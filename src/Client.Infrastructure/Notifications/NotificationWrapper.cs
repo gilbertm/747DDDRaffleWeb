@@ -1,7 +1,7 @@
-using FSH.WebApi.Shared.Notifications;
+using EHULOG.WebApi.Shared.Notifications;
 using MediatR;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 public class NotificationWrapper<TNotificationMessage> : INotification
     where TNotificationMessage : INotificationMessage

@@ -1,9 +1,9 @@
-using FSH.BlazorWebAssembly.Client.Components.Common;
-using FSH.BlazorWebAssembly.Client.Shared;
+using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Components.EntityTable;
+namespace EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
 
 public partial class AddEditModal<TRequest> : IAddEditModal<TRequest>
 {

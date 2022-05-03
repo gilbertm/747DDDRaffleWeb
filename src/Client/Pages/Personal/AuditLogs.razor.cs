@@ -1,10 +1,10 @@
-using FSH.BlazorWebAssembly.Client.Components.EntityTable;
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using Mapster;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Personal;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Personal;
 
 public partial class AuditLogs
 {

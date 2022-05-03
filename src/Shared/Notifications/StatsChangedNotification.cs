@@ -1,4 +1,4 @@
-namespace FSH.WebApi.Shared.Notifications;
+namespace EHULOG.WebApi.Shared.Notifications;
 
 public class StatsChangedNotification : INotificationMessage
 {

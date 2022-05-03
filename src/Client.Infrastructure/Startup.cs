@@ -1,15 +1,15 @@
 ﻿using System.Globalization;
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Preferences;
-using FSH.WebApi.Shared.Authorization;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using EHULOG.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure;
 
 public static class Startup
 {
@@ -47,9 +47,9 @@ public static class Startup
 
     private static void RegisterPermissionClaims(AuthorizationOptions options)
     {
-        foreach (var permission in FSHPermissions.All)
+        foreach (var permission in EHULOGPermissions.All)
         {
-            options.AddPolicy(permission.Name, policy => policy.RequireClaim(FSHClaims.Permission, permission.Name));
+            options.AddPolicy(permission.Name, policy => policy.RequireClaim(EHULOGClaims.Permission, permission.Name));
         }
     }
 

@@ -1,10 +1,10 @@
-﻿using FSH.WebApi.Shared.Notifications;
+﻿using EHULOG.WebApi.Shared.Notifications;
 using MediatR;
 using MediatR.Courier;
 using MediatR.Courier.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 internal static class Startup
 {

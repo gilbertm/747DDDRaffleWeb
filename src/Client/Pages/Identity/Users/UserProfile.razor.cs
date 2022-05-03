@@ -1,13 +1,13 @@
-﻿using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Common;
-using FSH.BlazorWebAssembly.Client.Shared;
-using FSH.WebApi.Shared.Authorization;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+using EHULOG.BlazorWebAssembly.Client.Shared;
+using EHULOG.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Identity.Users;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
 
 public partial class UserProfile
 {

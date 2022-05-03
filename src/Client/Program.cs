@@ -1,8 +1,8 @@
 using System.Globalization;
-using FSH.BlazorWebAssembly.Client;
-using FSH.BlazorWebAssembly.Client.Infrastructure;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Common;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using EHULOG.BlazorWebAssembly.Client;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 

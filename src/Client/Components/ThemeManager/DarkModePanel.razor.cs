@@ -1,7 +1,7 @@
-using FSH.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 
-namespace FSH.BlazorWebAssembly.Client.Components.ThemeManager;
+namespace EHULOG.BlazorWebAssembly.Client.Components.ThemeManager;
 
 public partial class DarkModePanel
 {

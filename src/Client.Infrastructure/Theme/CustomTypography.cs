@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Theme;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
 
 public static class CustomTypography
 {

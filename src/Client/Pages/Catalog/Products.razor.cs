@@ -1,13 +1,13 @@
-﻿using FSH.BlazorWebAssembly.Client.Components.EntityTable;
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Common;
-using FSH.WebApi.Shared.Authorization;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+using EHULOG.WebApi.Shared.Authorization;
 using Mapster;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Catalog;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
 public partial class Products
 {

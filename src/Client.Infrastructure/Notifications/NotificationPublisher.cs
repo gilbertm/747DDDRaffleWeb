@@ -1,8 +1,8 @@
-using FSH.WebApi.Shared.Notifications;
+using EHULOG.WebApi.Shared.Notifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 public class NotificationPublisher : INotificationPublisher
 {

@@ -1,11 +1,11 @@
-﻿using FSH.BlazorWebAssembly.Client.Components.Common;
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Shared;
-using FSH.WebApi.Shared.Multitenancy;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Shared;
+using EHULOG.WebApi.Shared.Multitenancy;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Authentication;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Authentication;
 
 public partial class SelfRegister
 {

@@ -9,11 +9,11 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <!-- This file is only needed (and apparently also only generated) if there are any Page or Component specific styles used. -->
-    <!--<link href="FSH.BlazorWebAssembly.Client.styles.css" rel="stylesheet" />-->
+    <!--<link href="EHULOG.BlazorWebAssembly.Client.styles.css" rel="stylesheet" />-->
     <link href="css/fsh.css" rel="stylesheet" />
     <link href="manifest.json" rel="manifest" />
-    <link rel="apple-touch-icon" sizes="512x512" href="full-stack-hero-logo.png" />
-    <link rel="apple-touch-icon" sizes="192x192" href="full-stack-hero-logo.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="ehulog.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="ehulog.png" />
 </head>
 
 <body>
@@ -50,14 +50,26 @@
             }
         </style>
 
-        <div style="height:100%;width:100%;margin:0;position:fixed;">
-            <div class="fsh-wasm"></div>
-            <div class="fsh-wasm" style="animation-direction:alternate-reverse;animation-duration:2s;"></div>
-            <div class="fsh-wasm" style="animation-duration:5s;"></div>
-            <div class="fsh-wasm-cont ">
-                <img src="/full-stack-hero-logo.png" Style="height:350px; width:350px; opacity:0.8" />
-            </div>
+        <!-- MudPaper Class="d-flex align-content-center flex-wrap flex-grow-1 gap-4" MaxWidth="100%" Height="100%" Elevation="0">
+            <MudPaper Class="mud-theme-primary" Width="128px" Height="64px" />
+            <h1>Test</h1>
+        </!--MudPaper -->
+
+       <div class="loader">
+          <div class="load-text">
+            <div class="loaded-text">e</div>
+            <div class="loading-text">Hulog</div>
+          </div>
         </div>
+
+        <!-- div style="height:100%;width:100%;margin:0;position:fixed;">
+        <div class="fsh-wasm"></div>
+        <div class="fsh-wasm" style="animation-direction:alternate-reverse;animation-duration:2s;"></div>
+        <div class="fsh-wasm" style="animation-duration:5s;"></div>
+        <div class="fsh-wasm-cont ">
+            <img src="/ehulog.png" Style="height:350px; width:350px; opacity:0.8" />
+        </div>
+        </!--div -->
     </div>
 
     <div id="blazor-error-ui">

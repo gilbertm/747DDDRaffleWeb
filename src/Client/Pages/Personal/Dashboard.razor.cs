@@ -1,11 +1,11 @@
-﻿using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
-using FSH.BlazorWebAssembly.Client.Shared;
-using FSH.WebApi.Shared.Notifications;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
+using EHULOG.BlazorWebAssembly.Client.Shared;
+using EHULOG.WebApi.Shared.Notifications;
 using MediatR.Courier;
 using Microsoft.AspNetCore.Components;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Personal;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Personal;
 
 public partial class Dashboard
 {

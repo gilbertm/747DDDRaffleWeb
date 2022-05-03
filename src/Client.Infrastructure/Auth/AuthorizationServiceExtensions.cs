@@ -1,7 +1,7 @@
-﻿using FSH.WebApi.Shared.Authorization;
+﻿using EHULOG.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 
 public static class AuthorizationServiceExtensions
 {

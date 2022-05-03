@@ -1,8 +1,8 @@
-﻿using FSH.BlazorWebAssembly.Client.Infrastructure.Preferences;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Theme;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Shared;
+namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
 public partial class BaseLayout
 {

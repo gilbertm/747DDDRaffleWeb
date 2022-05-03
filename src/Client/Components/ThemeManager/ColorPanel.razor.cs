@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Components.ThemeManager;
+namespace EHULOG.BlazorWebAssembly.Client.Components.ThemeManager;
 
 public partial class ColorPanel
 {

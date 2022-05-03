@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Shared;
+namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
 public static class DialogServiceExtensions
 {

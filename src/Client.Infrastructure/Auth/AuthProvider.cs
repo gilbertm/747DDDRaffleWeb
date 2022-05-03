@@ -1,4 +1,4 @@
-﻿namespace FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
+﻿namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 
 public enum AuthProvider
 {

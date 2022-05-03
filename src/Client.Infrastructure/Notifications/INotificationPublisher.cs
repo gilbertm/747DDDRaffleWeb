@@ -1,6 +1,6 @@
-using FSH.WebApi.Shared.Notifications;
+using EHULOG.WebApi.Shared.Notifications;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 public interface INotificationPublisher
 {

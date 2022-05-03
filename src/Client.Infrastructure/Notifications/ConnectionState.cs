@@ -1,4 +1,4 @@
-﻿namespace FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
+﻿namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 public enum ConnectionState
 {

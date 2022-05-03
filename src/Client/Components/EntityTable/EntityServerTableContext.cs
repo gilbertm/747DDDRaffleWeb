@@ -1,6 +1,6 @@
-﻿using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
-namespace FSH.BlazorWebAssembly.Client.Components.EntityTable;
+namespace EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
 
 /// <summary>
 /// Initialization Context for the EntityTable Component.

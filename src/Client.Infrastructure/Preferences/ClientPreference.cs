@@ -1,6 +1,6 @@
-﻿using FSH.BlazorWebAssembly.Client.Infrastructure.Theme;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Preferences;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 
 public class ClientPreference : IPreference
 {

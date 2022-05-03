@@ -1,16 +1,16 @@
 ﻿using System.Security.Claims;
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
-using FSH.BlazorWebAssembly.Client.Shared;
-using FSH.WebApi.Shared.Authorization;
-using FSH.WebApi.Shared.Multitenancy;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+using EHULOG.BlazorWebAssembly.Client.Shared;
+using EHULOG.WebApi.Shared.Authorization;
+using EHULOG.WebApi.Shared.Multitenancy;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Identity.Roles;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Roles;
 
 public partial class RolePermissions
 {
@@ -50,8 +50,8 @@ public partial class RolePermissions
             _description = string.Format(L["Manage {0} Role Permissions"], role.Name);
 
             var permissions = state.User.GetTenant() == MultitenancyConstants.Root.Id
-                ? FSHPermissions.All
-                : FSHPermissions.Admin;
+                ? EHULOGPermissions.All
+                : EHULOGPermissions.Admin;
 
             _groupedRoleClaims = permissions
                 .GroupBy(p => p.Resource)

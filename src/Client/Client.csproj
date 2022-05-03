@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>FSH.BlazorWebAssembly.Client</RootNamespace>
-        <AssemblyName>FSH.BlazorWebAssembly.Client</AssemblyName>
+        <RootNamespace>EHULOG.BlazorWebAssembly.Client</RootNamespace>
+        <AssemblyName>EHULOG.BlazorWebAssembly.Client</AssemblyName>
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>

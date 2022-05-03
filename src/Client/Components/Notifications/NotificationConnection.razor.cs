@@ -2,15 +2,15 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Common;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Notifications;
-using FSH.WebApi.Shared.Notifications;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
+using EHULOG.WebApi.Shared.Notifications;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace FSH.BlazorWebAssembly.Client.Components.Notifications;
+namespace EHULOG.BlazorWebAssembly.Client.Components.Notifications;
 
 public partial class NotificationConnection : IDisposable, IAsyncDisposable
 {

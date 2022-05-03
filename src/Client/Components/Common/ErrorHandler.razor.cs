@@ -1,8 +1,8 @@
-﻿using FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Components.Common;
+namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
 
 public partial class ErrorHandler
 {

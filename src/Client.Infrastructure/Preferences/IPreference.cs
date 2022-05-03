@@ -1,4 +1,4 @@
-﻿namespace FSH.BlazorWebAssembly.Client.Infrastructure.Preferences;
+﻿namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 
 public interface IPreference
 {

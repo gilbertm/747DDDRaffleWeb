@@ -1,4 +1,4 @@
-﻿namespace FSH.BlazorWebAssembly.Client.Components.EntityTable;
+﻿namespace EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
 
 public interface IAddEditModal<TRequest>
 {

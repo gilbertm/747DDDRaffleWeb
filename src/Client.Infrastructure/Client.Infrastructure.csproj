@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>FSH.BlazorWebAssembly.Client.Infrastructure</RootNamespace>
-        <AssemblyName>FSH.BlazorWebAssembly.Client.Infrastructure</AssemblyName>
+        <RootNamespace>EHULOG.BlazorWebAssembly.Client.Infrastructure</RootNamespace>
+        <AssemblyName>EHULOG.BlazorWebAssembly.Client.Infrastructure</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,9 +31,7 @@
     </ItemGroup>
 
     <Target Name="NSwag">
-        <Exec WorkingDirectory="$(ProjectDir)\ApiClient"
-              EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
-              Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" />
+        <Exec WorkingDirectory="$(ProjectDir)\ApiClient" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" />
     </Target>
 
 </Project>

@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Common;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace FSH.BlazorWebAssembly.Client.Components.Common;
+namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
 
 public partial class PersonCard
 {

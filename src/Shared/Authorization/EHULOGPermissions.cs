@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace FSH.WebApi.Shared.Authorization;
+namespace EHULOG.WebApi.Shared.Authorization;
 
 public static class FSHAction
 {
@@ -28,7 +28,7 @@ public static class FSHResource
     public const string Brands = nameof(Brands);
 }
 
-public static class FSHPermissions
+public static class EHULOGPermissions
 {
     private static readonly FSHPermission[] _all = new FSHPermission[]
     {

@@ -1,6 +1,6 @@
-using FSH.WebApi.Shared.Notifications;
+using EHULOG.WebApi.Shared.Notifications;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Preferences;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 
 public class FshTablePreference : INotificationMessage
 {

@@ -1,10 +1,10 @@
-﻿using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Shared;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Catalog;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
 public class BrandAutocomplete : MudAutocomplete<Guid>
 {

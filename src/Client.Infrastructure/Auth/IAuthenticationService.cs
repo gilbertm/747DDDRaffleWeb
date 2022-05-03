@@ -1,6 +1,6 @@
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
-namespace FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
+namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 
 public interface IAuthenticationService
 {

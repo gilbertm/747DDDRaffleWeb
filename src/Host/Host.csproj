@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>FSH.BlazorWebAssembly.Host</RootNamespace>
-        <AssemblyName>FSH.BlazorWebAssembly.Host</AssemblyName>
+        <RootNamespace>EHULOG.BlazorWebAssembly.Host</RootNamespace>
+        <AssemblyName>EHULOG.BlazorWebAssembly.Host</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

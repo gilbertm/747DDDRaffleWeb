@@ -1,7 +1,7 @@
-﻿using FSH.WebApi.Shared.Authorization;
+﻿using EHULOG.WebApi.Shared.Authorization;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Components.EntityTable;
+namespace EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
 
 /// <summary>
 /// Abstract base class for the initialization Context of the EntityTable Component.

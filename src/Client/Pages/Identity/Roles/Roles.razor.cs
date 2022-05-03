@@ -1,12 +1,12 @@
-﻿using FSH.BlazorWebAssembly.Client.Components.EntityTable;
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
-using FSH.WebApi.Shared.Authorization;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+using EHULOG.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace FSH.BlazorWebAssembly.Client.Pages.Identity.Roles;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Roles;
 
 public partial class Roles
 {
@@ -47,8 +47,8 @@ public partial class Roles
             updateFunc: async (_, role) => await RolesClient.RegisterRoleAsync(role),
             deleteFunc: async id => await RolesClient.DeleteAsync(id),
             hasExtraActionsFunc: () => _canViewRoleClaims,
-            canUpdateEntityFunc: e => !FSHRoles.IsDefault(e.Name),
-            canDeleteEntityFunc: e => !FSHRoles.IsDefault(e.Name),
+            canUpdateEntityFunc: e => !EHULOGRoles.IsDefault(e.Name),
+            canDeleteEntityFunc: e => !EHULOGRoles.IsDefault(e.Name),
             exportAction: string.Empty);
     }
 

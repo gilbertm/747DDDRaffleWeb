@@ -1,7 +1,7 @@
-using FSH.BlazorWebAssembly.Client.Components.Dialogs;
-using FSH.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using FSH.BlazorWebAssembly.Client.Infrastructure.Auth;
-using FSH.BlazorWebAssembly.Client.Shared;
+using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+using EHULOG.BlazorWebAssembly.Client.Shared;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using MudBlazor;
 
-namespace FSH.BlazorWebAssembly.Client.Components.EntityTable;
+namespace EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
 
 public partial class EntityTable<TEntity, TId, TRequest>
     where TRequest : new()
