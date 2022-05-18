@@ -16,8 +16,10 @@
 }
 
     .mud-nav-link.active:not(.mud-nav-link-disabled) {
-        border-right: 3px solid var(--mud-palette-primary);
-        background-color: rgba(var(--mud-palette-primary-rgb), 0.1);
+        /* border-right: 3px solid var(--mud-palette-primary);
+        background-color: rgba(var(--mud-palette-primary-rgb), 0.1); */
+        border-right: none !important;
+        background-color: rgba(var(--mud-palette-primary-rgb), 0.1) !important;
     }
 
 .mud-table {

@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace EHULOG.WebApi.Shared.Authorization;
 
-public static class FSHAction
+public static class EHULOGAction
 {
     public const string View = nameof(View);
     public const string Search = nameof(Search);
@@ -15,7 +15,7 @@ public static class FSHAction
     public const string UpgradeSubscription = nameof(UpgradeSubscription);
 }
 
-public static class FSHResource
+public static class EHULOGResource
 {
     public const string Tenants = nameof(Tenants);
     public const string Dashboard = nameof(Dashboard);
@@ -26,54 +26,163 @@ public static class FSHResource
     public const string RoleClaims = nameof(RoleClaims);
     public const string Products = nameof(Products);
     public const string Brands = nameof(Brands);
+
+    public const string AppUsers = nameof(AppUsers);
+    public const string AppUserProducts = nameof(AppUserProducts);
+    public const string Categories = nameof(Categories);
+    public const string Ledgers = nameof(Ledgers);
+    public const string Loans = nameof(Loans);
+    public const string LoanApplicants = nameof(LoanApplicants);
+    public const string LoanLenders = nameof(LoanLenders);
+    public const string LoanLessees = nameof(LoanLessees);
+    public const string LoanLocations = nameof(LoanLocations);
+    public const string LoanProducts = nameof(LoanProducts);
+    public const string Packages = nameof(Packages);
+    public const string Ratings = nameof(Ratings);
+    public const string InputOutputResources = nameof(InputOutputResources);
 }
 
 public static class EHULOGPermissions
 {
-    private static readonly FSHPermission[] _all = new FSHPermission[]
+    private static readonly EHULOGPermission[] _all = new EHULOGPermission[]
     {
-        new("View Dashboard", FSHAction.View, FSHResource.Dashboard),
-        new("View Hangfire", FSHAction.View, FSHResource.Hangfire),
-        new("View Users", FSHAction.View, FSHResource.Users),
-        new("Search Users", FSHAction.Search, FSHResource.Users),
-        new("Create Users", FSHAction.Create, FSHResource.Users),
-        new("Update Users", FSHAction.Update, FSHResource.Users),
-        new("Delete Users", FSHAction.Delete, FSHResource.Users),
-        new("Export Users", FSHAction.Export, FSHResource.Users),
-        new("View UserRoles", FSHAction.View, FSHResource.UserRoles),
-        new("Update UserRoles", FSHAction.Update, FSHResource.UserRoles),
-        new("View Roles", FSHAction.View, FSHResource.Roles),
-        new("Create Roles", FSHAction.Create, FSHResource.Roles),
-        new("Update Roles", FSHAction.Update, FSHResource.Roles),
-        new("Delete Roles", FSHAction.Delete, FSHResource.Roles),
-        new("View RoleClaims", FSHAction.View, FSHResource.RoleClaims),
-        new("Update RoleClaims", FSHAction.Update, FSHResource.RoleClaims),
-        new("View Products", FSHAction.View, FSHResource.Products, IsBasic: true),
-        new("Search Products", FSHAction.Search, FSHResource.Products, IsBasic: true),
-        new("Create Products", FSHAction.Create, FSHResource.Products),
-        new("Update Products", FSHAction.Update, FSHResource.Products),
-        new("Delete Products", FSHAction.Delete, FSHResource.Products),
-        new("Export Products", FSHAction.Export, FSHResource.Products),
-        new("View Brands", FSHAction.View, FSHResource.Brands, IsBasic: true),
-        new("Search Brands", FSHAction.Search, FSHResource.Brands, IsBasic: true),
-        new("Create Brands", FSHAction.Create, FSHResource.Brands),
-        new("Update Brands", FSHAction.Update, FSHResource.Brands),
-        new("Delete Brands", FSHAction.Delete, FSHResource.Brands),
-        new("Generate Brands", FSHAction.Generate, FSHResource.Brands),
-        new("Clean Brands", FSHAction.Clean, FSHResource.Brands),
-        new("View Tenants", FSHAction.View, FSHResource.Tenants, IsRoot: true),
-        new("Create Tenants", FSHAction.Create, FSHResource.Tenants, IsRoot: true),
-        new("Update Tenants", FSHAction.Update, FSHResource.Tenants, IsRoot: true),
-        new("Upgrade Tenant Subscription", FSHAction.UpgradeSubscription, FSHResource.Tenants, IsRoot: true)
+        new("View Dashboard", EHULOGAction.View, EHULOGResource.Dashboard),
+        new("View Hangfire", EHULOGAction.View, EHULOGResource.Hangfire),
+        new("View Users", EHULOGAction.View, EHULOGResource.Users),
+        new("Search Users", EHULOGAction.Search, EHULOGResource.Users),
+        new("Create Users", EHULOGAction.Create, EHULOGResource.Users),
+        new("Update Users", EHULOGAction.Update, EHULOGResource.Users),
+        new("Delete Users", EHULOGAction.Delete, EHULOGResource.Users),
+        new("Export Users", EHULOGAction.Export, EHULOGResource.Users),
+        new("View UserRoles", EHULOGAction.View, EHULOGResource.UserRoles),
+        new("Update UserRoles", EHULOGAction.Update, EHULOGResource.UserRoles),
+        new("View Roles", EHULOGAction.View, EHULOGResource.Roles),
+        new("Create Roles", EHULOGAction.Create, EHULOGResource.Roles),
+        new("Update Roles", EHULOGAction.Update, EHULOGResource.Roles),
+        new("Delete Roles", EHULOGAction.Delete, EHULOGResource.Roles),
+        new("View RoleClaims", EHULOGAction.View, EHULOGResource.RoleClaims),
+        new("Update RoleClaims", EHULOGAction.Update, EHULOGResource.RoleClaims),
+        new("View Products", EHULOGAction.View, EHULOGResource.Products, IsBasic: true),
+        new("Search Products", EHULOGAction.Search, EHULOGResource.Products, IsBasic: true),
+        new("Create Products", EHULOGAction.Create, EHULOGResource.Products),
+        new("Update Products", EHULOGAction.Update, EHULOGResource.Products),
+        new("Delete Products", EHULOGAction.Delete, EHULOGResource.Products),
+        new("Export Products", EHULOGAction.Export, EHULOGResource.Products),
+        new("View Brands", EHULOGAction.View, EHULOGResource.Brands, IsBasic: true),
+        new("Search Brands", EHULOGAction.Search, EHULOGResource.Brands, IsBasic: true),
+        new("Create Brands", EHULOGAction.Create, EHULOGResource.Brands),
+        new("Update Brands", EHULOGAction.Update, EHULOGResource.Brands),
+        new("Delete Brands", EHULOGAction.Delete, EHULOGResource.Brands),
+        new("Generate Brands", EHULOGAction.Generate, EHULOGResource.Brands),
+        new("Clean Brands", EHULOGAction.Clean, EHULOGResource.Brands),
+        new("View Tenants", EHULOGAction.View, EHULOGResource.Tenants, IsRoot: true),
+        new("Create Tenants", EHULOGAction.Create, EHULOGResource.Tenants, IsRoot: true),
+        new("Update Tenants", EHULOGAction.Update, EHULOGResource.Tenants, IsRoot: true),
+        new("Upgrade Tenant Subscription", EHULOGAction.UpgradeSubscription, EHULOGResource.Tenants, IsRoot: true),
+
+        new("View Applicants", EHULOGAction.View, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: true),
+        new("Search Applicants", EHULOGAction.Search, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: true),
+        new("Create Applicants", EHULOGAction.Create, EHULOGResource.LoanApplicants),
+        new("Update Applicants", EHULOGAction.Update, EHULOGResource.LoanApplicants),
+        new("Delete Applicants", EHULOGAction.Delete, EHULOGResource.LoanApplicants),
+        new("Export Applicants", EHULOGAction.Export, EHULOGResource.LoanApplicants),
+
+        new("View AppUsers", EHULOGAction.View, EHULOGResource.AppUsers, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Search AppUsers", EHULOGAction.Search, EHULOGResource.AppUsers),
+        new("Create AppUsers", EHULOGAction.Create, EHULOGResource.AppUsers, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Update AppUsers", EHULOGAction.Update, EHULOGResource.AppUsers, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Delete AppUsers", EHULOGAction.Delete, EHULOGResource.AppUsers),
+        new("Export AppUsers", EHULOGAction.Export, EHULOGResource.AppUsers),
+
+        new("View AppUserProducts", EHULOGAction.View, EHULOGResource.AppUserProducts, IsLender: true, IsLessee: true),
+        new("Search AppUserProducts", EHULOGAction.Search, EHULOGResource.AppUserProducts, IsLender: true, IsLessee: true),
+        new("Create AppUserProducts", EHULOGAction.Create, EHULOGResource.AppUserProducts),
+        new("Update AppUserProducts", EHULOGAction.Update, EHULOGResource.AppUserProducts),
+        new("Delete AppUserProducts", EHULOGAction.Delete, EHULOGResource.AppUserProducts),
+        new("Export AppUserProducts", EHULOGAction.Export, EHULOGResource.AppUserProducts),
+
+        new("View Categories", EHULOGAction.View, EHULOGResource.Categories, IsBasic: true),
+        new("Search Categories", EHULOGAction.Search, EHULOGResource.Categories, IsBasic: true),
+        new("Create Categories", EHULOGAction.Create, EHULOGResource.Categories),
+        new("Update Categories", EHULOGAction.Update, EHULOGResource.Categories),
+        new("Delete Categories", EHULOGAction.Delete, EHULOGResource.Categories),
+        new("Export Categories", EHULOGAction.Export, EHULOGResource.Categories),
+
+        new("View Ledgers", EHULOGAction.View, EHULOGResource.Ledgers, IsLender: true, IsLessee: true),
+        new("Search Ledgers", EHULOGAction.Search, EHULOGResource.Ledgers, IsLender: true, IsLessee: true),
+        new("Create Ledgers", EHULOGAction.Create, EHULOGResource.Ledgers),
+        new("Update Ledgers", EHULOGAction.Update, EHULOGResource.Ledgers),
+        new("Delete Ledgers", EHULOGAction.Delete, EHULOGResource.Ledgers),
+        new("Export Ledgers", EHULOGAction.Export, EHULOGResource.Ledgers),
+
+        new("View Loans", EHULOGAction.View, EHULOGResource.Loans, IsBasic: true),
+        new("Search Loans", EHULOGAction.Search, EHULOGResource.Loans, IsBasic: true),
+        new("Create Loans", EHULOGAction.Create, EHULOGResource.Loans),
+        new("Update Loans", EHULOGAction.Update, EHULOGResource.Loans),
+        new("Delete Loans", EHULOGAction.Delete, EHULOGResource.Loans),
+        new("Export Loans", EHULOGAction.Export, EHULOGResource.Loans),
+
+        new("View LoanLenders", EHULOGAction.View, EHULOGResource.LoanLenders, IsLender: true, IsLessee: true),
+        new("Search LoanLenders", EHULOGAction.Search, EHULOGResource.LoanLenders, IsLender: true, IsLessee: true),
+        new("Create LoanLenders", EHULOGAction.Create, EHULOGResource.LoanLenders),
+        new("Update LoanLenders", EHULOGAction.Update, EHULOGResource.LoanLenders),
+        new("Delete LoanLenders", EHULOGAction.Delete, EHULOGResource.LoanLenders),
+        new("Export LoanLenders", EHULOGAction.Export, EHULOGResource.LoanLenders),
+
+        new("View LoanLessees", EHULOGAction.View, EHULOGResource.LoanLessees, IsLender: true),
+        new("Search LoanLessees", EHULOGAction.Search, EHULOGResource.LoanLessees, IsLender: true),
+        new("Create LoanLessees", EHULOGAction.Create, EHULOGResource.LoanLessees),
+        new("Update LoanLessees", EHULOGAction.Update, EHULOGResource.LoanLessees),
+        new("Delete LoanLessees", EHULOGAction.Delete, EHULOGResource.LoanLessees),
+        new("Export LoanLessees", EHULOGAction.Export, EHULOGResource.LoanLessees),
+
+        new("View LoanLocations", EHULOGAction.View, EHULOGResource.LoanLocations, IsBasic: true),
+        new("Search LoanLocations", EHULOGAction.Search, EHULOGResource.LoanLocations, IsBasic: true),
+        new("Create LoanLocations", EHULOGAction.Create, EHULOGResource.LoanLocations),
+        new("Update LoanLocations", EHULOGAction.Update, EHULOGResource.LoanLocations),
+        new("Delete LoanLocations", EHULOGAction.Delete, EHULOGResource.LoanLocations),
+        new("Export LoanLocations", EHULOGAction.Export, EHULOGResource.LoanLocations),
+
+        new("View LoanProducts", EHULOGAction.View, EHULOGResource.LoanProducts, IsBasic: true),
+        new("Search LoanProducts", EHULOGAction.Search, EHULOGResource.LoanProducts, IsBasic: true),
+        new("Create LoanProducts", EHULOGAction.Create, EHULOGResource.LoanProducts),
+        new("Update LoanProducts", EHULOGAction.Update, EHULOGResource.LoanProducts),
+        new("Delete LoanProducts", EHULOGAction.Delete, EHULOGResource.LoanProducts),
+        new("Export LoanProducts", EHULOGAction.Export, EHULOGResource.LoanProducts),
+
+        new("View Packages", EHULOGAction.View, EHULOGResource.Packages, IsLender: true, IsLessee: true),
+        new("Search Packages", EHULOGAction.Search, EHULOGResource.Packages, IsLender: true, IsLessee: true),
+        new("Create Packages", EHULOGAction.Create, EHULOGResource.Packages),
+        new("Update Packages", EHULOGAction.Update, EHULOGResource.Packages),
+        new("Delete Packages", EHULOGAction.Delete, EHULOGResource.Packages),
+        new("Export Packages", EHULOGAction.Export, EHULOGResource.Packages),
+
+        new("View Ratings", EHULOGAction.View, EHULOGResource.Ratings, IsLender: true, IsLessee: true),
+        new("Search Ratings", EHULOGAction.Search, EHULOGResource.Ratings, IsLender: true, IsLessee: true),
+        new("Create Ratings", EHULOGAction.Create, EHULOGResource.Ratings),
+        new("Update Ratings", EHULOGAction.Update, EHULOGResource.Ratings),
+        new("Delete Ratings", EHULOGAction.Delete, EHULOGResource.Ratings),
+        new("Export Ratings", EHULOGAction.Export, EHULOGResource.Ratings),
+
+        new("View InputOutputResources", EHULOGAction.View, EHULOGResource.InputOutputResources, IsBasic: true),
+        new("Search InputOutputResources", EHULOGAction.Search, EHULOGResource.InputOutputResources, IsBasic: true),
+        new("Create InputOutputResources", EHULOGAction.Create, EHULOGResource.InputOutputResources),
+        new("Update InputOutputResources", EHULOGAction.Update, EHULOGResource.InputOutputResources),
+        new("Delete InputOutputResources", EHULOGAction.Delete, EHULOGResource.InputOutputResources),
+        new("Export InputOutputResources", EHULOGAction.Export, EHULOGResource.InputOutputResources)
     };
 
-    public static IReadOnlyList<FSHPermission> All { get; } = new ReadOnlyCollection<FSHPermission>(_all);
-    public static IReadOnlyList<FSHPermission> Root { get; } = new ReadOnlyCollection<FSHPermission>(_all.Where(p => p.IsRoot).ToArray());
-    public static IReadOnlyList<FSHPermission> Admin { get; } = new ReadOnlyCollection<FSHPermission>(_all.Where(p => !p.IsRoot).ToArray());
-    public static IReadOnlyList<FSHPermission> Basic { get; } = new ReadOnlyCollection<FSHPermission>(_all.Where(p => p.IsBasic).ToArray());
+    public static IReadOnlyList<EHULOGPermission> All { get; } = new ReadOnlyCollection<EHULOGPermission>(_all);
+    public static IReadOnlyList<EHULOGPermission> Root { get; } = new ReadOnlyCollection<EHULOGPermission>(_all.Where(p => p.IsRoot).ToArray());
+    public static IReadOnlyList<EHULOGPermission> Admin { get; } = new ReadOnlyCollection<EHULOGPermission>(_all.Where(p => !p.IsRoot).ToArray());
+    public static IReadOnlyList<EHULOGPermission> Basic { get; } = new ReadOnlyCollection<EHULOGPermission>(_all.Where(p => p.IsBasic).ToArray());
+
+    public static IReadOnlyList<EHULOGPermission> Lessee { get; } = new ReadOnlyCollection<EHULOGPermission>(_all.Where(p => p.IsLessee).ToArray());
+    public static IReadOnlyList<EHULOGPermission> Lender { get; } = new ReadOnlyCollection<EHULOGPermission>(_all.Where(p => p.IsLender).ToArray());
+
 }
 
-public record FSHPermission(string Description, string Action, string Resource, bool IsBasic = false, bool IsRoot = false)
+public record EHULOGPermission(string Description, string Action, string Resource, bool IsBasic = false, bool IsRoot = false, bool IsLessee = false, bool IsLender = false)
 {
     public string Name => NameFor(Action, Resource);
     public static string NameFor(string action, string resource) => $"Permissions.{resource}.{action}";

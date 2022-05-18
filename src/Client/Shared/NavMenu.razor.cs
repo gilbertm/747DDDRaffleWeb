@@ -28,12 +28,12 @@ public partial class NavMenu
     {
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
         var user = (await AuthState).User;
-        _canViewHangfire = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.Hangfire);
-        _canViewDashboard = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.Dashboard);
-        _canViewRoles = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.Roles);
-        _canViewUsers = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.Users);
-        _canViewProducts = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.Products);
-        _canViewBrands = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.Brands);
-        _canViewTenants = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.Tenants);
+        _canViewHangfire = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Hangfire);
+        _canViewDashboard = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Dashboard);
+        _canViewRoles = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Roles);
+        _canViewUsers = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Users);
+        _canViewProducts = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Products);
+        _canViewBrands = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Brands);
+        _canViewTenants = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Tenants);
     }
 }

@@ -2,7 +2,7 @@
 
 @inject IStringLocalizer<Account> L
 
-<FshTitle Title="@L["Account"]" Description="@L["Manage your account"]" />
+<EhulogTitle Title="@L["Account"]" Description="@L["Manage your account"]" />
 
 <MudTabs Elevation="25" Color="Color.Transparent" Rounded="true" PanelClass="mt-6">
     <MudTabPanel Text="@L["Profile"]">
@@ -14,20 +14,13 @@
             <Security />
         </MudTabPanel>
     }
+    <MudTabPanel Text="@L["Package"]" Style="color:#ff0000">
+        <Package AppUserDto="AppUserDto" />
+    </MudTabPanel>
+    <MudTabPanel Text="@L["Address"]" Style="color:#ff0000">
+        <Address />
+    </MudTabPanel>
+    <MudTabPanel Text="@L["Document"]" Style="color:#ff0000">
+        <Document />
+    </MudTabPanel>
 </MudTabs>
-
-@code
-{
-    [Inject]
-    public IAuthenticationService AuthService { get; set; } = default!;
-
-    public bool SecurityTabHidden { get; set; } = false;
-
-    protected override void OnInitialized()
-    {
-        if (AuthService.ProviderType == AuthProvider.AzureAd)
-        {
-            SecurityTabHidden = true;
-        }
-    }
-}

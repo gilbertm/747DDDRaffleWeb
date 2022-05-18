@@ -34,13 +34,13 @@ public partial class RolePermissions
     private bool _canSearchRoleClaims;
     private bool _loaded;
 
-    static RolePermissions() => TypeAdapterConfig<FSHPermission, PermissionViewModel>.NewConfig().MapToConstructor(true);
+    static RolePermissions() => TypeAdapterConfig<EHULOGPermission, PermissionViewModel>.NewConfig().MapToConstructor(true);
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canEditRoleClaims = await AuthService.HasPermissionAsync(state.User, FSHAction.Update, FSHResource.RoleClaims);
-        _canSearchRoleClaims = await AuthService.HasPermissionAsync(state.User, FSHAction.View, FSHResource.RoleClaims);
+        _canEditRoleClaims = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.RoleClaims);
+        _canSearchRoleClaims = await AuthService.HasPermissionAsync(state.User, EHULOGAction.View, EHULOGResource.RoleClaims);
 
         if (await ApiHelper.ExecuteCallGuardedAsync(
                 () => RolesClient.GetByIdWithPermissionsAsync(Id), Snackbar)
@@ -103,7 +103,7 @@ public partial class RolePermissions
             || permission.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase) is true;
 }
 
-public record PermissionViewModel : FSHPermission
+public record PermissionViewModel : EHULOGPermission
 {
     public bool Enabled { get; set; }
 

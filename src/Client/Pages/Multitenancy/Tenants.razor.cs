@@ -32,8 +32,8 @@ public partial class Tenants
         Context = new(
             entityName: L["Tenant"],
             entityNamePlural: L["Tenants"],
-            entityResource: FSHResource.Tenants,
-            searchAction: FSHAction.View,
+            entityResource: EHULOGResource.Tenants,
+            searchAction: EHULOGAction.View,
             deleteAction: string.Empty,
             updateAction: string.Empty,
             fields: new()
@@ -53,8 +53,8 @@ public partial class Tenants
             exportAction: string.Empty);
 
         var state = await AuthState;
-        _canUpgrade = await AuthService.HasPermissionAsync(state.User, FSHAction.UpgradeSubscription, FSHResource.Tenants);
-        _canModify = await AuthService.HasPermissionAsync(state.User, FSHAction.Update, FSHResource.Tenants);
+        _canUpgrade = await AuthService.HasPermissionAsync(state.User, EHULOGAction.UpgradeSubscription, EHULOGResource.Tenants);
+        _canModify = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.Tenants);
     }
 
     private void ViewTenantDetails(string id)

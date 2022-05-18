@@ -1,9 +1,9 @@
 ﻿@page "/users/{Id}/roles"
-@attribute [MustHavePermission(FSHAction.View, FSHResource.UserRoles)]
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.UserRoles)]
 
 @inject IStringLocalizer<UserRoles> L
 
-<FshTitle Title="@_title" Description="@_description" />
+<EhulogTitle Title="@_title" Description="@_description" />
 
 @if (!_loaded)
 {

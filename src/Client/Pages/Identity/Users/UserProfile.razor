@@ -1,9 +1,9 @@
 ﻿@page "/users/{Id}/profile"
-@attribute [MustHavePermission(FSHAction.View, FSHResource.Users)]
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Users)]
 
 @inject IStringLocalizer<UserProfile> _localizer
 
-<FshTitle Title="@Title" Description="@Description" />
+<EhulogTitle Title="@Title" Description="@Description" />
 @if (!_loaded)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />

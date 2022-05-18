@@ -1,0 +1,9 @@
+﻿@inject IStringLocalizer<Profile> L
+
+<EhulogTitle Title="@L["Package"]" Description="@L["Your package and subscription"]" />
+
+<MudText>@_userId</MudText>
+
+@if (AppUserDto is not null && !string.IsNullOrEmpty(AppUserDto.ApplicationUserId)) {
+    <MudText>@AppUserDto?.ApplicationUserId</MudText>
+}

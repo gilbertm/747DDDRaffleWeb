@@ -68,7 +68,7 @@ public partial class UserProfile
         }
 
         var state = await AuthState;
-        _canToggleUserStatus = await AuthService.HasPermissionAsync(state.User, FSHAction.Update, FSHResource.Users);
+        _canToggleUserStatus = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.Users);
         _loaded = true;
     }
 }

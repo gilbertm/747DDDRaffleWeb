@@ -20,64 +20,66 @@ public partial class Products
 
     private EntityTable<ProductDto, Guid, ProductViewModel> _table = default!;
 
-    protected override void OnInitialized() =>
+    protected override void OnInitialized()
+    {
         Context = new(
-            entityName: L["Product"],
-            entityNamePlural: L["Products"],
-            entityResource: FSHResource.Products,
-            fields: new()
-            {
+                    entityName: L["Product"],
+                    entityNamePlural: L["Products"],
+                    entityResource: EHULOGResource.Products,
+                    fields: new()
+                    {
                 new(prod => prod.Id, L["Id"], "Id"),
+                new(prod => prod.Image?.ImagePath, L["Image"], "Image"),
                 new(prod => prod.Name, L["Name"], "Name"),
-                new(prod => prod.BrandName, L["Brand"], "Brand.Name"),
                 new(prod => prod.Description, L["Description"], "Description"),
-                new(prod => prod.Rate, L["Rate"], "Rate")
-            },
-            enableAdvancedSearch: true,
-            idFunc: prod => prod.Id,
-            searchFunc: async filter =>
-            {
-                var productFilter = filter.Adapt<SearchProductsRequest>();
+                new(prod => prod.BrandName, L["Brand"], "Brand.Name"),
+                new(prod => prod.CategoryName, L["Category"], "Category.Name")
+                    },
+                    enableAdvancedSearch: true,
+                    idFunc: prod => prod.Id,
+                    searchFunc: async filter =>
+                    {
+                        var productFilter = filter.Adapt<SearchProductsRequest>();
 
-                productFilter.BrandId = SearchBrandId == default ? null : SearchBrandId;
-                productFilter.MinimumRate = SearchMinimumRate;
-                productFilter.MaximumRate = SearchMaximumRate;
+                        productFilter.BrandId = SearchBrandId == default ? null : SearchBrandId;
+                        productFilter.CategoryId = SearchCategoryId == default ? null : SearchCategoryId;
 
-                var result = await ProductsClient.SearchAsync(productFilter);
-                return result.Adapt<PaginationResponse<ProductDto>>();
-            },
-            createFunc: async prod =>
-            {
-                if (!string.IsNullOrEmpty(prod.ImageInBytes))
-                {
-                    prod.Image = new FileUploadRequest() { Data = prod.ImageInBytes, Extension = prod.ImageExtension ?? string.Empty, Name = $"{prod.Name}_{Guid.NewGuid():N}" };
-                }
+                        var result = await ProductsClient.SearchAsync(productFilter);
+                        return result.Adapt<PaginationResponse<ProductDto>>();
+                    },
+                    createFunc: async prod =>
+                    {
+                        if (!string.IsNullOrEmpty(prod.ImageInBytes))
+                        {
+                            prod.Image = new FileUploadRequest() { Data = prod.ImageInBytes, Extension = prod.ImageExtension ?? string.Empty, Name = $"{prod.Name}_{Guid.NewGuid():N}" };
+                        }
 
-                await ProductsClient.CreateAsync(prod.Adapt<CreateProductRequest>());
-                prod.ImageInBytes = string.Empty;
-            },
-            updateFunc: async (id, prod) =>
-            {
-                if (!string.IsNullOrEmpty(prod.ImageInBytes))
-                {
-                    prod.DeleteCurrentImage = true;
-                    prod.Image = new FileUploadRequest() { Data = prod.ImageInBytes, Extension = prod.ImageExtension ?? string.Empty, Name = $"{prod.Name}_{Guid.NewGuid():N}" };
-                }
+                        await ProductsClient.CreateAsync(prod.Adapt<CreateProductRequest>());
+                        prod.ImageInBytes = string.Empty;
+                    },
+                    updateFunc: async (id, prod) =>
+                    {
+                        if (!string.IsNullOrEmpty(prod.ImageInBytes))
+                        {
+                            prod.DeleteCurrentImage = true;
+                            prod.Image = new FileUploadRequest() { Data = prod.ImageInBytes, Extension = prod.ImageExtension ?? string.Empty, Name = $"{prod.Name}_{Guid.NewGuid():N}" };
+                        }
 
-                await ProductsClient.UpdateAsync(id, prod.Adapt<UpdateProductRequest>());
-                prod.ImageInBytes = string.Empty;
-            },
-            exportFunc: async filter =>
-            {
-                var exportFilter = filter.Adapt<ExportProductsRequest>();
+                        await ProductsClient.UpdateAsync(id, prod.Adapt<UpdateProductRequest>());
+                        prod.ImageInBytes = string.Empty;
+                    },
+                    exportFunc: async filter =>
+                    {
+                        var exportFilter = filter.Adapt<ExportProductsRequest>();
 
-                exportFilter.BrandId = SearchBrandId == default ? null : SearchBrandId;
-                exportFilter.MinimumRate = SearchMinimumRate;
-                exportFilter.MaximumRate = SearchMaximumRate;
+                        exportFilter.BrandId = SearchBrandId == default ? null : SearchBrandId;
+                        exportFilter.MinimumRate = SearchMinimumRate;
+                        exportFilter.MaximumRate = SearchMaximumRate;
 
-                return await ProductsClient.ExportAsync(exportFilter);
-            },
-            deleteFunc: async id => await ProductsClient.DeleteAsync(id));
+                        return await ProductsClient.ExportAsync(exportFilter);
+                    },
+                    deleteFunc: async id => await ProductsClient.DeleteAsync(id));
+    }
 
     // Advanced Search
 
@@ -88,6 +90,17 @@ public partial class Products
         set
         {
             _searchBrandId = value;
+            _ = _table.ReloadDataAsync();
+        }
+    }
+
+    private Guid _searchCategoryId;
+    private Guid SearchCategoryId
+    {
+        get => _searchCategoryId;
+        set
+        {
+            _searchCategoryId = value;
             _ = _table.ReloadDataAsync();
         }
     }

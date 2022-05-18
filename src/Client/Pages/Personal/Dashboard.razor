@@ -1,9 +1,9 @@
 ﻿@page "/dashboard"
-@attribute [MustHavePermission(FSHAction.View, FSHResource.Dashboard)]
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Dashboard)]
 
 @inject IStringLocalizer<Dashboard> L
 
-<FshTitle Title="@L["Dashboard"]" Description="@L["Realtime Updates & Insights with SignalR."]" />
+<EhulogTitle Title="@L["Dashboard"]" Description="@L["Realtime Updates & Insights with SignalR."]" />
 
 @if (!_loaded)
 {

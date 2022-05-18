@@ -33,8 +33,8 @@ public partial class UserRoles
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canEditUsers = await AuthService.HasPermissionAsync(state.User, FSHAction.Update, FSHResource.Users);
-        _canSearchRoles = await AuthService.HasPermissionAsync(state.User, FSHAction.View, FSHResource.UserRoles);
+        _canEditUsers = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.Users);
+        _canSearchRoles = await AuthService.HasPermissionAsync(state.User, EHULOGAction.View, EHULOGResource.UserRoles);
 
         if (await ApiHelper.ExecuteCallGuardedAsync(
                 () => UsersClient.GetByIdAsync(Id), Snackbar)

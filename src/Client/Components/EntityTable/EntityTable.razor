@@ -40,7 +40,7 @@
             </MudExpansionPanel>
         }
 
-        <FshTable @ref="_table" Elevation="25" ServerData="@ServerReloadFunc" Items="@_entityList" Filter="LocalSearch"
+        <EhulogTable @ref="_table" Elevation="25" ServerData="@ServerReloadFunc" Items="@_entityList" Filter="LocalSearch"
             Loading="@Loading" LoadingProgressColor="@Color.Secondary" ChildRowContent="@ChildRowContent">
 
             <ToolBarContent>
@@ -149,10 +149,10 @@
                 <TablePager />
             </PagerContent>
 
-        </FshTable>
+        </EhulogTable>
 
     </ChildContent>
     <ErrorContent>
-        <FshCustomError />
+        <EhulogCustomError />
     </ErrorContent>
 </ErrorBoundary>

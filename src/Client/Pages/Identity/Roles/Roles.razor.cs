@@ -24,13 +24,13 @@ public partial class Roles
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canViewRoleClaims = await AuthService.HasPermissionAsync(state.User, FSHAction.View, FSHResource.RoleClaims);
+        _canViewRoleClaims = await AuthService.HasPermissionAsync(state.User, EHULOGAction.View, EHULOGResource.RoleClaims);
 
         Context = new(
             entityName: L["Role"],
             entityNamePlural: L["Roles"],
-            entityResource: FSHResource.Roles,
-            searchAction: FSHAction.View,
+            entityResource: EHULOGResource.Roles,
+            searchAction: EHULOGAction.View,
             fields: new()
             {
                 new(role => role.Id, L["Id"]),

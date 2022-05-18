@@ -1,16 +1,17 @@
 ﻿@page "/catalog/products"
-@attribute [MustHavePermission(FSHAction.View, FSHResource.Products)]
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Products)]
 
 @inject IStringLocalizer<Products> L
 
-<FshTitle Title="@L["Products"]" Description="@L["Manage Products."]" />
+<EhulogTitle Title="@L["Products"]" Description="@L["Manage Products."]" />
 
 <EntityTable @ref="_table" TEntity="ProductDto" TId="Guid" TRequest="ProductViewModel" Context="@Context">
 
     <AdvancedSearchContent>
         <BrandAutocomplete @bind-Value="SearchBrandId" />
-        <MudSlider T="decimal" @bind-value="SearchMinimumRate" Min="0" Max="9999" Step="100">@L["Minimum Rate"]: @_searchMinimumRate.ToString()</MudSlider>
-        <MudSlider T="decimal" @bind-value="SearchMaximumRate" Min="0" Max="9999" Step="100">@L["Maximum Rate"]: @_searchMaximumRate.ToString()</MudSlider>
+        <CategoryAutocomplete @bind-Value="SearchCategoryId" />
+        @* <MudSlider T="decimal" @bind-value="SearchMinimumRate" Min="0" Max="9999" Step="100">@L["Minimum Rate"]: @_searchMinimumRate.ToString()</MudSlider>
+        <MudSlider T="decimal" @bind-value="SearchMaximumRate" Min="0" Max="9999" Step="100">@L["Maximum Rate"]: @_searchMaximumRate.ToString()</MudSlider> *@
     </AdvancedSearchContent>
 
     <EditFormContent>
@@ -23,6 +24,10 @@
         <MudItem xs="12" md="6">
             <MudTextField Label="@L["Name"]" For="@(() => context.Name)" @bind-Value="context.Name" />
         </MudItem>
+                <MudItem xs="12" md="6">
+            <MudTextField Label="@L["Amount"]" For="@(() => context.Amount)"
+                @bind-Value="context.Amount" />
+        </MudItem>
         <MudItem xs="12" md="6">
             <MudTextField Label="@L["Description"]" For="@(() => context.Description)"
                 @bind-Value="context.Description" />
@@ -31,10 +36,15 @@
             <BrandAutocomplete For="@(() => context.BrandId)" @bind-Value="context.BrandId" OffsetY="true" />
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTextField Label="@L["Rate"]" For="@(() => context.Rate)" @bind-Value="context.Rate" />
+            <CategoryAutocomplete For="@(() => context.CategoryId)" @bind-Value="context.CategoryId" OffsetY="true" />
         </MudItem>
+        @* <MudItem xs="12" md="6">
+            <MudTextField Label="@L["Rate"]" For="@(() => context.Rate)" @bind-Value="context.Rate" />
+        </MudItem> *@
         <MudItem xs="12" md="12">
             <MudItem>
+                <img src="https://localhost:5001/Files/Images/ApplicationUser/09ad991332784ce2a0a4718bc2fb27a06a5ac1f0b82c4036ac347e2b0235a02f.png" />
+
                 @if(!string.IsNullOrEmpty(context.ImageInBytes))
                 {
                     <MudAvatar Image ="@context.ImageInBytes" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>

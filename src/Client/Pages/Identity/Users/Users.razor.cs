@@ -35,14 +35,14 @@ public partial class Users
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthState).User;
-        _canExportUsers = await AuthService.HasPermissionAsync(user, FSHAction.Export, FSHResource.Users);
-        _canViewRoles = await AuthService.HasPermissionAsync(user, FSHAction.View, FSHResource.UserRoles);
+        _canExportUsers = await AuthService.HasPermissionAsync(user, EHULOGAction.Export, EHULOGResource.Users);
+        _canViewRoles = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.UserRoles);
 
         Context = new(
             entityName: L["User"],
             entityNamePlural: L["Users"],
-            entityResource: FSHResource.Users,
-            searchAction: FSHAction.View,
+            entityResource: EHULOGResource.Users,
+            searchAction: EHULOGAction.View,
             updateAction: string.Empty,
             deleteAction: string.Empty,
             fields: new()

@@ -2,7 +2,7 @@ using EHULOG.WebApi.Shared.Notifications;
 
 namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 
-public class FshTablePreference : INotificationMessage
+public class EhulogTablePreference : INotificationMessage
 {
     public bool IsDense { get; set; }
     public bool IsStriped { get; set; }
