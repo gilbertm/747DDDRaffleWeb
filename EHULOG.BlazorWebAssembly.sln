@@ -30,6 +30,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{F529
 		scripts\pull-shared-from-webapi.ps1 = scripts\pull-shared-from-webapi.ps1
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Tests", "Client.Tests\Client.Tests.csproj", "{582755B0-840F-4658-9154-6B5460D64649}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D5DB6E8A-0161-4EF1-B4D9-467E9A7EF9A7} = {D5DB6E8A-0161-4EF1-B4D9-467E9A7EF9A7}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +57,10 @@ Global
 		{28E5DFC7-A05B-40DB-9E35-AC1E84C008A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28E5DFC7-A05B-40DB-9E35-AC1E84C008A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28E5DFC7-A05B-40DB-9E35-AC1E84C008A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{582755B0-840F-4658-9154-6B5460D64649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{582755B0-840F-4658-9154-6B5460D64649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{582755B0-840F-4658-9154-6B5460D64649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{582755B0-840F-4658-9154-6B5460D64649}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
