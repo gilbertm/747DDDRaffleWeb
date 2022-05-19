@@ -1,9 +1,95 @@
 ﻿@inject IStringLocalizer<Profile> L
 
-<EhulogTitle Title="@L["Package"]" Description="@L["Your package and subscription"]" />
+<EhulogTitle Title="@L["Role and Package"]" Description="@L["Your package and subscription"]" />
 
-<MudText>@_userId</MudText>
+<EditForm Model="@AppUserDto">
+    <MudCard Elevation="25">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText>@L["Role and Package"]</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <DataAnnotationsValidator />
+            <CustomValidation @ref="_customValidation" />
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Align="Align.Center" Typo="Typo.h3">@L["Roles"]</MudText>
+                        <MudText Align="Align.Center" Typo="Typo.caption" Class="d-block w-100">@L["Select your role. This role determines how you will be interacting the system."]</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudItem xs="12">
+                        <MudGrid Justify="Justify.Center">
+                            <MudTextField @bind-Value="@AppUserDto.RoleId" For="@(() => AppUserDto.RoleId)"
+                                          Label="RoleId" Variant="Variant.Outlined" />
+                            @foreach (var role in runningRoles)
+                            {
+                                <MudItem xs="6" md="4" onclick="@(() => UpdateRole(role))">
+                                    <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 bg-white color-black" Style="position:relative;">
+                                        <MudText Typo="Typo.caption" Align="Align.Center">
+                                            @role.RoleDto.Name<br />
+                                            @role.RoleDto.Id
+                                        </MudText>
+                                        <MudOverlay Visible="role.IsSelected" DarkBackground="true" Absolute="true">
+                                            <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Success">
+                                                @role.RoleDto.Name<br />
+                                                @role.RoleDto.Id
+                                            </MudText>
+                                        </MudOverlay>
+                                    </MudPaper>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudItem>
+                </MudCardContent>
 
-@if (AppUserDto is not null && !string.IsNullOrEmpty(AppUserDto.ApplicationUserId)) {
-    <MudText>@AppUserDto?.ApplicationUserId</MudText>
-}
+                @if (!string.IsNullOrEmpty(selectedRole) && selectedRole.Equals("Lender"))
+                {
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Align="Align.Center" Typo="Typo.h3">@L["Packages"]</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudItem xs="12">
+                            <MudGrid Justify="Justify.Center">
+                                <MudTextField @bind-Value="@AppUserDto.PackageId" For="@(() => AppUserDto.PackageId)"
+                                          Label="PackageId" Variant="Variant.Outlined" />
+                                @foreach (var package in runningPackages)
+                                {
+                                    @if (package.IsVisible)
+                                    {
+                                        <MudItem xs="6" md="4" onclick="@(() => UpdatePackage(package))">
+                                            <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 bg-white color-black" Style="position:relative;">
+                                                <MudText Typo="Typo.caption" Align="Align.Center">
+                                                    @package.PackageDto.Id<br />
+                                                    @package.PackageDto.Name
+                                                </MudText>
+                                                <MudOverlay Visible="package.IsSelected" DarkBackground="true" Absolute="true">
+                                                    <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Success">
+                                                        @package.PackageDto.Id<br />
+                                                        @package.PackageDto.Name
+                                                    </MudText>
+                                                </MudOverlay>
+                                            </MudPaper>
+                                        </MudItem>
+                                    }
+                                }
+                            </MudGrid>
+                        </MudItem>
+                    </MudCardContent>
+                }
+            </MudCard>
+        </MudCardContent>
+        <MudCardActions Class="pb-4 pl-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll" Class="ml-auto">
+                @L["Clear"]
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => SubmitAppUserDto())" StartIcon="@Icons.Filled.Save" Class="ml-auto">
+                @L["Update"]
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>

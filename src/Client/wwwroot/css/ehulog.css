@@ -157,3 +157,20 @@
         z-index: -1;
     }
 }
+
+/* common */
+.bg-white {
+    background:#ffffff;
+}
+.bg-black {
+    background:#000000;
+}
+
+.color-white {
+    color: #ffffff;
+}
+
+.color-black {
+    color: #000000;
+}
+/* customs - account - packages */
