@@ -11172,17 +11172,17 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         System.Threading.Tasks.Task<System.Guid> DeleteAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get package details.
+        /// Get package(s) details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PackageDto> GetAsync(System.Guid id);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageDto>> GetAsync(System.Guid? id);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get package details.
+        /// Get package(s) details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PackageDto> GetAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageDto>> GetAsync(System.Guid? id, System.Threading.CancellationToken cancellationToken);
 
     }
 
@@ -11608,24 +11608,21 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         }
 
         /// <summary>
-        /// Get package details.
+        /// Get package(s) details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PackageDto> GetAsync(System.Guid id)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageDto>> GetAsync(System.Guid? id)
         {
             return GetAsync(id, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get package details.
+        /// Get package(s) details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PackageDto> GetAsync(System.Guid id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageDto>> GetAsync(System.Guid? id, System.Threading.CancellationToken cancellationToken)
         {
-            if (id == null)
-                throw new System.ArgumentNullException("id");
-
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/v1/packages/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -11662,7 +11659,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<PackageDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<PackageDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -13685,32 +13682,32 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("applicationUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ApplicationUserId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeAddress", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string HomeAddress { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeAddress", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeAddress { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string HomeCity { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCity { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeRegion", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string HomeRegion { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeRegion", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeRegion { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string HomeCountry { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCountry { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Longitude { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? Longitude { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Latitude { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? Latitude { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsVerified { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid PackageId { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PackageId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("package", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Package Package { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("package", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Package? Package { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("appUserProducts", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<AppUserProduct> AppUserProducts { get; set; } = default!;
@@ -13749,6 +13746,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLender { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isDefault", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsDefault { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("appUsers", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<AppUser> AppUsers { get; set; } = default!;
@@ -14376,42 +14376,35 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [System.ComponentModel.DataAnnotations.Required]
         public string ApplicationUserId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeAddress", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeAddress { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeAddress", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeAddress { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeCity { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeCity { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeRegion", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeRegion { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeRegion", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeRegion { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeCountry { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeCountry { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string Longitude { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? Longitude { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string Latitude { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? Latitude { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsVerified { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public System.Guid PackageId { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PackageId { get; set; } = default!;
 
     }
 
@@ -14425,42 +14418,35 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [System.ComponentModel.DataAnnotations.Required]
         public string ApplicationUserId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeAddress", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeAddress { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeAddress", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeAddress { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeCity { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeCity { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeRegion", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeRegion { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeRegion", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeRegion { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string HomeCountry { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? HomeCountry { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string Longitude { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? Longitude { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
-        public string Latitude { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? Latitude { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsVerified { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public System.Guid PackageId { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PackageId { get; set; } = default!;
 
     }
 
@@ -15244,6 +15230,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLender { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("isDefault", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsDefault { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public InputOutputResourceDto? Image { get; set; } = default!;
 
@@ -15288,6 +15277,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLender { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("isDefault", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsDefault { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public FileUploadRequest? Image { get; set; } = default!;
 
@@ -15326,6 +15318,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLender { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isDefault", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsDefault { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("deleteCurrentImage", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool DeleteCurrentImage { get; set; } = default!;

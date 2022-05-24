@@ -23,6 +23,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="AspNetMonsters.Blazor.Geolocation.Custom">
+        <HintPath>C:\Users\Gilbert\source\repos\Blazor.Geolocation\AspNetMonsters.Blazor.Geolocation.Custom\bin\Release\net6.0\AspNetMonsters.Blazor.Geolocation.Custom.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
         <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
     </ItemGroup>
 
@@ -31,5 +37,11 @@
              There's something too much trimmed from Msal in the publish step. Then, after logging in,
              the user gets redirected to authentication/login-failed with no error message. -->
         <TrimmerRootAssembly Include="Microsoft.Authentication.WebAssembly.Msal" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="Pages\Identity\Account\AccountAddress.razor">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </Content>
     </ItemGroup>
 </Project>

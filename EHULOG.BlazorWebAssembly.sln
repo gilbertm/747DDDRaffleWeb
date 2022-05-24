@@ -30,7 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{F529
 		scripts\pull-shared-from-webapi.ps1 = scripts\pull-shared-from-webapi.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Tests", "Client.Tests\Client.Tests.csproj", "{582755B0-840F-4658-9154-6B5460D64649}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.Tests", "Client.Tests\Client.Tests.csproj", "{582755B0-840F-4658-9154-6B5460D64649}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D5DB6E8A-0161-4EF1-B4D9-467E9A7EF9A7} = {D5DB6E8A-0161-4EF1-B4D9-467E9A7EF9A7}
 	EndProjectSection

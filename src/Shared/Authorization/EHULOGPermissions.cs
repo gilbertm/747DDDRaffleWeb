@@ -46,18 +46,17 @@ public static class EHULOGPermissions
 {
     private static readonly EHULOGPermission[] _all = new EHULOGPermission[]
     {
-
         new("View Dashboard", EHULOGAction.View, EHULOGResource.Dashboard),
         new("View Hangfire", EHULOGAction.View, EHULOGResource.Hangfire),
-        new("View Users", EHULOGAction.View, EHULOGResource.Users),
-        new("Search Users", EHULOGAction.Search, EHULOGResource.Users),
+        new("View Users", EHULOGAction.View, EHULOGResource.Users, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Search Users", EHULOGAction.Search, EHULOGResource.Users, IsBasic: true, IsLender: true, IsLessee: true),
         new("Create Users", EHULOGAction.Create, EHULOGResource.Users),
         new("Update Users", EHULOGAction.Update, EHULOGResource.Users),
         new("Delete Users", EHULOGAction.Delete, EHULOGResource.Users),
         new("Export Users", EHULOGAction.Export, EHULOGResource.Users),
-        new("View UserRoles", EHULOGAction.View, EHULOGResource.UserRoles),
-        new("Update UserRoles", EHULOGAction.Update, EHULOGResource.UserRoles),
-        new("View Roles", EHULOGAction.View, EHULOGResource.Roles, IsBasic : true, IsLender : true, IsLessee : true),
+        new("View UserRoles", EHULOGAction.View, EHULOGResource.UserRoles, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Update UserRoles", EHULOGAction.Update, EHULOGResource.UserRoles, IsBasic: true, IsLender: true, IsLessee: true),
+        new("View Roles", EHULOGAction.View, EHULOGResource.Roles, IsBasic: true, IsLender: true, IsLessee: true),
         new("Create Roles", EHULOGAction.Create, EHULOGResource.Roles),
         new("Update Roles", EHULOGAction.Update, EHULOGResource.Roles),
         new("Delete Roles", EHULOGAction.Delete, EHULOGResource.Roles),
@@ -151,8 +150,8 @@ public static class EHULOGPermissions
         new("Delete LoanProducts", EHULOGAction.Delete, EHULOGResource.LoanProducts),
         new("Export LoanProducts", EHULOGAction.Export, EHULOGResource.LoanProducts),
 
-        new("View Packages", EHULOGAction.View, EHULOGResource.Packages, IsBasic:true, IsLender: true, IsLessee: true),
-        new("Search Packages", EHULOGAction.Search, EHULOGResource.Packages, IsBasic:true, IsLender: true, IsLessee: true),
+        new("View Packages", EHULOGAction.View, EHULOGResource.Packages, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Search Packages", EHULOGAction.Search, EHULOGResource.Packages, IsBasic: true, IsLender: true, IsLessee: true),
         new("Create Packages", EHULOGAction.Create, EHULOGResource.Packages),
         new("Update Packages", EHULOGAction.Update, EHULOGResource.Packages),
         new("Delete Packages", EHULOGAction.Delete, EHULOGResource.Packages),
@@ -171,6 +170,7 @@ public static class EHULOGPermissions
         new("Update InputOutputResources", EHULOGAction.Update, EHULOGResource.InputOutputResources),
         new("Delete InputOutputResources", EHULOGAction.Delete, EHULOGResource.InputOutputResources),
         new("Export InputOutputResources", EHULOGAction.Export, EHULOGResource.InputOutputResources)
+
     };
 
     public static IReadOnlyList<EHULOGPermission> All { get; } = new ReadOnlyCollection<EHULOGPermission>(_all);

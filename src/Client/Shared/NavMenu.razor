@@ -16,7 +16,13 @@
     {
         <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Filled.Dashboard">@L["Dashboard"]</MudNavLink>
     }
-    <MudNavLink Href="/account" Icon="@Icons.Filled.ManageAccounts">@L["Account"]</MudNavLink>
+    <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
+        <MudNavLink Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="fsh-nav-child">@L["Account"]</MudNavLink>
+        <MudNavLink Href="/accountaddress" Icon="@Icons.Filled.Map" Class="fsh-nav-child">@L["Address"]</MudNavLink>
+        <MudNavLink Href="/accountrolepackage" Icon="@Icons.Filled.Fingerprint" Class="fsh-nav-child">@L["Role and Package"]</MudNavLink>
+        <MudNavLink Href="/accountdocument" Icon="@Icons.Filled.Face" Class="fsh-nav-child">@L["Documents"]</MudNavLink>
+     </MudNavGroup>
+
     <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
     @if (_canViewProducts || _canViewBrands)
     {

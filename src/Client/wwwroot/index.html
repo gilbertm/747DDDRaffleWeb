@@ -14,6 +14,10 @@
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="ehulog.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="ehulog.png" />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://tiles.locationiq.com/v3/js/liq-styles-ctrl-gl.js?v=0.1.8'></script>
+    <link href='https://tiles.locationiq.com/v3/css/liq-styles-ctrl-gl.css?v=0.1.8' rel='stylesheet' />
 </head>
 
 <body>
@@ -55,11 +59,11 @@
             <h1>Test</h1>
         </!--MudPaper -->
 
-       <div class="loader">
-          <div class="load-text">
-            <div class="loaded-text">e</div>
-            <div class="loading-text">Hulog</div>
-          </div>
+        <div class="loader">
+            <div class="load-text">
+                <div class="loaded-text">e</div>
+                <div class="loading-text">Hulog</div>
+            </div>
         </div>
 
         <!-- div style="height:100%;width:100%;margin:0;position:fixed;">
@@ -78,8 +82,10 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_content/Microsoft.Authentication.WebAssembly.Msal/AuthenticationService.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCcvepI3EDqbsthQ7AXSrnsIvY4eEOEz88&libraries=places" async defer></script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="./Location.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
     <script>
@@ -116,6 +122,92 @@
             anchorElement.click();
             anchorElement.remove();
         }
+
+        /* map */
+        window.dotNetToJsMapInitialize = {
+            displayInitMap: function (objectFromDotNet) {
+
+                console.log(objectFromDotNet.key);
+                console.log(objectFromDotNet.longitude);
+                console.log(objectFromDotNet.latitude);
+
+
+                if (document.getElementById(objectFromDotNet.mapContainer) != undefined) {
+                    //Add your LocationIQ Maps Access Token here (not the API token!)
+                    locationiq.key = objectFromDotNet.key;
+                    //Define the map and configure the map's theme
+                    var map = new mapboxgl.Map({
+                        container: objectFromDotNet.mapContainer,
+                        attributionControl: false, //need this to show a compact attribution icon (i) instead of the whole text
+                        zoom: parseInt(objectFromDotNet.zoom),
+                        center: [parseFloat(objectFromDotNet.longitude), parseFloat(objectFromDotNet.latitude)]
+                    });
+
+                    var geolocate = new mapboxgl.GeolocateControl({
+                        positionOptions: {
+                            enableHighAccuracy: true
+                        },
+                        showAccuracyCircle: true,
+                        trackUserLocation: true,
+                        showUserHeading: true,
+                        showUserLocation: true
+                    });
+
+                    map.addControl(geolocate);
+                    map.on('load', () => {
+                        geolocate.trigger();
+                    });
+
+                    geolocate.on('trackuserlocationstart', () => {
+                        console.log('A trackuserlocationstart event has occurred.');
+                    });
+
+                    map.on('styleimagemissing', (e) => {
+                        const id = e.id; // id of the missing image
+
+                        // Check if this missing icon is
+                        // one this function can generate.
+                        const prefix = 'square-rgb-';
+                        if (!id.includes(prefix)) return;
+
+                        // Get the color from the id.
+                        const rgb = id.replace(prefix, '').split(',').map(Number);
+
+                        const width = 64; // The image will be 64 pixels square.
+                        const bytesPerPixel = 4; // Each pixel is represented by 4 bytes: red, green, blue, and alpha.
+                        const data = new Uint8Array(width * width * bytesPerPixel);
+
+                        for (let x = 0; x < width; x++) {
+                            for (let y = 0; y < width; y++) {
+                                const offset = (y * width + x) * bytesPerPixel;
+                                data[offset + 0] = rgb[0]; // red
+                                data[offset + 1] = rgb[1]; // green
+                                data[offset + 2] = rgb[2]; // blue
+                                data[offset + 3] = 255; // alpha
+                            }
+                        }
+
+                        map.addImage(id, { width: width, height: width, data: data });
+                    });
+
+                    //Define layers you want to add to the layer controls; the first element will be the default layer
+                    var layerStyles = {
+                        "Streets": "streets/vector",
+                       // "Satellite": "earth/raster",
+                       // "Hybrid": "hybrid/vector",
+                       // "Dark": "dark/vector",
+                       // "Light": "light/vector"
+                    };
+
+                    map.addControl(new mapboxgl.FullscreenControl());
+
+                    map.addControl(new locationiqLayerControl({
+                        key: locationiq.key,
+                        layerStyles: layerStyles
+                    }), 'top-left');
+                }
+            }
+        };
     </script>
 </body>
 

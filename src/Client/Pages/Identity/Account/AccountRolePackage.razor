@@ -1,0 +1,173 @@
+﻿@page "/accountrolepackage"
+
+@inject IStringLocalizer<AccountRolePackage> L
+
+<EhulogTitle Title="@L["Role and Package"]" Description="@L["Manage your account role and package subscription"]" />
+
+@if (!_hideRolePackage)
+{
+    <EditForm Model="@appUserDto" OnValidSubmit="UpdateAppUserRoleAndPackage">
+        <MudCard Elevation="25">
+            <MudCardContent>
+                <DataAnnotationsValidator />
+                <CustomValidation @ref="_customValidation" />
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Align="Align.Center" Typo="Typo.h3">@L["Roles"]</MudText>
+                            <MudText Align="Align.Center" Typo="Typo.caption" Class="d-block w-100">@L["Select your role. This role determines how you will be interacting the system."]</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudItem xs="12">
+                            <MudGrid Justify="Justify.Center">
+                                @* <input type="hidden" @bind-value="@AppUserDto.RoleId" /> *@
+                                @* <MudTextField hidden @bind-Value="@AppUserDto.RoleId" For="@(() => AppUserDto.RoleId)"
+                            Label="RoleId" Variant="Variant.Outlined" /> *@
+                                @if (_runningRoles.Count() > 1)
+                                {
+                                    @foreach (var role in _runningRoles)
+                                    {
+                                        <MudItem xs="6" md="4" onclick="@(() => UpdateRole(role))">
+                                            <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 bg-white color-black" Style="position:relative;">
+                                                <MudText Typo="Typo.caption" Align="Align.Center">
+                                                    @role?.RoleDto?.Name<br />
+                                                    @role?.RoleDto?.Id
+                                                </MudText>
+                                                <MudOverlay Visible="role.IsSelected" DarkBackground="true" Absolute="true">
+                                                    <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Success">
+                                                        @role?.RoleDto?.Name<br />
+                                                        @role?.RoleDto?.Id
+                                                    </MudText>
+                                                </MudOverlay>
+                                            </MudPaper>
+                                        </MudItem>
+                                    }
+                                }
+                                else
+                                {
+                                    <MudItem xs="6" md="4">
+                                        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 bg-white color-black" Style="position:relative;cursor:pointer;">
+                                            <MudGrid>
+                                                <MudItem xs="12" md="12">
+                                                    @if (_runningRoles.Count() > 0 && !_runningRoles.First().IsSelected)
+                                                    {
+                                                        <MudText Typo="Typo.caption" Align="Align.Center">
+                                                            @if (_runningRoles.Count() > 0)
+                                                            {
+                                                                @_runningRoles?.First().RoleDto?.Name
+                                                                <br />
+                                                                @_runningRoles?.First().RoleDto?.Id
+
+                                                                @if ((_runningRoles is not null) && (_runningRoles.First().RoleDto is not null))
+                                                                {
+                                                                    if (_runningRoles.First().RoleDto.Name.Equals("Lender"))
+                                                                    {
+                                                                        <MudImage Src="./img/lender.png" Height="35" />
+                                                                    }
+                                                                }
+                                                            }
+                                                        </MudText>
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudText Typo="Typo.caption" Align="Align.Center">
+                                                            <MudOverlay Visible="_runningRoles.First().IsSelected" DarkBackground="true" Absolute="true">
+                                                                <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Success">
+
+                                                                    @_runningRoles?.First().RoleDto?.Name
+                                                                    <br />
+                                                                    @_runningRoles?.First().RoleDto?.Id
+
+                                                                    @if ((_runningRoles is not null) && (_runningRoles.First().RoleDto is not null))
+                                                                    {
+                                                                        if (_runningRoles.First().RoleDto.Name.Equals("Lender"))
+                                                                        {
+                                                                            <MudImage Src="./img/lender.png" Height="100" />
+                                                                        }
+                                                                    }
+                                                                </MudText>
+                                                            </MudOverlay>
+                                                        </MudText>
+                                                    }
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudPaper>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudItem>
+                    </MudCardContent>
+
+                    @if (_runningPackages.Count() > 0)
+                    {
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Align="Align.Center" Typo="Typo.h3">@L["Packages"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudItem xs="12">
+                                <MudGrid Justify="Justify.Center">
+                                    @* <input type="hidden" @bind-value="@AppUserDto.PackageId" /> *@
+                                    @* <MudTextField @bind-Value="@AppUserDto.PackageId" For="@(() => AppUserDto.PackageId)"
+                            Label="PackageId" Variant="Variant.Outlined" /> *@
+                                    @if (_runningPackages.Count() > 1)
+                                    {
+                                        @foreach (var package in _runningPackages)
+                                        {
+                                            @if (package.IsVisible)
+                                            {
+                                                <MudItem xs="6" md="4" onclick="@(() => UpdatePackage(package))">
+                                                    <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 bg-white color-black" Style="position:relative;cursor:pointer;">
+                                                        <MudText Typo="Typo.caption" Align="Align.Center">
+                                                            @package.PackageDto.Id<br />
+                                                            @package.PackageDto.Name
+                                                        </MudText>
+                                                        <MudOverlay Visible="package.IsSelected" DarkBackground="true" Absolute="true">
+                                                            <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Success">
+                                                                @package.PackageDto.Id<br />
+                                                                @package.PackageDto.Name
+                                                            </MudText>
+                                                        </MudOverlay>
+                                                    </MudPaper>
+                                                </MudItem>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudItem xs="6" md="4">
+                                            <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 bg-white color-black" Style="position:relative;">
+                                                <MudText Typo="Typo.caption" Align="Align.Center">
+                                                    @_runningPackages?.First().PackageDto?.Id<br />
+                                                    @_runningPackages?.First().PackageDto?.Name
+                                                </MudText>
+                                                <MudOverlay Visible="_runningPackages?.First().IsSelected ?? false" DarkBackground="true" Absolute="true">
+                                                    <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Success">
+                                                        @_runningPackages?.First().PackageDto.Id<br />
+                                                        @_runningPackages?.First().PackageDto.Name
+                                                    </MudText>
+                                                </MudOverlay>
+                                            </MudPaper>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            </MudItem>
+                        </MudCardContent>
+                    }
+                </MudCard>
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <MudGrid Justify="Justify.FlexEnd">
+                    <MudButton Variant="Variant.Filled" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll">
+                        @L["Clear"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="ml-3">
+                        @L["Update"]
+                    </MudButton>
+                </MudGrid>
+            </MudCardActions>
+        </MudCard>
+    </EditForm>
+}

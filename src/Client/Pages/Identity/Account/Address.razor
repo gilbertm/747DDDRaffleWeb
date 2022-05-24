@@ -1,3 +1,74 @@
-﻿@inject IStringLocalizer<Profile> L
+﻿@inject IStringLocalizer<Address> L
+@inject IJSRuntime JS
 
-<EhulogTitle Title="@L["Address"]" Description="@L["Your address and maplocation. You will get ehulog resouces from this"]" />
+<EditForm Model="@AppUserDto">
+    <MudCard Elevation="25">
+        <MudCardContent>
+            <DataAnnotationsValidator />
+            <CustomValidation @ref="_customValidation" />
+            <MudCard>
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <div class="map-container embed-responsive embed-responsive-16by9">
+                            <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:500px;width:100%;position:relative">
+                                @if (Location is null)
+                                {
+                                    <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
+                                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                                    </MudOverlay>
+
+                                }
+                            </div>
+                        </div>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        @if (AppUserDto.HomeAddress is not null)
+                        {
+                            <MudTextField @bind-Value="@AppUserDto.HomeAddress" id="HomeAddress"
+                                      For="@(() => AppUserDto.HomeAddress)" Label="@L["Home Street Address"]" Variant="Variant.Outlined" />
+                            <br />
+                        }
+                        @if (AppUserDto.HomeCity is not null)
+                        {
+                            <MudTextField @bind-Value="@AppUserDto.HomeCity" id="HomeCity"
+                                      For="@(() => AppUserDto.HomeCity)" Label="@L["Home City"]" Variant="Variant.Outlined" />
+                            <br />
+                        }
+                        @if (AppUserDto.HomeRegion is not null)
+                        {
+                            <MudTextField @bind-Value="@AppUserDto.HomeRegion" id="HomeRegion"
+                                      For="@(() => AppUserDto.HomeRegion)" Label="@L["Home Region"]" Variant="Variant.Outlined" />
+                            <br />
+                        }
+                        @if (AppUserDto.HomeCountry is not null)
+                        {
+                            <MudTextField @bind-Value="@AppUserDto.HomeCountry" id="HomeCountry"
+                                      For="@(() => AppUserDto.HomeCountry)" Label="@L["Home Country"]" Variant="Variant.Outlined" />
+                            <br />
+                        }
+                        @if (AppUserDto.Latitude is not null)
+                        {
+                            <MudTextField @bind-Value="@AppUserDto.Latitude" id="Latitude"
+                                      For="@(() => AppUserDto.Latitude)" Label="@L["Home Latitude"]" Variant="Variant.Outlined" />
+                            <br />
+                        }
+
+                        @if (AppUserDto.Longitude is not null)
+                        {
+                            <MudTextField @bind-Value="@AppUserDto.Longitude" id="Longitude"
+                                      For="@(() => AppUserDto.Longitude)" Label="@L["Home Longitude"]" Variant="Variant.Outlined" />
+                            <br />
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudCard>
+        </MudCardContent>
+        <MudCardActions Class="pb-4 pl-4">
+            <MudGrid Justify="Justify.FlexEnd">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="ml-auto">
+                    @L["Update"]
+                </MudButton>
+            </MudGrid>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
