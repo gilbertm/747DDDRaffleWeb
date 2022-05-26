@@ -34,7 +34,7 @@
                             {
                                 @foreach (var role in _runningRoles)
                                 {
-                                    <MudItem xs="6" md="4" lg="3" onclick="@(() => UpdateRole(role))" onmouseover="@(() => ChooseRole(role))" Class="cursor-pointer..................................">
+                                    <MudItem xs="6" md="4" lg="3" onclick="@(() => UpdateRole(role))" onmouseover="@(() => HoverRole(role))" Class="cursor-pointer" Style="@(role.IsVisible ? "display:block" : "display:none")">
                                         <MudCard Class="position-relative">
                                             @{
                                                 var isLender = role?.RoleDto?.Name.Equals("Lender");
@@ -82,7 +82,11 @@
                                             </MudCardActions>
                                             @{
                                                 var roleSelected = @role?.IsSelected ?? false;
-                                                <MudOverlay Visible="@roleSelected" DarkBackground="true" Absolute="true" Class="text-center">
+                                                var roleHovered = @role?.IsHovered ?? false;
+
+                                                var keepOpen = roleSelected || roleHovered ? true : false;
+
+                                                <MudOverlay Visible="@keepOpen" DarkBackground="true" Absolute="true" Class="text-center">
                                                     @{
                                                         var isLender = role?.RoleDto?.Name.Equals("Lender");
 
@@ -101,9 +105,15 @@
 
                                                     <MudText Typo="Typo.h5" Color="Color.Warning">@role?.RoleDto?.Name</MudText>
                                                     <MudText Typo="Typo.body2" Color="Color.Info">@role?.RoleDto?.Description</MudText>
+                                                    <br />
 
-                                                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearRole())">Cancel</MudButton>
+                                                   @if (roleSelected) {
+                                                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearRole())">Cancel</MudButton>
+                                                   }
+                                                   else
+                                                   {
                                                     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdateRole(role ?? default!))">Select</MudButton>
+                                                   }
                                                 </MudOverlay>
                                             }
                                         </MudCard>

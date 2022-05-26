@@ -53,19 +53,21 @@ public partial class AccountRolePackage
 
     private bool _selectedRoleIsOpen { get; set; } = false;
 
-    public class SelectedVisible
+    public class SelectedHoveredVisible
     {
         public bool IsSelected { get; set; } = false;
+
+        public bool IsHovered { get; set; } = false;
 
         public bool IsVisible { get; set; } = false;
     }
 
-    public class ExtendedPackageDto : SelectedVisible
+    public class ExtendedPackageDto : SelectedHoveredVisible
     {
         public PackageDto PackageDto { get; set; } = default!;
     }
 
-    public class ExtendedRoleDto : SelectedVisible
+    public class ExtendedRoleDto : SelectedHoveredVisible
     {
         public RoleDto? RoleDto { get; set; }
     }
@@ -235,6 +237,8 @@ public partial class AccountRolePackage
         foreach (var role in _runningRoles)
         {
             role.IsSelected = false;
+            role.IsHovered = false;
+            role.IsVisible = true;
         }
 
         PackagesForLenderRole();
@@ -244,18 +248,18 @@ public partial class AccountRolePackage
         StateHasChanged();
     }
 
-    private void ChooseRole(ExtendedRoleDto extendedRoleDto)
+    private void HoverRole(ExtendedRoleDto extendedRoleDto)
     {
-        /* hover or click only */
+        /* click only */
 
         foreach (var role in _runningRoles)
         {
-            role.IsSelected = false;
+            role.IsHovered = false;
         }
 
         if (extendedRoleDto is not null)
         {
-            extendedRoleDto.IsSelected = true;
+            extendedRoleDto.IsHovered = true;
 
             if ((extendedRoleDto.RoleDto is not null) && extendedRoleDto.RoleDto.Name.Equals("Lender"))
             {
@@ -276,11 +280,13 @@ public partial class AccountRolePackage
         foreach (var role in _runningRoles)
         {
             role.IsSelected = false;
+            role.IsVisible = false;
         }
 
         if (extendedRoleDto is not null)
         {
             extendedRoleDto.IsSelected = true;
+            extendedRoleDto.IsVisible = true;
 
             if ((extendedRoleDto.RoleDto is not null) && extendedRoleDto.RoleDto.Name.Equals("Lender"))
             {

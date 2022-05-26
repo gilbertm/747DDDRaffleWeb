@@ -29,7 +29,7 @@ public partial class Address
 
     private CustomValidation? _customValidation;
 
-    private DotNetObjectReference<Address> _objRef;
+    private DotNetObjectReference<Address>? _objRef;
 
     protected override async Task OnInitializedAsync()
     {
