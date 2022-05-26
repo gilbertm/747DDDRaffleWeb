@@ -22,10 +22,14 @@ public partial class Address
 {
     [Inject]
     public AppDataService AppDataService { get; set; } = default!;
+    [Inject]
+    protected IAppUsersClient AppUsersClient { get; set; } = default!;
 
     public AppUserDto AppUserDto = new();
 
     private CustomValidation? _customValidation;
+
+    private DotNetObjectReference<Address> _objRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,11 +46,52 @@ public partial class Address
         {
             Key = "pk.bf547d628289a729866c964e450f6beb",
             MapContainer = "InitialRegisterMap",
-            Zoom = 12,
+            Zoom = 13,
             Longitude = AppUserDto.Longitude,
             Latitude = AppUserDto.Latitude,
         };
 
         await JS.InvokeVoidAsync("dotNetToJsMapInitialize.displayInitMap", obj);
     }
+
+    private async Task UpdateAppUserAddress()
+    {
+        _objRef = DotNetObjectReference.Create(this);
+
+        await JS.InvokeVoidAsync("dotNetToJsMapInitialize.updateAddressDtoFromJS", _objRef);
+
+        var updateAppUserRequest = new UpdateAppUserRequest
+        {
+            ApplicationUserId = AppUserDto.ApplicationUserId,
+            HomeAddress = AppUserDto.HomeAddress,
+            HomeCity = AppUserDto.HomeCity,
+            HomeCountry = AppUserDto.HomeCountry,
+            HomeRegion = AppUserDto.HomeRegion,
+            Id = AppUserDto.Id,
+            IsVerified = AppUserDto.IsVerified,
+            Latitude = AppUserDto.Latitude,
+            Longitude = AppUserDto.Longitude,
+            PackageId = AppUserDto.PackageId
+
+        };
+
+        var guid = await AppUsersClient.UpdateAsync(AppUserDto.Id, updateAppUserRequest);
+    }
+
+    [JSInvokable]
+    public void ChangeAddressFromJS(string homeAddress, string homeCity, string homeCountry, string homeRegion, string latitude, string longitude)
+    {
+        AppUserDto.HomeAddress = homeAddress;
+        AppUserDto.HomeCity = homeCity;
+        AppUserDto.HomeCountry = homeCountry;
+        AppUserDto.HomeRegion = homeRegion;
+        AppUserDto.Latitude = latitude;
+        AppUserDto.Longitude = longitude;
+    }
+
+    public void Dispose()
+    {
+        _objRef?.Dispose();
+    }
+
 }

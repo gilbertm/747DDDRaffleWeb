@@ -60,36 +60,6 @@ public class AppDataService
     }
 
     private bool _isNewUser { get; set; } = false;
-    public bool IsNewUser
-    {
-
-        get
-        {
-            return _isNewUser;
-        }
-
-        set
-        {
-            _isNewUser = value;
-            NotifyDataChanged();
-        }
-    }
-
-    private string? _test { get; set; }
-    public string IsTest
-    {
-
-        get
-        {
-            return _test;
-        }
-
-        set
-        {
-            _test = value;
-            NotifyDataChanged();
-        }
-    }
 
     public async Task Start()
     {
@@ -106,7 +76,7 @@ public class AppDataService
 
             if (_appUserDto.Id == Guid.Empty || string.IsNullOrEmpty(_appUserDto.ApplicationUserId))
             {
-                IsNewUser = true;
+                _isNewUser = true;
 
                 /* create the app user defaults */
                 var createAppUserRequest = new CreateAppUserRequest
@@ -126,7 +96,7 @@ public class AppDataService
                 _appUserDto = await _appUsersClient.GetAsync(userId);
             }
 
-            if (IsNewUser)
+            if (_isNewUser)
             {
                 var location = await _locationService.GetLocationAsync();
 

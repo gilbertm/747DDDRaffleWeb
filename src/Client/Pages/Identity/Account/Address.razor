@@ -1,7 +1,7 @@
 ﻿@inject IStringLocalizer<Address> L
 @inject IJSRuntime JS
 
-<EditForm Model="@AppUserDto">
+<EditForm Model="@AppUserDto"  OnValidSubmit="UpdateAppUserAddress">
     <MudCard Elevation="25">
         <MudCardContent>
             <DataAnnotationsValidator />
@@ -19,6 +19,7 @@
 
                                 }
                             </div>
+                            <pre id="coordinates" class="coordinates"></pre>
                         </div>
                     </MudItem>
                     <MudItem xs="12" md="6">
