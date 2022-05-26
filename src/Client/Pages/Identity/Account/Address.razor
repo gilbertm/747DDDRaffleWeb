@@ -11,7 +11,7 @@
                     <MudItem xs="12" md="6">
                         <div class="map-container embed-responsive embed-responsive-16by9">
                             <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:500px;width:100%;position:relative">
-                                @if (Location is null)
+                                @if (AppUserDto is null)
                                 {
                                     <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
                                         <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
@@ -22,6 +22,7 @@
                         </div>
                     </MudItem>
                     <MudItem xs="12" md="6">
+
                         @if (AppUserDto.HomeAddress is not null)
                         {
                             <MudTextField @bind-Value="@AppUserDto.HomeAddress" id="HomeAddress"

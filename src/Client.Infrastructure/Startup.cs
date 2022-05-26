@@ -13,7 +13,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure;
 
 public static class Startup
 {
-    private const string ClientName = "FullStackHero.API";
+    private const string ClientName = "eHulog.API";
 
     public static IServiceCollection AddClientServices(this IServiceCollection services, IConfiguration config) =>
         services

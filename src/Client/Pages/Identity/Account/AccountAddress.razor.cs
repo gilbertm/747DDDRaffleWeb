@@ -24,7 +24,6 @@ public partial class AccountAddress
 
     private string? _userId;
 
-
     private CustomValidation? _customValidation;
 
     protected override async Task OnInitializedAsync()

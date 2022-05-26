@@ -74,6 +74,10 @@
 }
 
 /* customs */
+.position-relative {
+    position:relative;
+}
+
 .loader {
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     position: fixed;
@@ -159,6 +163,9 @@
 }
 
 /* common */
+.text-center {
+    text-align: center !important;
+}
 .bg-white {
     background:#ffffff;
 }

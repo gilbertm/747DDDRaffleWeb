@@ -1,11 +1,11 @@
-﻿using System.Security.Claims;
-using EHULOG.BlazorWebAssembly.Client.Components.Common;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
+using System.Security.Claims;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
@@ -24,7 +24,7 @@ public partial class AccountRolePackage
     [Inject]
     private IUsersClient UsersClient { get; set; } = default!;
 
-    protected AppUserDto appUserDto { get; set; } = new ();
+    protected AppUserDto appUserDto { get; set; } = new();
 
     public UserRolesRequest UserRolesRequest { get; set; } = default!;
 
@@ -50,6 +50,8 @@ public partial class AccountRolePackage
 
     private bool _hideRolePackage { get; set; } = false;
 
+    private bool _selectedRoleIsOpen { get; set; } = false;
+
     public class SelectedVisible
     {
         public bool IsSelected { get; set; } = false;
@@ -66,6 +68,8 @@ public partial class AccountRolePackage
     {
         public RoleDto? RoleDto { get; set; }
     }
+
+    private void AddSelectedRoleIsOpenClass() => _selectedRoleIsOpen = !_selectedRoleIsOpen;
 
     protected override async Task OnInitializedAsync()
     {
@@ -275,8 +279,51 @@ public partial class AccountRolePackage
         }
     }
 
+    private void ClearRole()
+    {
+        /* hover or click only */
+
+        foreach (var role in _runningRoles)
+        {
+            role.IsSelected = false;
+        }
+
+        PackagesForLenderRole();
+
+        PackagesForNonLenderRole();
+
+        StateHasChanged();
+    }
+
+    private void ChooseRole(ExtendedRoleDto extendedRoleDto)
+    {
+        /* hover or click only */
+
+        foreach (var role in _runningRoles)
+        {
+            role.IsSelected = false;
+        }
+
+        if (extendedRoleDto is not null)
+        {
+            extendedRoleDto.IsSelected = true;
+
+            if ((extendedRoleDto.RoleDto is not null) && extendedRoleDto.RoleDto.Name.Equals("Lender"))
+            {
+                PackagesForLenderRole();
+            }
+            else
+            {
+                PackagesForNonLenderRole();
+            }
+        }
+
+        StateHasChanged();
+    }
+
     private void UpdateRole(ExtendedRoleDto extendedRoleDto)
     {
+        /* update the model */
         foreach (var role in _runningRoles)
         {
             role.IsSelected = false;
@@ -297,8 +344,6 @@ public partial class AccountRolePackage
         }
 
         appUserDto.RoleId = extendedRoleDto?.RoleDto?.Id;
-        System.Console.Write("RoleId: ");
-        System.Console.WriteLine(extendedRoleDto?.RoleDto?.Id);
         StateHasChanged();
     }
 

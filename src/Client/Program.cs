@@ -4,6 +4,7 @@ using EHULOG.BlazorWebAssembly.Client;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,7 +14,8 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddClientServices(builder.Configuration);
-builder.Services.AddSingleton<LocationService>();
+builder.Services.AddScoped<LocationService>();
+builder.Services.AddScoped<AppDataService>();
 
 var host = builder.Build();
 
