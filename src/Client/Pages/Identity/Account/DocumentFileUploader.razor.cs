@@ -24,7 +24,7 @@ public partial class DocumentFileUploader
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
 
     [Parameter]
-    public List<UploadedFile>? UploadedFiles { get; set; }
+    public List<ForUploadFile>? ForUploadFiles { get; set; }
 
     [Parameter]
     public InputOutputResourceDocumentType FileIdentifier { get; set; }
@@ -35,11 +35,11 @@ public partial class DocumentFileUploader
     {
     }
 
-    private async Task UploadFiles(InputFileChangeEventArgs e, UploadedFile? uploadedFile)
+    private async Task UploadFiles(InputFileChangeEventArgs e, ForUploadFile? forUploadFile)
     {
         var file = e.File;
 
-        if (file is not null && uploadedFile is not null)
+        if (file is not null && forUploadFile is not null)
         {
             string? extension = Path.GetExtension(file.Name);
             if (!ApplicationConstants.SupportedImageFormats.Contains(extension.ToLower()))
@@ -48,30 +48,30 @@ public partial class DocumentFileUploader
                 return;
             }
 
-            string? fileName = $"{Enum.GetName(typeof(InputOutputResourceDocumentType), uploadedFile.FileIdentifier ?? default)}--{uploadedFile?.UserId?.ToString()}--{Guid.NewGuid():N}";
+            string? fileName = $"{Enum.GetName(typeof(InputOutputResourceDocumentType), forUploadFile.FileIdentifier ?? default)}--{forUploadFile?.UserIdReferenceId?.ToString()}--{Guid.NewGuid():N}";
             fileName = fileName[..Math.Min(fileName.Length, 90)];
             var imageFile = await file.RequestImageFileAsync(ApplicationConstants.StandardImageFormat, ApplicationConstants.MaxImageWidth, ApplicationConstants.MaxImageHeight);
             byte[]? buffer = new byte[imageFile.Size];
             await imageFile.OpenReadStream(ApplicationConstants.MaxAllowedSize).ReadAsync(buffer);
             string? base64String = $"data:{ApplicationConstants.StandardImageFormat};base64,{Convert.ToBase64String(buffer)}";
 
-            if (Guid.TryParse(uploadedFile?.UserId?.ToString(), out var referenceId))
+            if (Guid.TryParse(forUploadFile?.UserIdReferenceId?.ToString(), out var referenceId))
             {
                 CreateInputOutputResourceRequest createInputOutputResourceRequest = new CreateInputOutputResourceRequest()
                 {
                     ReferenceId = referenceId == Guid.Empty ? default! : referenceId,
                     Image = new FileUploadRequest() { Name = fileName, Data = base64String, Extension = extension },
-                    InputOutputResourceDocumentType = uploadedFile.FileIdentifier ?? default,
+                    InputOutputResourceDocumentType = forUploadFile.FileIdentifier ?? default,
                     InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
                     InputOutputResourceType = InputOutputResourceType.Identification
                 };
 
                 var valueTupleOfGuidAndString = await InputOutputResourceClient.CreateAsync(createInputOutputResourceRequest);
 
-                if (UploadedFiles is not null)
+                if (ForUploadFiles is not null)
                 {
-                    uploadedFile.InputOutputResourceImgUrl = valueTupleOfGuidAndString.Value;
-                    uploadedFile.InputOutputResourceId = valueTupleOfGuidAndString.Key.ToString();
+                    forUploadFile.InputOutputResourceImgUrl = valueTupleOfGuidAndString.Value;
+                    forUploadFile.InputOutputResourceId = valueTupleOfGuidAndString.Key.ToString();
                 }
             }
         }

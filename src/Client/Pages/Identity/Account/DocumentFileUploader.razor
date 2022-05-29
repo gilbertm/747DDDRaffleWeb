@@ -2,8 +2,8 @@
 
 <MudCardContent Style="padding:0px!important;position:relative">
     @{
-        var _uploadFile = UploadedFiles?.Where(f => f.FileIdentifier.Equals(FileIdentifier)).FirstOrDefault();
-        var _imageUrl = string.IsNullOrEmpty(_uploadFile?.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _uploadFile?.InputOutputResourceImgUrl);
+        var _forUploadFile = ForUploadFiles?.Where(f => f.FileIdentifier.Equals(FileIdentifier)).FirstOrDefault();
+        var _imageUrl = string.IsNullOrEmpty(_forUploadFile?.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _forUploadFile?.InputOutputResourceImgUrl);
 
         <div class="d-flex justify-center mb-4">
             @if (!string.IsNullOrEmpty(_imageUrl))
@@ -22,7 +22,7 @@
                     <MudCardActions Class="d-flex justify-center">
                         @{
 
-                            <InputFile id="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)" OnChange="@((InputFileChangeEventArgs e) => UploadFiles(e, _uploadFile ))" capture hidden accept=".jpg,.jpeg,.png" />
+                            <InputFile id="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)" OnChange="@((InputFileChangeEventArgs e) => UploadFiles(e, _forUploadFile ))" capture hidden accept=".jpg,.jpeg,.png" />
                             <div style="padding-bottom:20px">
                                 <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
                                StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)">
