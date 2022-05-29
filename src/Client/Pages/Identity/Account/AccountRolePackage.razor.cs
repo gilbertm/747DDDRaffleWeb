@@ -201,6 +201,7 @@ public partial class AccountRolePackage
         foreach (var package in _runningPackages)
         {
             package.IsSelected = false;
+            package.IsHovered = false;
 
             if (package.PackageDto.IsLender)
             {
@@ -218,6 +219,7 @@ public partial class AccountRolePackage
         foreach (var package in _runningPackages)
         {
             package.IsSelected = false;
+            package.IsHovered = false;
 
             if (package.PackageDto.IsLender)
             {
@@ -232,7 +234,7 @@ public partial class AccountRolePackage
 
     private void ClearRole()
     {
-        /* hover or click only */
+        /* cancel selection */
 
         foreach (var role in _runningRoles)
         {
@@ -250,7 +252,7 @@ public partial class AccountRolePackage
 
     private void HoverRole(ExtendedRoleDto extendedRoleDto)
     {
-        /* click only */
+        /* hover only */
 
         foreach (var role in _runningRoles)
         {
@@ -271,12 +273,14 @@ public partial class AccountRolePackage
             }
         }
 
+        SelectDefaultPackage();
+
         StateHasChanged();
     }
 
     private void UpdateRole(ExtendedRoleDto extendedRoleDto)
     {
-        /* update the model */
+        /* selected and updated the model */
         foreach (var role in _runningRoles)
         {
             role.IsSelected = false;
@@ -298,36 +302,92 @@ public partial class AccountRolePackage
             }
         }
 
+        SelectDefaultPackage();
+
         AppUserDto.RoleId = extendedRoleDto?.RoleDto?.Id;
+        StateHasChanged();
+    }
+
+    public void SelectDefaultPackage()
+    {
+        foreach (var package in _runningPackages)
+        {
+            if (package.IsVisible && package.PackageDto.IsDefault)
+            {
+                package.IsSelected = true;
+                AppUserDto.PackageId = package.PackageDto.Id;
+            } else
+            {
+                package.IsSelected = false;
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private void ClearPackage(bool isLender = false)
+    {
+        /* cancel selection */
+
+        foreach (var package in _runningPackages)
+        {
+            package.IsSelected = false;
+            package.IsHovered = false;
+            package.IsVisible = true;
+        }
+
+        if (isLender)
+        {
+            PackagesForLenderRole();
+        } else
+        {
+            PackagesForNonLenderRole();
+        }        
+
+        StateHasChanged();
+    }
+
+    private void HoverPackage(ExtendedPackageDto extendedPackageDto)
+    {
+        /* hover only */
+
+        foreach (var package in _runningPackages)
+        {
+            package.IsHovered = false;
+        }
+
+        if (extendedPackageDto is not null)
+        {
+            extendedPackageDto.IsHovered = true;
+        }
+
         StateHasChanged();
     }
 
     private void UpdatePackage(ExtendedPackageDto extendedPackageDto)
     {
+        /* selected and updated the model */
         foreach (var package in _runningPackages)
         {
             package.IsSelected = false;
+            package.IsVisible = false;
         }
 
-        extendedPackageDto.IsSelected = true;
+        if (extendedPackageDto is not null)
+        {
+            extendedPackageDto.IsSelected = true;
+            extendedPackageDto.IsVisible = true;
+        }
 
-        AppUserDto.PackageId = extendedPackageDto.PackageDto.Id;
-        System.Console.Write("PackageId: ");
-        System.Console.WriteLine(extendedPackageDto.PackageDto.Id);
+        AppUserDto.PackageId = extendedPackageDto?.PackageDto?.Id ?? default;
+
         StateHasChanged();
     }
 
     private void ClearAppUserDto()
     {
-        foreach (var role in _runningRoles)
-        {
-            role.IsSelected = false;
-        }
-
-        foreach (var package in _runningPackages)
-        {
-            package.IsSelected = false;
-        }
+        ClearRole();
+        ClearPackage();
 
         AppUserDto.RoleId = null;
         AppUserDto.PackageId = default!;
@@ -374,7 +434,7 @@ public partial class AccountRolePackage
             }
         }
 
-        if (Guid.TryParse(AppUserDto.PackageId.ToString(), out _) && _runningPackages.Count() == 1)
+        if (Guid.TryParse(AppUserDto.PackageId.ToString(), out _) && _runningPackages.Where(p => p.IsSelected).Count() == 1)
         {
             /* create appuser */
             UpdateAppUserRequest = new()

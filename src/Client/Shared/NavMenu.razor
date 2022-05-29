@@ -5,8 +5,8 @@
 <MudNavMenu>
     <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Start"]</MudText>
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">@L["Home"]</MudNavLink>
-    <MudNavLink Href="https://fullstackhero.net/basics/getting-started/" Match="NavLinkMatch.All" Target="_blank"
-        Icon="@Icons.Material.Filled.RocketLaunch">@L["Getting Started"]</MudNavLink>
+    @* <MudNavLink Href="https://fullstackhero.net/basics/getting-started/" Match="NavLinkMatch.All" Target="_blank"
+        Icon="@Icons.Material.Filled.RocketLaunch">@L["Getting Started"]</MudNavLink> *@
     @if (_canViewHangfire)
     {
         <MudNavLink Href="@_hangfireUrl" Match="NavLinkMatch.All" Target="_blank" Icon="@Icons.Material.Filled.Work">@L["Hangfire"]</MudNavLink>
@@ -17,10 +17,10 @@
         <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Filled.Dashboard">@L["Dashboard"]</MudNavLink>
     }
     <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
-        <MudNavLink Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="fsh-nav-child">@L["Account"]</MudNavLink>
-        <MudNavLink Href="/accountaddress" Icon="@Icons.Filled.Map" Class="fsh-nav-child">@L["Address"]</MudNavLink>
-        <MudNavLink Href="/accountrolepackage" Icon="@Icons.Filled.Fingerprint" Class="fsh-nav-child">@L["Role and Package"]</MudNavLink>
-        <MudNavLink Href="/accountdocument" Icon="@Icons.Filled.Face" Class="fsh-nav-child">@L["Documents"]</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="fsh-nav-child">@L["Account"]</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="fsh-nav-child">@L["Address"]</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="fsh-nav-child">@L["Role and Package"]</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="fsh-nav-child">@L["Documents"]</MudNavLink>
      </MudNavGroup>
 
     <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>

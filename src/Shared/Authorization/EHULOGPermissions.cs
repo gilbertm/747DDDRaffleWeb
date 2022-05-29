@@ -164,12 +164,12 @@ public static class EHULOGPermissions
         new("Delete Ratings", EHULOGAction.Delete, EHULOGResource.Ratings),
         new("Export Ratings", EHULOGAction.Export, EHULOGResource.Ratings),
 
-        new("View InputOutputResources", EHULOGAction.View, EHULOGResource.InputOutputResources, IsBasic: true),
-        new("Search InputOutputResources", EHULOGAction.Search, EHULOGResource.InputOutputResources, IsBasic: true),
-        new("Create InputOutputResources", EHULOGAction.Create, EHULOGResource.InputOutputResources),
-        new("Update InputOutputResources", EHULOGAction.Update, EHULOGResource.InputOutputResources),
-        new("Delete InputOutputResources", EHULOGAction.Delete, EHULOGResource.InputOutputResources),
-        new("Export InputOutputResources", EHULOGAction.Export, EHULOGResource.InputOutputResources)
+        new("View InputOutputResources", EHULOGAction.View, EHULOGResource.InputOutputResources, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Search InputOutputResources", EHULOGAction.Search, EHULOGResource.InputOutputResources, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Create InputOutputResources", EHULOGAction.Create, EHULOGResource.InputOutputResources, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Update InputOutputResources", EHULOGAction.Update, EHULOGResource.InputOutputResources, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Delete InputOutputResources", EHULOGAction.Delete, EHULOGResource.InputOutputResources, IsBasic: true, IsLender: true, IsLessee: true),
+        new("Export InputOutputResources", EHULOGAction.Export, EHULOGResource.InputOutputResources, IsBasic: true, IsLender: true, IsLessee: true)
 
     };
 

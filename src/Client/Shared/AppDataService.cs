@@ -96,7 +96,7 @@ public class AppDataService
                 _appUserDto = await _appUsersClient.GetAsync(userId);
             }
 
-            if (_isNewUser)
+            if (_isNewUser || (string.IsNullOrEmpty(_appUserDto.Latitude) && string.IsNullOrEmpty(_appUserDto.Longitude)))
             {
                 var location = await _locationService.GetLocationAsync();
 

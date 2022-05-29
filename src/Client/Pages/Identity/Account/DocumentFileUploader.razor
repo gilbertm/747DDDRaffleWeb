@@ -1,0 +1,66 @@
+﻿@inject IStringLocalizer<Profile> L
+
+<MudCardContent Style="padding:0px!important;position:relative">
+    @{
+        var _uploadFile = UploadedFiles?.Where(f => f.FileIdentifier.Equals(FileIdentifier)).FirstOrDefault();
+        var _imageUrl = string.IsNullOrEmpty(_uploadFile?.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _uploadFile?.InputOutputResourceImgUrl);
+
+        <div class="d-flex justify-center mb-4">
+            @if (!string.IsNullOrEmpty(_imageUrl))
+            {
+                <MudAvatar Square="true" Image="@_imageUrl" Style=" width:100%;height:150px;position:relative">
+
+                </MudAvatar>
+                <MudButton>
+                    <MudText>Remove</MudText>
+                </MudButton>
+            }
+            else
+            {
+                <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
+
+                    <MudCardActions Class="d-flex justify-center">
+                        @{
+
+                            <InputFile id="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)" OnChange="@((InputFileChangeEventArgs e) => UploadFiles(e, _uploadFile ))" capture hidden accept=".jpg,.jpeg,.png" />
+                            <div style="padding-bottom:20px">
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                               StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)">
+                                    @Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)
+                                </MudButton>
+                                @if (!string.IsNullOrEmpty(_imageUrl))
+                                {
+                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank"
+                               StartIcon="@Icons.Filled.RemoveRedEye" Link="@_imageUrl" Style="margin-left: 5px;">
+                                        @L["View"]
+                                    </MudButton>
+
+                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Error" Size="Size.Small"
+                               StartIcon="@Icons.Filled.Delete" OnClick="RemoveImageAsync" Style="margin-left: 5px;">
+                                        @L["Delete"]
+                                    </MudButton>
+                                }
+
+                            </div>
+                            <MudText>
+                                @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
+                                {
+                                    case "Passport":
+                                        <text>Front<br>Passport</text>
+                                        break;
+                                    case "PassportBack":
+                                        <text>Back<br>Passport</text>
+                                        break;
+                                    default:
+                                        <text>Others</text>
+                                        break;
+
+                                }
+                            </MudText>
+                        }
+                    </MudCardActions>
+                </MudOverlay>
+            }
+        </div>
+    }
+</MudCardContent>

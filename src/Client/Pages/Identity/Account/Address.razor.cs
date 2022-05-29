@@ -41,14 +41,21 @@ public partial class Address
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // data is not loading
+        // rerun service
+        if (string.IsNullOrEmpty(AppDataService.AppUserDto.Latitude) && string.IsNullOrEmpty(AppDataService.AppUserDto.Longitude))
+        {
+            await AppDataService.Start();
+            AppUserDto = AppDataService.AppUserDto;
+        }
 
         var obj = new
         {
             Key = "pk.bf547d628289a729866c964e450f6beb",
             MapContainer = "InitialRegisterMap",
             Zoom = 13,
-            Longitude = AppUserDto.Longitude,
-            Latitude = AppUserDto.Latitude,
+            Longitude = AppDataService.AppUserDto.Longitude,
+            Latitude = AppDataService.AppUserDto.Latitude,
         };
 
         await JS.InvokeVoidAsync("dotNetToJsMapInitialize.displayInitMap", obj);

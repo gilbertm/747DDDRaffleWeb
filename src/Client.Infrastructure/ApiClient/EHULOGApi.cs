@@ -7117,14 +7117,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Create an IOResource.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Guid> CreateAsync(CreateInputOutputResourceRequest request);
+        System.Threading.Tasks.Task<KeyValuePairOfGuidAndString> CreateAsync(CreateInputOutputResourceRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Create an IOResource.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Guid> CreateAsync(CreateInputOutputResourceRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<KeyValuePairOfGuidAndString> CreateAsync(CreateInputOutputResourceRequest request, System.Threading.CancellationToken cancellationToken);
 
     }
 
@@ -7351,7 +7351,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Create an IOResource.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Guid> CreateAsync(CreateInputOutputResourceRequest request)
+        public virtual System.Threading.Tasks.Task<KeyValuePairOfGuidAndString> CreateAsync(CreateInputOutputResourceRequest request)
         {
             return CreateAsync(request, System.Threading.CancellationToken.None);
         }
@@ -7361,7 +7361,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Create an IOResource.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Guid> CreateAsync(CreateInputOutputResourceRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<KeyValuePairOfGuidAndString> CreateAsync(CreateInputOutputResourceRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -7404,7 +7404,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Guid>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<KeyValuePairOfGuidAndString>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -14203,6 +14203,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         AppUser = 6,
 
+        Identification = 100,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -14216,6 +14218,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         NationalId = 2,
 
         GovernmentId = 3,
+
+        SelfieWithAtLeastOneCard = 4,
+
+        PassportBack = 10,
+
+        NationalIdBack = 20,
+
+        GovernmentIdBack = 30,
 
     }
 
@@ -14616,6 +14626,17 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public FileUploadRequest? Image { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class KeyValuePairOfGuidAndString
+    {
+        [Newtonsoft.Json.JsonProperty("key", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Key { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Value { get; set; } = default!;
 
     }
 
