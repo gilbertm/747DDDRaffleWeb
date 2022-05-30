@@ -20,7 +20,8 @@ public class ForUploadFile
     public string? UserIdReferenceId { get; set; }
     public bool isVerified { get; set; } = false; // if the status type is enabled. disabled means uploaded temporarily.
     public bool isTemporarilyUploaded { get; set; } = false; // if on first load and already in the system
-
+    public bool isHovered { get; set; } = false;
+    public bool isRemove { get; set; } = false;
 }
 
 public partial class Document

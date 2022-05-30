@@ -8,58 +8,101 @@
         <div class="d-flex justify-center mb-4">
             @if (!string.IsNullOrEmpty(_imageUrl))
             {
-                <MudAvatar Square="true" Image="@_imageUrl" Style=" width:100%;height:150px;position:relative">
+                <MudCard Class="position-relative text-center" @onmouseover="@(() => Hover(_forUploadFile ?? default!))" @onmouseleave="@(() => ClearHover(_forUploadFile ?? default!))">
+                    <MudCardContent>
+                        <MudAvatar Square="true" Image="@_imageUrl" Style=" width:100%;height:150px;position:relative"></MudAvatar>
 
-                </MudAvatar>
-                <MudButton>
-                    <MudText>Remove</MudText>
-                </MudButton>
+                         @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
+                            {
+                                case "Passport":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Passport</MudText>
+                                    break;
+                                case "PassportBack":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Passport</MudText>
+                                    break;
+                                case "NationalId":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Nadtional Id</MudText>
+                                    break;
+                                case "NationalIdBack":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>National Id</MudText>
+                                    break;
+                                case "GovernmentId":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Government Id</MudText>
+                                    break;
+                                case "GovernmentIdBack":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Government Id</MudText>
+                                    break;
+                                case "SelfieWithAtLeastOneCard":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Selfie<br>With at least one of the cards above</MudText>
+                                    break;
+                                default:
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Others</MudText>
+                                    break;
+
+                            }
+                    </MudCardContent>
+
+                    <MudOverlay Visible="_forUploadFile?.isHovered ?? false" DarkBackground="true" Absolute="true" Class="text-center">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Remove(_forUploadFile ?? default!))">Remove</MudButton>
+                    </MudOverlay>
+                </MudCard>
             }
             else
             {
-                <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
-
-                    <MudCardActions Class="d-flex justify-center">
+                <MudCard Class="position-relative" Elevation="0">
+                    <MudCardContent Class="align-center text-center">
+                        <MudAvatar Color="Color.Error" Variant="Variant.Outlined" Style=" width:100px;height:100px;position:relative"><MudText Typo="Typo.caption">Upload</MudText></MudAvatar>
+                    </MudCardContent>
+                    <MudCardActions Class="d-block align-center text-center">
                         @{
 
                             <InputFile id="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)" OnChange="@((InputFileChangeEventArgs e) => UploadFiles(e, _forUploadFile ))" capture hidden accept=".jpg,.jpeg,.png" />
-                            <div style="padding-bottom:20px">
-                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
-                               StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)">
-                                    @Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)
-                                </MudButton>
+
+                            @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
+                            {
+                                case "Passport":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Passport</MudText>
+                                    break;
+                                case "PassportBack":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Passport</MudText>
+                                    break;
+                                case "NationalId":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Nadtional Id</MudText>
+                                    break;
+                                case "NationalIdBack":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>National Id</MudText>
+                                    break;
+                                case "GovernmentId":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Government Id</MudText>
+                                    break;
+                                case "GovernmentIdBack":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Government Id</MudText>
+                                    break;
+                                case "SelfieWithAtLeastOneCard":
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Selfie<br>With at least one of the cards above</MudText>
+                                    break;
+                                default:
+                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Others</MudText>
+                                    break;
+
+                            }
+                            <div style="padding-top:20px;display:block;">
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)"><MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Upload</MudText></MudButton>
+                                <br />
                                 @if (!string.IsNullOrEmpty(_imageUrl))
                                 {
-                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank"
-                               StartIcon="@Icons.Filled.RemoveRedEye" Link="@_imageUrl" Style="margin-left: 5px;">
+                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Filled.RemoveRedEye" Link="@_imageUrl" Style="margin-left: 5px;">
                                         @L["View"]
                                     </MudButton>
 
-                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Error" Size="Size.Small"
-                               StartIcon="@Icons.Filled.Delete" OnClick="RemoveImageAsync" Style="margin-left: 5px;">
+                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" StartIcon="@Icons.Filled.Delete" OnClick="RemoveImageAsync" Style="margin-left: 5px;">
                                         @L["Delete"]
                                     </MudButton>
                                 }
-
                             </div>
-                            <MudText>
-                                @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
-                                {
-                                    case "Passport":
-                                        <text>Front<br>Passport</text>
-                                        break;
-                                    case "PassportBack":
-                                        <text>Back<br>Passport</text>
-                                        break;
-                                    default:
-                                        <text>Others</text>
-                                        break;
-
-                                }
-                            </MudText>
                         }
                     </MudCardActions>
-                </MudOverlay>
+                </MudCard>
             }
         </div>
     }

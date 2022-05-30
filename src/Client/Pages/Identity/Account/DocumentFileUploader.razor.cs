@@ -93,4 +93,39 @@ public partial class DocumentFileUploader
             await UpdateUploadedFilesAsync();
         }
     }
+
+    public void Hover(ForUploadFile forUploadFile)
+    {
+        forUploadFile.isHovered = true;
+        StateHasChanged();
+    }
+
+    public void ClearHover(ForUploadFile forUploadFile)
+    {
+        forUploadFile.isHovered = false;
+        StateHasChanged();
+    }
+
+    public async Task Remove(ForUploadFile? forUploadFile)
+    {
+        if (forUploadFile is not null)
+        {
+            string id = forUploadFile.InputOutputResourceId ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                Guid guid = await InputOutputResourceClient.DeleteByIdAsync(Guid.Parse(id));
+
+                if (forUploadFile is not null)
+                {
+                    forUploadFile.InputOutputResourceId = string.Empty;
+                    forUploadFile.InputOutputResourceImgUrl = string.Empty;
+                    forUploadFile.isVerified = false;
+                    forUploadFile.isTemporarilyUploaded = false;
+                }
+
+                StateHasChanged();
+            }
+        }
+    }
 }
