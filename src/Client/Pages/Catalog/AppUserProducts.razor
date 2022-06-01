@@ -5,7 +5,7 @@
 
 <EhulogTitle Title="@L["AppUserProducts"]" Description="@L["Manage Products."]" />
 
-@if (AppDataService.AppUserDto != null)
+@if (_appUserDto != null)
 {
     <EntityTable TEntity="AppUserProductDto" TId="Guid" TRequest="AppUserProductViewModel" Context="@Context">
         <EditFormContent>

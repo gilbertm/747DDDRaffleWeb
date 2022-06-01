@@ -6,7 +6,7 @@
 
 @if (!_hideRolePackage)
 {
-    <EditForm Model="@AppUserDto" OnValidSubmit="UpdateAppUserRoleAndPackage">
+    <EditForm Model="@_appUserDto" OnValidSubmit="UpdateAppUserRoleAndPackage">
         <MudCard Elevation="25">
             <MudCardContent>
                 <DataAnnotationsValidator />
@@ -114,7 +114,7 @@
                             else
                             {
                                 <MudItem xs="6" md="4">
-                                    @if (_runningRoles.Where(r => r?.RoleDto?.Id.Equals(AppUserDto.RoleId) ?? false).Count() == 1)
+                                    @if (_runningRoles.Where(r => r?.RoleDto?.Id.Equals(_appUserDto.RoleId) ?? false).Count() == 1)
                                     {
                                         <MudCard Class="position-relative">
                                             @{
@@ -260,7 +260,7 @@
                                 else
                                 {
                                     <MudItem xs="6" md="4">
-                                        @if (_runningPackages.Where(p => p.PackageDto.Id.Equals(AppUserDto.PackageId)).Count() == 1)
+                                        @if (_runningPackages.Where(p => p.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
                                         {
                                             <MudCard Class="position-relative">
                                                 @{

@@ -49,23 +49,9 @@ public class AppDataService
 
     private AppUserDto _appUserDto { get; set; }
 
-    public AppUserDto AppUserDto
-    {
-        get
-        {
-            return _appUserDto ?? default!;
-        }
-
-        set
-        {
-            _appUserDto = value;
-            NotifyDataChanged();
-        }
-    }
-
     private bool _isNewUser { get; set; } = false;
 
-    public async Task Start()
+    public async Task<AppUserDto> Start()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -216,6 +202,8 @@ public class AppDataService
                 }
             }
         }
+
+        return _appUserDto;
     }
 
     public event Action? OnChange;

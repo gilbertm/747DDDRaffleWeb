@@ -27,7 +27,7 @@ public partial class AccountRolePackage
     [Inject]
     public AppDataService AppDataService { get; set; } = default!;
 
-    public AppUserDto AppUserDto = new();
+    private AppUserDto _appUserDto;
 
     public UserRolesRequest UserRolesRequest { get; set; } = default!;
 
@@ -76,13 +76,11 @@ public partial class AccountRolePackage
 
     protected override async Task OnInitializedAsync()
     {
-        await AppDataService.Start();
-
-        AppUserDto = AppDataService.AppUserDto;
+        _appUserDto = await AppDataService.Start();
 
         /* role */
         if (await ApiHelper.ExecuteCallGuardedAsync(
-                 () => UsersClient.GetRolesAsync(AppUserDto.ApplicationUserId), Snackbar)
+                 () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
              is ICollection<UserRoleDto> response)
         {
             _userRolesList = response.ToList();
@@ -104,7 +102,7 @@ public partial class AccountRolePackage
         }
 
         /* process */
-        if (AppUserDto is not null && AppUserDto.Id != default)
+        if (_appUserDto is not null && _appUserDto.Id != default)
         {
             if (await ApiHelper.ExecuteCallGuardedAsync(
                     () => PackagesClient.GetAsync(null), Snackbar)
@@ -117,7 +115,7 @@ public partial class AccountRolePackage
             {
                 foreach (var package in _packages)
                 {
-                    bool selected = AppUserDto.PackageId.Equals(package.Id) ? true : false;
+                    bool selected = _appUserDto.PackageId.Equals(package.Id) ? true : false;
                     _runningPackages.Add(new ExtendedPackageDto()
                     {
                         PackageDto = package,
@@ -129,7 +127,7 @@ public partial class AccountRolePackage
 
             /* role */
             if (await ApiHelper.ExecuteCallGuardedAsync(
-                    () => UsersClient.GetRolesAsync(AppUserDto.ApplicationUserId), Snackbar)
+                    () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
                 is ICollection<UserRoleDto> responseRoles)
             {
                 _userRolesList = responseRoles.ToList();
@@ -158,7 +156,7 @@ public partial class AccountRolePackage
 
                 if (lenderOrLessee.Count() == 1)
                 {
-                    AppUserDto.RoleId = lenderOrLessee.First().RoleId;
+                    _appUserDto.RoleId = lenderOrLessee.First().RoleId;
 
                     _runningRoles.Clear();
 
@@ -179,9 +177,9 @@ public partial class AccountRolePackage
                     {
                         PackagesForLenderRole();
 
-                        if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(AppUserDto.PackageId)).Count() == 1)
+                        if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
                         {
-                            _runningPackages = _runningPackages.Where(rp => rp.PackageDto.Id.Equals(AppUserDto.PackageId)).ToList();
+                            _runningPackages = _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).ToList();
 
                         }
                     }
@@ -304,7 +302,7 @@ public partial class AccountRolePackage
 
         SelectDefaultPackage();
 
-        AppUserDto.RoleId = extendedRoleDto?.RoleDto?.Id;
+        _appUserDto.RoleId = extendedRoleDto?.RoleDto?.Id;
         StateHasChanged();
     }
 
@@ -315,7 +313,7 @@ public partial class AccountRolePackage
             if (package.IsVisible && package.PackageDto.IsDefault)
             {
                 package.IsSelected = true;
-                AppUserDto.PackageId = package.PackageDto.Id;
+                _appUserDto.PackageId = package.PackageDto.Id;
             } else
             {
                 package.IsSelected = false;
@@ -379,7 +377,7 @@ public partial class AccountRolePackage
             extendedPackageDto.IsVisible = true;
         }
 
-        AppUserDto.PackageId = extendedPackageDto?.PackageDto?.Id ?? default;
+        _appUserDto.PackageId = extendedPackageDto?.PackageDto?.Id ?? default;
 
         StateHasChanged();
     }
@@ -389,8 +387,8 @@ public partial class AccountRolePackage
         ClearRole();
         ClearPackage();
 
-        AppUserDto.RoleId = null;
-        AppUserDto.PackageId = default!;
+        _appUserDto.RoleId = null;
+        _appUserDto.PackageId = default!;
         StateHasChanged();
     }
 
@@ -400,20 +398,20 @@ public partial class AccountRolePackage
         * role
         * _runningRoles is greater than 1, if lessee or lender is not yet selected
         */
-        if (!string.IsNullOrEmpty(AppUserDto.RoleId) && _runningRoles.Count() > 1)
+        if (!string.IsNullOrEmpty(_appUserDto.RoleId) && _runningRoles.Count() > 1)
         {
             if (await ApiHelper.ExecuteCallGuardedAsync(
-                () => UsersClient.GetRolesAsync(AppUserDto.ApplicationUserId), Snackbar)
+                () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
             is ICollection<UserRoleDto> response)
             {
                 _userRolesList = response.ToList();
 
                 _userRolesList.ForEach(userRole =>
                 {
-                    if (!string.IsNullOrEmpty(userRole.RoleId) && userRole.RoleId.Equals(AppUserDto.RoleId))
+                    if (!string.IsNullOrEmpty(userRole.RoleId) && userRole.RoleId.Equals(_appUserDto.RoleId))
                     {
                         userRole.Enabled = true;
-                        AppUserDto.RoleId = userRole.RoleId;
+                        _appUserDto.RoleId = userRole.RoleId;
                     }
                     else
                     {
@@ -423,7 +421,7 @@ public partial class AccountRolePackage
                 });
 
                 if (await ApiHelper.ExecuteCallGuardedAsync(
-                    () => UsersClient.AssignRolesAsync(AppUserDto.ApplicationUserId, new UserRolesRequest
+                    () => UsersClient.AssignRolesAsync(_appUserDto.ApplicationUserId, new UserRolesRequest
                     {
                         UserRoles = _userRolesList
                     }),
@@ -434,18 +432,18 @@ public partial class AccountRolePackage
             }
         }
 
-        if (Guid.TryParse(AppUserDto.PackageId.ToString(), out _) && _runningPackages.Where(p => p.IsSelected).Count() == 1)
+        if (Guid.TryParse(_appUserDto.PackageId.ToString(), out _) && _runningPackages.Where(p => p.IsSelected).Count() == 1)
         {
             /* create appuser */
             UpdateAppUserRequest = new()
             {
-                Id = AppUserDto.Id,
-                ApplicationUserId = AppUserDto.ApplicationUserId,
-                PackageId = AppUserDto.PackageId
+                Id = _appUserDto.Id,
+                ApplicationUserId = _appUserDto.ApplicationUserId,
+                PackageId = _appUserDto.PackageId
             };
 
             if (await ApiHelper.ExecuteCallGuardedAsync(
-                () => AppUsersClient.UpdateAsync(AppUserDto.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
+                () => AppUsersClient.UpdateAsync(_appUserDto.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
             {
                 Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
             }

@@ -38,167 +38,192 @@ public partial class AppUserProducts
 
     protected EntityServerTableContext<AppUserProductDto, Guid, AppUserProductViewModel> Context { get; set; } = default!;
 
+    private AppUserDto _appUserDto;
     protected override async Task OnInitializedAsync()
     {
-        await AppDataService.Start();
+        _appUserDto = await AppDataService.Start();
 
         Context = new(
-                    entityName: L["AppUser Product"],
-                    entityNamePlural: L["AppUser Products"],
-                    entityResource: EHULOGResource.AppUserProducts,
-                    fields: new()
-                    {
+               entityName: L["AppUser Product"],
+               entityNamePlural: L["AppUser Products"],
+               entityResource: EHULOGResource.AppUserProducts,
+               fields: new()
+               {
                         new(prod => prod.Id, L["Product"], Template: AppUserIdFieldTemplate),
                         new(prod => prod.Product.Brand.Name, L["Brand"], "Product.Brand.Name"),
                         new(prod => prod.Product.Category.Name, L["Category"], "Product.Category.Name"),
                         new(prod => prod.Product.ProductType, L["Type"], "Product.ProductType"),
-                    },
-                    idFunc: prod => prod.Id,
-                    searchFunc: async filter =>
-                    {
-                        // only the following can be listed
-                        // a. system provided products
-                        // b. custom products, possible of package subscription
-                        var productFilter = filter.Adapt<SearchAppUserProductsRequest>();
+               },
+               idFunc: prod => prod.Id,
+               searchFunc: async filter =>
+               {
+                   // only the following can be listed
+                   // a. system provided products
+                   // b. custom products, possible of package subscription
+                   var productFilter = filter.Adapt<SearchAppUserProductsRequest>();
 
-                        productFilter.AppUserId = AppDataService.AppUserDto.Id;
-                        productFilter.ProductId = null;
+                   productFilter.AppUserId = _appUserDto.Id == default ? null : _appUserDto.Id;
 
-                        var result = await AppUserProductsClient.SearchAsync(productFilter);
+                   productFilter.ProductId = null;
 
-                        foreach (var item in result.Data)
-                        {
-                            var image = await InputOutputResourceClient.GetAsync(item.ProductId);
+                   var result = await AppUserProductsClient.SearchAsync(productFilter);
 
-                            if (image.Count() > 0)
-                            {
-                                item.Product.Image = image.First();
-                            }
-                        }
-
-                        return result.Adapt<PaginationResponse<AppUserProductDto>>();
-
-                    },
-                    createFunc: async prod =>
-                    {
-                        var state = await AuthState;
-                        bool _canCreate = await CanDoActionAsync(Context.CreateAction, state);
-
-                        if (!_canCreate && !prod.Product.ProductType.Equals(ProductType.Custom))
-                        {
-                            throw new Exception("You are authorized to access this resource. Testing");
-                        }
-
-                        prod.AppUserId = AppDataService.AppUserDto.Id;
-
-                        /* TODO: if with package to allow or can be able to create custom product */
-                        /* product type = 3 custom for lender, admins must be any */
-                        /* need to check the role */
-                        /* only lenders (with subscription package) and system adminis can create products */
-                        var createProductRequest = prod.Product.Adapt<CreateProductRequest>();
-                        Guid productId = await ProductsClient.CreateAsync(createProductRequest);
-                        prod.ProductId = productId;
-
-
-                        if (!string.IsNullOrEmpty(prod.ImageInBytes))
-                        {
-                            var imageCreate = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
-                            {
-                                ReferenceId = prod.ProductId,
-                                InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
-                                Image = new FileUploadRequest()
-                                {
-                                    Data = prod.ImageInBytes ?? default!,
-                                    Extension = prod.ImageExtension ?? string.Empty,
-                                    Name = $"{prod.Product.Name}_{Guid.NewGuid():N}"
-                                },
-                                InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
-                                InputOutputResourceType = InputOutputResourceType.Product
-                            });
-                        }
-
-                        var createAppUserProductRequest = prod.Adapt<CreateAppUserProductRequest>();
-                        Guid appUserProductId = await AppUserProductsClient.CreateAsync(createAppUserProductRequest);
-                        prod.Id = appUserProductId;
-                        prod.ImageInBytes = string.Empty;
-                    },
-                    updateFunc: async (id, prod) =>
-                    {
-                        var updateProductRequest = prod.Product.Adapt<UpdateProductRequest>();
-                        Guid productId = await ProductsClient.UpdateAsync(prod.ProductId, updateProductRequest);
-                        prod.ProductId = productId;
-
-                        var image = await InputOutputResourceClient.GetAsync(prod.ProductId);
-
-                        if (!string.IsNullOrEmpty(prod.ImageInBytes))
-                        {
-                            var deleteImage = await InputOutputResourceClient.DeleteAsync(prod.ProductId);
-
-                            if (!string.IsNullOrEmpty(deleteImage.ToString()))
-                            {
-                                var updateImage = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
-                                {
-                                    ReferenceId = prod.ProductId,
-                                    InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
-                                    Image = new FileUploadRequest()
-                                    {
-                                        Data = prod.ImageInBytes ?? default!,
-                                        Extension = prod.ImageExtension ?? string.Empty,
-                                        Name = $"{prod.Product.Name}_{Guid.NewGuid():N}"
-                                    },
-                                    InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
-                                    InputOutputResourceType = InputOutputResourceType.Product
-                                });
-                            }
-                        }
-
-                        var updateAppUserProductRequest = prod.Adapt<UpdateAppUserProductRequest>();
-                        await AppUserProductsClient.UpdateAsync(id, updateAppUserProductRequest);
-                        prod.ImageInBytes = string.Empty;
-                    },
-                    deleteFunc: async id =>
-                    {
-                        var deleteAppUserProduct = await AppUserProductsClient.GetIdAsync(id);
-
-                        // TODO:// the user can only allowed a custom and owned list.
-
-                        // throw new ForbiddenException("You are not authorized to access this resource."),
-
-                        if (deleteAppUserProduct != null && deleteAppUserProduct != default!)
-                        {
-                            var deleteImage = await InputOutputResourceClient.DeleteAsync(deleteAppUserProduct.ProductId);
-
-                            var deleteProduct = await ProductsClient.DeleteAsync(deleteAppUserProduct.ProductId);
-
-                            if (!string.IsNullOrEmpty(deleteProduct.ToString()))
-                            {
-                                await AppUserProductsClient.DeleteAsync(deleteAppUserProduct.AppUserId, deleteAppUserProduct.ProductId);
-                            }
-                        }
-                    }
-                    /* ,
-                     canUpdateEntityFunc: prod =>
-                    {
-                        bool canUpdate = true;
-
-                        // TODO:// check if can update
-                        // only lender and admin
-                        if (prod != null && !prod.Product.ProductType.Equals(ProductType.Custom) && (AppDataService.AppUserDto.RoleName is not null && AppDataService.AppUserDto.RoleName.Equals("Lender")))
-                        {
-                            canUpdate = false;
-                        }
-
-                        return canUpdate; 
-                    },*/
-                    /*canDeleteEntityFunc: prod =>
+                   if (result.Data.Count() > 0)
                    {
-                       if (prod != null && !prod.Product.ProductType.Equals(ProductType.Custom))
+                       foreach (var item in result.Data)
                        {
-                           return false;
-                       }
+                           var image = await InputOutputResourceClient.GetAsync(item.ProductId);
 
-                       return true; 
-                   } */);
+                           if (image.Count() > 0)
+                           {
+                               item.Product.Image = image.First();
+                           }
+                       }
+                   }
+
+                   return result.Adapt<PaginationResponse<AppUserProductDto>>();
+               },
+               createFunc: async prod =>
+               {
+                   var state = await AuthState;
+                   bool _canCreate = await CanDoActionAsync(Context.CreateAction, state);
+
+                   if (!_canCreate && !prod.Product.ProductType.Equals(ProductType.Custom))
+                   {
+                       throw new Exception("You are authorized to access this resource. Testing");
+                   }
+
+                   prod.AppUserId = _appUserDto.Id;
+
+                   /* TODO: if with package to allow or can be able to create custom product */
+                   /* product type = 3 custom for lender, admins must be any */
+                   /* need to check the role */
+                   /* only lenders (with subscription package) and system adminis can create products */
+                   var createProductRequest = prod.Product.Adapt<CreateProductRequest>();
+                   Guid productId = await ProductsClient.CreateAsync(createProductRequest);
+                   prod.ProductId = productId;
+
+
+                   if (!string.IsNullOrEmpty(prod.ImageInBytes))
+                   {
+                       var imageCreate = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
+                       {
+                           ReferenceId = prod.ProductId,
+                           InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
+                           Image = new FileUploadRequest()
+                           {
+                               Data = prod.ImageInBytes ?? default!,
+                               Extension = prod.ImageExtension ?? string.Empty,
+                               Name = $"{prod.Product.Name}_{Guid.NewGuid():N}"
+                           },
+                           InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
+                           InputOutputResourceType = InputOutputResourceType.Product
+                       });
+                   }
+
+                   var createAppUserProductRequest = prod.Adapt<CreateAppUserProductRequest>();
+                   Guid appUserProductId = await AppUserProductsClient.CreateAsync(createAppUserProductRequest);
+                   prod.Id = appUserProductId;
+                   prod.ImageInBytes = string.Empty;
+               },
+               updateFunc: async (id, prod) =>
+               {
+                   var updateProductRequest = prod.Product.Adapt<UpdateProductRequest>();
+                   Guid productId = await ProductsClient.UpdateAsync(prod.ProductId, updateProductRequest);
+                   prod.ProductId = productId;
+
+                   var image = await InputOutputResourceClient.GetAsync(prod.ProductId);
+
+                   if (!string.IsNullOrEmpty(prod.ImageInBytes))
+                   {
+                       var deleteImage = await InputOutputResourceClient.DeleteAsync(prod.ProductId);
+
+                       if (!string.IsNullOrEmpty(deleteImage.ToString()))
+                       {
+                           var updateImage = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
+                           {
+                               ReferenceId = prod.ProductId,
+                               InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
+                               Image = new FileUploadRequest()
+                               {
+                                   Data = prod.ImageInBytes ?? default!,
+                                   Extension = prod.ImageExtension ?? string.Empty,
+                                   Name = $"{prod.Product.Name}_{Guid.NewGuid():N}"
+                               },
+                               InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
+                               InputOutputResourceType = InputOutputResourceType.Product
+                           });
+                       }
+                   }
+
+                   var updateAppUserProductRequest = prod.Adapt<UpdateAppUserProductRequest>();
+                   await AppUserProductsClient.UpdateAsync(id, updateAppUserProductRequest);
+                   prod.ImageInBytes = string.Empty;
+               },
+               deleteFunc: async id =>
+               {
+                   var deleteAppUserProduct = await AppUserProductsClient.GetIdAsync(id);
+
+                   if (deleteAppUserProduct != null && deleteAppUserProduct != default!)
+                   {
+                       var deleteImage = await InputOutputResourceClient.DeleteAsync(deleteAppUserProduct.ProductId);
+
+                       var deleteProduct = await ProductsClient.DeleteAsync(deleteAppUserProduct.ProductId);
+
+                       if (!string.IsNullOrEmpty(deleteProduct.ToString()))
+                       {
+                           await AppUserProductsClient.DeleteAsync(deleteAppUserProduct.AppUserId, deleteAppUserProduct.ProductId);
+                       }
+                   }
+               },
+               canUpdateEntityFunc: prod =>
+               {
+                   bool canUpdate = false;
+
+                   if (_appUserDto is not null && !string.IsNullOrEmpty(_appUserDto.RoleName))
+                   {
+                       if (_appUserDto.RoleName.Equals("Admin"))
+                       {
+                           return true;
+                       }
+                       else if (_appUserDto.RoleName.Equals("Lender"))
+                       {
+                           if (prod != null)
+                           {
+                               if (prod.Product.ProductType.Equals(ProductType.Custom))
+                               {
+                                   canUpdate = true;
+                               }
+                           }
+                       }
+                   }
+
+                   return canUpdate;
+               },
+               canDeleteEntityFunc: prod =>
+               {
+                   bool canDelete = false;
+
+                   if (_appUserDto is not null && !string.IsNullOrEmpty(_appUserDto.RoleName))
+                   {
+                       if (_appUserDto.RoleName.Equals("Admin"))
+                       {
+                           return true;
+                       }
+                       else if (_appUserDto.RoleName.Equals("Lender"))
+                       {
+                           if (prod != null)
+                           {
+                               if (prod.Product.ProductType.Equals(ProductType.Custom))
+                               {
+                                   canDelete = true;
+                               }
+                           }
+                       }
+                   }
+
+                   return canDelete;
+               });
     }
 
     private async Task<bool> CanDoActionAsync(string? action, AuthenticationState state) =>
