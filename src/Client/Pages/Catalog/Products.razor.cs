@@ -28,12 +28,12 @@ public partial class Products
                     entityResource: EHULOGResource.Products,
                     fields: new()
                     {
-                new(prod => prod.Id, L["Id"], "Id"),
-                new(prod => prod.Image?.ImagePath, L["Image"], "Image"),
-                new(prod => prod.Name, L["Name"], "Name"),
-                new(prod => prod.Description, L["Description"], "Description"),
-                new(prod => prod.BrandName, L["Brand"], "Brand.Name"),
-                new(prod => prod.CategoryName, L["Category"], "Category.Name")
+                        new(prod => prod.Id, L["Id"], "Id"),
+                        new(prod => prod.Image?.ImagePath, L["Image"], "Image"),
+                        new(prod => prod.Name, L["Name"], "Name"),
+                        new(prod => prod.Description, L["Description"], "Description"),
+                        new(prod => prod.BrandName, L["Brand"], "Brand.Name"),
+                        new(prod => prod.CategoryName, L["Category"], "Category.Name")
                     },
                     enableAdvancedSearch: true,
                     idFunc: prod => prod.Id,
@@ -49,21 +49,21 @@ public partial class Products
                     },
                     createFunc: async prod =>
                     {
-                        if (!string.IsNullOrEmpty(prod.ImageInBytes))
+                        /* if (!string.IsNullOrEmpty(prod.ImageInBytes))
                         {
                             prod.Image = new FileUploadRequest() { Data = prod.ImageInBytes, Extension = prod.ImageExtension ?? string.Empty, Name = $"{prod.Name}_{Guid.NewGuid():N}" };
-                        }
+                        } */
 
                         await ProductsClient.CreateAsync(prod.Adapt<CreateProductRequest>());
                         prod.ImageInBytes = string.Empty;
                     },
                     updateFunc: async (id, prod) =>
                     {
-                        if (!string.IsNullOrEmpty(prod.ImageInBytes))
+                        /* if (!string.IsNullOrEmpty(prod.ImageInBytes))
                         {
                             prod.DeleteCurrentImage = true;
                             prod.Image = new FileUploadRequest() { Data = prod.ImageInBytes, Extension = prod.ImageExtension ?? string.Empty, Name = $"{prod.Name}_{Guid.NewGuid():N}" };
-                        }
+                        } */
 
                         await ProductsClient.UpdateAsync(id, prod.Adapt<UpdateProductRequest>());
                         prod.ImageInBytes = string.Empty;
@@ -159,7 +159,7 @@ public partial class Products
     {
         Context.AddEditModal.RequestModel.ImageInBytes = string.Empty;
         Context.AddEditModal.RequestModel.ImagePath = string.Empty;
-        Context.AddEditModal.RequestModel.DeleteCurrentImage = true;
+        // Context.AddEditModal.RequestModel.DeleteCurrentImage = true;
         Context.AddEditModal.ForceRender();
     }
 }

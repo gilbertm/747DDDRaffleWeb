@@ -24,13 +24,13 @@ public class AppDataService
 
     protected IPackagesClient PackagesClient { get; set; } = default!;
 
-    private IRolesClient RolesClient { get; set; } = default!;
+    private IRolesClient _rolesClient { get; set; } = default!;
 
-    private IUsersClient UsersClient { get; set; } = default!;
+    private IUsersClient _usersClient { get; set; } = default!;
 
     private LocationService _locationService { get; set; } = default!;
 
-    public AppDataService(AuthenticationStateProvider authenticationStateProvider, IAppUsersClient appUsersClient, IJSRuntime jsRuntime, IHttpClientFactory httpClientFactory, LocationService locationService)
+    public AppDataService(AuthenticationStateProvider authenticationStateProvider, IAppUsersClient appUsersClient, IUsersClient usersClient, IRolesClient rolesClient, IJSRuntime jsRuntime, IHttpClientFactory httpClientFactory, LocationService locationService)
     {
         _jsRuntime = jsRuntime;
 
@@ -38,12 +38,16 @@ public class AppDataService
 
         _appUsersClient = appUsersClient;
 
+        _usersClient = usersClient;
+
+        _rolesClient = rolesClient;
+
         _locationService = locationService;
 
         _authenticationStateProvider = authenticationStateProvider;
     }
 
-    private AppUserDto _appUserDto { get; set; } = new();
+    private AppUserDto _appUserDto { get; set; }
 
     public AppUserDto AppUserDto
     {
@@ -166,6 +170,50 @@ public class AppDataService
                 };
 
                 var guid = await _appUsersClient.UpdateAsync(_appUserDto.Id, updateAppUserRequest);
+            }
+
+            // get application user role, the selected if exists
+            // if not just assign the other roles
+            // this is used for checking on some parts of the system.
+            var userRoles = await _usersClient.GetRolesAsync(userId);
+            if (userRoles != null)
+            {
+                if (!string.IsNullOrEmpty(_appUserDto.RoleId))
+                {
+
+                    var userRole = userRoles.Where(ur => (ur.RoleId is not null) && ur.RoleId.Equals(_appUserDto.RoleId) && ur.Enabled).FirstOrDefault();
+
+                    if (userRole is not null)
+                    {
+                        _appUserDto.RoleId = userRole.RoleId;
+                        _appUserDto.RoleName = userRole.RoleName;
+                    }
+                }
+                else
+                {
+                    var lenderOrLessee = userRoles.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
+                    if (lenderOrLessee.Count() == 1)
+                    {
+                        // assigned properly with one application role
+                        _appUserDto.RoleId = lenderOrLessee.First().RoleId;
+                        _appUserDto.RoleName = lenderOrLessee.First().RoleName;
+                    }
+
+                    var basic = userRoles.Where(r => (new string[] { "Basic" }).Contains(r.RoleName) && r.Enabled).ToList();
+                    if (basic.Count() > 0)
+                    {
+                        _appUserDto.RoleId = basic.First().RoleId;
+                        _appUserDto.RoleName = basic.First().RoleName;
+                    }
+
+                    var admin = userRoles.Where(r => (new string[] { "Admin" }).Contains(r.RoleName) && r.Enabled).ToList();
+                    if (admin.Count() > 0)
+                    {
+                        _appUserDto.RoleId = admin.First().RoleId;
+                        _appUserDto.RoleName = admin.First().RoleName;
+                    }
+
+                }
             }
         }
     }
