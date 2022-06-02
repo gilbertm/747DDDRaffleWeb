@@ -37,17 +37,29 @@
             </MudItem>
 
             <MudItem xs="12" md="6">
-                <MudSelect @bind-Value="context.Product.ProductType" Label="Select product type" HelperText="behavior of product for each user permissions" OpenIcon="@Icons.Material.Filled.Category" AdornmentColor="Color.Secondary">
-                    @foreach (ProductType item in Enum.GetValues(typeof(ProductType)))
-                    {
-                    <MudSelectItem Value="@item">@item</MudSelectItem>
-                    }
-            </MudSelect>
-        </MudItem>
 
-        <MudItem xs="12" md="12">
-            <MudItem>
-                @if (!string.IsNullOrEmpty(context.ImageInBytes))
+                @{
+                   
+                    @if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lender"))
+                    {
+                        <MudTextField Label="@L["Product Type"]" For="@(() => context.Product.ProductType)"
+                          Value="ProductType.Custom" />
+                    }
+                    else
+                    {
+                        <MudSelect @bind-Value="context.Product.ProductType" For="@(() => context.Product.ProductType)" Label="Select product type" HelperText="behavior of product for each user permissions" OpenIcon="@Icons.Material.Filled.Category" AdornmentColor="Color.Secondary">
+                            @foreach (ProductType item in Enum.GetValues(typeof(ProductType)))
+                            {
+                                <MudSelectItem Value="@item">@item</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                }
+            </MudItem>
+
+            <MudItem xs="12" md="12">
+                <MudItem>
+                    @if (!string.IsNullOrEmpty(context.ImageInBytes))
                     {
                         <MudAvatar Image="@context.ImageInBytes" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
                     }

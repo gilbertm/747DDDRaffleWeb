@@ -22,7 +22,7 @@ public class AppDataService
 
     protected IAppUsersClient _appUsersClient { get; set; } = default!;
 
-    protected IPackagesClient PackagesClient { get; set; } = default!;
+    protected IPackagesClient _packagesClient { get; set; } = default!;
 
     private IRolesClient _rolesClient { get; set; } = default!;
 
@@ -30,7 +30,7 @@ public class AppDataService
 
     private LocationService _locationService { get; set; } = default!;
 
-    public AppDataService(AuthenticationStateProvider authenticationStateProvider, IAppUsersClient appUsersClient, IUsersClient usersClient, IRolesClient rolesClient, IJSRuntime jsRuntime, IHttpClientFactory httpClientFactory, LocationService locationService)
+    public AppDataService(AuthenticationStateProvider authenticationStateProvider, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IJSRuntime jsRuntime, IHttpClientFactory httpClientFactory, LocationService locationService)
     {
         _jsRuntime = jsRuntime;
 
@@ -40,6 +40,8 @@ public class AppDataService
 
         _usersClient = usersClient;
 
+        _packagesClient = packagesClient;
+
         _rolesClient = rolesClient;
 
         _locationService = locationService;
@@ -47,7 +49,7 @@ public class AppDataService
         _authenticationStateProvider = authenticationStateProvider;
     }
 
-    private AppUserDto _appUserDto { get; set; }
+    private AppUserDto? _appUserDto { get; set; }
 
     private bool _isNewUser { get; set; } = false;
 

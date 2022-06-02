@@ -1,4 +1,5 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,10 @@ public partial class NavMenu
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
     [Inject]
     protected IAuthorizationService AuthService { get; set; } = default!;
+    [Inject]
+    public AppDataService AppDataService { get; set; } = default!;
+
+    private AppUserDto _appUserDto;
 
     private string? _hangfireUrl;
     private bool _canViewHangfire;
@@ -26,6 +31,8 @@ public partial class NavMenu
 
     protected override async Task OnParametersSetAsync()
     {
+        _appUserDto = await AppDataService.Start();
+
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
         var user = (await AuthState).User;
         _canViewHangfire = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Hangfire);

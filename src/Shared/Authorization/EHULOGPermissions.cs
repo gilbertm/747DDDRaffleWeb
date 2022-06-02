@@ -66,7 +66,7 @@ public static class EHULOGPermissions
         new("Search Products", EHULOGAction.Search, EHULOGResource.Products, IsLender: true),
         new("Create Products", EHULOGAction.Create, EHULOGResource.Products, IsLender: true),
         new("Update Products", EHULOGAction.Update, EHULOGResource.Products, IsLender: true),
-        new("Delete Products", EHULOGAction.Delete, EHULOGResource.Products),
+        new("Delete Products", EHULOGAction.Delete, EHULOGResource.Products, IsLender: true),
         new("Export Products", EHULOGAction.Export, EHULOGResource.Products),
         new("View Brands", EHULOGAction.View, EHULOGResource.Brands, IsLender: true, IsLessee: true),
         new("Search Brands", EHULOGAction.Search, EHULOGResource.Brands, IsLender: true, IsLessee: true),

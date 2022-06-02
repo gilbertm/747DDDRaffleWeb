@@ -24,6 +24,9 @@ public partial class AppUserProducts
     public AppDataService AppDataService { get; set; } = default!;
 
     [Inject]
+    public NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
     protected IAppUserProductsClient AppUserProductsClient { get; set; } = default!;
 
     [Inject]
@@ -39,10 +42,29 @@ public partial class AppUserProducts
     protected EntityServerTableContext<AppUserProductDto, Guid, AppUserProductViewModel> Context { get; set; } = default!;
 
     private AppUserDto _appUserDto;
+
     protected override async Task OnInitializedAsync()
     {
         _appUserDto = await AppDataService.Start();
 
+        // consolidate, add all system products, default products
+        // on appuser products, so that the user can make use of them in making loans
+        var appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(_appUserDto.Id)).ToList();
+
+        foreach (var appUserProduct in appUserProducts)
+        {
+            if (appUserProduct.Id == default)
+            {
+                _ = await AppUserProductsClient.CreateAsync(new()
+                {
+                    AppUserId = _appUserDto.Id,
+                    ProductId = appUserProduct.Product?.Id ?? default!
+                });
+            }
+        }
+
+        // manage all available products
+        // get all active system products that the lender can use
         Context = new(
                entityName: L["AppUser Product"],
                entityNamePlural: L["AppUser Products"],
@@ -50,9 +72,9 @@ public partial class AppUserProducts
                fields: new()
                {
                         new(prod => prod.Id, L["Product"], Template: AppUserIdFieldTemplate),
-                        new(prod => prod.Product.Brand.Name, L["Brand"], "Product.Brand.Name"),
-                        new(prod => prod.Product.Category.Name, L["Category"], "Product.Category.Name"),
-                        new(prod => prod.Product.ProductType, L["Type"], "Product.ProductType"),
+                        new(prod => prod.Product?.Brand?.Name, L["Brand"], "Product.Brand.Name"),
+                        new(prod => prod.Product?.Category?.Name, L["Category"], "Product.Category.Name"),
+                        new(prod => prod.Product?.ProductType, L["Type"], "Product.ProductType"),
                },
                idFunc: prod => prod.Id,
                searchFunc: async filter =>
@@ -62,7 +84,7 @@ public partial class AppUserProducts
                    // b. custom products, possible of package subscription
                    var productFilter = filter.Adapt<SearchAppUserProductsRequest>();
 
-                   productFilter.AppUserId = _appUserDto.Id == default ? null : _appUserDto.Id;
+                   productFilter.AppUserId = _appUserDto.Id;
 
                    productFilter.ProductId = null;
 
@@ -100,6 +122,12 @@ public partial class AppUserProducts
                    /* need to check the role */
                    /* only lenders (with subscription package) and system adminis can create products */
                    var createProductRequest = prod.Product.Adapt<CreateProductRequest>();
+
+                   if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lender"))
+                   {
+                       createProductRequest.ProductType = ProductType.Custom;
+                   }
+
                    Guid productId = await ProductsClient.CreateAsync(createProductRequest);
                    prod.ProductId = productId;
 
@@ -125,6 +153,8 @@ public partial class AppUserProducts
                    Guid appUserProductId = await AppUserProductsClient.CreateAsync(createAppUserProductRequest);
                    prod.Id = appUserProductId;
                    prod.ImageInBytes = string.Empty;
+
+                   NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
                },
                updateFunc: async (id, prod) =>
                {
@@ -159,6 +189,8 @@ public partial class AppUserProducts
                    var updateAppUserProductRequest = prod.Adapt<UpdateAppUserProductRequest>();
                    await AppUserProductsClient.UpdateAsync(id, updateAppUserProductRequest);
                    prod.ImageInBytes = string.Empty;
+
+                   NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
                },
                deleteFunc: async id =>
                {
@@ -175,6 +207,8 @@ public partial class AppUserProducts
                            await AppUserProductsClient.DeleteAsync(deleteAppUserProduct.AppUserId, deleteAppUserProduct.ProductId);
                        }
                    }
+
+                   NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
                },
                canUpdateEntityFunc: prod =>
                {
@@ -190,7 +224,7 @@ public partial class AppUserProducts
                        {
                            if (prod != null)
                            {
-                               if (prod.Product.ProductType.Equals(ProductType.Custom))
+                               if (prod.Product is not null && prod.Product.ProductType.Equals(ProductType.Custom))
                                {
                                    canUpdate = true;
                                }
@@ -214,7 +248,7 @@ public partial class AppUserProducts
                        {
                            if (prod != null)
                            {
-                               if (prod.Product.ProductType.Equals(ProductType.Custom))
+                               if (prod.Product is not null && prod.Product.ProductType.Equals(ProductType.Custom))
                                {
                                    canDelete = true;
                                }
@@ -223,7 +257,15 @@ public partial class AppUserProducts
                    }
 
                    return canDelete;
-               });
+               },
+               searchAction: ((Func<string>)(() =>
+               {
+                   return string.Empty;
+               }))(),
+               exportAction: ((Func<string>)(() => {
+                   return string.Empty;
+               }))()
+               );
     }
 
     private async Task<bool> CanDoActionAsync(string? action, AuthenticationState state) =>

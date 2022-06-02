@@ -4274,14 +4274,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         System.Threading.Tasks.Task<AppUserProductDto> GetAsync(System.Guid appUserId, System.Guid productId, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get user's product details.
+        /// Get user's specific product with detail.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AppUserProductDto> GetIdAsync(System.Guid id);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get user's product details.
+        /// Get user's specific product with detail.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AppUserProductDto> GetIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
@@ -4298,6 +4298,19 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid id, UpdateAppUserProductRequest request, System.Threading.CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get user's products with details.
+        /// </summary>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AppUserProductDto>> GetByAppUserIdAsync(System.Guid appUserId);
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get user's products with details.
+        /// </summary>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AppUserProductDto>> GetByAppUserIdAsync(System.Guid appUserId, System.Threading.CancellationToken cancellationToken);
 
     }
 
@@ -4725,7 +4738,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         }
 
         /// <summary>
-        /// Get user's product details.
+        /// Get user's specific product with detail.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<AppUserProductDto> GetIdAsync(System.Guid id)
@@ -4735,7 +4748,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get user's product details.
+        /// Get user's specific product with detail.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<AppUserProductDto> GetIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken)
@@ -4882,6 +4895,102 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
                         if (status_ == 200)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Guid>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<HttpValidationProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<HttpValidationProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResult>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ErrorResult>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Get user's products with details.
+        /// </summary>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AppUserProductDto>> GetByAppUserIdAsync(System.Guid appUserId)
+        {
+            return GetByAppUserIdAsync(appUserId, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get user's products with details.
+        /// </summary>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AppUserProductDto>> GetByAppUserIdAsync(System.Guid appUserId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (appUserId == null)
+                throw new System.ArgumentNullException("appUserId");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("api/v1/appuserproducts/appuser/{appUserId}");
+            urlBuilder_.Replace("{appUserId}", System.Uri.EscapeDataString(ConvertToString(appUserId, System.Globalization.CultureInfo.InvariantCulture)));
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<AppUserProductDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -12156,14 +12265,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Get product details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ProductDetailsDto> GetAsync(System.Guid id);
+        System.Threading.Tasks.Task<ProductDto> GetAsync(System.Guid id);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Get product details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ProductDetailsDto> GetAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<ProductDto> GetAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Update a product.
@@ -12361,7 +12470,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Get product details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ProductDetailsDto> GetAsync(System.Guid id)
+        public virtual System.Threading.Tasks.Task<ProductDto> GetAsync(System.Guid id)
         {
             return GetAsync(id, System.Threading.CancellationToken.None);
         }
@@ -12371,7 +12480,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Get product details.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ProductDetailsDto> GetAsync(System.Guid id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ProductDto> GetAsync(System.Guid id, System.Threading.CancellationToken cancellationToken)
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -12412,7 +12521,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProductDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<ProductDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -14001,14 +14110,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("appUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid AppUserId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("appUser", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public AppUserDto AppUser { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("appUser", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public AppUserDto? AppUser { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("productId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid ProductId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("product", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ProductDto Product { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("product", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ProductDto? Product { get; set; } = default!;
 
     }
 
@@ -14059,8 +14168,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid Id { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Name { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? Name { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; } = default!;
@@ -14074,20 +14183,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("brandId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid BrandId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("brand", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public BrandDto Brand { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("brandName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string BrandName { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("brand", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BrandDto? Brand { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("categoryId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid CategoryId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("categoryName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string CategoryName { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public CategoryDto Category { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public CategoryDto? Category { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public InputOutputResourceDto? Image { get; set; } = default!;
@@ -14110,20 +14213,6 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class BrandDto
-    {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Name { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? Description { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class CategoryDto
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid Id { get; set; } = default!;
@@ -14224,10 +14313,27 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class CategoryDto
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Name { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? Description { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public InputOutputResourceDto? Image { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class SearchAppUserProductsRequest : PaginationFilter
     {
-        [Newtonsoft.Json.JsonProperty("appUserId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? AppUserId { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("appUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid AppUserId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("productId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? ProductId { get; set; } = default!;
@@ -15744,32 +15850,6 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("productType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ProductType? ProductType { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ProductDetailsDto
-    {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Name { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? Description { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("rate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal Rate { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("brand", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public BrandDto Brand { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public CategoryDto Category { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public InputOutputResourceDto? Image { get; set; } = default!;
 
     }
 

@@ -32,8 +32,8 @@ public partial class Products
                         new(prod => prod.Image?.ImagePath, L["Image"], "Image"),
                         new(prod => prod.Name, L["Name"], "Name"),
                         new(prod => prod.Description, L["Description"], "Description"),
-                        new(prod => prod.BrandName, L["Brand"], "Brand.Name"),
-                        new(prod => prod.CategoryName, L["Category"], "Category.Name")
+                        new(prod => prod.Brand?.Name, L["Brand"], "Brand.Name"),
+                        new(prod => prod.Category?.Name, L["Category"], "Category.Name")
                     },
                     enableAdvancedSearch: true,
                     idFunc: prod => prod.Id,
