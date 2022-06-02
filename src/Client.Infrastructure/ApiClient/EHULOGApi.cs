@@ -14272,6 +14272,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         AppUser = 6,
 
+        Brand = 7,
+
         Identification = 100,
 
     }
