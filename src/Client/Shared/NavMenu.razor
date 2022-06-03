@@ -27,19 +27,31 @@
     {
         <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Management"]</MudText>
         <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.AddBox">
+            @if (_canViewPackages)
+            {
+                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                    @L["Packages"]
+                </MudNavLink>
+            }
             @if (_canViewProducts)
             {
                 @* <MudNavLink Match="NavLinkMatch.All" Href="/catalog/products" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-        @L["Products"]
-        </MudNavLink> *@
+                    @L["Products"]
+                    </MudNavLink> *@
                 <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["User Products"]
+                    @L["Products"]
                 </MudNavLink>
             }
             @if (_canViewBrands)
             {
                 <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
                     @L["Brands"]
+                </MudNavLink>
+            }
+            @if (_canViewCategories)
+            {
+                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                    @L["Categories"]
                 </MudNavLink>
             }
         </MudNavGroup>

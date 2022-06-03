@@ -26,6 +26,8 @@ public partial class NavMenu
     private bool _canViewUsers;
     private bool _canViewProducts;
     private bool _canViewBrands;
+    private bool _canViewCategories;
+    private bool _canViewPackages;
     private bool _canViewTenants;
     private bool CanViewAdministrationGroup => _canViewUsers || _canViewRoles || _canViewTenants;
 
@@ -42,5 +44,7 @@ public partial class NavMenu
         _canViewProducts = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Products);
         _canViewBrands = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Brands);
         _canViewTenants = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Tenants);
+        _canViewCategories = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Categories);
+        _canViewPackages = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Packages);
     }
 }

@@ -1,0 +1,73 @@
+﻿@page "/catalog/categories"
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Categories)]
+
+@inject IStringLocalizer<Category> L
+
+<EhulogTitle Title="@L["Categories"]" Description="@L["Manage Categories."]" />
+
+<EntityTable TEntity="CategoryDto" TId="Guid" TRequest="CategoryViewModel" Context="@Context">
+
+    <EditFormContent>
+        @if (!Context.AddEditModal.IsCreate)
+        {
+            <MudItem xs="12" md="6" >
+                <MudTextField Value="context.Id" ReadOnly DisableUnderLine Label="@L[$"Category Id"]" />
+            </MudItem>
+        }
+        <MudItem xs="12" md="6">
+            <MudTextField T="string" For="@(() => context.Name)" @bind-Value="context.Name" Label="@L["Name"]" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField For="@(() => context.Description)" @bind-Value="context.Description"
+                          Label="@L["Description"]" />
+        </MudItem>
+
+        <MudItem xs="12" md="12">
+            <MudItem>
+                @if (!string.IsNullOrEmpty(context.ImageInBytes))
+                {
+                    <MudAvatar Image="@context.ImageInBytes" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                }
+                else
+                {
+                    <MudAvatar Image="@(string.IsNullOrEmpty(@context.Image.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + @context.Image.ImagePath))" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                }
+            </MudItem>
+            <MudItem>
+                <div>
+                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                               StartIcon="@Icons.Filled.CloudUpload" for="fileInput">
+                        @L["Upload"]
+                    </MudButton>
+                    @if (!Context.AddEditModal.IsCreate && !string.IsNullOrEmpty(context.ImagePath) && string.IsNullOrEmpty(context.ImageInBytes))
+                    {
+                        <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank"
+                               StartIcon="@Icons.Filled.RemoveRedEye" Link="@(Config[ConfigNames.ApiBaseUrl] + @context.ImagePath)" Style="margin-left: 5px;">
+                            @L["View"]
+                        </MudButton>
+                    }
+                </div>
+                <InputFile id="fileInput" hidden OnChange="UploadFiles" />
+            </MudItem>
+        </MudItem>
+    </EditFormContent>
+
+</EntityTable>
+
+@code {
+    protected RenderFragment<CategoryDto> CategoryDtoTemplate => trail => __builder =>
+    {
+        var _imageUrl = string.IsNullOrEmpty(@trail.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.Image?.ImagePath);
+
+        <MudCard>
+            <MudCardContent>
+                @if (!string.IsNullOrEmpty(_imageUrl))
+                {
+                    <MudAvatar Square="true" Image="@_imageUrl" Style=" width:150px;height:100px;position:relative"></MudAvatar>
+                }
+                <MudText Typo="Typo.h5">@trail.Name</MudText>
+                <MudText Typo="Typo.caption">@trail.Description</MudText>
+            </MudCardContent>
+        </MudCard>
+    };
+}
