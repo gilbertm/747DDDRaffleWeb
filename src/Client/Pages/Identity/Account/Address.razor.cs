@@ -25,7 +25,7 @@ public partial class Address
     [Inject]
     protected IAppUsersClient AppUsersClient { get; set; } = default!;
 
-    private AppUserDto _appUserDto;
+    private AppUserDto? _appUserDto { get; set; } = default!;
 
     private CustomValidation? _customValidation;
 
@@ -38,23 +38,26 @@ public partial class Address
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // data is not loading
-        // rerun service
-        if (string.IsNullOrEmpty(_appUserDto.Latitude) && string.IsNullOrEmpty(_appUserDto.Longitude))
+        if (_appUserDto is not null)
         {
-            _appUserDto = await AppDataService.Start();
+            // data is not loading
+            // rerun service
+            if (string.IsNullOrEmpty(_appUserDto?.Latitude) && string.IsNullOrEmpty(_appUserDto?.Longitude))
+            {
+                _appUserDto = await AppDataService.Start();
+            }
+
+            var obj = new
+            {
+                Key = "pk.bf547d628289a729866c964e450f6beb",
+                MapContainer = "InitialRegisterMap",
+                Zoom = 13,
+                Longitude = _appUserDto.Longitude,
+                Latitude = _appUserDto.Latitude,
+            };
+
+            await JS.InvokeVoidAsync("dotNetToJsMapInitialize.displayInitMap", obj);
         }
-
-        var obj = new
-        {
-            Key = "pk.bf547d628289a729866c964e450f6beb",
-            MapContainer = "InitialRegisterMap",
-            Zoom = 13,
-            Longitude = _appUserDto.Longitude,
-            Latitude = _appUserDto.Latitude,
-        };
-
-        await JS.InvokeVoidAsync("dotNetToJsMapInitialize.displayInitMap", obj);
     }
 
     private async Task UpdateAppUserAddress()
@@ -63,33 +66,39 @@ public partial class Address
 
         await JS.InvokeVoidAsync("dotNetToJsMapInitialize.updateAddressDtoFromJS", _objRef);
 
-        var updateAppUserRequest = new UpdateAppUserRequest
+        if (_appUserDto is not null)
         {
-            ApplicationUserId = _appUserDto.ApplicationUserId,
-            HomeAddress = _appUserDto.HomeAddress,
-            HomeCity = _appUserDto.HomeCity,
-            HomeCountry = _appUserDto.HomeCountry,
-            HomeRegion = _appUserDto.HomeRegion,
-            Id = _appUserDto.Id,
-            IsVerified = _appUserDto.IsVerified,
-            Latitude = _appUserDto.Latitude,
-            Longitude = _appUserDto.Longitude,
-            PackageId = _appUserDto.PackageId
+            var updateAppUserRequest = new UpdateAppUserRequest
+            {
+                ApplicationUserId = _appUserDto.ApplicationUserId,
+                HomeAddress = _appUserDto.HomeAddress,
+                HomeCity = _appUserDto.HomeCity,
+                HomeCountry = _appUserDto.HomeCountry,
+                HomeRegion = _appUserDto.HomeRegion,
+                Id = _appUserDto.Id,
+                IsVerified = _appUserDto.IsVerified,
+                Latitude = _appUserDto.Latitude,
+                Longitude = _appUserDto.Longitude,
+                PackageId = _appUserDto.PackageId
 
-        };
+            };
 
-        var guid = await AppUsersClient.UpdateAsync(_appUserDto.Id, updateAppUserRequest);
+            var guid = await AppUsersClient.UpdateAsync(_appUserDto.Id, updateAppUserRequest);
+        }
     }
 
     [JSInvokable]
     public void ChangeAddressFromJS(string homeAddress, string homeCity, string homeCountry, string homeRegion, string latitude, string longitude)
     {
-        _appUserDto.HomeAddress = homeAddress;
-        _appUserDto.HomeCity = homeCity;
-        _appUserDto.HomeCountry = homeCountry;
-        _appUserDto.HomeRegion = homeRegion;
-        _appUserDto.Latitude = latitude;
-        _appUserDto.Longitude = longitude;
+        if (_appUserDto is not null)
+        {
+            _appUserDto.HomeAddress = homeAddress;
+            _appUserDto.HomeCity = homeCity;
+            _appUserDto.HomeCountry = homeCountry;
+            _appUserDto.HomeRegion = homeRegion;
+            _appUserDto.Latitude = latitude;
+            _appUserDto.Longitude = longitude;
+        }
     }
 
     public void Dispose()

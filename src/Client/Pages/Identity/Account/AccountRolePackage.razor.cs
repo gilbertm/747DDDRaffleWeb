@@ -27,7 +27,7 @@ public partial class AccountRolePackage
     [Inject]
     public AppDataService AppDataService { get; set; } = default!;
 
-    private AppUserDto _appUserDto;
+    private AppUserDto _appUserDto { get; set; } = default!;
 
     public UserRolesRequest UserRolesRequest { get; set; } = default!;
 
@@ -78,116 +78,119 @@ public partial class AccountRolePackage
     {
         _appUserDto = await AppDataService.Start();
 
-        /* role */
-        if (await ApiHelper.ExecuteCallGuardedAsync(
-                 () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
-             is ICollection<UserRoleDto> response)
+        if (_appUserDto is not null)
         {
-            _userRolesList = response.ToList();
-
-            /*
-             * look for the ehulog roles (not admin or basic) that are disabled
-             */
-            var lenderOrLessee = _userRolesList.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
-
-            /*
-             * look for the ehulog roles (not admin or basic) that are disabled
-             */
-            var superUsers = _userRolesList.Where(r => (new string[] { "Admin", "Administrator", "SuperUser" }).Contains(r.RoleName) && r.Enabled).ToList();
-
-            if (superUsers.Count() > 0)
-            {
-                _hideRolePackage = true;
-            }
-        }
-
-        /* process */
-        if (_appUserDto is not null && _appUserDto.Id != default)
-        {
-            if (await ApiHelper.ExecuteCallGuardedAsync(
-                    () => PackagesClient.GetAsync(null), Snackbar)
-                is List<PackageDto> responsePackages)
-            {
-                _packages = responsePackages;
-            }
-
-            if (_packages is not null)
-            {
-                foreach (var package in _packages)
-                {
-                    bool selected = _appUserDto.PackageId.Equals(package.Id) ? true : false;
-                    _runningPackages.Add(new ExtendedPackageDto()
-                    {
-                        PackageDto = package,
-                        IsSelected = selected,
-                        IsVisible = selected
-                    });
-                }
-            }
-
             /* role */
             if (await ApiHelper.ExecuteCallGuardedAsync(
-                    () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
-                is ICollection<UserRoleDto> responseRoles)
+                     () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
+                 is ICollection<UserRoleDto> response)
             {
-                _userRolesList = responseRoles.ToList();
+                _userRolesList = response.ToList();
 
                 /*
                  * look for the ehulog roles (not admin or basic) that are disabled
                  */
-                var lenderOrLessee = _userRolesList.Where(r => !(new string[] { "Basic", "Admin" }).Contains(r.RoleName)).ToList();
+                var lenderOrLessee = _userRolesList.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
 
-                foreach (var role in lenderOrLessee.Where(r => !r.Enabled).ToList())
+                /*
+                 * look for the ehulog roles (not admin or basic) that are disabled
+                 */
+                var superUsers = _userRolesList.Where(r => (new string[] { "Admin", "Administrator", "SuperUser" }).Contains(r.RoleName) && r.Enabled).ToList();
+
+                if (superUsers.Count() > 0)
                 {
-                    _runningRoles.Add(new ExtendedRoleDto()
-                    {
-                        RoleDto = new RoleDto()
-                        {
-                            Id = role.RoleId ?? default!,
-                            Name = role.RoleName ?? default!,
-                            Description = role.Description,
-                        },
-                        IsSelected = false,
-                        IsVisible = true
-                    });
+                    _hideRolePackage = true;
+                }
+            }
+
+            /* process */
+            if (_appUserDto is not null && _appUserDto.Id != default)
+            {
+                if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => PackagesClient.GetAsync(null), Snackbar)
+                    is List<PackageDto> responsePackages)
+                {
+                    _packages = responsePackages;
                 }
 
-                lenderOrLessee = lenderOrLessee.Where(r => r.Enabled).ToList();
-
-                if (lenderOrLessee.Count() == 1)
+                if (_packages is not null)
                 {
-                    _appUserDto.RoleId = lenderOrLessee.First().RoleId;
-
-                    _runningRoles.Clear();
-
-                    _runningRoles.Add(new ExtendedRoleDto()
+                    foreach (var package in _packages)
                     {
-                        RoleDto = new RoleDto()
+                        bool selected = _appUserDto.PackageId.Equals(package.Id) ? true : false;
+                        _runningPackages.Add(new ExtendedPackageDto()
                         {
-                            Id = lenderOrLessee.First().RoleId ?? default!,
-                            Name = lenderOrLessee.First().RoleName ?? default!,
-                            Description = lenderOrLessee.First().Description,
-                        },
-                        IsSelected = true,
-                        IsVisible = true
-                    });
+                            PackageDto = package,
+                            IsSelected = selected,
+                            IsVisible = selected
+                        });
+                    }
+                }
 
-                    string? lenderOrLesseRoleName = lenderOrLessee.First().RoleName ?? default!;
-                    if (lenderOrLesseRoleName is not null && lenderOrLesseRoleName.Equals("Lender"))
+                /* role */
+                if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
+                    is ICollection<UserRoleDto> responseRoles)
+                {
+                    _userRolesList = responseRoles.ToList();
+
+                    /*
+                     * look for the ehulog roles (not admin or basic) that are disabled
+                     */
+                    var lenderOrLessee = _userRolesList.Where(r => !(new string[] { "Basic", "Admin" }).Contains(r.RoleName)).ToList();
+
+                    foreach (var role in lenderOrLessee.Where(r => !r.Enabled).ToList())
                     {
-                        PackagesForLenderRole();
-
-                        if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
+                        _runningRoles.Add(new ExtendedRoleDto()
                         {
-                            _runningPackages = _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).ToList();
+                            RoleDto = new RoleDto()
+                            {
+                                Id = role.RoleId ?? default!,
+                                Name = role.RoleName ?? default!,
+                                Description = role.Description,
+                            },
+                            IsSelected = false,
+                            IsVisible = true
+                        });
+                    }
 
+                    lenderOrLessee = lenderOrLessee.Where(r => r.Enabled).ToList();
+
+                    if (lenderOrLessee.Count() == 1)
+                    {
+                        _appUserDto.RoleId = lenderOrLessee.First().RoleId;
+
+                        _runningRoles.Clear();
+
+                        _runningRoles.Add(new ExtendedRoleDto()
+                        {
+                            RoleDto = new RoleDto()
+                            {
+                                Id = lenderOrLessee.First().RoleId ?? default!,
+                                Name = lenderOrLessee.First().RoleName ?? default!,
+                                Description = lenderOrLessee.First().Description,
+                            },
+                            IsSelected = true,
+                            IsVisible = true
+                        });
+
+                        string? lenderOrLesseRoleName = lenderOrLessee.First().RoleName ?? default!;
+                        if (lenderOrLesseRoleName is not null && lenderOrLesseRoleName.Equals("Lender"))
+                        {
+                            PackagesForLenderRole();
+
+                            if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
+                            {
+                                _runningPackages = _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).ToList();
+
+                            }
                         }
-                    }
-                    else
-                    {
-                        PackagesForNonLenderRole();
-                    }
+                        else
+                        {
+                            PackagesForNonLenderRole();
+                        }
 
+                    }
                 }
             }
         }
@@ -314,7 +317,8 @@ public partial class AccountRolePackage
             {
                 package.IsSelected = true;
                 _appUserDto.PackageId = package.PackageDto.Id;
-            } else
+            }
+            else
             {
                 package.IsSelected = false;
             }
@@ -337,10 +341,11 @@ public partial class AccountRolePackage
         if (isLender)
         {
             PackagesForLenderRole();
-        } else
+        }
+        else
         {
             PackagesForNonLenderRole();
-        }        
+        }
 
         StateHasChanged();
     }
@@ -394,58 +399,61 @@ public partial class AccountRolePackage
 
     private async Task UpdateAppUserRoleAndPackage()
     {
-        /*
-        * role
-        * _runningRoles is greater than 1, if lessee or lender is not yet selected
-        */
-        if (!string.IsNullOrEmpty(_appUserDto.RoleId) && _runningRoles.Count() > 1)
+        if (_appUserDto is not null)
         {
-            if (await ApiHelper.ExecuteCallGuardedAsync(
-                () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
-            is ICollection<UserRoleDto> response)
+            /*
+       * role
+       * _runningRoles is greater than 1, if lessee or lender is not yet selected
+       */
+            if (!string.IsNullOrEmpty(_appUserDto.RoleId) && _runningRoles.Count() > 1)
             {
-                _userRolesList = response.ToList();
-
-                _userRolesList.ForEach(userRole =>
-                {
-                    if (!string.IsNullOrEmpty(userRole.RoleId) && userRole.RoleId.Equals(_appUserDto.RoleId))
-                    {
-                        userRole.Enabled = true;
-                        _appUserDto.RoleId = userRole.RoleId;
-                    }
-                    else
-                    {
-                        userRole.Enabled = false;
-                    }
-
-                });
-
                 if (await ApiHelper.ExecuteCallGuardedAsync(
-                    () => UsersClient.AssignRolesAsync(_appUserDto.ApplicationUserId, new UserRolesRequest
-                    {
-                        UserRoles = _userRolesList
-                    }),
-                    Snackbar,
-                    successMessage: L["Updated User Roles."]) is not null)
+                    () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
+                is ICollection<UserRoleDto> response)
                 {
+                    _userRolesList = response.ToList();
+
+                    _userRolesList.ForEach(userRole =>
+                    {
+                        if (!string.IsNullOrEmpty(userRole.RoleId) && userRole.RoleId.Equals(_appUserDto.RoleId))
+                        {
+                            userRole.Enabled = true;
+                            _appUserDto.RoleId = userRole.RoleId;
+                        }
+                        else
+                        {
+                            userRole.Enabled = false;
+                        }
+
+                    });
+
+                    if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => UsersClient.AssignRolesAsync(_appUserDto.ApplicationUserId, new UserRolesRequest
+                        {
+                            UserRoles = _userRolesList
+                        }),
+                        Snackbar,
+                        successMessage: L["Updated User Roles."]) is not null)
+                    {
+                    }
                 }
             }
-        }
 
-        if (Guid.TryParse(_appUserDto.PackageId.ToString(), out _) && _runningPackages.Where(p => p.IsSelected).Count() == 1)
-        {
-            /* create appuser */
-            UpdateAppUserRequest = new()
+            if (Guid.TryParse(_appUserDto.PackageId.ToString(), out _) && _runningPackages.Where(p => p.IsSelected).Count() == 1)
             {
-                Id = _appUserDto.Id,
-                ApplicationUserId = _appUserDto.ApplicationUserId,
-                PackageId = _appUserDto.PackageId
-            };
+                /* create appuser */
+                UpdateAppUserRequest = new()
+                {
+                    Id = _appUserDto.Id,
+                    ApplicationUserId = _appUserDto.ApplicationUserId,
+                    PackageId = _appUserDto.PackageId
+                };
 
-            if (await ApiHelper.ExecuteCallGuardedAsync(
-                () => AppUsersClient.UpdateAsync(_appUserDto.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
-            {
-                Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
+                if (await ApiHelper.ExecuteCallGuardedAsync(
+                    () => AppUsersClient.UpdateAsync(_appUserDto.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
+                {
+                    Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
+                }
             }
         }
 

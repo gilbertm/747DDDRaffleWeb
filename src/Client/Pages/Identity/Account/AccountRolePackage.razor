@@ -4,188 +4,41 @@
 
 <EhulogTitle Title="@L["Role and Package"]" Description="@L["Manage your account role and package subscription"]" />
 
-@if (!_hideRolePackage)
+@if (_appUserDto is not null)
 {
-    <EditForm Model="@_appUserDto" OnValidSubmit="UpdateAppUserRoleAndPackage">
-        <MudCard Elevation="25">
-            <MudCardContent>
-                <DataAnnotationsValidator />
-                <CustomValidation @ref="_customValidation" />
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Align="Align.Center" Typo="Typo.h3">@L["Roles"]</MudText>
-                            <MudText Align="Align.Center" Typo="Typo.caption" Class="d-block w-100">@L["Select your role. This role determines how you will be interacting the system."]</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudGrid Justify="Justify.Center">
-                            @if (_runningRoles.Count() > 1)
-                            {
-                                @foreach (var role in _runningRoles)
-                                {
-                                    <MudItem xs="6" md="4" lg="3" onclick="@(() => UpdateRole(role))" onmouseover="@(() => HoverRole(role))" Class="cursor-pointer" Style="@(role.IsVisible ? "display:block" : "display:none")">
-                                        <MudCard Class="position-relative">
-                                            @{
-                                                var isLender = role?.RoleDto?.Name.Equals("Lender");
-
-                                                var isLessee = role?.RoleDto?.Name.Equals("Lessee");
-
-                                                if (isLender.HasValue && isLender.Value == true)
-                                                {
-                                                    <MudCardMedia Image="./img/lender.png" Height="250" />
-                                                }
-
-                                                if (isLessee.HasValue && isLessee.Value == true)
-                                                {
-                                                    <MudCardMedia Image="./img/lessee.png" Height="250" />
-                                                }
-                                            }
-                                            <MudCardContent>
-
-                                            </MudCardContent>
-                                            <MudCardActions>
-                                                <MudGrid>
-                                                    <MudItem xs="2">
-                                                        @{
-                                                            var isLender = role?.RoleDto?.Name.Equals("Lender");
-
-                                                            var isLessee = role?.RoleDto?.Name.Equals("Lessee");
-
-                                                            if (isLender.HasValue && isLender.Value == true)
-                                                            {
-                                                                <MudImage Src="./img/lender.png" Height="50" />
-                                                            }
-
-                                                            if (isLessee.HasValue && isLessee.Value == true)
-                                                            {
-                                                                <MudImage Src="./img/lessee.png" Height="50" />
-                                                            }
-                                                        }
-                                                    </MudItem>
-                                                    <MudItem xs="10">
-                                                        <MudText Typo="Typo.h5" Color="Color.Warning">@role?.RoleDto?.Name</MudText>
-                                                        <MudText Typo="Typo.body2" Color="Color.Info">@role?.RoleDto?.Description</MudText>
-                                                    </MudItem>
-                                                </MudGrid>
-
-                                            </MudCardActions>
-                                            @{
-                                                var roleSelected = @role?.IsSelected ?? false;
-                                                var roleHovered = @role?.IsHovered ?? false;
-
-                                                var keepOpen = roleSelected || roleHovered ? true : false;
-
-                                                <MudOverlay Visible="@keepOpen" DarkBackground="true" Absolute="true" Class="text-center">
-                                                    @{
-                                                        var isLender = role?.RoleDto?.Name.Equals("Lender");
-
-                                                        var isLessee = role?.RoleDto?.Name.Equals("Lessee");
-
-                                                        if (isLender.HasValue && isLender.Value == true)
-                                                        {
-                                                            <MudImage Src="./img/lender.png" Height="80" />
-                                                        }
-
-                                                        if (isLessee.HasValue && isLessee.Value == true)
-                                                        {
-                                                            <MudImage Src="./img/lessee.png" Height="80" />
-                                                        }
-                                                    }
-
-                                                    <MudText Typo="Typo.h5" Color="Color.Warning">@role?.RoleDto?.Name</MudText>
-                                                    <MudText Typo="Typo.body2" Color="Color.Info">@role?.RoleDto?.Description</MudText>
-                                                    <br />
-
-                                                    @if (roleSelected)
-                                                    {
-                                                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearRole())">Cancel</MudButton>
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdateRole(role ?? default!))">Select</MudButton>
-                                                    }
-                                                </MudOverlay>
-                                            }
-                                        </MudCard>
-                                    </MudItem>
-                                }
-                            }
-                            else
-                            {
-                                <MudItem xs="6" md="4">
-                                    @if (_runningRoles.Where(r => r?.RoleDto?.Id.Equals(_appUserDto.RoleId) ?? false).Count() == 1)
-                                    {
-                                        <MudCard Class="position-relative">
-                                            @{
-                                                var isLender = _runningRoles?.First()?.RoleDto?.Name.Equals("Lender") ?? default;
-
-                                                if (isLender)
-                                                {
-                                                    <MudCardMedia Image="./img/lender.png" Height="250" />
-                                                }
-                                                else
-                                                {
-                                                    <MudCardMedia Image="./img/lessee.png" Height="250" />
-                                                }
-                                            }
-                                            <MudCardContent>
-
-                                            </MudCardContent>
-                                            <MudCardActions>
-                                                <MudGrid>
-                                                    <MudItem xs="2">
-                                                        @{
-                                                            var isLender = _runningRoles?.First()?.RoleDto?.Name.Equals("Lender") ?? default;
-
-                                                            if (isLender)
-                                                            {
-                                                                <MudCardMedia Image="./img/lender.png" Height="50" />
-                                                            }
-                                                            else
-                                                            {
-                                                                <MudCardMedia Image="./img/lessee.png" Height="50" />
-                                                            }
-                                                        }
-                                                    </MudItem>
-                                                    <MudItem xs="10">
-                                                        <MudText Typo="Typo.h5" Color="Color.Warning">@_runningRoles?.First()?.RoleDto?.Name</MudText>
-                                                        <MudText Typo="Typo.body2" Color="Color.Info">@_runningRoles?.First()?.RoleDto?.Description</MudText>
-                                                    </MudItem>
-                                                </MudGrid>
-
-                                            </MudCardActions>
-
-                                        </MudCard>
-                                    }
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    </MudCardContent>
-
-                    @if (_runningPackages.Count() > 0)
-                    {
+    @if (!_hideRolePackage)
+    {
+        <EditForm Model="@_appUserDto" OnValidSubmit="UpdateAppUserRoleAndPackage">
+            <MudCard Elevation="25">
+                <MudCardContent>
+                    <DataAnnotationsValidator />
+                    <CustomValidation @ref="_customValidation" />
+                    <MudCard>
                         <MudCardHeader>
                             <CardHeaderContent>
-                                <MudText Align="Align.Center" Typo="Typo.h3">@L["Packages"]</MudText>
+                                <MudText Align="Align.Center" Typo="Typo.h3">@L["Roles"]</MudText>
+                                <MudText Align="Align.Center" Typo="Typo.caption" Class="d-block w-100">@L["Select your role. This role determines how you will be interacting the system."]</MudText>
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent>
                             <MudGrid Justify="Justify.Center">
-                                @if (_runningPackages.Count() > 1)
+                                @if (_runningRoles.Count() > 1)
                                 {
-                                    @foreach (var package in _runningPackages)
+                                    @foreach (var role in _runningRoles)
                                     {
-                                        <MudItem xs="6" md="4" lg="3" onclick="@(() => UpdatePackage(package))" onmouseover="@(() => HoverPackage(package))" Class="cursor-pointer" Style="@(package.IsVisible ? "display:block" : "display:none")">
+                                        <MudItem xs="6" md="4" lg="3" onclick="@(() => UpdateRole(role))" onmouseover="@(() => HoverRole(role))" Class="cursor-pointer" Style="@(role.IsVisible ? "display:block" : "display:none")">
                                             <MudCard Class="position-relative">
                                                 @{
-                                                    var isLender = package?.PackageDto?.IsLender;
+                                                    var isLender = role?.RoleDto?.Name.Equals("Lender");
+
+                                                    var isLessee = role?.RoleDto?.Name.Equals("Lessee");
 
                                                     if (isLender.HasValue && isLender.Value == true)
                                                     {
                                                         <MudCardMedia Image="./img/lender.png" Height="250" />
                                                     }
-                                                    else
+
+                                                    if (isLessee.HasValue && isLessee.Value == true)
                                                     {
                                                         <MudCardMedia Image="./img/lessee.png" Height="250" />
                                                     }
@@ -197,59 +50,62 @@
                                                     <MudGrid>
                                                         <MudItem xs="2">
                                                             @{
-                                                                var isLender = package?.PackageDto?.IsLender;
+                                                                var isLender = role?.RoleDto?.Name.Equals("Lender");
+
+                                                                var isLessee = role?.RoleDto?.Name.Equals("Lessee");
 
                                                                 if (isLender.HasValue && isLender.Value == true)
                                                                 {
-                                                                    <MudCardMedia Image="./img/lender.png" Height="250" />
+                                                                    <MudImage Src="./img/lender.png" Height="50" />
                                                                 }
-                                                                else
+
+                                                                if (isLessee.HasValue && isLessee.Value == true)
                                                                 {
-                                                                    <MudCardMedia Image="./img/lessee.png" Height="250" />
+                                                                    <MudImage Src="./img/lessee.png" Height="50" />
                                                                 }
                                                             }
                                                         </MudItem>
                                                         <MudItem xs="10">
-                                                            <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
-                                                            <MudText Typo="Typo.body2" Color="Color.Info">@package?.PackageDto?.Description</MudText>
+                                                            <MudText Typo="Typo.h5" Color="Color.Warning">@role?.RoleDto?.Name</MudText>
+                                                            <MudText Typo="Typo.body2" Color="Color.Info">@role?.RoleDto?.Description</MudText>
                                                         </MudItem>
                                                     </MudGrid>
 
                                                 </MudCardActions>
                                                 @{
-                                                    var packageSelected = @package?.IsSelected ?? false;
-                                                    var packageHovered = @package?.IsHovered ?? false;
+                                                    var roleSelected = @role?.IsSelected ?? false;
+                                                    var roleHovered = @role?.IsHovered ?? false;
 
-                                                    var keepOpen = packageSelected || packageHovered ? true : false;
+                                                    var keepOpen = roleSelected || roleHovered ? true : false;
 
                                                     <MudOverlay Visible="@keepOpen" DarkBackground="true" Absolute="true" Class="text-center">
                                                         @{
-                                                            var isLender = package?.PackageDto?.IsLender;
+                                                            var isLender = role?.RoleDto?.Name.Equals("Lender");
+
+                                                            var isLessee = role?.RoleDto?.Name.Equals("Lessee");
 
                                                             if (isLender.HasValue && isLender.Value == true)
                                                             {
-                                                                <MudCardMedia Image="./img/lender.png" Height="50" />
+                                                                <MudImage Src="./img/lender.png" Height="80" />
                                                             }
-                                                            else
+
+                                                            if (isLessee.HasValue && isLessee.Value == true)
                                                             {
-                                                                <MudCardMedia Image="./img/lessee.png" Height="50" />
+                                                                <MudImage Src="./img/lessee.png" Height="80" />
                                                             }
                                                         }
 
-                                                        <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
-                                                        <MudText Typo="Typo.body2" Color="Color.Info">@package?.PackageDto?.Description</MudText>
+                                                        <MudText Typo="Typo.h5" Color="Color.Warning">@role?.RoleDto?.Name</MudText>
+                                                        <MudText Typo="Typo.body2" Color="Color.Info">@role?.RoleDto?.Description</MudText>
                                                         <br />
 
-                                                        @if (packageSelected)
+                                                        @if (roleSelected)
                                                         {
-                                                            /* best to get this from TODO:// AppUserData */
-                                                            var isLenderSelected = _runningRoles?.Where(r => r.IsSelected)?.First()?.RoleDto?.Name.Equals("Lender") ?? false;
-
-                                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearPackage(isLenderSelected))">Cancel</MudButton>
+                                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearRole())">Cancel</MudButton>
                                                         }
                                                         else
                                                         {
-                                                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdatePackage(package ?? default!))">Select</MudButton>
+                                                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdateRole(role ?? default!))">Select</MudButton>
                                                         }
                                                     </MudOverlay>
                                                 }
@@ -260,13 +116,13 @@
                                 else
                                 {
                                     <MudItem xs="6" md="4">
-                                        @if (_runningPackages.Where(p => p.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
+                                        @if (_runningRoles.Where(r => r?.RoleDto?.Id.Equals(_appUserDto.RoleId) ?? false).Count() == 1)
                                         {
                                             <MudCard Class="position-relative">
                                                 @{
-                                                    var isLender = @_runningPackages?.First().PackageDto?.IsLender;
+                                                    var isLender = _runningRoles?.First()?.RoleDto?.Name.Equals("Lender") ?? default;
 
-                                                    if (isLender.HasValue && isLender.Value == true)
+                                                    if (isLender)
                                                     {
                                                         <MudCardMedia Image="./img/lender.png" Height="250" />
                                                     }
@@ -282,9 +138,9 @@
                                                     <MudGrid>
                                                         <MudItem xs="2">
                                                             @{
-                                                                var isLender = @_runningPackages?.First().PackageDto?.IsLender;
+                                                                var isLender = _runningRoles?.First()?.RoleDto?.Name.Equals("Lender") ?? default;
 
-                                                                if (isLender.HasValue && isLender.Value == true)
+                                                                if (isLender)
                                                                 {
                                                                     <MudCardMedia Image="./img/lender.png" Height="50" />
                                                                 }
@@ -295,8 +151,8 @@
                                                             }
                                                         </MudItem>
                                                         <MudItem xs="10">
-                                                            <MudText Typo="Typo.h5" Color="Color.Warning">@_runningPackages?.First().PackageDto?.Name</MudText>
-                                                            <MudText Typo="Typo.body2" Color="Color.Info">@_runningPackages?.First().PackageDto?.Description</MudText>
+                                                            <MudText Typo="Typo.h5" Color="Color.Warning">@_runningRoles?.First()?.RoleDto?.Name</MudText>
+                                                            <MudText Typo="Typo.body2" Color="Color.Info">@_runningRoles?.First()?.RoleDto?.Description</MudText>
                                                         </MudItem>
                                                     </MudGrid>
 
@@ -308,22 +164,169 @@
                                 }
                             </MudGrid>
                         </MudCardContent>
-                    }
-                </MudCard>
-            </MudCardContent>
-            <MudCardActions Class="pb-4 pl-4">
-                <MudGrid Justify="Justify.FlexEnd">
-                    @* TODO:// if the role and packages are already fulfilled, these buttons must be reactive.
+
+                        @if (_runningPackages.Count() > 0)
+                        {
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Align="Align.Center" Typo="Typo.h3">@L["Packages"]</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudGrid Justify="Justify.Center">
+                                    @if (_runningPackages.Count() > 1)
+                                    {
+                                        @foreach (var package in _runningPackages)
+                                        {
+                                            <MudItem xs="6" md="4" lg="3" onclick="@(() => UpdatePackage(package))" onmouseover="@(() => HoverPackage(package))" Class="cursor-pointer" Style="@(package.IsVisible ? "display:block" : "display:none")">
+                                                <MudCard Class="position-relative">
+                                                    @{
+                                                        var isLender = package?.PackageDto?.IsLender;
+
+                                                        if (isLender.HasValue && isLender.Value == true)
+                                                        {
+                                                            <MudCardMedia Image="./img/lender.png" Height="250" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudCardMedia Image="./img/lessee.png" Height="250" />
+                                                        }
+                                                    }
+                                                    <MudCardContent>
+
+                                                    </MudCardContent>
+                                                    <MudCardActions>
+                                                        <MudGrid>
+                                                            <MudItem xs="2">
+                                                                @{
+                                                                    var isLender = package?.PackageDto?.IsLender;
+
+                                                                    if (isLender.HasValue && isLender.Value == true)
+                                                                    {
+                                                                        <MudCardMedia Image="./img/lender.png" Height="250" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <MudCardMedia Image="./img/lessee.png" Height="250" />
+                                                                    }
+                                                                }
+                                                            </MudItem>
+                                                            <MudItem xs="10">
+                                                                <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
+                                                                <MudText Typo="Typo.body2" Color="Color.Info">@package?.PackageDto?.Description</MudText>
+                                                            </MudItem>
+                                                        </MudGrid>
+
+                                                    </MudCardActions>
+                                                    @{
+                                                        var packageSelected = @package?.IsSelected ?? false;
+                                                        var packageHovered = @package?.IsHovered ?? false;
+
+                                                        var keepOpen = packageSelected || packageHovered ? true : false;
+
+                                                        <MudOverlay Visible="@keepOpen" DarkBackground="true" Absolute="true" Class="text-center">
+                                                            @{
+                                                                var isLender = package?.PackageDto?.IsLender;
+
+                                                                if (isLender.HasValue && isLender.Value == true)
+                                                                {
+                                                                    <MudCardMedia Image="./img/lender.png" Height="50" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <MudCardMedia Image="./img/lessee.png" Height="50" />
+                                                                }
+                                                            }
+
+                                                            <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
+                                                            <MudText Typo="Typo.body2" Color="Color.Info">@package?.PackageDto?.Description</MudText>
+                                                            <br />
+
+                                                            @if (packageSelected)
+                                                            {
+                                                                /* best to get this from TODO:// AppUserData */
+                                                                var isLenderSelected = _runningRoles?.Where(r => r.IsSelected)?.First()?.RoleDto?.Name.Equals("Lender") ?? false;
+
+                                                                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearPackage(isLenderSelected))">Cancel</MudButton>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdatePackage(package ?? default!))">Select</MudButton>
+                                                            }
+                                                        </MudOverlay>
+                                                    }
+                                                </MudCard>
+                                            </MudItem>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudItem xs="6" md="4">
+                                            @if (_runningPackages.Where(p => p.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
+                                            {
+                                                <MudCard Class="position-relative">
+                                                    @{
+                                                        var isLender = @_runningPackages?.First().PackageDto?.IsLender;
+
+                                                        if (isLender.HasValue && isLender.Value == true)
+                                                        {
+                                                            <MudCardMedia Image="./img/lender.png" Height="250" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudCardMedia Image="./img/lessee.png" Height="250" />
+                                                        }
+                                                    }
+                                                    <MudCardContent>
+
+                                                    </MudCardContent>
+                                                    <MudCardActions>
+                                                        <MudGrid>
+                                                            <MudItem xs="2">
+                                                                @{
+                                                                    var isLender = @_runningPackages?.First().PackageDto?.IsLender;
+
+                                                                    if (isLender.HasValue && isLender.Value == true)
+                                                                    {
+                                                                        <MudCardMedia Image="./img/lender.png" Height="50" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <MudCardMedia Image="./img/lessee.png" Height="50" />
+                                                                    }
+                                                                }
+                                                            </MudItem>
+                                                            <MudItem xs="10">
+                                                                <MudText Typo="Typo.h5" Color="Color.Warning">@_runningPackages?.First().PackageDto?.Name</MudText>
+                                                                <MudText Typo="Typo.body2" Color="Color.Info">@_runningPackages?.First().PackageDto?.Description</MudText>
+                                                            </MudItem>
+                                                        </MudGrid>
+
+                                                    </MudCardActions>
+
+                                                </MudCard>
+                                            }
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            </MudCardContent>
+                        }
+                    </MudCard>
+                </MudCardContent>
+                <MudCardActions Class="pb-4 pl-4">
+                    <MudGrid Justify="Justify.FlexEnd">
+                        @* TODO:// if the role and packages are already fulfilled, these buttons must be reactive.
                 Update AppUserData service for this.
                 *@
-                    <MudButton Variant="Variant.Filled" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll">
-                        @L["Clear"]
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="ml-3">
-                        @L["Update"]
-                    </MudButton>
-                </MudGrid>
-            </MudCardActions>
-        </MudCard>
-    </EditForm>
+                        <MudButton Variant="Variant.Filled" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll">
+                            @L["Clear"]
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="ml-3">
+                            @L["Update"]
+                        </MudButton>
+                    </MudGrid>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    }
 }

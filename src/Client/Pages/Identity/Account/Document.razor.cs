@@ -97,6 +97,9 @@ public partial class Document
     private async Task UpdateProfileAsync()
     {
         /*
+         * TODO:// 
+         * a. notification to all admins that can check and verify the documents
+         * b. flag down that the documents is for checking
          * 
          * Submitting will trigger verification. Informing the admins.
          * 
