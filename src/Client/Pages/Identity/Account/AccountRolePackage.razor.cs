@@ -80,6 +80,11 @@ public partial class AccountRolePackage
 
         if (_appUserDto is not null)
         {
+            if (!_appUserDto.PackageId.Equals(default!))
+            {
+                isForSubmission = true;
+            }
+
             /* role */
             if (await ApiHelper.ExecuteCallGuardedAsync(
                      () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
@@ -397,6 +402,8 @@ public partial class AccountRolePackage
         StateHasChanged();
     }
 
+    private bool isForSubmission { get; set; } = false;
+
     private async Task UpdateAppUserRoleAndPackage()
     {
         if (_appUserDto is not null)
@@ -452,7 +459,9 @@ public partial class AccountRolePackage
                 if (await ApiHelper.ExecuteCallGuardedAsync(
                     () => AppUsersClient.UpdateAsync(_appUserDto.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
                 {
-                    Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
+                    // Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
+                    Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
+                    await AuthService.ReLoginAsync(Navigation.Uri);
                 }
             }
         }

@@ -313,19 +313,23 @@
                         }
                     </MudCard>
                 </MudCardContent>
-                <MudCardActions Class="pb-4 pl-4">
-                    <MudGrid Justify="Justify.FlexEnd">
-                        @* TODO:// if the role and packages are already fulfilled, these buttons must be reactive.
+                @if (!(new string[] { "Admin", "Lender", "Lessee" }).Contains(_appUserDto.RoleName) || _appUserDto.PackageId.Equals(default!))
+                {
+                    <MudCardActions Class="pb-4 pl-4">
+                        <MudGrid Justify="Justify.FlexEnd">
+                            @* TODO:// if the role and packages are already fulfilled, these buttons must be reactive.
                 Update AppUserData service for this.
                 *@
-                        <MudButton Variant="Variant.Filled" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll">
-                            @L["Clear"]
-                        </MudButton>
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="ml-3">
-                            @L["Update"]
-                        </MudButton>
-                    </MudGrid>
-                </MudCardActions>
+                            <MudButton Class="@(isForSubmission ? "d-block" : "d-none")" Variant="Variant.Filled" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll">
+                                @L["Clear"]
+                            </MudButton>
+                            <MudButton Class="@(isForSubmission ? "d-block ml-3" : "d-none ml-3")" Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save">
+                                @L["Update"]
+                            </MudButton>
+                        </MudGrid>
+                    </MudCardActions>
+                }
+
             </MudCard>
         </EditForm>
     }
