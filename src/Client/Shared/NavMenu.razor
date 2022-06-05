@@ -23,6 +23,19 @@
     </MudNavGroup>
 
     <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
+
+    @if (_canViewProducts || _canViewBrands)
+    {
+        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText>
+        <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
+            @if (_canViewLoanLenders)
+            {
+                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/loans" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                    @L["Loan Lenders"]
+                </MudNavLink>
+            }
+        </MudNavGroup>
+    }
     @if (_canViewProducts || _canViewBrands)
     {
         <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Management"]</MudText>

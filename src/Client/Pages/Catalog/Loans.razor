@@ -1,0 +1,142 @@
+﻿@page "/catalog/loans"
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.LoanLenders)]
+
+@inject IStringLocalizer<Loans> L
+
+<EhulogTitle Title="@L["Loans"]" Description="@L["Manage Loans."]" />
+
+@if (_appUserDto is not null)
+{
+    @* @ref="_table" *@
+    <EntityTable TEntity="LoanLenderDto" TId="Guid" TRequest="LoanLenderViewModel" Context="@Context">
+        <EditFormContent>
+
+            @if (!Context.AddEditModal.IsCreate)
+            {
+                <MudItem xs="12" md="6">
+                    <MudTextField Value="context.Id" ReadOnly DisableUnderLine Label="@L[$"Loan Lender Id"]" />
+                </MudItem>
+            }
+
+            <MudItem xs="12" md="6">
+                @* @bind-Value="context.ProductId" *@
+                <ProductAutocomplete For="@(() => context.ProductId)" OffsetY="true" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudTextField Label="@L["Product Id"]" For="@(() => context.Product.Id)" @bind-Value="context.Product.Id" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField Label="@L["Product Name"]" For="@(() => context.Product.Name)" @bind-Value="context.Product.Name" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField T="int" Label="@L["Loan Month"]" For="@(() => context.Loan.Month)" @bind-Value="context.Loan.Month" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField T="float" Label="@L["Loan Interest"]" For="@(() => context.Loan.Interest)" @bind-Value="context.Loan.Interest" />
+            </MudItem>
+
+            <MudSelect @bind-Value="context.Loan.InterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Filled.LocalDrink" AdornmentColor="Color.Secondary">
+                @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
+                {
+                <MudSelectItem Value="@item">@item</MudSelectItem>
+                }
+        </MudSelect>
+
+    </EditFormContent>
+</EntityTable>
+}
+
+@*
+<EntityTable @ref="_table"  TEntity="LoanDto" TId="Guid" TRequest="LoanViewModel" Context="@Context">
+
+    <AdvancedSearchContent>
+        <BrandAutocomplete @bind-Value="SearchBrandId" />
+        <CategoryAutocomplete @bind-Value="SearchCategoryId" />
+     </AdvancedSearchContent>
+
+    <EditFormContent>
+        @if (!Context.AddEditModal.IsCreate)
+        {
+            <MudItem xs="12" md="6">
+                <MudTextField Value="context.Id" ReadOnly DisableUnderLine Label="@L[$"Loan Id"]" />
+            </MudItem>
+        }
+        <MudItem xs="12" md="6">
+            <MudTextField Label="@L["Name"]" For="@(() => context.Name)" @bind-Value="context.Name" />
+        </MudItem>
+                <MudItem xs="12" md="6">
+            <MudTextField Label="@L["Amount"]" For="@(() => context.Amount)"
+                @bind-Value="context.Amount" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Label="@L["Description"]" For="@(() => context.Description)"
+                @bind-Value="context.Description" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <BrandAutocomplete For="@(() => context.BrandId)" @bind-Value="context.BrandId" OffsetY="true" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <CategoryAutocomplete For="@(() => context.CategoryId)" @bind-Value="context.CategoryId" OffsetY="true" />
+        </MudItem>
+        @* <MudItem xs="12" md="6">
+            <MudTextField Label="@L["Rate"]" For="@(() => context.Rate)" @bind-Value="context.Rate" />
+        </MudItem> * @
+        <MudItem xs="12" md="12">
+            <MudItem>
+                <img src="https://localhost:5001/Files/Images/ApplicationUser/09ad991332784ce2a0a4718bc2fb27a06a5ac1f0b82c4036ac347e2b0235a02f.png" />
+
+                @if(!string.IsNullOrEmpty(context.ImageInBytes))
+                {
+                    <MudAvatar Image ="@context.ImageInBytes" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                }
+                else
+                {
+                    <MudAvatar Image="@(string.IsNullOrEmpty(@context.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + @context.ImagePath))" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                }
+            </MudItem>
+            <MudItem>
+                <div>
+                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                        StartIcon="@Icons.Filled.CloudUpload" for="fileInput">
+                        @L["Upload"]
+                    </MudButton>
+                    @if(!Context.AddEditModal.IsCreate && !string.IsNullOrEmpty(context.ImagePath) && string.IsNullOrEmpty(context.ImageInBytes))
+                    {
+                        <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank"
+                            StartIcon="@Icons.Filled.RemoveRedEye" Link="@(Config[ConfigNames.ApiBaseUrl] + @context.ImagePath)" Style="margin-left: 5px;" >
+                            @L["View"]
+                        </MudButton>
+
+                        <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Error" Size="Size.Small"
+                            StartIcon="@Icons.Filled.Delete" OnClick="SetDeleteCurrentImageFlag" Style="margin-left: 5px;" >
+                            @L["Delete"]
+                        </MudButton>
+                    }
+                    @if(!string.IsNullOrEmpty(context.ImageInBytes))
+                    {
+                        <MudButton HtmlTag="label" DisableElevation OnClick="ClearImageInBytes" Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small" Target="_blank"
+                            StartIcon="@Icons.Filled.Clear" Style="margin-left: 5px;" >
+                            @L["Clear"]
+                        </MudButton>
+                    }
+                </div>
+                <InputFile id="fileInput" hidden OnChange="UploadFiles" />
+            </MudItem>
+        </MudItem>
+    </EditFormContent>
+
+</EntityTable> *@
+
+@code {
+    public async Task AutocompleteProductChange(Guid id)
+    {
+        var product = appUserProducts.Where(ap => ap.Product.Id.Equals(id)).FirstOrDefault();
+
+        if (product is not null)
+        {
+            Context.AddEditModal.RequestModel.Product.Name = product.Product.Name;
+            Context.AddEditModal.ForceRender();
+        }
+    }
+}
