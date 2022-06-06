@@ -21,8 +21,6 @@ public class ProductAutocomplete : MudAutocomplete<Guid>
     [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
 
-
-
     private List<ProductDto> _products = new();
 
     // supply default parameters, but leave the possibility to override them
@@ -36,8 +34,8 @@ public class ProductAutocomplete : MudAutocomplete<Guid>
         SearchFunc = SearchProducts;
         ToStringFunc = GetProductName;
         Clearable = true;
-        ItemTemplate = SetItemTemplate;
-        ItemSelectedTemplate = SetItemSelectedTemplate;
+        ItemTemplate = SetProductDropdownTemplate;
+        ItemSelectedTemplate = SetProductDropdownTemplate;
         return base.SetParametersAsync(parameters);
     }
 
@@ -91,23 +89,14 @@ public class ProductAutocomplete : MudAutocomplete<Guid>
     private string GetProductName(Guid id) =>
         _products.Find(b => b.Id == id)?.Name ?? string.Empty;
 
-    private RenderFragment SetItemTemplate(Guid id) => builder =>
+    private RenderFragment SetProductDropdownTemplate(Guid id) => builder =>
     {
         ProductDto product = _products.Where(p => p.Id.Equals(id)).First();
 
         if (product.Image is null)
-            builder.AddMarkupContent(2, string.Format("<table cellpadding='5'><tr><td><td>{0}<br />{1}</td></tr></table>", product.Name, product.Amount));
+            builder.AddMarkupContent(2, string.Format("<table><tr><td class='pr-3'><h3>{0}</h3><span style='font-size:10px'>Category: </span>{1}, <span style='font-size:10px'>Brand: </span>{2}</td><td><h3>{3}</h3></td></tr></table>", product.Name, product.Category?.Name, product.Brand?.Name, product.Amount));
         else
-            builder.AddMarkupContent(2, string.Format("<table cellpadding='5'><tr><td><img src='{0}' style='height:50px' /><td>{1}<br />{2}</td></tr></table>", Config[ConfigNames.ApiBaseUrl] + product.Image.ImagePath, product.Name, product.Amount));
+            builder.AddMarkupContent(2, string.Format("<table><tr><td class='pr-3'><img src='{0}' style='height:50px' /></td><td class='pr-3'><h3>{1}</h3><span style='font-size:10px'>Category: </span>{2}, <span style='font-size:10px'>Brand: </span>{3}</td><td class='pr-3'><h3>{4}</h3></td></tr></table>", Config[ConfigNames.ApiBaseUrl] + product.Image.ImagePath, product.Name, product.Category?.Name, product.Brand?.Name, product.Amount));
     };
 
-    private RenderFragment SetItemSelectedTemplate(Guid id) => builder =>
-    {
-        ProductDto product = _products.Where(p => p.Id.Equals(id)).First();
-
-        if (product.Image is null)
-            builder.AddMarkupContent(1, string.Format("<table cellpadding='5'><tr><td><td>{0}<br />{1}</td></tr></table>", product.Name, product.Amount));
-        else
-            builder.AddMarkupContent(1, string.Format("<table cellpadding='5'><tr><td><img src='{0}' style='height:50px' /><td>{1}<br />{2}</td></tr></table>", Config[ConfigNames.ApiBaseUrl] + product.Image.ImagePath, product.Name, product.Amount));
-    };
 }

@@ -92,7 +92,12 @@ public class LoanLenderViewModel : UpdateLoanLenderRequest
 {
     public LoanDto Loan { get; set; } = new LoanDto();
 
-    public ProductDto Product { get; set; } = new ProductDto();
+    public ProductDto Product { get; set; } = new ProductDto()
+    {
+        Image = new InputOutputResourceDto(),
+        Category = new CategoryDto(),
+        Brand = new BrandDto()
+    };
 
     public AppUserDto User { get; set; } = new AppUserDto();
 }
