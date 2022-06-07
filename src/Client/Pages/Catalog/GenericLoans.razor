@@ -1,15 +1,15 @@
-﻿@page "/catalog/loans"
+﻿@page "/catalog/all/loans"
 @using System.Globalization
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.LoanLenders)]
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)]
 
-@inject IStringLocalizer<Loans> L
+@inject IStringLocalizer<GenericLoans> L
 
 <EhulogTitle Title="@L["Loans"]" Description="@L["Manage Loans."]" />
 
 @if (_appUserDto is not null)
 {
     @*  @ref="_table" *@
-    <EntityTable TEntity="LoanLenderDto" TId="Guid" TRequest="LoanLenderViewModel" Context="@Context">
+    <EntityTable TEntity="LoanDto" TId="Guid" TRequest="LoanViewModel" Context="@Context">
         <EditFormContent>
 
             @if (!Context.AddEditModal.IsCreate)
@@ -77,16 +77,16 @@
                 <MudGrid Spacing="2" Justify="Justify.FlexStart">
 
                     <MudItem xs="12" md="6">
-                        <MudTextField Required="true" T="int" Label="@L["Loan Month"]" For="@(() => context.Loan.Month)" @bind-Value="context.Loan.Month" />
+                        <MudTextField Required="true" T="int" Label="@L["Loan Month"]" For="@(() => context.Month)" @bind-Value="context.Month" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField Required="true" T="float" Label="@L["Loan Interest"]" For="@(() => context.Loan.Interest)" @bind-Value="context.Loan.Interest" Format="F2" Culture="@CultureInfo.InvariantCulture" />
+                        <MudTextField Required="true" T="float" Label="@L["Loan Interest"]" For="@(() => context.Interest)" @bind-Value="context.Interest" Format="F2" Culture="@CultureInfo.InvariantCulture" />
                     </MudItem>
                     <MudItem xs="12" md="6">
                         <MudDatePicker Required="true" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of payment" Editable="true" MinDate="DateTime.Now" AdornmentColor="Color.Secondary" DateChanged="@((DateTime? val) => StartDatePayment(val))" Placeholder="Select Start of payment" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudSelect Required="true" @bind-Value="context.Loan.InterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Filled.Insights" AdornmentColor="Color.Secondary">
+                        <MudSelect Required="true" @bind-Value="context.InterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Filled.Insights" AdornmentColor="Color.Secondary">
                             @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
                             {
                             <MudSelectItem Value="@item">@item</MudSelectItem>
@@ -94,7 +94,7 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudSelect Required="true" @bind-Value="context.Loan.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
+                        <MudSelect Required="true" @bind-Value="context.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
                             <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
                             <MudSelectItem Value="@LoanStatus.Published">Publish</MudSelectItem>
                         </MudSelect>
@@ -121,7 +121,7 @@
     public void StartDatePayment(DateTime? dateTime)
     {
         if (dateTime is not null)
-            Context.AddEditModal.RequestModel.Loan.StartOfPayment = dateTime.Value;
+            Context.AddEditModal.RequestModel.StartOfPayment = dateTime.Value;
     }
     public void AutocompleteProductChange(Guid id)
     {
@@ -162,9 +162,11 @@
         }
     }
 
-    protected RenderFragment<LoanLenderDto> LoanTemplate => trail => __builder =>
+    protected RenderFragment<LoanDto> LoanTemplate => trail => __builder =>
     {
-        var _imageUrl = string.IsNullOrEmpty(@trail.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.Product?.Image?.ImagePath);
+         var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
+        var _imageUrl = string.IsNullOrEmpty(loanLender.Product.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + loanLender.Product.Image?.ImagePath);
 
         <MudCard Elevation="0">
             <MudCardContent>
@@ -178,22 +180,22 @@
         </MudCard>
     };
 
-    protected RenderFragment<LoanLenderDto> LoanDetailsTemplate => trail => __builder =>
+    protected RenderFragment<LoanDto> LoanDetailsTemplate => trail => __builder =>
     {
         <MudPaper Class="pa-2 ma-2 text-left" Elevation="0">
-            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Loan?.Month Month(s)</MudText><br />
-            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Loan?.Interest</MudText><br />
-            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.Loan?.InterestType</MudText><br />
-            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.Loan?.StartOfPayment)</MudText>
+            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText><br />
+            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText><br />
+            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.InterestType</MudText><br />
+            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText>
         </MudPaper>
     };
 
-    protected RenderFragment<LoanLenderDto> LoanStatusTemplate => trail => __builder =>
+    protected RenderFragment<LoanDto> LoanStatusTemplate => trail => __builder =>
     {
         <MudCard Elevation="0">
             <MudCardContent>
             <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.ShowChart" Title="Status" />
-            <MudText Typo="Typo.body1">@trail.Loan?.Status</MudText><br />
+            <MudText Typo="Typo.body1">@trail.Status</MudText><br />
             </MudCardContent>
         </MudCard>
     };

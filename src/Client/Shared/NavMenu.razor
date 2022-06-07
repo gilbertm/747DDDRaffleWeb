@@ -28,10 +28,10 @@
     {
         <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText>
         <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
-            @if (_canViewLoanLenders)
+            @if (_canViewLoans)
             {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/loans" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["Loan Lenders"]
+                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                    @L["Loans"]
                 </MudNavLink>
             }
         </MudNavGroup>

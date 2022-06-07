@@ -13,7 +13,7 @@ using MudBlazor;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
-public partial class Loans
+public partial class GenericLoans
 {
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -38,9 +38,9 @@ public partial class Loans
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
 
-    protected EntityServerTableContext<LoanLenderDto, Guid, LoanLenderViewModel> Context { get; set; } = default!;
+    protected EntityServerTableContext<LoanDto, Guid, LoanViewModel> Context { get; set; } = default!;
 
-    private EntityTable<LoanLenderDto, Guid, LoanLenderViewModel> _table = default!;
+    private EntityTable<LoanDto, Guid, LoanViewModel> _table = default!;
 
     private AppUserDto _appUserDto;
 
@@ -74,44 +74,45 @@ public partial class Loans
             }
 
             Context = new(
-                   entityName: L["LoanLenders"],
-                   entityNamePlural: L["LoanLenders"],
-                   entityResource: EHULOGResource.LoanLenders,
+                   entityName: L["Loan"],
+                   entityNamePlural: L["Loans"],
+                   entityResource: EHULOGResource.Loans,
                    enableAdvancedSearch: false,
                    fields: new()
                    {
-                        new(loanLender => loanLender.Id, L["Id"], Template: LoanTemplate),
-                        new(loanLender => loanLender.Loan?.StartOfPayment, L["Loan"], "Loan.StartOfPayment", Template: LoanDetailsTemplate),
-                        new(loanLender => loanLender.Id, L["Status"], Template: LoanStatusTemplate),
-                        new(loanLender => loanLender.ProductId, L["ProductId"], "ProductId"),
+                        new(loan => loan.Id, L["Id"], Template: LoanTemplate),
+                        new(loan => loan.StartOfPayment, L["Loan"], "StartOfPayment", Template: LoanDetailsTemplate),
+                        new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
+                        new(loan => loan.LoanLenders?.Where(l => l.LoanId.Equals(loan.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault()?.ProductId, L["ProductId"], "LoanLenders.ProductId"),
                    },
                    idFunc: loanLender => loanLender.Id,
                    searchFunc: async filter =>
                    {
-                       var loanFilter = filter.Adapt<SearchLoanLendersRequest>();
+                       var loanFilter = filter.Adapt<SearchLoansRequest>();
 
-                       loanFilter.LenderId = _appUserDto.Id;
+                       if (_appUserDto.RoleName.Equals("Lender"))
+                       {
+                           loanFilter.LenderId = _appUserDto.Id;
+                           loanFilter.IsLender = true;
+                       }
 
-                       var result = await LoanLendersClient.SearchAsync(loanFilter);
+                       var result = await LoansClient.SearchAsync(loanFilter);
 
                        foreach (var item in result.Data)
                        {
-                           if (item.Product is not null)
+                           var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
+                           if (loanLender is not null)
                            {
-                               if (item.Product.Image is null)
-                               {
-                                   item.Product.Image = appUserProducts.Where(ap => ap.ProductId.Equals(item.ProductId)).First()?.Product?.Image;
-                               }
+                               loanLender.Product.Image = appUserProducts.Where(ap => ap.ProductId.Equals(loanLender.ProductId)).First()?.Product?.Image;
                            }
                        }
 
-                       return result.Adapt<PaginationResponse<LoanLenderDto>>();
+                       return result.Adapt<PaginationResponse<LoanDto>>();
                    },
                    createFunc: async loanLender =>
                    {
-                       loanLender.LenderId = _appUserDto.Id;
-
-                       var createLoanRequest = loanLender.Loan.Adapt<CreateLoanRequest>();
+                       var createLoanRequest = loanLender.Adapt<CreateLoanRequest>();
 
                        if (await ApiHelper.ExecuteCallGuardedAsync(
                            async () => await LoansClient.CreateAsync(createLoanRequest),
@@ -120,15 +121,19 @@ public partial class Loans
                        {
                            if (loanId != Guid.Empty && loanId != default!)
                            {
-                               loanLender.LoanId = loanId;
+                               var createLoanLenderRequest = new CreateLoanLenderRequest()
+                               {
+                                   LenderId = _appUserDto.Id,
+                                   LoanId = loanId,
+                                   ProductId = loanLender.ProductId
+                               };
 
-                               var createLoanLenderRequest = loanLender.Adapt<CreateLoanLenderRequest>();
                                if (await ApiHelper.ExecuteCallGuardedAsync(
                                    async () => await LoanLendersClient.CreateAsync(createLoanLenderRequest),
                                    Snackbar,
                                    _customValidation) is Guid loanLenderId)
                                {
-                                   if (loanLenderId != Guid.Empty && loanLenderId != default!)
+                                   /*if (loanLenderId != Guid.Empty && loanLenderId != default!)
                                    {
                                        // create now ledger
                                        var createLoanLedgerRequest = loanLender.Adapt<CreateLoanLedgerRequest>();
@@ -144,7 +149,7 @@ public partial class Loans
                                                NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
                                            }
                                        }
-                                   }
+                                   } */
                                }
                            }
                        }
@@ -154,9 +159,9 @@ public partial class Loans
     }
 }
 
-public class LoanLenderViewModel : UpdateLoanLenderRequest
+public class LoanViewModel : UpdateLoanRequest
 {
-    public LoanDto Loan { get; set; } = new LoanDto();
+    public Guid ProductId { get; set; }
 
     public ProductDto Product { get; set; } = new ProductDto()
     {
@@ -164,6 +169,4 @@ public class LoanLenderViewModel : UpdateLoanLenderRequest
         Category = new CategoryDto(),
         Brand = new BrandDto()
     };
-
-    public AppUserDto Lender { get; set; } = new AppUserDto();
 }
