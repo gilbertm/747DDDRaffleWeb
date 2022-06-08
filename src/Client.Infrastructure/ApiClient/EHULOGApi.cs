@@ -15401,9 +15401,6 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [System.ComponentModel.DataAnnotations.Required]
         public System.Guid LoanId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("productId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid ProductId { get; set; } = default!;
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -15438,6 +15435,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class LoanLedgerDto
     {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("loanId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid LoanId { get; set; } = default!;
 
@@ -15852,6 +15852,18 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("showApplicants", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool ShowApplicants { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("ledgers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLedgerDto>? Ledgers { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanLenders", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLenderDto>? LoanLenders { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanLessees", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLesseeDto>? LoanLessees { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanApplicants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanApplicantDto>? LoanApplicants { get; set; } = default!;
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -15898,6 +15910,18 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public LoanStatus Status { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("ledgers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLedgerDto>? Ledgers { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanLenders", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLenderDto>? LoanLenders { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanLessees", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLesseeDto>? LoanLessees { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanApplicants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanApplicantDto>? LoanApplicants { get; set; } = default!;
 
     }
 

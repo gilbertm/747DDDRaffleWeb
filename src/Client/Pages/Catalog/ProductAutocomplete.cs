@@ -80,6 +80,7 @@ public class ProductAutocomplete : MudAutocomplete<Guid>
                 }
 
             }
+
             _products = response.Data.ToList();
         }
 

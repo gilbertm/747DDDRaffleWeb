@@ -15,61 +15,104 @@
             @if (!Context.AddEditModal.IsCreate)
             {
                 <MudItem xs="12" md="6" Class="d-none">
-                    <MudTextField Value="context.Id" ReadOnly DisableUnderLine Label="@L[$"Loan Lender Id"]" />
+                    <MudTextField Value="Context.AddEditModal.RequestModel.Id" ReadOnly DisableUnderLine Label="@L[$"Loan Lender Id"]" />
                 </MudItem>
             }
 
             <MudItem xs="12" md="4">
-                @* @bind-Value="context.ProductId" *@
-                <ProductAutocomplete Required="true" For="@(() => context.ProductId)" OffsetY="true" Immediate="true" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+                @{
+                    var loanLender = context.LoanLenders?.Where(l => l.LoanId.Equals(Context.AddEditModal.RequestModel.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
 
-                @if (context.Product is not null)
-                {
-                    <MudCard>
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Class="d-none" Typo="Typo.body1">@context.Product.Id</MudText>
-                                <MudText Typo="Typo.h5">@context.Product.Name</MudText>
-                                @if (context.Product.Category is not null && !string.IsNullOrEmpty(context.Product.Category?.Name))
-                                {
-                                    <MudText Typo="Typo.caption">Category: @context.Product.Category.Name</MudText>
-                                }
-                                @if (context.Product.Brand is not null && !string.IsNullOrEmpty(context.Product.Brand?.Name))
-                                {
-                                    <MudText Typo="Typo.caption"> Brand: @context.Product.Brand.Name</MudText>
-                                }
+                    if (loanLender is not null)
+                    {
+                        Context.AddEditModal.RequestModel.ProductId = default!;
+                        Context.AddEditModal.RequestModel.ProductId = loanLender.ProductId;
 
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                @if (context.Product.ProductType.Equals(ProductType.System))
-                                {
-                                    <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
-                                }
-                                else
-                                {
-                                    <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
-                                }
-
-                            </CardHeaderActions>
-                        </MudCardHeader>
-
-                        @if (context.Product.Image is not null && !string.IsNullOrEmpty(context.Product.Image.ImagePath))
+                        if (loanLender.Product is not null)
                         {
-                            var image = Config[ConfigNames.ApiBaseUrl] + context.Product.Image.ImagePath;
 
-                            <MudCardMedia Image="@image" Height="150" Class="position-relative" />
+                            Context.AddEditModal.RequestModel.Product = new();
+                            Context.AddEditModal.RequestModel.Product.Image = new();
+                            Context.AddEditModal.RequestModel.Product.Brand = new();
+                            Context.AddEditModal.RequestModel.Product.Category = new();
+
+                            Context.AddEditModal.RequestModel.Product = loanLender.Product;
+                            Context.AddEditModal.RequestModel.Product.Id = loanLender.Product.Id;
+                            Context.AddEditModal.RequestModel.Product.Name = loanLender.Product.Name;
+                            Context.AddEditModal.RequestModel.Product.BrandId = loanLender.Product.BrandId;
+                            Context.AddEditModal.RequestModel.Product.CategoryId = loanLender.Product.CategoryId;
+                            Context.AddEditModal.RequestModel.Product.Amount = loanLender.Product.Amount;
+                            Context.AddEditModal.RequestModel.Product.Description = loanLender.Product.Description;
+
+                            if (loanLender.Product.Image is not null)
+                            {
+                                Context.AddEditModal.RequestModel.Product.Image = loanLender.Product.Image;
+                            }
+
+                            if (loanLender.Product.Category is not null)
+                            {
+                                Context.AddEditModal.RequestModel.Product.Category = loanLender.Product.Category;
+                            }
+
+                            if (loanLender.Product.Brand is not null)
+                            {
+                                Context.AddEditModal.RequestModel.Product.Brand = loanLender.Product.Brand;
+                            }
                         }
+                    }
 
-                        @if (!string.IsNullOrEmpty(context.Product?.Description))
-                        {
-                            <MudCardContent>
-                                <MudText Typo="Typo.h5" Color="Color.Success">Amount:</MudText>
-                                <MudText Typo="Typo.h3">@context.Product.Amount</MudText>
+                    @*  ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" *@
+                    <ProductAutocomplete Required="true" Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Value="Context.AddEditModal.RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
 
-                                <MudText Typo="Typo.body2">@context.Product.Description</MudText>
-                            </MudCardContent>
-                        }
-                    </MudCard>
+                    @if (Context.AddEditModal.RequestModel.Product is not null)
+                    {
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Class="d-none" Typo="Typo.body1">@Context.AddEditModal.RequestModel.ProductId</MudText>
+                                    <MudText Typo="Typo.h5">@Context.AddEditModal.RequestModel.Product.Name</MudText>
+                                    @if (Context.AddEditModal.RequestModel.Product.Category is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Category?.Name))
+                                    {
+                                        <MudText Typo="Typo.caption">Category: @Context.AddEditModal.RequestModel.Product.Category?.Name</MudText>
+                                    }
+                                    @if (Context.AddEditModal.RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Brand?.Name))
+                                    {
+                                        <MudText Typo="Typo.caption"> Brand: @Context.AddEditModal.RequestModel.Product.Brand?.Name</MudText>
+                                    }
+
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    @if (Context.AddEditModal.RequestModel.Product.ProductType.Equals(ProductType.System))
+                                    {
+                                        <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
+                                    }
+                                    else
+                                    {
+                                        <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
+                                    }
+
+                                </CardHeaderActions>
+                            </MudCardHeader>
+
+                            @if (Context.AddEditModal.RequestModel.Product.Image is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Image?.ImagePath))
+                            {
+                                var image = Config[ConfigNames.ApiBaseUrl] + Context.AddEditModal.RequestModel.Product.Image?.ImagePath;
+
+                                <MudCardMedia Image="@image" Height="150" Class="position-relative" />
+                            }
+
+                            @if (!string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product?.Description))
+                            {
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h5" Color="Color.Success">Amount:</MudText>
+                                    <MudText Typo="Typo.h3">@Context.AddEditModal.RequestModel.Product.Amount</MudText>
+
+                                    <MudText Typo="Typo.body2">@Context.AddEditModal.RequestModel.Product.Description</MudText>
+                                </MudCardContent>
+                            }
+                        </MudCard>
+                    }
+
                 }
             </MudItem>
 
@@ -77,28 +120,28 @@
                 <MudGrid Spacing="2" Justify="Justify.FlexStart">
 
                     <MudItem xs="12" md="6">
-                        <MudTextField Required="true" T="int" Label="@L["Loan Month"]" For="@(() => context.Month)" @bind-Value="context.Month" />
+                        <MudTextField Required="true" T="int" Label="@L["Loan Month"]" For="@(() => Context.AddEditModal.RequestModel.Month)" @bind-Value="Context.AddEditModal.RequestModel.Month" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField Required="true" T="float" Label="@L["Loan Interest"]" For="@(() => context.Interest)" @bind-Value="context.Interest" Format="F2" Culture="@CultureInfo.InvariantCulture" />
+                        <MudTextField Required="true" T="float" Label="@L["Loan Interest"]" For="@(() => Context.AddEditModal.RequestModel.Interest)" @bind-Value="Context.AddEditModal.RequestModel.Interest" Format="F2" Culture="@CultureInfo.InvariantCulture" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudDatePicker Required="true" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of payment" Editable="true" MinDate="DateTime.Now" AdornmentColor="Color.Secondary" DateChanged="@((DateTime? val) => StartDatePayment(val))" Placeholder="Select Start of payment" />
+                        <MudDatePicker Required="true" Date="@DateTime.Now" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of payment" Editable="true" MinDate="DateTime.Now.AddDays(-1)" AdornmentColor="Color.Secondary" Text="@DateIsNewlyCreated(Context.AddEditModal.RequestModel.StartOfPayment)" DateChanged="@((DateTime? val) => StartDatePayment(val))" Placeholder="Select Start of payment" DateFormat="dddd, MMMM d, yyyy" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudSelect Required="true" @bind-Value="context.InterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Filled.Insights" AdornmentColor="Color.Secondary">
+                        <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.InterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Filled.Insights" AdornmentColor="Color.Secondary">
                             @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
                             {
                             <MudSelectItem Value="@item">@item</MudSelectItem>
                             }
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem xs="12" md="6">
-                        <MudSelect Required="true" @bind-Value="context.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
-                            <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
-                            <MudSelectItem Value="@LoanStatus.Published">Publish</MudSelectItem>
-                        </MudSelect>
-                    </MudItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
+                        <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
+                        <MudSelectItem Value="@LoanStatus.Published">Publish</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
             </MudGrid>
         </MudItem>
 
@@ -108,9 +151,19 @@
 
 @code {
 
+    public string DateIsNewlyCreated(DateTime? date = null)
+    {
+        if (date is null)
+        {
+            date = DateTime.Now.Date;
+        }
+
+        return string.Format("{0:dddd, MMMM d, yyyy}", date);
+    }
+
     public bool DisableOldDates(DateTime val)
     {
-        if (val < DateTime.Now)
+        if (val < DateTime.Now.AddDays(-1))
         {
             return true;
         }
@@ -125,68 +178,85 @@
     }
     public void AutocompleteProductChange(Guid id)
     {
-        var product = appUserProducts.Where(ap => (ap.Product is not null) && ap.Product.Id.Equals(id)).FirstOrDefault();
+        var userProduct = appUserProducts.Where(ap => (ap.Product is not null) && ap.Product.Id.Equals(id)).FirstOrDefault();
 
-        if (product is not null)
+        if (userProduct is not null)
         {
-            if (product.Product is not null)
+            Context.AddEditModal.RequestModel.ProductId = default!;
+            Context.AddEditModal.RequestModel.Product = new();
+            Context.AddEditModal.RequestModel.Product.Image = new();
+            Context.AddEditModal.RequestModel.Product.Brand = new();
+            Context.AddEditModal.RequestModel.Product.Category = new();
+
+            if (userProduct.Product is not null)
             {
-                Context.AddEditModal.RequestModel.ProductId = product.Product.Id;
+                // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(userProduct.Product));
 
-                Context.AddEditModal.RequestModel.Product.Id = product.Product.Id;
-                Context.AddEditModal.RequestModel.Product.Name = product.Product.Name;
-                Context.AddEditModal.RequestModel.Product.Description = product.Product.Description;
+                Context.AddEditModal.RequestModel.ProductId = userProduct.Product.Id;
+                Context.AddEditModal.RequestModel.Product.Id = userProduct.Product.Id;
+                Context.AddEditModal.RequestModel.Product.Name = userProduct.Product.Name;
+                Context.AddEditModal.RequestModel.Product.Amount = userProduct.Product.Amount;
 
-                if (product.Product.Category is not null)
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(Context.AddEditModal.RequestModel.ProductId));
+
+                // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(Context.AddEditModal.RequestModel.Product));
+
+                if (userProduct.Product.Category is not null)
                 {
-                    Context.AddEditModal.RequestModel.Product.Category.Id = product.Product.Category.Id;
-                    Context.AddEditModal.RequestModel.Product.Category.Name = product.Product.Category.Name;
-                }
-                if (product.Product.Brand is not null)
-                {
-
-                    Context.AddEditModal.RequestModel.Product.Brand.Id = product.Product.Brand.Id;
-                    Context.AddEditModal.RequestModel.Product.Brand.Name = product.Product.Brand.Name;
-                }
-                if (product.Product.Image is not null)
-                {
-
-                    Context.AddEditModal.RequestModel.Product.Image.Id = product.Product.Image.Id;
-                    Context.AddEditModal.RequestModel.Product.Image.ImagePath = product.Product.Image.ImagePath;
+                    Context.AddEditModal.RequestModel.Product.Category = userProduct.Product.Category;
                 }
 
-                Context.AddEditModal.RequestModel.Product.Amount = product.Product.Amount;
-                Context.AddEditModal.RequestModel.Product.ProductType = product.Product.ProductType;
+
+                if (userProduct.Product.Brand is not null)
+                {
+
+                    Context.AddEditModal.RequestModel.Product.Brand = userProduct.Product.Brand;
+                }
+
+                if (userProduct.Product.Image is not null)
+                {
+                    Context.AddEditModal.RequestModel.Product.Image = userProduct.Product.Image;
+                }
+
+                Context.AddEditModal.ForceRender();
+
             }
-            Context.AddEditModal.ForceRender();
         }
     }
 
     protected RenderFragment<LoanDto> LoanTemplate => trail => __builder =>
     {
-         var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+        var loanLedgerTotal = trail.Ledgers?.Where(l => l.LoanId.Equals(trail.Id)).Sum(s => s.AmountDue);
 
-        var _imageUrl = string.IsNullOrEmpty(loanLender.Product.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + loanLender.Product.Image?.ImagePath);
+        var _imageUrl = string.IsNullOrEmpty(loanLender?.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + loanLender?.Product?.Image?.ImagePath);
 
         <MudCard Elevation="0">
+            <MudCardHeader>
+                <MudText Typo="Typo.h5">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText>
+            </MudCardHeader>
             <MudCardContent>
                 @if (!string.IsNullOrEmpty(_imageUrl))
                 {
                     <MudAvatar Square="true" Image="@_imageUrl" Style=" width:150px;height:100px;position:relative"></MudAvatar>
                 }
-                <MudButton Href="@string.Format("/catalog/loans/{0}", trail.Id)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Info">Send</MudButton>
-
             </MudCardContent>
+            <MudCardActions>
+                <MudButton Href="@string.Format("/catalog/loans/{0}", trail.Id)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Info">Send</MudButton>
+            </MudCardActions>
         </MudCard>
     };
 
     protected RenderFragment<LoanDto> LoanDetailsTemplate => trail => __builder =>
     {
+        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
         <MudPaper Class="pa-2 ma-2 text-left" Elevation="0">
             <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText><br />
             <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText><br />
             <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.InterestType</MudText><br />
-            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText>
+            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText><br />
+            <MudText Typo="Typo.caption"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Money" Title="Base Amount" /> Base amount: @string.Format("{0:#,0.00}", loanLender?.Product?.Amount)</MudText>
         </MudPaper>
     };
 
@@ -194,8 +264,8 @@
     {
         <MudCard Elevation="0">
             <MudCardContent>
-            <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.ShowChart" Title="Status" />
-            <MudText Typo="Typo.body1">@trail.Status</MudText><br />
+                <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.ShowChart" Title="Status" />
+                <MudText Typo="Typo.body1">@trail.Status</MudText><br />
             </MudCardContent>
         </MudCard>
     };

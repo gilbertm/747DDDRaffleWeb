@@ -32,7 +32,6 @@ public partial class AppUserProducts
     [Inject]
     protected IProductsClient ProductsClient { get; set; } = default!;
 
-
     [Inject]
     protected IAppUsersClient AppUsersClient { get; set; } = default!;
 

@@ -94,6 +94,10 @@ public partial class GenericLoans
                        {
                            loanFilter.LenderId = _appUserDto.Id;
                            loanFilter.IsLender = true;
+                           loanFilter.IsLedger = true;
+                       }
+                       else if (_appUserDto.RoleName.Equals("Admin"))
+                       {
                        }
 
                        var result = await LoansClient.SearchAsync(loanFilter);
@@ -110,10 +114,22 @@ public partial class GenericLoans
 
                        return result.Adapt<PaginationResponse<LoanDto>>();
                    },
-                   createFunc: async loanLender =>
+                   createFunc: async loan =>
                    {
-                       var createLoanRequest = loanLender.Adapt<CreateLoanRequest>();
+                       if (loan.ProductId == Guid.Empty || loan.ProductId.Equals(default))
+                       {
+                           Snackbar.Add("Product is required.", Severity.Error);
+                           throw new FormatException("Product is required.");
+                       }
 
+                       // TODO://
+                       // can only create if, packages is still allows
+                       // Business logic of the number allowed
+                       // loans that can be created
+                       // amount
+                       // etc.
+                       var createLoanRequest = loan.Adapt<CreateLoanRequest>();
+ 
                        if (await ApiHelper.ExecuteCallGuardedAsync(
                            async () => await LoansClient.CreateAsync(createLoanRequest),
                            Snackbar,
@@ -125,7 +141,7 @@ public partial class GenericLoans
                                {
                                    LenderId = _appUserDto.Id,
                                    LoanId = loanId,
-                                   ProductId = loanLender.ProductId
+                                   ProductId = loan.ProductId
                                };
 
                                if (await ApiHelper.ExecuteCallGuardedAsync(
@@ -133,10 +149,13 @@ public partial class GenericLoans
                                    Snackbar,
                                    _customValidation) is Guid loanLenderId)
                                {
-                                   /*if (loanLenderId != Guid.Empty && loanLenderId != default!)
+                                   if (loanLenderId != Guid.Empty && loanLenderId != default!)
                                    {
-                                       // create now ledger
-                                       var createLoanLedgerRequest = loanLender.Adapt<CreateLoanLedgerRequest>();
+                                       var createLoanLedgerRequest = new CreateLoanLedgerRequest()
+                                       {
+                                           LoanId = loanId
+                                       };
+
                                        if (await ApiHelper.ExecuteCallGuardedAsync(
                                            async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
                                            Snackbar,
@@ -149,11 +168,59 @@ public partial class GenericLoans
                                                NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
                                            }
                                        }
-                                   } */
+                                   }
                                }
                            }
                        }
-                   }
+                   },
+                   updateFunc: async (id, loan) =>
+                    {
+                        // Restriction:
+                        // Prevent unnecessary loan changes
+                        // updating a product is not permitted
+
+                        // TODO://
+                        // can only create if, packages is still allows
+                        // Business logic of the number allowed
+                        // loans that can be created
+                        // amount
+                        // etc.
+
+                        // CAN ONLY BE CHANGED, if the criteria of allowed limits is still okay
+                        // this loan is not yet a running loan
+                        // that there's already a lessee assigned.
+                        var updateLoanRequest = loan.Adapt<UpdateLoanRequest>();
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(
+                           async () => await LoansClient.UpdateAsync(id, updateLoanRequest),
+                           Snackbar,
+                           _customValidation) is Guid loanId)
+                        {
+                            if (id.Equals(loanId))
+                            {
+                                var createLoanLedgerRequest = new CreateLoanLedgerRequest()
+                                {
+                                    LoanId = loanId
+                                };
+
+                                if (await ApiHelper.ExecuteCallGuardedAsync(
+                                    async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
+                                    Snackbar,
+                                    _customValidation) is Guid loanLedgerId)
+                                {
+                                    if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
+                                    {
+                                        Snackbar.Add(L["Loan successfully updated."], Severity.Success);
+
+                                        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+                                    }
+                                }
+                            }
+
+                        }
+
+                        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+                    }
                    );
         }
     }
@@ -163,10 +230,5 @@ public class LoanViewModel : UpdateLoanRequest
 {
     public Guid ProductId { get; set; }
 
-    public ProductDto Product { get; set; } = new ProductDto()
-    {
-        Image = new InputOutputResourceDto(),
-        Category = new CategoryDto(),
-        Brand = new BrandDto()
-    };
+    public ProductDto Product { get; set; } = new();
 }

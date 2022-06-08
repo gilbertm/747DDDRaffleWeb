@@ -389,6 +389,8 @@ public partial class AccountRolePackage
 
         _appUserDto.PackageId = extendedPackageDto?.PackageDto?.Id ?? default;
 
+        isForSubmission = true;
+
         StateHasChanged();
     }
 
