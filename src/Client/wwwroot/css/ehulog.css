@@ -78,6 +78,11 @@
 }
 
 /* customs */
+.ehulog-mud-table-compact .mud-table-cell {
+    padding: 3px;
+    font-size: .5rem;
+}
+
 .position-relative {
     position:relative;
 }

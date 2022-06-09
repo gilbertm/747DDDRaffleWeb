@@ -174,6 +174,55 @@ public partial class GenericLoans
                            }
                        }
                    },
+                   editFormInitializedFunc: async () =>
+                   {
+                       await Task.Run(async () =>
+                       {
+                           var loanLender = Context.AddEditModal.RequestModel.LoanLenders?.Where(l => l.LoanId.Equals(Context.AddEditModal.RequestModel.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
+                           _disabledInterestSelection = Context.AddEditModal.RequestModel.InterestType.Equals(InterestType.Zero) ? true : false;
+
+                           if (loanLender is not null)
+                           {
+                               Context.AddEditModal.RequestModel.ProductId = default!;
+                               Context.AddEditModal.RequestModel.ProductId = loanLender.ProductId;
+
+                               if (loanLender.Product is not null)
+                               {
+
+                                   Context.AddEditModal.RequestModel.Product = new();
+                                   Context.AddEditModal.RequestModel.Product.Image = new();
+                                   Context.AddEditModal.RequestModel.Product.Brand = new();
+                                   Context.AddEditModal.RequestModel.Product.Category = new();
+
+                                   Context.AddEditModal.RequestModel.Product = loanLender.Product;
+                                   Context.AddEditModal.RequestModel.Product.Id = loanLender.Product.Id;
+                                   Context.AddEditModal.RequestModel.Product.Name = loanLender.Product.Name;
+                                   Context.AddEditModal.RequestModel.Product.BrandId = loanLender.Product.BrandId;
+                                   Context.AddEditModal.RequestModel.Product.CategoryId = loanLender.Product.CategoryId;
+                                   Context.AddEditModal.RequestModel.Product.Amount = loanLender.Product.Amount;
+                                   Context.AddEditModal.RequestModel.Product.Description = loanLender.Product.Description;
+
+                                   if (loanLender.Product.Image is not null)
+                                   {
+                                       Context.AddEditModal.RequestModel.Product.Image = loanLender.Product.Image;
+                                   }
+
+                                   if (loanLender.Product.Category is not null)
+                                   {
+                                       Context.AddEditModal.RequestModel.Product.Category = loanLender.Product.Category;
+                                   }
+
+                                   if (loanLender.Product.Brand is not null)
+                                   {
+                                       Context.AddEditModal.RequestModel.Product.Brand = loanLender.Product.Brand;
+                                   }
+                               }
+                           }
+
+                           await HandleInterest();
+                       });
+                   },
                    updateFunc: async (id, loan) =>
                     {
                         // Restriction:

@@ -21,99 +21,57 @@
             }
 
             <MudItem xs="12" md="4">
-                @{
-                    var loanLender = context.LoanLenders?.Where(l => l.LoanId.Equals(Context.AddEditModal.RequestModel.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
 
-                    if (loanLender is not null)
-                    {
-                        Context.AddEditModal.RequestModel.ProductId = default!;
-                        Context.AddEditModal.RequestModel.ProductId = loanLender.ProductId;
+                @* Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" *@
+                <ProductAutocomplete Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@Context.AddEditModal.RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
 
-                        if (loanLender.Product is not null)
+                @if (Context.AddEditModal.RequestModel.Product is not null)
+                {
+                    <MudCard Elevation="0">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Class="d-none" Typo="Typo.body1">@Context.AddEditModal.RequestModel.ProductId</MudText>
+                                <MudText Typo="Typo.h5">@Context.AddEditModal.RequestModel.Product.Name</MudText>
+                                @if (Context.AddEditModal.RequestModel.Product.Category is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Category?.Name))
+                                {
+                                    <MudText Typo="Typo.caption">Category: @Context.AddEditModal.RequestModel.Product.Category?.Name</MudText>
+                                }
+                                @if (Context.AddEditModal.RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Brand?.Name))
+                                {
+                                    <MudText Typo="Typo.caption"> Brand: @Context.AddEditModal.RequestModel.Product.Brand?.Name</MudText>
+                                }
+
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                @if (Context.AddEditModal.RequestModel.Product.ProductType.Equals(ProductType.System))
+                                {
+                                    <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
+                                }
+
+                            </CardHeaderActions>
+                        </MudCardHeader>
+
+                        @if (Context.AddEditModal.RequestModel.Product.Image is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Image?.ImagePath))
                         {
+                            var image = Config[ConfigNames.ApiBaseUrl] + Context.AddEditModal.RequestModel.Product.Image?.ImagePath;
 
-                            Context.AddEditModal.RequestModel.Product = new();
-                            Context.AddEditModal.RequestModel.Product.Image = new();
-                            Context.AddEditModal.RequestModel.Product.Brand = new();
-                            Context.AddEditModal.RequestModel.Product.Category = new();
-
-                            Context.AddEditModal.RequestModel.Product = loanLender.Product;
-                            Context.AddEditModal.RequestModel.Product.Id = loanLender.Product.Id;
-                            Context.AddEditModal.RequestModel.Product.Name = loanLender.Product.Name;
-                            Context.AddEditModal.RequestModel.Product.BrandId = loanLender.Product.BrandId;
-                            Context.AddEditModal.RequestModel.Product.CategoryId = loanLender.Product.CategoryId;
-                            Context.AddEditModal.RequestModel.Product.Amount = loanLender.Product.Amount;
-                            Context.AddEditModal.RequestModel.Product.Description = loanLender.Product.Description;
-
-                            if (loanLender.Product.Image is not null)
-                            {
-                                Context.AddEditModal.RequestModel.Product.Image = loanLender.Product.Image;
-                            }
-
-                            if (loanLender.Product.Category is not null)
-                            {
-                                Context.AddEditModal.RequestModel.Product.Category = loanLender.Product.Category;
-                            }
-
-                            if (loanLender.Product.Brand is not null)
-                            {
-                                Context.AddEditModal.RequestModel.Product.Brand = loanLender.Product.Brand;
-                            }
+                            <MudCardMedia Image="@image" Height="150" Class="position-relative" />
                         }
-                    }
 
-                    @*  ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" *@
-                    <ProductAutocomplete Required="true" Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Value="Context.AddEditModal.RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+                        @if (!string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product?.Description))
+                        {
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5" Color="Color.Success">Amount:</MudText>
+                                <MudText Typo="Typo.h3">@Context.AddEditModal.RequestModel.Product.Amount</MudText>
 
-                    @if (Context.AddEditModal.RequestModel.Product is not null)
-                    {
-                        <MudCard Elevation="0">
-                            <MudCardHeader>
-                                <CardHeaderContent>
-                                    <MudText Class="d-none" Typo="Typo.body1">@Context.AddEditModal.RequestModel.ProductId</MudText>
-                                    <MudText Typo="Typo.h5">@Context.AddEditModal.RequestModel.Product.Name</MudText>
-                                    @if (Context.AddEditModal.RequestModel.Product.Category is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Category?.Name))
-                                    {
-                                        <MudText Typo="Typo.caption">Category: @Context.AddEditModal.RequestModel.Product.Category?.Name</MudText>
-                                    }
-                                    @if (Context.AddEditModal.RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Brand?.Name))
-                                    {
-                                        <MudText Typo="Typo.caption"> Brand: @Context.AddEditModal.RequestModel.Product.Brand?.Name</MudText>
-                                    }
-
-                                </CardHeaderContent>
-                                <CardHeaderActions>
-                                    @if (Context.AddEditModal.RequestModel.Product.ProductType.Equals(ProductType.System))
-                                    {
-                                        <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
-                                    }
-                                    else
-                                    {
-                                        <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
-                                    }
-
-                                </CardHeaderActions>
-                            </MudCardHeader>
-
-                            @if (Context.AddEditModal.RequestModel.Product.Image is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Image?.ImagePath))
-                            {
-                                var image = Config[ConfigNames.ApiBaseUrl] + Context.AddEditModal.RequestModel.Product.Image?.ImagePath;
-
-                                <MudCardMedia Image="@image" Height="150" Class="position-relative" />
-                            }
-
-                            @if (!string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product?.Description))
-                            {
-                                <MudCardContent>
-                                    <MudText Typo="Typo.h5" Color="Color.Success">Amount:</MudText>
-                                    <MudText Typo="Typo.h3">@Context.AddEditModal.RequestModel.Product.Amount</MudText>
-
-                                    <MudText Typo="Typo.body2">@Context.AddEditModal.RequestModel.Product.Description</MudText>
-                                </MudCardContent>
-                            }
-                        </MudCard>
-                    }
-
+                                <MudText Typo="Typo.body2">@Context.AddEditModal.RequestModel.Product.Description</MudText>
+                            </MudCardContent>
+                        }
+                    </MudCard>
                 }
             </MudItem>
 
@@ -129,24 +87,25 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.Interest" Label="Select interest rates" HelperText="Interest rates, applies only to compount type" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="Color.Secondary">
-                            @foreach (float f in Enumerable.Range(-1, 9).Select(f => f == -1 ? 0.0f : f + 0.50f))
+                        <MudSelect Disabled="_disabledInterestSelection" ReadOnly="_disabledInterestSelection" Required="true" T="float" @bind-Value="@ChangeInterest" Immediate="true" Label="Select interest rates" HelperText="Interest rates, applies only to compount type" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="Color.Secondary">
+                            @foreach (float f in Enumerable.Range(0, 15).Select(f => f == 0 ? 0.0f : (f/2.0f) + 0.50f))
                             {
-                            <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
+                                <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
                             }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudDatePicker Required="true" Date="@DateTime.Now" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of payment" Editable="true" MinDate="DateTime.Now.AddDays(-1)" AdornmentColor="Color.Secondary" Text="@DateIsNewlyCreated(Context.AddEditModal.RequestModel.StartOfPayment)" DateChanged="@((DateTime? val) => StartDatePayment(val))" Placeholder="Select Start of payment" DateFormat="dddd, MMMM d, yyyy" />
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.InterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Filled.Insights" AdornmentColor="Color.Secondary">
-                        @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudDatePicker Required="true" Date="@DateTime.Now" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of payment" Editable="true" MinDate="DateTime.Now.AddDays(-1)" AdornmentColor="Color.Secondary" Text="@DateIsNewlyCreated(Context.AddEditModal.RequestModel.StartOfPayment)" DateChanged="@((DateTime? val) => StartDatePayment(val))" Placeholder="Select Start of payment" DateFormat="dddd, MMMM d, yyyy" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudSelect Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Filled.Insights" AdornmentColor="Color.Secondary">
+                            @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
                             {
                             <MudSelectItem Value="@item">@item</MudSelectItem>
                             }
                     </MudSelect>
                 </MudItem>
+
                 <MudItem xs="12" md="6">
                     <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
                         <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
@@ -154,32 +113,25 @@
                     </MudSelect>
                 </MudItem>
 
-                <MudItem xs="12" md="12">
-
-                    @{
-                            Task.Run(async () => await HandleInterest());
-
-                            if (TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
-                            {
-                                <MudTable Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
-                                    <HeaderContent>
-                                        <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
-                                        <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
-                                        <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
-                                        <MudTh><MudText Typo="Typo.caption">Balance</MudText></MudTh>
-                                    </HeaderContent>
-                                    <RowTemplate>
-                                        <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
-                                        <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.Due)</MudText></MudTd>
-                                        <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Amount)</MudText></MudTd>
-                                        <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
-                                    </RowTemplate>
-                                </MudTable>
-                            }
-                        }
-
-
-                    </MudItem>
+                @if (TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
+                    {
+                        <MudItem xs="12" md="12">
+                            <MudTable Class="ehulog-mud-table-compact" Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                                <HeaderContent>
+                                    <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
+                                    <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
+                                    <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
+                                    <MudTh><MudText Typo="Typo.caption">Balance</MudText></MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
+                                    <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.Due)</MudText></MudTd>
+                                    <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Amount)</MudText></MudTd>
+                                    <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudItem>
 
@@ -188,6 +140,7 @@
 }
 
 @code {
+    private bool _disabledInterestSelection = false;
 
     private int MonthsToPay
     {
@@ -198,6 +151,41 @@
         set
         {
             Context.AddEditModal.RequestModel.Month = value;
+
+            Task.Run(async () => await HandleInterest());
+        }
+    }
+
+    private float ChangeInterest
+    {
+        get
+        {
+            return Context.AddEditModal.RequestModel.Interest;
+        }
+        set
+        {
+            Context.AddEditModal.RequestModel.Interest = value;
+
+            Task.Run(async () => await HandleInterest());
+        }
+    }
+
+    private InterestType ChangeInterestType
+    {
+        get
+        {
+            return Context.AddEditModal.RequestModel.InterestType;
+        }
+        set
+        {
+            Context.AddEditModal.RequestModel.InterestType = value;
+
+            _disabledInterestSelection = false;
+
+            if (value.Equals(InterestType.Zero))
+            {
+                _disabledInterestSelection = true;
+            }
 
             Task.Run(async () => await HandleInterest());
         }
@@ -252,8 +240,6 @@
 
             if (!string.IsNullOrEmpty(resultDict))
             {
-                // Console.WriteLine(resultDict);
-
                 var dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, Dictionary<string, object>>>(resultDict);
 
                 if (dictionary is not null && dictionary.Count > 0)
@@ -289,10 +275,12 @@
                             });
                     }
 
-                    Context.AddEditModal.ForceRender();
+
                 }
             }
         }
+
+        Context.AddEditModal.ForceRender();
     }
 
     public string DateIsNewlyCreated(DateTime? date = null)
@@ -320,6 +308,7 @@
         if (dateTime is not null)
             Context.AddEditModal.RequestModel.StartOfPayment = dateTime.Value;
     }
+
     public void AutocompleteProductChange(Guid id)
     {
         var userProduct = appUserProducts.Where(ap => (ap.Product is not null) && ap.Product.Id.Equals(id)).FirstOrDefault();
@@ -334,26 +323,18 @@
 
             if (userProduct.Product is not null)
             {
-                // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(userProduct.Product));
-
                 Context.AddEditModal.RequestModel.ProductId = userProduct.Product.Id;
                 Context.AddEditModal.RequestModel.Product.Id = userProduct.Product.Id;
                 Context.AddEditModal.RequestModel.Product.Name = userProduct.Product.Name;
                 Context.AddEditModal.RequestModel.Product.Amount = userProduct.Product.Amount;
-
-                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(Context.AddEditModal.RequestModel.ProductId));
-
-                // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(Context.AddEditModal.RequestModel.Product));
 
                 if (userProduct.Product.Category is not null)
                 {
                     Context.AddEditModal.RequestModel.Product.Category = userProduct.Product.Category;
                 }
 
-
                 if (userProduct.Product.Brand is not null)
                 {
-
                     Context.AddEditModal.RequestModel.Product.Brand = userProduct.Product.Brand;
                 }
 
