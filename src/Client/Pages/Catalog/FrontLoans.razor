@@ -16,17 +16,31 @@
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
         <MudCard>
-            
+
             <MudCardContent>
                 @{
                     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail));
                 }
+
                 @{
                     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail.LoanLenders?.FirstOrDefault()?.Product?.Name));
                 }
-                @trail.Id,
-                @trail.Month,
-                @trail.LoanLenders?.FirstOrDefault()?.Product?.Name
+                
+                <div class="thumbnail clearfix">
+                    <img src="https://picsum.photos/400/250" alt="" />
+                    <div class="caption" id="@trail.Id">
+                        <MudText Typo="Typo.h5">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
+
+                        <MudText Typo="Typo.body1" Class="caption-text">
+                            @trail.LoanLenders?.FirstOrDefault()?.Product?.Description
+                        </MudText>
+
+                        <MudElement HtmlTag="div" Class="price-buy-spacing">
+                            <MudText Class="lead">@trail.Month</MudText>
+                            <MudElement HtmlTag="div"><a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a></MudElement>
+                        </MudElement>
+                    </div>
+                </div>
             </MudCardContent>
         </MudCard>
     };

@@ -195,18 +195,13 @@
 
 
 /* list /dislay */
-.list-grid-group-wrapper {
-    margin-left: -15px;
-    margin-right: -15px;
-}
-
 .grid-group-wrapper.row {
     display: flex;
     flex-wrap: wrap;
 }
 
     .grid-group-wrapper.row .item {
-        padding: 15px;
+        padding: 5px;
     }
     .grid-group-wrapper.row:after,
     .grid-group-wrapper.row:before {
@@ -251,7 +246,7 @@
 .list-group-wrapper .item {
     float: none;
     max-width: 100%;
-    padding: 15px;
+    padding: 5px;
 }
 
     .list-group-wrapper .item:before,
