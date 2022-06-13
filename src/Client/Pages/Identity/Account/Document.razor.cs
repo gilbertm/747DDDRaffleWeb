@@ -12,18 +12,6 @@ using MudBlazor;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
-public class ForUploadFile
-{
-    public InputOutputResourceDocumentType? FileIdentifier { get; set; }
-    public string? InputOutputResourceId { get; set; }
-    public string? InputOutputResourceImgUrl { get; set; }
-    public string? UserIdReferenceId { get; set; }
-    public bool isVerified { get; set; } = false; // if the status type is enabled. disabled means uploaded temporarily.
-    public bool isTemporarilyUploaded { get; set; } = false; // if on first load and already in the system
-    public bool isHovered { get; set; } = false;
-    public bool isRemove { get; set; } = false;
-}
-
 public partial class Document
 {
     [CascadingParameter]
@@ -96,14 +84,17 @@ public partial class Document
 
     private async Task UpdateProfileAsync()
     {
-        /*
-         * TODO:// 
-         * a. notification to all admins that can check and verify the documents
-         * b. flag down that the documents is for checking
-         * 
-         * Submitting will trigger verification. Informing the admins.
-         * 
-         */
-        Console.WriteLine("Test");
+        await Task.Run(() =>
+        {
+            /*
+        * TODO:// 
+        * a. notification to all admins that can check and verify the documents
+        * b. flag down that the documents is for checking
+        * 
+        * Submitting will trigger verification. Informing the admins.
+        * 
+        */
+            Console.WriteLine("Test");
+        });
     }
 }

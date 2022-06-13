@@ -1,0 +1,105 @@
+﻿@typeparam TEntity
+
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResource> L
+
+<ErrorBoundary>
+    <ChildContent>
+
+        @if (!Loading && _entityList is not null)
+        {
+            <EhulogContainer MaxWidth="MaxWidth.False" Class="list-grid-container pa-0">
+                <MudPaper Elevation="1" Class="px-3 mb-4">
+                    <MudText Typo="Typo.caption" Align="Align.Left">Display</MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list">List</MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid">Grid</MudIconButton>
+                </MudPaper>
+
+                <MudPaper id="@typeof(TEntity).Name" Class="list-grid-group-wrapper list-group-wrapper row">
+                    @if (_entityList.Count() > 0)
+                    {
+                        foreach (var item in _entityList)
+                        {
+                            <MudItem xs="6" sm="4" md="3" Class="item mb-5">
+                                @Context.Template(item)
+
+                                <div class="thumbnail clearfix">
+                                    <img src="http://placehold.it/400x250/000/fff" alt="" />
+                                    <div class="caption">
+                                        <h4 class="h3 ">
+                                            Product title
+                                        </h4>
+                                        <p class="caption-text">
+                                            Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                            sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. asdfasdfasdfasdfasdfasdfa asdf asdf asdf asdf asdf asdf sdfasd fasdf asdfa sdfas dfasd fasdfasdfasdfsdf asdf asdfasdfasdfasdfa sfa sdfa sdf asd f
+                                        </p>
+
+
+                                        <div class="price-buy-spacing">
+                                            <div class="lead">                        $21.000</div>
+
+
+                                            <div>
+                                                <a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                            </MudItem>
+
+                        }
+                    }
+                </MudPaper>
+                @* <div id="@typeof(TEntity).Name" class="list-grid-group-wrapper list-group-wrapper row">
+                    @if (_entityList.Count() > 0)
+                    {
+                        foreach (var item in _entityList)
+                        {
+                            <MudItem xs="6" sm="4" md="3" Class="item mb-5">
+                                @Context.Template(item)
+
+                                <div class="thumbnail clearfix">
+                                    <img src="http://placehold.it/400x250/000/fff" alt="" />
+                                    <div class="caption">
+                                        <h4 class="h3 ">
+                                            Product title
+                                        </h4>
+                                        <p class="caption-text">
+                                            Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                            sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. asdfasdfasdfasdfasdfasdfa asdf asdf asdf asdf asdf asdf sdfasd fasdf asdfa sdfas dfasd fasdfasdfasdfsdf asdf asdfasdfasdfasdfa sfa sdfa sdf asd f
+                                        </p>
+
+
+                                        <div class="price-buy-spacing">
+                                            <div class="lead">                        $21.000</div>
+
+
+                                            <div>
+                                                <a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                            </MudItem>
+
+                        }
+                    }
+                </div> *@
+            </EhulogContainer>
+        }
+
+    </ChildContent>
+    <ErrorContent>
+        <EhulogCustomError />
+    </ErrorContent>
+</ErrorBoundary>

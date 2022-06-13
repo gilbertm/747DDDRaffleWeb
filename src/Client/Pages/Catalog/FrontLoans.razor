@@ -1,0 +1,33 @@
+﻿@page "/catalog/front/loans"
+@using System.Globalization
+@using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)]
+
+@inject IStringLocalizer<FrontLoans> L
+
+<EhulogTitle Title="@L["Loans"]" Description="@L["Browse"]" />
+
+@if (_appUserDto is not null)
+{
+    <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
+}
+
+@code {
+    protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
+    {
+        <MudCard>
+            
+            <MudCardContent>
+                @{
+                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail));
+                }
+                @{
+                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail.LoanLenders?.FirstOrDefault()?.Product?.Name));
+                }
+                @trail.Id,
+                @trail.Month,
+                @trail.LoanLenders?.FirstOrDefault()?.Product?.Name
+            </MudCardContent>
+        </MudCard>
+    };
+}

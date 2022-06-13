@@ -159,7 +159,9 @@ public partial class Products
     {
         Context.AddEditModal.RequestModel.ImageInBytes = string.Empty;
         Context.AddEditModal.RequestModel.ImagePath = string.Empty;
+
         // Context.AddEditModal.RequestModel.DeleteCurrentImage = true;
+
         Context.AddEditModal.ForceRender();
     }
 }

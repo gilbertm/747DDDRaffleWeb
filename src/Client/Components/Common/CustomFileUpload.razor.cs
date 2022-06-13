@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
+namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
 
-public partial class DocumentFileUploader
+public partial class CustomFileUpload
 {
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -80,13 +80,13 @@ public partial class DocumentFileUploader
 
     public async Task RemoveImageAsync()
     {
-        string deleteContent = L["You're sure you want to delete your Profile Image?"];
+        string deleteContent = "You're sure you want to delete your Profile Image?";
         var parameters = new DialogParameters
         {
             { nameof(DeleteConfirmation.ContentText), deleteContent }
         };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
-        var dialog = DialogService.Show<DeleteConfirmation>(L["Delete"], parameters, options);
+        var dialog = DialogService.Show<DeleteConfirmation>("Delete", parameters, options);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {

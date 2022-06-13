@@ -42,9 +42,11 @@ public partial class GenericLoans
 
     private EntityTable<LoanDto, Guid, LoanViewModel> _table = default!;
 
-    private AppUserDto _appUserDto;
+    private AppUserDto _appUserDto { get; set; } = default!;
 
-    private List<AppUserProductDto> appUserProducts;
+    private List<ForUploadFile> ForUploadFiles { get; set; } = new();
+
+    private List<AppUserProductDto> appUserProducts { get; set; } = default!;
 
     private CustomValidation? _customValidation;
 
@@ -83,6 +85,7 @@ public partial class GenericLoans
                         new(loan => loan.Id, L["Id"], Template: LoanTemplate),
                         new(loan => loan.StartOfPayment, L["Loan"], "StartOfPayment", Template: LoanDetailsTemplate),
                         new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
+
                         // new(loan => loan.LoanLenders?.Where(l => l.LoanId.Equals(loan.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault()?.ProductId, L["ProductId"], "LoanLenders.ProductId"),
                         new(loan => loan.Id, L["Ledger"], Template: LoanLedgersTemplate),
                    },
@@ -91,13 +94,21 @@ public partial class GenericLoans
                    {
                        var loanFilter = filter.Adapt<SearchLoansRequest>();
 
-                       if (_appUserDto.RoleName.Equals("Lender"))
+                       if (_appUserDto is not null && !string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
                        {
                            loanFilter.LenderId = _appUserDto.Id;
                            loanFilter.IsLender = true;
                            loanFilter.IsLedger = true;
+                           loanFilter.IsLessee = false;
                        }
-                       else if (_appUserDto.RoleName.Equals("Admin"))
+                       else if (_appUserDto is not null && !string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lessee"))
+                       {
+                           loanFilter.LesseeId = _appUserDto.Id;
+                           loanFilter.IsLender = false;
+                           loanFilter.IsLessee = true;
+                           loanFilter.IsLedger = true;
+                       }
+                       else if (_appUserDto is not null && !string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Admin"))
                        {
                        }
 
@@ -107,7 +118,7 @@ public partial class GenericLoans
                        {
                            var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
 
-                           if (loanLender is not null)
+                           if (loanLender is not null && loanLender.Product is not null)
                            {
                                loanLender.Product.Image = appUserProducts.Where(ap => ap.ProductId.Equals(loanLender.ProductId)).First()?.Product?.Image;
                            }
@@ -130,7 +141,7 @@ public partial class GenericLoans
                        // amount
                        // etc.
                        var createLoanRequest = loan.Adapt<CreateLoanRequest>();
- 
+
                        if (await ApiHelper.ExecuteCallGuardedAsync(
                            async () => await LoansClient.CreateAsync(createLoanRequest),
                            Snackbar,
@@ -270,7 +281,19 @@ public partial class GenericLoans
                         }
 
                         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-                    }
+                    } /*,
+                   canUpdateEntityFunc: LoanDto =>
+                   {
+                       return false;
+                   },
+                   canDeleteEntityFunc: LoanDto =>
+                   {
+                       return false;
+                   },
+                   hasExtraActionsFunc: () =>
+                   {
+                       return false;
+                   } */
                    );
         }
     }

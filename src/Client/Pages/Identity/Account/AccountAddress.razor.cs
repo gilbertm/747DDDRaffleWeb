@@ -17,7 +17,7 @@ public partial class AccountAddress
     protected IAuthenticationService AuthService { get; set; } = default!;
     [Inject]
     protected IAppUsersClient AppUsersClient { get; set; } = default!;
-    
+
     protected AppUserDto appUserDto = new();
 
     protected Guid appUserId { get; set; }

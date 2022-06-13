@@ -268,9 +268,7 @@ public class AppDataService
         [JsonPropertyName("address")]
         public LocationIQGeoCodingAddress Address { get; set; } = default!;
 
-
     }
-
 
     public class LocationIQGeoCodingAddress
     {

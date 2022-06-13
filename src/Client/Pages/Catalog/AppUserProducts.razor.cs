@@ -40,7 +40,7 @@ public partial class AppUserProducts
 
     protected EntityServerTableContext<AppUserProductDto, Guid, AppUserProductViewModel> Context { get; set; } = default!;
 
-    private AppUserDto _appUserDto;
+    private AppUserDto _appUserDto { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,7 +97,8 @@ public partial class AppUserProducts
 
                            if (image.Count() > 0)
                            {
-                               item.Product.Image = image.First();
+                               if (item.Product is not null)
+                                   item.Product.Image = image.First();
                            }
                        }
                    }
@@ -129,7 +130,6 @@ public partial class AppUserProducts
 
                    Guid productId = await ProductsClient.CreateAsync(createProductRequest);
                    prod.ProductId = productId;
-
 
                    if (!string.IsNullOrEmpty(prod.ImageInBytes))
                    {
@@ -261,7 +261,8 @@ public partial class AppUserProducts
                {
                    return string.Empty;
                }))(),
-               exportAction: ((Func<string>)(() => {
+               exportAction: ((Func<string>)(() =>
+               {
                    return string.Empty;
                }))()
                );
@@ -282,6 +283,7 @@ public partial class AppUserProducts
     {
         Context.AddEditModal.RequestModel.ImageInBytes = string.Empty;
         Context.AddEditModal.RequestModel.ImagePath = string.Empty;
+
         // Context.AddEditModal.RequestModel.DeleteCurrentImage = true;
         Context.AddEditModal.ForceRender();
     }

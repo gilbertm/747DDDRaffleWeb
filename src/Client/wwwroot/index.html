@@ -132,7 +132,7 @@
                 var homeRegion = '';
                 var latitude = '';
                 var longitude = '';
-                
+
                 if (document.getElementById("HomeAddress"))
                     homeAddress = document.getElementById("HomeAddress").value;
 
@@ -243,10 +243,10 @@
                     //Define layers you want to add to the layer controls; the first element will be the default layer
                     var layerStyles = {
                         "Streets": "streets/vector",
-                       // "Satellite": "earth/raster",
-                       // "Hybrid": "hybrid/vector",
-                       // "Dark": "dark/vector",
-                       // "Light": "light/vector"
+                        // "Satellite": "earth/raster",
+                        // "Hybrid": "hybrid/vector",
+                        // "Dark": "dark/vector",
+                        // "Light": "light/vector"
                     };
 
                     map.addControl(new mapboxgl.FullscreenControl());
@@ -255,7 +255,7 @@
                         key: locationiq.key,
                         layerStyles: layerStyles
                     }), 'top-left');
-                                       
+
 
                     map.on('click', function (e) {
                         // e.point is the x, y coordinates of the mousemove event relative
@@ -273,13 +273,13 @@
                             'Latitude: ' + lngLat.lat + '<br />Longitude: ' + lngLat.lng; */
 
                         var url = "https://us1.locationiq.com/v1/reverse.php?key=" + locationiq.key + "&lat=" + lngLat.lat + "&lon=" + lngLat.lng + "&format=json";
-                        
-                        // Making our request 
+
+                        // Making our request
                         fetch(url, { method: 'GET' })
                             .then(Result => Result.json())
                             .then(location => {
 
-                                // Printing our response 
+                                // Printing our response
                                 console.log(location);
                                 console.log(location.address.road);
 
@@ -307,6 +307,26 @@
                             .catch(errorMsg => {
                                 console.log(errorMsg);
                             });
+                    });
+                }
+            }
+        };
+    </script>
+    <script>
+        window.dotNetJS = {
+
+            containerGrid: function () {
+                if (document.querySelector(".btn-list-list")) {
+                    document.querySelector(".btn-list-list").addEventListener("click", () => {
+                        document.querySelector(".list-grid-group-wrapper").classList.remove("grid-group-wrapper");
+                        document.querySelector(".list-grid-group-wrapper").classList.add("list-group-wrapper");
+                    });
+                }
+
+                if (document.querySelector(".btn-list-list")) {
+                    document.querySelector(".btn-list-grid").addEventListener("click", () => {
+                        document.querySelector(".list-grid-group-wrapper").classList.remove("list-group-wrapper");
+                        document.querySelector(".list-grid-group-wrapper").classList.add("grid-group-wrapper");
                     });
                 }
             }

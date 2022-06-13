@@ -17,7 +17,7 @@ public partial class NavMenu
     [Inject]
     public AppDataService AppDataService { get; set; } = default!;
 
-    private AppUserDto _appUserDto;
+    private AppUserDto _appUserDto { get; set; } = default!;
 
     private string? _hangfireUrl;
     private bool _canViewHangfire;
