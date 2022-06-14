@@ -16017,6 +16017,12 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("isLessee", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLessee { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCity { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCountry { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("showApplicants", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool ShowApplicants { get; set; } = default!;
 
