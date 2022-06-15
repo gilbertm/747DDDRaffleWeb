@@ -11,8 +11,8 @@
             <EhulogContainer MaxWidth="MaxWidth.False" Class="list-grid-container pa-0">
                 <MudPaper Elevation="1" Class="px-3 mb-4">
                     <MudText Typo="Typo.caption" Align="Align.Left">Display</MudText>
-                    <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list">List</MudIconButton>
-                    <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid">Grid</MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list" OnClick="@(() => SetList())" Color="@(IsList ? Color.Success : Color.Surface)">List</MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid" OnClick="@(() => SetGrid())" Color="@(IsGrid ? Color.Success : Color.Surface)">Grid</MudIconButton>
                 </MudPaper>
 
                 <MudPaper Elevation="0" id="@typeof(TEntity).Name" Class="list-grid-group-wrapper grid-group-wrapper row">
@@ -35,3 +35,20 @@
         <EhulogCustomError />
     </ErrorContent>
 </ErrorBoundary>
+
+@code {
+    private void SetList()
+    {
+        IsList = true;
+        IsGrid = false;
+
+    }
+    private void SetGrid()
+    {
+        IsList = false;
+        IsGrid = true;
+
+    }
+    private bool IsList { get; set; }
+    private bool IsGrid { get; set; } = true;
+}

@@ -25,8 +25,6 @@ public partial class EntityContainer<TEntity>
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await AuthState;
-
         await LoadDataAsync();
     }
 
