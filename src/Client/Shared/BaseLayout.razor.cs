@@ -17,7 +17,7 @@ public partial class BaseLayout
         if (_themePreference == null) _themePreference = new ClientPreference();
         SetCurrentTheme(_themePreference);
 
-        Snackbar.Add("Like this boilerplate? ", Severity.Normal, config =>
+        /* Snackbar.Add("Like this boilerplate? ", Severity.Normal, config =>
         {
             config.BackgroundBlurred = true;
             config.Icon = Icons.Custom.Brands.GitHub;
@@ -28,7 +28,7 @@ public partial class BaseLayout
                 Navigation.NavigateTo("https://github.com/fullstackhero/blazor-wasm-boilerplate");
                 return Task.CompletedTask;
             };
-        });
+        }); */
     }
 
     private async Task ThemePreferenceChanged(ClientPreference themePreference)

@@ -1,0 +1,45 @@
+﻿@page "/catalog/front/loans/anon"
+@attribute [AllowAnonymous]
+@using System.Globalization
+@using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer
+
+<EhulogTitle Title="Loans" />
+
+@if (Context is not null && Context.SearchFunc is not null)
+{
+    <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
+}
+
+@code {
+    protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
+    {
+        <MudCard>
+
+            <MudCardContent>
+                @{
+                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail));
+                }
+
+                @{
+                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail.LoanLenders?.FirstOrDefault()?.Product?.Name));
+                }
+                
+                <div class="thumbnail clearfix">
+                    <img src="https://picsum.photos/400/250" alt="" />
+                    <div class="caption" id="@trail.Id">
+                        <MudText Typo="Typo.h5">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
+
+                        <MudText Typo="Typo.body1" Class="caption-text">
+                            @trail.LoanLenders?.FirstOrDefault()?.Product?.Description
+                        </MudText>
+
+                        <MudElement HtmlTag="div" Class="price-buy-spacing">
+                            <MudText Class="lead">@trail.Month</MudText>
+                            <MudElement HtmlTag="div"><a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a></MudElement>
+                        </MudElement>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    };
+}

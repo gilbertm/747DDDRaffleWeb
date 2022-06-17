@@ -25,7 +25,14 @@ public class JwtAuthenticationHeaderHandler : DelegatingHandler
             }
             else
             {
-                _navigation.NavigateTo("/login");
+                // ++g++, bypass all SendAsync requests that were marked /anon
+                if (request.RequestUri?.AbsolutePath.Contains("/anon") is true)
+                {
+
+                } else
+                {
+                    _navigation.NavigateTo("/login");
+                }
             }
         }
 
