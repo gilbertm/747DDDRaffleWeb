@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 
 public partial class FrontAnonLoans
 {

@@ -1,0 +1,43 @@
+﻿@inject IStringLocalizer<EntityContainerPager> L
+@inject NavigationManager NavigationManager
+
+<div class="d-flex flex-column align-center">
+    <MudPagination Size="Size.Medium" Variant="Variant.Filled" Count="_count" SelectedChanged="PageChanged" Selected="CurrentPage" Class="my-4" />
+</div>
+
+@code {
+    [Parameter]
+    public int Total { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    private int _count { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _count = (Total + PageSize - 1) / PageSize;
+    }
+
+    private void PageChanged(int i)
+    {
+        var query = new Dictionary<string, string> {
+            { "page", i.ToString() }
+        };
+
+        if (CurrentPage != i)
+        {
+            var currUrl = NavigationManager.Uri.ToString().ToLower();
+            currUrl = currUrl.Replace(NavigationManager.BaseUri, "");
+
+            if (currUrl.Contains("?"))
+                currUrl = currUrl.Substring(0, currUrl.IndexOf("?"));
+
+            NavigationManager.NavigateTo(QueryHelpers.AddQueryString(NavigationManager.ToAbsoluteUri(currUrl).ToString(), query), true);
+        }
+
+    }
+}

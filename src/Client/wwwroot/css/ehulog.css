@@ -192,7 +192,9 @@
     color: #000000;
 }
 /* customs - account - packages */
-
+.custom-mud-checkbox.pl-0 span {
+    padding-left: 0;
+}
 
 /* list /dislay */
 .grid-group-wrapper.row {

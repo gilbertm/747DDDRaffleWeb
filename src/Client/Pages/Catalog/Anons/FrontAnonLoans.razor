@@ -30,12 +30,17 @@
                         <MudText Typo="Typo.h5">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
 
                         <MudText Typo="Typo.body1" Class="caption-text">
-                            @trail.LoanLenders?.FirstOrDefault()?.Product?.Description
+                            Description: @trail.LoanLenders?.FirstOrDefault()?.Product?.Description
                         </MudText>
+
+                        <MudText Typo="Typo.body1" Class="caption-text">
+                            Home: @trail.LoanLenders?.FirstOrDefault()?.Lender?.HomeCity
+                        </MudText>
+
 
                         <MudElement HtmlTag="div" Class="price-buy-spacing">
                             <MudText Class="lead">@trail.Month</MudText>
-                            <MudElement HtmlTag="div"><a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a></MudElement>
+                            <MudElement HtmlTag="div"><a class="btn btn-success" href="/loan/@trail.Id">Apply</a></MudElement>
                         </MudElement>
                     </div>
                 </div>

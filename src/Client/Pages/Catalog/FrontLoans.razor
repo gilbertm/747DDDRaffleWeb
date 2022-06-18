@@ -25,7 +25,7 @@
                 @{
                     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail.LoanLenders?.FirstOrDefault()?.Product?.Name));
                 }
-                
+
                 <div class="thumbnail clearfix">
                     <img src="https://picsum.photos/400/250" alt="" />
                     <div class="caption" id="@trail.Id">
@@ -37,8 +37,24 @@
 
                         <MudElement HtmlTag="div" Class="price-buy-spacing">
                             <MudText Class="lead">@trail.Month</MudText>
-                            <MudElement HtmlTag="div"><a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a></MudElement>
+                            <MudElement HtmlTag="div"><a class="btn btn-success" href="/loan/@trail.Id">Add to cart</a></MudElement>
                         </MudElement>
+                        @if (_appUserDto is not null)
+                        {
+                            if (trail.LoanLenders is not null)
+                            {
+                                var loanLender = trail.LoanLenders.FirstOrDefault();
+
+                                if (loanLender is not null && loanLender.LenderId.Equals(_appUserDto.Id))
+                                {
+                                    <MudElement HtmlTag="div" Class="price-buy-spacing">
+                                        THIS IS MINE
+                                    </MudElement>
+                                }
+                            }
+                        }
+
+
                     </div>
                 </div>
             </MudCardContent>
