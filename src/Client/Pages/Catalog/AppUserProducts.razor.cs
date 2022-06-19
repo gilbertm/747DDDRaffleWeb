@@ -317,7 +317,7 @@ public class AppUserProductViewModel : UpdateAppUserProductRequest
     public Guid ProductId { get; set; }
     public ProductDto Product { get; set; } = new();
 
-    public AppUser AppUser { get; set; } = new();
+    public AppUserDto AppUser { get; set; } = new();
 
     public string? ImagePath { get; set; }
     public string? ImageInBytes { get; set; }

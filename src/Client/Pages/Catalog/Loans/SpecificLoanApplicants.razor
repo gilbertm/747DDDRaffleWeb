@@ -1,0 +1,65 @@
+﻿@if (_appUserDto is { })
+{
+    if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lessee"))
+    {
+        if (IsPossibleToAppy && _loanApplicantDto is null)
+        {
+            @* Todo:// can apply for this loan. *@
+            @* Do all necessary checks. *@
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Large" OnClick="(async ()=>{ await LesseeLoanApply(); await OnClick.InvokeAsync(); })">Apply</MudButton>
+            <MudTooltip Text="You can apply for this listing, subject to your system credentials and permissions.">
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+            </MudTooltip>
+
+        }
+        else if (_loanApplicantDto is { })
+        {
+            switch (_loanApplicantDto.Flag)
+            {
+                case 1:
+                    <MudText Typo="Typo.caption">You are not allowed on this loan</MudText>
+                    break;
+                case 2:
+                    @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways.
+                                Business rules should apply*@
+                    <MudText Typo="Typo.caption">You applied but removed yourself from this Loan. Reapply?</MudText>
+                    break;
+                case 3:
+                    @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways.
+                                Business rules should apply*@
+                    <MudText Typo="Typo.caption">The Lender removed you from applying from loan. Reapply?</MudText>
+                    break;
+                case 400:
+                    @*Lender blocked you from applying this loan*@
+                    <MudAlert Severity="Severity.Error">Declined. You are declined, you can not do anything with this listing. For whatever reasons, please proceed with dispute process, if you need to.</MudAlert>
+                    break;
+
+                default:
+                    <MudButton Variant="Variant.Filled" Class="mb-4" StartIcon="@Icons.Material.Filled.CancelScheduleSend" IconColor="Color.Warning" Size="Size.Large">Applied</MudButton>
+                    <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Info">If you wish to cancel your application, click action.<br />Awaiting lender's acceptance and approval</MudAlert>
+                    break;
+            }
+        }
+
+    }
+
+    @if (Applicants is not null && Applicants.Count() > 0)
+    {
+        _loanApplicantDto = Applicants?.Where(a => a.AppUser.Id.Equals(_appUserDto.Id)).Single();
+
+        if (Applicants?.Count() > 0)
+        {
+            <MudGrid Spacing="2" Justify="Justify.Center">
+                <MudItem xs="12" md="12">
+                    <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
+                    @foreach (var item in Applicants)
+                    {
+                        <MudAvatar Image="https://picsum.photos/400/250" Alt="@item.AppUser.Id.ToString()" />
+                    }
+                    <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@Applicants.Count()</MudText>
+
+                </MudItem>
+            </MudGrid>
+        }
+    }
+}

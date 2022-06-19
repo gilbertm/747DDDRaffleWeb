@@ -82,10 +82,10 @@ public static class EHULOGPermissions
 
         new("View Applicants", EHULOGAction.View, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: true),
         new("Search Applicants", EHULOGAction.Search, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: true),
-        new("Create Applicants", EHULOGAction.Create, EHULOGResource.LoanApplicants),
-        new("Update Applicants", EHULOGAction.Update, EHULOGResource.LoanApplicants),
-        new("Delete Applicants", EHULOGAction.Delete, EHULOGResource.LoanApplicants),
-        new("Export Applicants", EHULOGAction.Export, EHULOGResource.LoanApplicants),
+        new("Create Applicants", EHULOGAction.Create, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: true),
+        new("Update Applicants", EHULOGAction.Update, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: true),
+        new("Delete Applicants", EHULOGAction.Delete, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: false),
+        new("Export Applicants", EHULOGAction.Export, EHULOGResource.LoanApplicants, IsLender: true, IsLessee: false),
 
         new("View AppUsers", EHULOGAction.View, EHULOGResource.AppUsers, IsBasic: true, IsLender: true, IsLessee: true),
         new("Search AppUsers", EHULOGAction.Search, EHULOGResource.AppUsers),
