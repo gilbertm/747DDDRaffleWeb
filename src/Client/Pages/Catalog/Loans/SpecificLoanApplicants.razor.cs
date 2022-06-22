@@ -1,24 +1,45 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
 using EHULOG.BlazorWebAssembly.Client.Shared;
+using Mapster;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
+using static MudBlazor.CategoryTypes;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
 
 public partial class SpecificLoanApplicants
 {
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthState { get; set; } = default!;
+    [Inject]
+    protected IAuthenticationService AuthService { get; set; } = default!;
+
     [Parameter]
     public ICollection<LoanApplicantDto> Applicants { get; set; } = default!;
 
+    public List<LoanApplicantDtoVM>? _applicants { get; set; }
+
     [Parameter]
     public bool IsPossibleToAppy { get; set; } = false;
+
+    [Parameter]
+    public bool IsMinimal { get; set; } = false;
 
     [Parameter]
     public Guid LoanId { get; set; }
 
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
+    [Inject]
+    protected IPersonalClient PersonalClient { get; set; } = default!;
+
+    [Inject]
+    protected IUsersClient UsersClient { get; set; } = default!;
 
     [Inject]
     protected ILoanApplicantsClient LoanApplicantsClient { get; set; } = default!;
@@ -30,6 +51,11 @@ public partial class SpecificLoanApplicants
 
     [Parameter]
     public EventCallback OnClick { get; set; }
+
+    [Inject]
+    protected IDialogService Dialog { get; set; } = default!;
+
+    private CustomValidation? _customValidation;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,7 +72,25 @@ public partial class SpecificLoanApplicants
 
         if (Applicants is not null && Applicants.Count() > 0)
         {
-            // load their profile images for display.
+            _applicants = new List<LoanApplicantDtoVM>();
+
+            foreach (var item in Applicants)
+            {
+                // load their profile images for display.
+                if (await ApiHelper.ExecuteCallGuardedAsync(() => UsersClient.GetByIdAsync(item.AppUser.ApplicationUserId), Snackbar, _customValidation) is UserDetailsDto userDetails)
+                {
+                    var loanApplicationDtoVM = userDetails.Adapt<LoanApplicantDtoVM>();
+                    loanApplicationDtoVM.AppUser = item.AppUser;
+                    loanApplicationDtoVM.Email = userDetails.Email ?? string.Empty;
+                    loanApplicationDtoVM.FirstName = userDetails.FirstName ?? string.Empty;
+                    loanApplicationDtoVM.LastName = userDetails.LastName ?? string.Empty;
+                    loanApplicationDtoVM.PhoneNumber = userDetails.PhoneNumber ?? string.Empty;
+                    loanApplicationDtoVM.ImageURL = userDetails.ImageUrl ?? string.Empty;
+
+                    _applicants.Add(loanApplicationDtoVM);
+                }
+
+            }
         }
     }
 
@@ -73,4 +117,25 @@ public partial class SpecificLoanApplicants
         }
 
     }
+
+    private void OpenLendersUserInspectionView(LoanApplicantDtoVM loanApplicantDtoVM)
+    {
+        var parameters = new DialogParameters { ["loanApplicantDtoVM"] = loanApplicantDtoVM };
+
+        DialogOptions noHeader = new DialogOptions() { CloseButton = true };
+        Dialog.Show<LendersUserInspectionView>("User's Details", parameters, noHeader);
+    }
+}
+
+public class LoanApplicantDtoVM : LoanApplicantDto
+{
+    public string Email { get; set; } = default!;
+
+    public string FirstName { get; set; } = default!;
+
+    public string LastName { get; set; } = default!;
+
+    public string? PhoneNumber { get; set; }
+
+    public string? ImageURL { get; set; }
 }

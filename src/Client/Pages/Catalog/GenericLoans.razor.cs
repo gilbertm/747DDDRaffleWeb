@@ -84,8 +84,8 @@ public partial class GenericLoans
                    {
                         new(loan => loan.Id, L["Id"], Template: LoanTemplate),
                         new(loan => loan.StartOfPayment, L["Loan"], "StartOfPayment", Template: LoanDetailsTemplate),
-                        new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
-
+                        // new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
+                        new(loan => loan.Id, L["Applicants"], Template: LoanApplicantsTemplate),
                         // new(loan => loan.LoanLenders?.Where(l => l.LoanId.Equals(loan.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault()?.ProductId, L["ProductId"], "LoanLenders.ProductId"),
                         new(loan => loan.Id, L["Ledger"], Template: LoanLedgersTemplate),
                    },

@@ -1,0 +1,26 @@
+﻿@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
+<MudDialog>
+    <DialogContent>
+        <MudText>LendersUserInspectionView</MudText>
+
+        @if (loanApplicantDtoVM is not null)
+        {
+            <MudText>@loanApplicantDtoVM.Email</MudText>
+        }
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Submit">Grant applicant and manage loan</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public LoanApplicantDtoVM loanApplicantDtoVM { get; set; }
+
+    private void Submit()
+    {
+        // do the needed submission and proceed to the loan page.
+    }
+    
+}

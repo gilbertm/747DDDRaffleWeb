@@ -1,8 +1,9 @@
 ﻿@page "/account/rolepackage"
 
+@inject IDialogService Dialog
 @inject IStringLocalizer<AccountRolePackage> L
 
-<EhulogTitle Title="@L["Role and Package"]" Description="@L["Manage your account role and package subscription"]" />
+<EhulogTitle Title="@L["Role and Package"]" Description="@L["Manage your account role and package subscription. Important: Allow location, if not you will not be able to see the map and proceed."]" />
 
 @if (_appUserDto is not null)
 {
@@ -313,7 +314,7 @@
                         }
                     </MudCard>
                 </MudCardContent>
-                @if (!(new string[] { "Admin", "Lender", "Lessee" }).Contains(_appUserDto.RoleName) || _appUserDto.PackageId.Equals(default!))
+                @if (!(new string[] { "Admin", "Lender", "Lessee" }).Contains(_appUserDto.RoleName) || _appUserDto.PackageId.Equals(default) || !_appUserDto.PackageId.Equals(_oldPackage))
                 {
                     <MudCardActions Class="pb-4 pl-4">
                         <MudGrid Justify="Justify.FlexEnd">

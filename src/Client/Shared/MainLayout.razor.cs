@@ -20,11 +20,6 @@ public partial class MainLayout
     {
         if (await ClientPreferences.GetPreference() is ClientPreference preference)
         {
-            if (Navigation.Uri.Equals(Navigation.BaseUri))
-            {
-                preference.IsDrawerOpen = false;
-            }
-
             _rightToLeft = preference.IsRTL;
             _drawerOpen = preference.IsDrawerOpen;
         }

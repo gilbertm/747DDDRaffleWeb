@@ -24,55 +24,59 @@
 
     <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
 
-    @if (_canViewProducts || _canViewBrands)
-    {
-        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText>
-        <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
-            @if (_canViewLoans)
-            {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["Loans"]
-                </MudNavLink>
-            }
-        </MudNavGroup>
-    }
-    @if (_canViewProducts || _canViewBrands)
-    {
-        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Management"]</MudText>
-        <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.AddBox">
-            @if (_canViewPackages)
-            {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["Packages"]
-                </MudNavLink>
-            }
-            @if (_canViewProducts)
-            {
-                @* <MudNavLink Match="NavLinkMatch.All" Href="/catalog/products" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["Products"]
-                    </MudNavLink> *@
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["Products"]
-                </MudNavLink>
-            }
-            @if (_canViewBrands)
-            {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["Brands"]
-                </MudNavLink>
-            }
-            @if (_canViewCategories)
-            {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
-                    @L["Categories"]
-                </MudNavLink>
-            }
-        </MudNavGroup>
-    }
-
     @if (_appUserDto is not null)
     {
         bool isAdmin = (_appUserDto.RoleName is not null ? _appUserDto.RoleName : string.Empty).Equals("Admin");
+
+        if ((!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender")) || isAdmin)
+        {
+            if (_canViewProducts || _canViewBrands)
+            {
+                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText>
+                <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
+                    @if (_canViewLoans)
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                            @L["Loans"]
+                        </MudNavLink>
+                    }
+                </MudNavGroup>
+            }
+
+            if (_canViewProducts || _canViewBrands)
+            {
+                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Management"]</MudText>
+                <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.AddBox">
+                    @if (_canViewPackages)
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                            @L["Packages"]
+                        </MudNavLink>
+                    }
+                    @if (_canViewProducts)
+                    {
+                        @* <MudNavLink Match="NavLinkMatch.All" Href="/catalog/products" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+        @L["Products"]
+        </MudNavLink> *@
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                            @L["Products"]
+                        </MudNavLink>
+                    }
+                    @if (_canViewBrands)
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                            @L["Brands"]
+                        </MudNavLink>
+                    }
+                    @if (_canViewCategories)
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                            @L["Categories"]
+                        </MudNavLink>
+                    }
+                </MudNavGroup>
+            }
+        }
 
         if (isAdmin)
         {

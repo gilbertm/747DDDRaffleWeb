@@ -1,0 +1,52 @@
+﻿@using System.Threading
+@implements IDisposable
+
+@page "/component/timer/relogin"
+
+<MudCard Elevation="0" Class="text-center">
+    <MudCardHeader Class="d-block">
+        <MudText Typo="Typo.h5" Class="d-block">Relogin</MudText>
+        <MudText Typo="Typo.caption" Color="Color.Error" Class="d-block">*Required</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+
+        <MudText Typo="Typo.h6">@timerCount</MudText>      
+
+        @if (timerCount <= 1)
+        {
+            <MudText Typo="Typo.body1">Logging out.</MudText>
+        }
+    </MudCardContent>
+</MudCard>
+
+
+
+
+@code {
+    private System.Threading.Timer timer { get; set; } = default!;
+    private int timerCount = 5; // in seconds
+    private int intervalPeriod = 1000; // 1 second
+
+    protected override void OnInitialized()
+    {
+        timer = new System.Threading.Timer(async _ =>  // async void
+        {
+            timerCount--;
+
+            if (timerCount <= 0)
+            {
+                timer.Dispose();
+                await AuthService.ReLoginAsync(Navigation.Uri);
+            }
+            // we need StateHasChanged() because this is an async void handler
+            // we need to Invoke it because we could be on the wrong Thread
+            await InvokeAsync(StateHasChanged);
+        }, null, 0, intervalPeriod);
+
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

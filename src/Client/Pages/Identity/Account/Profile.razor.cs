@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using EHULOG.BlazorWebAssembly.Client.Components.Common;
 using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using static MudBlazor.CategoryTypes;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
@@ -20,6 +22,8 @@ public partial class Profile
     protected IAuthenticationService AuthService { get; set; } = default!;
     [Inject]
     protected IPersonalClient PersonalClient { get; set; } = default!;
+    [Inject]
+    protected IDialogService Dialog { get; set; } = default!;
 
     private readonly UpdateUserRequest _profileModel = new();
 
@@ -54,7 +58,12 @@ public partial class Profile
             () => PersonalClient.UpdateProfileAsync(_profileModel), Snackbar, _customValidation))
         {
             Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
-            await AuthService.ReLoginAsync(Navigation.Uri);
+
+            DialogOptions noHeader = new DialogOptions() { NoHeader = true };
+            Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
+
+            return;
+            // await AuthService.ReLoginAsync(Navigation.Uri);
         }
     }
 

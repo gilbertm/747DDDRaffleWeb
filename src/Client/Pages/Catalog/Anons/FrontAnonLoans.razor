@@ -3,6 +3,7 @@
 @using System.Globalization
 @using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer
 
+
 <EhulogTitle Title="Loans" />
 
 @if (Context is not null && Context.SearchFunc is not null)
@@ -13,6 +14,8 @@
 @code {
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
+        var href = "/loan/" + @trail.Id;
+
         <MudCard>
 
             <MudCardContent>
@@ -40,8 +43,11 @@
 
                         <MudElement HtmlTag="div" Class="price-buy-spacing">
                             <MudText Class="lead">@trail.Month</MudText>
-                            <MudElement HtmlTag="div"><a class="btn btn-success" href="/loan/@trail.Id">Apply</a></MudElement>
                         </MudElement>
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Small" Href="@href">Apply</MudButton>
+                    </div>
+                    <div class="caption" id="@trail.Id">
+                        <h2>Ledger</h2>
                     </div>
                 </div>
             </MudCardContent>

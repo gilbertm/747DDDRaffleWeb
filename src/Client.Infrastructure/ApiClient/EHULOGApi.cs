@@ -14827,6 +14827,12 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? PackageId { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("packageSubscriptionStart", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? PackageSubscriptionStart { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("packageSubscriptionEnd", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? PackageSubscriptionEnd { get; set; } = default!;
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -14868,6 +14874,12 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? PackageId { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("packageSubscriptionStart", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? PackageSubscriptionStart { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("packageSubscriptionEnd", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? PackageSubscriptionEnd { get; set; } = default!;
 
     }
 
@@ -15813,6 +15825,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("maxAmounts", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public float MaxAmounts { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("subscriptionPrice", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public float SubscriptionPrice { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLender { get; set; } = default!;
 
@@ -15860,6 +15875,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [System.ComponentModel.DataAnnotations.Range(0.0D, double.MaxValue)]
         public float MaxAmounts { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("subscriptionPrice", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public float SubscriptionPrice { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLender { get; set; } = default!;
 
@@ -15901,6 +15919,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("maxAmounts", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Range(0.0D, double.MaxValue)]
         public float MaxAmounts { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("subscriptionPrice", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public float SubscriptionPrice { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLender { get; set; } = default!;

@@ -115,8 +115,8 @@ public static class EHULOGPermissions
         new("Delete Ledgers", EHULOGAction.Delete, EHULOGResource.Ledgers, IsLender: true, IsLessee: false),
         new("Export Ledgers", EHULOGAction.Export, EHULOGResource.Ledgers, IsLender: true, IsLessee: false),
 
-        new("View Loans", EHULOGAction.View, EHULOGResource.Loans, IsLender: true, IsLessee: true),
-        new("Search Loans", EHULOGAction.Search, EHULOGResource.Loans, IsLender: true, IsLessee: true),
+        new("View Loans", EHULOGAction.View, EHULOGResource.Loans, IsLender: true, IsLessee: true, IsBasic: true),
+        new("Search Loans", EHULOGAction.Search, EHULOGResource.Loans, IsLender: true, IsLessee: true, IsBasic: true),
         new("Create Loans", EHULOGAction.Create, EHULOGResource.Loans, IsLender: true, IsLessee: false),
         new("Update Loans", EHULOGAction.Update, EHULOGResource.Loans, IsLender: true, IsLessee: false),
         new("Delete Loans", EHULOGAction.Delete, EHULOGResource.Loans),

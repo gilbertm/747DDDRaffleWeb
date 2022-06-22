@@ -33,12 +33,35 @@ public partial class FrontAnonLoans
     [Inject]
     protected HttpClient HttpClient { get; set; } = default!;
 
+    [Inject]
+    protected AppDataService AppDataService { get; set; } = default!;
+
+    private AppUserDto _appUserDto;
+
     protected EntityContainerContext<LoanDto> Context { get; set; } = default!;
 
     protected bool Loading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        _appUserDto = await AppDataService.Start();
+
+        if (_appUserDto is not null)
+        {
+            if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
+            {
+                NavigationManager.NavigateTo("/catalog/all/loans");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lessee"))
+            {
+                NavigationManager.NavigateTo("/");
+                return;
+            }
+
+        }
+
         var anonLoans = await getAnonLoans(new());
 
         Context = new EntityContainerContext<LoanDto>(

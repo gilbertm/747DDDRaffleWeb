@@ -43,28 +43,14 @@ public partial class FrontLoans
 
     protected override async Task OnInitializedAsync()
     {
-        
         _appUserDto = await AppDataService.Start();
 
         if (_appUserDto is not null)
         {
-            appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(_appUserDto.Id)).ToList();
-
-            if (appUserProducts.Count() > 0)
+            if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
             {
-                foreach (var item in appUserProducts)
-                {
-                    if (item.Product is not null)
-                    {
-                        var image = await InputOutputResourceClient.GetAsync(item.Product.Id);
-
-                        if (image.Count() > 0)
-                        {
-
-                            item.Product.Image = image.First();
-                        }
-                    }
-                }
+                NavigationManager.NavigateTo("/catalog/all/loans");
+                return;
             }
 
             Context = new EntityContainerContext<LoanDto>(

@@ -1,19 +1,37 @@
-﻿@if (_appUserDto is { })
+﻿@using EHULOG.BlazorWebAssembly.Client.Components.Dialogs
+@if (_appUserDto is { })
 {
+    var href = "/loan/" + LoanId;
+
     if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lessee"))
     {
         if (IsPossibleToAppy && _loanApplicantDto is null)
         {
-            @* Todo:// can apply for this loan. *@
-            @* Do all necessary checks. *@
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Large" OnClick="(async ()=>{ await LesseeLoanApply(); await OnClick.InvokeAsync(); })">Apply</MudButton>
-            <MudTooltip Text="You can apply for this listing, subject to your system credentials and permissions.">
-                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-            </MudTooltip>
+            <MudContainer MaxWidth="MaxWidth.Large" Class="text-center">
+                @* Todo:// can apply for this loan. *@
+                @* Do all necessary checks. *@
+                @if (IsMinimal)
+                {
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="@(IsMinimal ? Size.Small : Size.Large)" Href="@href">Apply</MudButton>
+
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="@(IsMinimal ? Size.Small : Size.Large)" OnClick="(async ()=>{ await LesseeLoanApply(); await OnClick.InvokeAsync(); })">Apply</MudButton>
+                }
+                <MudTooltip Text="You can apply for this listing, subject to your system credentials and permissions.">
+                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                </MudTooltip>
+            </MudContainer>
 
         }
         else if (_loanApplicantDto is { })
         {
+            if (IsMinimal)
+            {
+                <MudButton Variant="Variant.Filled" FullWidth="true" StartIcon="@Icons.Material.Filled.ManageAccounts" IconColor="Color.Success" Size="@(IsMinimal ? Size.Small : Size.Large)" Href="@href">Manage</MudButton>
+            }
+
             switch (_loanApplicantDto.Flag)
             {
                 case 1:
@@ -35,31 +53,108 @@
                     break;
 
                 default:
-                    <MudButton Variant="Variant.Filled" Class="mb-4" StartIcon="@Icons.Material.Filled.CancelScheduleSend" IconColor="Color.Warning" Size="Size.Large">Applied</MudButton>
-                    <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Info">If you wish to cancel your application, click action.<br />Awaiting lender's acceptance and approval</MudAlert>
+                    @if (IsMinimal)
+                    {
+                        <MudContainer MaxWidth="MaxWidth.Large" Class="text-center mt-4">
+                            <MudIcon Icon="@Icons.Material.Filled.CancelScheduleSend" Title="Applied" Color="Color.Warning" Size="Size.Small" /> <MudText Typo="Typo.button">Applied</MudText>
+                            <MudTooltip Text="If you wish to cancel your application, click action. Awaiting lender's acceptance and approval.">
+                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                            </MudTooltip>
+
+                        </MudContainer>
+                    }
+                    else
+                    {
+                        <MudButton Variant="Variant.Filled" Class="mb-4" StartIcon="@Icons.Material.Filled.CancelScheduleSend" IconColor="Color.Warning" Size="@(IsMinimal ? Size.Small : Size.Large)">Applied</MudButton>
+                        <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Info">If you wish to cancel your application, click action.<br />Awaiting lender's acceptance and approval</MudAlert>
+                    }
                     break;
             }
         }
 
     }
 
+    if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
+    {
+        if (_loanApplicantDto is null)
+        {
+            <MudContainer MaxWidth="MaxWidth.Large" Class="text-center d-block">
+                <MudIcon Icon="@Icons.Material.Filled.PlayArrow" Title="Applied" Color="Color.Info" Size="Size.Large" /><br />
+                <MudText Typo="Typo.caption">Published and running with no lessee selected.</MudText><br />
+                <MudTooltip Text="No applicant(s).">
+                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                </MudTooltip>
+            </MudContainer>
+
+        }
+    }
+
     @if (Applicants is not null && Applicants.Count() > 0)
     {
-        _loanApplicantDto = Applicants?.Where(a => a.AppUser.Id.Equals(_appUserDto.Id)).Single();
+        _loanApplicantDto = Applicants?.Where(a => a.AppUser.Id.Equals(_appUserDto.Id)).SingleOrDefault();
 
         if (Applicants?.Count() > 0)
         {
-            <MudGrid Spacing="2" Justify="Justify.Center">
-                <MudItem xs="12" md="12">
-                    <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
-                    @foreach (var item in Applicants)
-                    {
-                        <MudAvatar Image="https://picsum.photos/400/250" Alt="@item.AppUser.Id.ToString()" />
-                    }
-                    <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@Applicants.Count()</MudText>
+            if (IsMinimal)
+            {
+                if (!string.IsNullOrEmpty(_appUserDto.RoleName) && (new string[] { "Admin", "Lender", "Lessee" }).Contains(_appUserDto.RoleName))
+                {
+                    <MudExpansionPanels Elevation="0">
+                        <MudExpansionPanel Text="Details" MaxHeight="250">
+                            <MudGrid Spacing="2" Justify="Justify.Center">
+                                <MudItem xs="12" md="12" Class="text-center">
+                                    <MudText Typo="Typo.h6" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
+                                    @foreach (var item in Applicants)
+                                    {
+                                        <MudAvatar Image="https://picsum.photos/400/250" Alt="@item.AppUser.Id.ToString()" />
+                                    }
+                                    <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@Applicants.Count()</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                }
+                else
+                {
+                    <MudGrid Spacing="2" Justify="Justify.Center">
+                        <MudItem xs="12" md="12" Class="text-center">
+                            @if (_applicants is { } && _applicants.Count > 0)
+                            {
+                                <MudText Typo="Typo.caption" Class="mt-4 mb-2 d-inline" Style="display:inline" Color="Color.Success">Applicants: </MudText>
 
-                </MudItem>
-            </MudGrid>
+                                <MudText Typo="Typo.caption" Class="mt-2" Color="Color.Success">@_applicants?.Count()</MudText>
+                                <MudContainer MaxWidth="MaxWidth.False" Class="mt-2">
+
+                                    @foreach (var item in _applicants)
+                                    {
+                                        <MudAvatar Image="@item.ImageURL" Alt="@item.AppUser.Id.ToString()" Size="Size.Small" />
+                                    }
+
+                                </MudContainer>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                }
+            }
+            else
+            {
+                <MudGrid Spacing="2" Justify="Justify.Center">
+                    <MudItem xs="12" md="12" Class="text-center">
+                        @if (_applicants is { } && _applicants.Count > 0)
+                        {
+                            <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
+
+                            @foreach (var item in _applicants)
+                            {
+                                <MudAvatar Image="@item.ImageURL" Alt="@item.AppUser.Id.ToString()" Style="cursor:pointer;" onmouseover="@(() => OpenLendersUserInspectionView(item))" onclick="@(() => OpenLendersUserInspectionView(item))" />
+                            }
+
+                            <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@_applicants?.Count()</MudText>
+                        }
+
+                    </MudItem>
+                </MudGrid>
+            }
         }
     }
 }

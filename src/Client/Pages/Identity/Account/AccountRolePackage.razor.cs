@@ -1,9 +1,11 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using System.Security.Claims;
 
@@ -49,17 +51,19 @@ public partial class AccountRolePackage
 
     private CustomValidation? _customValidation;
 
-    private bool _hideRolePackage { get; set; } = false;
+    private bool _hideRolePackage { get; set; }
 
-    private bool _selectedRoleIsOpen { get; set; } = false;
+    private bool _selectedRoleIsOpen { get; set; }
+
+    private Guid _oldPackage { get; set; }
 
     public class SelectedHoveredVisible
     {
-        public bool IsSelected { get; set; } = false;
+        public bool IsSelected { get; set; }
 
-        public bool IsHovered { get; set; } = false;
+        public bool IsHovered { get; set; }
 
-        public bool IsVisible { get; set; } = false;
+        public bool IsVisible { get; set; }
     }
 
     public class ExtendedPackageDto : SelectedHoveredVisible
@@ -80,6 +84,8 @@ public partial class AccountRolePackage
 
         if (_appUserDto is not null)
         {
+            _oldPackage = _appUserDto.PackageId;
+
             if (!_appUserDto.PackageId.Equals(default!))
             {
                 isForSubmission = true;
@@ -463,7 +469,11 @@ public partial class AccountRolePackage
                 {
                     // Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
                     Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
-                    await AuthService.ReLoginAsync(Navigation.Uri);
+
+                    DialogOptions noHeader = new DialogOptions() { NoHeader = true };
+                    Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
+
+                    return;
                 }
             }
         }
