@@ -15,8 +15,6 @@
 
 @code {
 
-    private List<LoanApplicantDtoVM> Applicants { get; set; } = default!;
-
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
         var _imageUrl = string.IsNullOrEmpty(trail.LoanLenders?.FirstOrDefault().Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.LoanLenders?.First().Product?.Image?.ImagePath);
@@ -48,23 +46,7 @@
 
                         @if (trail.LoanApplicants is not null)
                         {
-                            // create a new instance per item.
-                            Applicants = new();
-
-                            foreach (var item in trail.LoanApplicants)
-                            {
-                                LoanApplicantDtoVM loanApplicationDtoVM = new();
-                                loanApplicationDtoVM.AppUser = item.AppUser;
-                                loanApplicationDtoVM.Email = string.Empty;
-                                loanApplicationDtoVM.FirstName = string.Empty;
-                                loanApplicationDtoVM.LastName = string.Empty;
-                                loanApplicationDtoVM.PhoneNumber = string.Empty;
-                                loanApplicationDtoVM.ImageURL = string.Empty;
-
-                                Applicants.Add(loanApplicationDtoVM);
-                            }
-
-                            <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@Applicants" />
+                            <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" />
                         }
                         
                     </div>

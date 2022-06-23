@@ -13,7 +13,6 @@
 }
 
 @code {
-    private List<LoanApplicantDtoVM> Applicants { get; set; } = default!;
 
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
@@ -56,26 +55,10 @@
                    
                     @if (trail.LoanApplicants is not null)
                     {
-                        // create a new instance per item.
-                        Applicants = new();
-
-                        foreach (var item in trail.LoanApplicants)
-                        {
-                            LoanApplicantDtoVM loanApplicationDtoVM = new();
-                            loanApplicationDtoVM.AppUser = item.AppUser;
-                            loanApplicationDtoVM.Email = string.Empty;
-                            loanApplicationDtoVM.FirstName = string.Empty;
-                            loanApplicationDtoVM.LastName = string.Empty;
-                            loanApplicationDtoVM.PhoneNumber = string.Empty;
-                            loanApplicationDtoVM.ImageURL = string.Empty;
-
-                            Applicants.Add(loanApplicationDtoVM);
-                        }
-
-                        @if (Applicants.Count() > 0)
+                        @if (trail.LoanApplicants.Count() > 0)
                         {
                             <div class="caption" id="@trail.Id">
-                                <h2>@Applicants.Count()</h2>
+                                <h2>@trail.LoanApplicants.Count()</h2>
                             </div>
                         }
                     }

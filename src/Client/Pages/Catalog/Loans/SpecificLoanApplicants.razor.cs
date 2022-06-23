@@ -19,7 +19,7 @@ public partial class SpecificLoanApplicants
     protected IAuthenticationService AuthService { get; set; } = default!;
 
     [Parameter]
-    public List<LoanApplicantDtoVM> Applicants { get; set; } = default!;
+    public ICollection<LoanApplicantDto> Applicants { get; set; } = default!;
 
     [Parameter]
     public bool IsPossibleToAppy { get; set; } = false;
@@ -60,27 +60,6 @@ public partial class SpecificLoanApplicants
     protected override async Task OnInitializedAsync()
     {
         _appUserDto = await AppDataService.Start();
-
-        if (Applicants is not null && Applicants.Count() > 0)
-        {
-            foreach (var item in Applicants)
-            {
-                // initially loaded from fragments
-                // just reload, as per record info.
-                // else loaded fully. see specific loan for fully loaded.
-                if (string.IsNullOrEmpty(item.Email))
-                {
-                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await UsersClient.GetByIdAsync(item.AppUser.ApplicationUserId), Snackbar) is UserDetailsDto userDetails)
-                    {
-                        item.Email = userDetails.Email ?? string.Empty;
-                        item.FirstName = userDetails.FirstName ?? string.Empty;
-                        item.LastName = userDetails.LastName ?? string.Empty;
-                        item.PhoneNumber = userDetails.PhoneNumber ?? string.Empty;
-                        item.ImageURL = userDetails.ImageUrl ?? string.Empty;
-                    }
-                }
-            }
-        }
     }
 
     private async Task LesseeLoanApply()
@@ -107,9 +86,9 @@ public partial class SpecificLoanApplicants
 
     }
 
-    private void OpenLendersUserInspectionView(LoanApplicantDtoVM loanApplicantDtoVM)
+    private void OpenLendersUserInspectionView(LoanApplicantDto loanApplicantDto)
     {
-        var parameters = new DialogParameters { ["loanApplicantDtoVM"] = loanApplicantDtoVM };
+        var parameters = new DialogParameters { ["LoanApplicantDto"] = loanApplicantDto, ["IsOwner"] = IsOwner };
 
         DialogOptions noHeader = new DialogOptions() { CloseButton = true };
         Dialog.Show<LendersUserInspectionView>("User's Details", parameters, noHeader);

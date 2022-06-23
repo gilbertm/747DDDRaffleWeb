@@ -20,6 +20,8 @@ public partial class GenericLoans
     [Inject]
     protected IAuthorizationService AuthService { get; set; } = default!;
     [Inject]
+    protected IUsersClient UsersClient { get; set; } = default!;
+    [Inject]
     protected ILoanLendersClient LoanLendersClient { get; set; } = default!;
     [Inject]
     protected IProductsClient ProductsClient { get; set; } = default!;
@@ -121,6 +123,23 @@ public partial class GenericLoans
                            if (loanLender is not null && loanLender.Product is not null)
                            {
                                loanLender.Product.Image = appUserProducts.Where(ap => ap.ProductId.Equals(loanLender.ProductId)).First()?.Product?.Image;
+                           }
+
+                           if (item.LoanApplicants is { })
+                           {
+                               if (item.LoanApplicants.Count() > 0)
+                               {
+                                   foreach (var loanApplicantDto in item.LoanApplicants)
+                                   {
+                                       var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicantDto.AppUser.ApplicationUserId);
+
+                                       loanApplicantDto.AppUser.FirstName = userDetailsDto.FirstName;
+                                       loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
+                                       loanApplicantDto.AppUser.Email = userDetailsDto.Email;
+                                       loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+
+                                   }
+                               }
                            }
                        }
 

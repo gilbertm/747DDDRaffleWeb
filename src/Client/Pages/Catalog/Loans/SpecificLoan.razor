@@ -6,7 +6,7 @@
 
 @inject IStringLocalizer<SpecificLoan> L
 
-<EhulogTitle Title="@L["Loan"]" Description="@L["Manage Loan."]" />
+<EhulogTitle Title="@(_canUpdate ? @L["Loan (MINE)"] : @L["Loan"])" Description="@(_canUpdate ? @L["Manage this loan"] : @L["View"])" />
 
 @if (_appUserDto is not null)
 {
@@ -23,21 +23,18 @@
 
                     @if (_canUpdate)
                     {
-                        <MudItem xs="12" md="6">
-                            <MudText>This is my Loan posting.</MudText>
-                        </MudItem>
                         <MudItem xs="12" md="6" Class="d-none">
                             <MudTextField @bind-Value="RequestModel.Id" Label="@L[$"Loan Lender Id"]" />
                         </MudItem>
                     }
 
-                    @if (RequestModel.LoanLessees is not null || RequestModel.LoanLessees is not null)
+                    @if (RequestModel.LoanLessees is not null || RequestModel.LoanApplicants is not null)
                     {
                         <MudItem xs="12">
                             <MudGrid Spacing="2" Justify="Justify.Center">
                                 <MudItem xs="12" md="12" Class="text-center">
                                     <SpecificLoanLessee CanUpdate="_canUpdate" />
-                                    <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" Applicants="RequestModel.Applicants" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" />
+                                    <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" IsOwner="_canUpdate" Applicants="RequestModel.LoanApplicants" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" />
                                 </MudItem>
                             </MudGrid>
                         </MudItem>

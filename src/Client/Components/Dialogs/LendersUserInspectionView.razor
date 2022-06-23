@@ -1,26 +1,27 @@
 ﻿@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
+
 <MudDialog>
     <DialogContent>
-        @if (LoanApplicantDtoVM is not null)
+        @if (LoanApplicantDto is not null)
         {
             <MudGrid>
                 <MudItem xs="12" Class="d-block">
-                    <MudText Typo="Typo.h5" Class="text-center" Align="Align.Center" Color="Color.Primary">@LoanApplicantDtoVM.FirstName @LoanApplicantDtoVM.LastName</MudText>
+                    <MudText Typo="Typo.h5" Class="text-center" Align="Align.Center" Color="Color.Primary">@LoanApplicantDto.AppUser.FirstName @LoanApplicantDto.AppUser.LastName</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="12" md="4">
                     <MudCard Elevation="25">
                         <MudCardContent Style="padding:0px!important">
                             <div class="d-flex justify-center mb-4">
-                                @if (!string.IsNullOrEmpty(LoanApplicantDtoVM.ImageURL))
+                                @if (!string.IsNullOrEmpty(LoanApplicantDto.AppUser.ImageUrl))
                                 {
-                                    <MudAvatar Square="true" Image="@LoanApplicantDtoVM.ImageURL" Style=" width:100%;height:auto;"> </MudAvatar>
+                                    <MudAvatar Square="true" Image="@LoanApplicantDto.AppUser.ImageUrl" Style=" width:100%;height:auto;"> </MudAvatar>
                                 }
                                 else
                                 {
-                                    <MudAvatar Square="true" Color="Color.Primary" Style="width:100%;height:300px;">@LoanApplicantDtoVM.FirstName</MudAvatar>
+                                    <MudAvatar Square="true" Color="Color.Primary" Style="width:100%;height:300px;">@LoanApplicantDto.AppUser.FirstName</MudAvatar>
                                 }
                             </div>
-                            <MudText Align="Align.Center">@LoanApplicantDtoVM.Email</MudText>
+                            <MudText Align="Align.Center">@LoanApplicantDto.AppUser.Email</MudText>
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -33,13 +34,15 @@
                         </MudCardHeader>
                         <MudCardContent>
                             <MudGrid>
-                                <MudItem xs="6" md="4">
-                                    <MudText>City / Country</MudText>
+                                <MudItem xs="6">
+                                    <MudText Typo="Typo.body2">City: @LoanApplicantDto.AppUser.HomeCity</MudText>
+                                    <MudText Typo="Typo.body2">Region: @LoanApplicantDto.AppUser.HomeRegion</MudText>
+                                    <MudText Typo="Typo.body2">Country: @LoanApplicantDto.AppUser.HomeCountry</MudText>
                                 </MudItem>
-                                <MudItem xs="6" md="4">
+                                <MudItem xs="6">
                                     <MudText>Existing loans or latest history</MudText>
                                 </MudItem>
-                                <MudItem xs="6" md="4">
+                                <MudItem xs="6">
                                     <MudText>Ratings and recent comments</MudText>
                                 </MudItem>
 
@@ -61,7 +64,7 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
 
-    [Parameter] public LoanApplicantDtoVM LoanApplicantDtoVM { get; set; } = default!;
+    [Parameter] public LoanApplicantDto LoanApplicantDto { get; set; } = default!;
 
     [Parameter] public bool IsOwner { get; set; } = default!;
 

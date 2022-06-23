@@ -5,6 +5,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using static MudBlazor.CategoryTypes;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
 
@@ -149,6 +150,23 @@ public partial class SpecificLoan
                     }
                 }
 
+                if (loanDto.LoanApplicants is { })
+                {
+                    if (loanDto.LoanApplicants.Count() > 0)
+                    {
+                        foreach (var loanApplicantDto in loanDto.LoanApplicants)
+                        {
+                            var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicantDto.AppUser.ApplicationUserId);
+
+                            loanApplicantDto.AppUser.FirstName = userDetailsDto.FirstName;
+                            loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
+                            loanApplicantDto.AppUser.Email = userDetailsDto.Email;
+                            loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+
+                        }
+                    }
+                }
+
                 RequestModel.InfoCollateral = loanDto.InfoCollateral;
                 RequestModel.IsCollateral = loanDto.IsCollateral;
                 RequestModel.Interest = loanDto.Interest;
@@ -160,29 +178,6 @@ public partial class SpecificLoan
                 RequestModel.LoanApplicants = loanDto.LoanApplicants;
                 RequestModel.Ledgers = loanDto.Ledgers;
                 RequestModel.LoanLessees = loanDto.LoanLessees;
-
-                if (RequestModel.LoanApplicants is not null && RequestModel.LoanApplicants.Count() > 0)
-                {
-                    foreach (var item in RequestModel.LoanApplicants)
-                    {
-                        // load their profile images for display.
-                        if (await ApiHelper.ExecuteCallGuardedAsync(() => UsersClient.GetByIdAsync(item.AppUser.ApplicationUserId), Snackbar, _customValidation) is UserDetailsDto userDetails)
-                        {
-                            var loanApplicationDtoVM = userDetails.Adapt<LoanApplicantDtoVM>();
-                            loanApplicationDtoVM.AppUser = item.AppUser;
-                            loanApplicationDtoVM.Email = userDetails.Email ?? string.Empty;
-                            loanApplicationDtoVM.FirstName = userDetails.FirstName ?? string.Empty;
-                            loanApplicationDtoVM.LastName = userDetails.LastName ?? string.Empty;
-                            loanApplicationDtoVM.PhoneNumber = userDetails.PhoneNumber ?? string.Empty;
-                            loanApplicationDtoVM.ImageURL = userDetails.ImageUrl ?? string.Empty;
-
-                            // use a VM to prevent
-                            // creating local variables to traverse
-                            // as it causes render gotchas
-                            RequestModel.Applicants.Add(loanApplicationDtoVM);
-                        }
-                    }
-                }
             }
         }
     }
@@ -193,10 +188,6 @@ public class LoanViewModel : UpdateLoanRequest
     public Guid ProductId { get; set; }
 
     public ProductDto Product { get; set; } = new();
-
-    // for rendering on children
-    // see: specific loan applicant components
-    public List<LoanApplicantDtoVM> Applicants { get; set; } = new();
 }
 
 public class TemporaryLedgerTableElement
@@ -205,17 +196,4 @@ public class TemporaryLedgerTableElement
     public DateTime Due { get; set; }
     public float Amount { get; set; }
     public float Balance { get; set; }
-}
-
-public class LoanApplicantDtoVM : LoanApplicantDto
-{
-    public string Email { get; set; } = default!;
-
-    public string FirstName { get; set; } = default!;
-
-    public string LastName { get; set; } = default!;
-
-    public string? PhoneNumber { get; set; }
-
-    public string? ImageURL { get; set; }
 }
