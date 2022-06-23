@@ -37,7 +37,7 @@
                             <MudGrid Spacing="2" Justify="Justify.Center">
                                 <MudItem xs="12" md="12" Class="text-center">
                                     <SpecificLoanLessee CanUpdate="_canUpdate" />
-                                    <SpecificLoanApplicants LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" Applicants="RequestModel.LoanApplicants" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" />
+                                    <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" Applicants="RequestModel.Applicants" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" />
                                 </MudItem>
                             </MudGrid>
                         </MudItem>

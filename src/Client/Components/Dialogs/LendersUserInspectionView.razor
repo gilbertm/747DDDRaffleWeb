@@ -1,26 +1,74 @@
 ﻿@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
 <MudDialog>
     <DialogContent>
-        <MudText>LendersUserInspectionView</MudText>
-
-        @if (loanApplicantDtoVM is not null)
+        @if (LoanApplicantDtoVM is not null)
         {
-            <MudText>@loanApplicantDtoVM.Email</MudText>
+            <MudGrid>
+                <MudItem xs="12" Class="d-block">
+                    <MudText Typo="Typo.h5" Class="text-center" Align="Align.Center" Color="Color.Primary">@LoanApplicantDtoVM.FirstName @LoanApplicantDtoVM.LastName</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="4">
+                    <MudCard Elevation="25">
+                        <MudCardContent Style="padding:0px!important">
+                            <div class="d-flex justify-center mb-4">
+                                @if (!string.IsNullOrEmpty(LoanApplicantDtoVM.ImageURL))
+                                {
+                                    <MudAvatar Square="true" Image="@LoanApplicantDtoVM.ImageURL" Style=" width:100%;height:auto;"> </MudAvatar>
+                                }
+                                else
+                                {
+                                    <MudAvatar Square="true" Color="Color.Primary" Style="width:100%;height:300px;">@LoanApplicantDtoVM.FirstName</MudAvatar>
+                                }
+                            </div>
+                            <MudText Align="Align.Center">@LoanApplicantDtoVM.Email</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="8">
+                    <MudCard Elevation="25">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText>Profile Details</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="6" md="4">
+                                    <MudText>City / Country</MudText>
+                                </MudItem>
+                                <MudItem xs="6" md="4">
+                                    <MudText>Existing loans or latest history</MudText>
+                                </MudItem>
+                                <MudItem xs="6" md="4">
+                                    <MudText>Ratings and recent comments</MudText>
+                                </MudItem>
+
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                @if (IsOwner)
+                {
+                    <MudItem xs="12">
+                        <MudButton OnClick="Submit">Grant applicant and manage loan</MudButton>
+                    </MudItem>
+                }
+            </MudGrid>
         }
 
     </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Submit">Grant applicant and manage loan</MudButton>
-    </DialogActions>
 </MudDialog>
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
 
-    [Parameter] public LoanApplicantDtoVM loanApplicantDtoVM { get; set; }
+    [Parameter] public LoanApplicantDtoVM LoanApplicantDtoVM { get; set; } = default!;
+
+    [Parameter] public bool IsOwner { get; set; } = default!;
 
     private void Submit()
     {
         // do the needed submission and proceed to the loan page.
+        MudDialog.Close();
     }
-    
+
 }

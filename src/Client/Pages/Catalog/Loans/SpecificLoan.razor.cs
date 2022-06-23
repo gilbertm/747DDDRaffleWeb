@@ -15,6 +15,8 @@ public partial class SpecificLoan
     [Inject]
     protected IAuthorizationService AuthService { get; set; } = default!;
     [Inject]
+    protected IUsersClient UsersClient { get; set; } = default!;
+    [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
     [Inject]
     protected ILoansClient LoansClient { get; set; } = default!;
@@ -158,44 +160,32 @@ public partial class SpecificLoan
                 RequestModel.LoanApplicants = loanDto.LoanApplicants;
                 RequestModel.Ledgers = loanDto.Ledgers;
                 RequestModel.LoanLessees = loanDto.LoanLessees;
+
+                if (RequestModel.LoanApplicants is not null && RequestModel.LoanApplicants.Count() > 0)
+                {
+                    foreach (var item in RequestModel.LoanApplicants)
+                    {
+                        // load their profile images for display.
+                        if (await ApiHelper.ExecuteCallGuardedAsync(() => UsersClient.GetByIdAsync(item.AppUser.ApplicationUserId), Snackbar, _customValidation) is UserDetailsDto userDetails)
+                        {
+                            var loanApplicationDtoVM = userDetails.Adapt<LoanApplicantDtoVM>();
+                            loanApplicationDtoVM.AppUser = item.AppUser;
+                            loanApplicationDtoVM.Email = userDetails.Email ?? string.Empty;
+                            loanApplicationDtoVM.FirstName = userDetails.FirstName ?? string.Empty;
+                            loanApplicationDtoVM.LastName = userDetails.LastName ?? string.Empty;
+                            loanApplicationDtoVM.PhoneNumber = userDetails.PhoneNumber ?? string.Empty;
+                            loanApplicationDtoVM.ImageURL = userDetails.ImageUrl ?? string.Empty;
+
+                            // use a VM to prevent
+                            // creating local variables to traverse
+                            // as it causes render gotchas
+                            RequestModel.Applicants.Add(loanApplicationDtoVM);
+                        }
+                    }
+                }
             }
         }
     }
-
-    /*private void updateupdate(Guid id, Loan loan)
-    {
-          var updateLoanRequest = loan.Adapt<UpdateLoanRequest>();
-
-         if (await ApiHelper.ExecuteCallGuardedAsync(
-            async () => await LoansClient.UpdateAsync(id, updateLoanRequest),
-            Snackbar,
-            _customValidation) is Guid loanId)
-         {
-             if (id.Equals(loanId))
-             {
-                 var createLoanLedgerRequest = new CreateLoanLedgerRequest()
-                 {
-                     LoanId = loanId
-                 };
-
-                 if (await ApiHelper.ExecuteCallGuardedAsync(
-                     async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
-                     Snackbar,
-                     _customValidation) is Guid loanLedgerId)
-                 {
-                     if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
-                     {
-                         Snackbar.Add(L["Loan successfully updated."], Severity.Success);
-
-                         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-                     }
-                 }
-             }
-
-         }
-
-         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true); 
-    }*/
 }
 
 public class LoanViewModel : UpdateLoanRequest
@@ -203,6 +193,10 @@ public class LoanViewModel : UpdateLoanRequest
     public Guid ProductId { get; set; }
 
     public ProductDto Product { get; set; } = new();
+
+    // for rendering on children
+    // see: specific loan applicant components
+    public List<LoanApplicantDtoVM> Applicants { get; set; } = new();
 }
 
 public class TemporaryLedgerTableElement
@@ -211,4 +205,17 @@ public class TemporaryLedgerTableElement
     public DateTime Due { get; set; }
     public float Amount { get; set; }
     public float Balance { get; set; }
+}
+
+public class LoanApplicantDtoVM : LoanApplicantDto
+{
+    public string Email { get; set; } = default!;
+
+    public string FirstName { get; set; } = default!;
+
+    public string LastName { get; set; } = default!;
+
+    public string? PhoneNumber { get; set; }
+
+    public string? ImageURL { get; set; }
 }

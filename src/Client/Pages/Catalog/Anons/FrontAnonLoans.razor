@@ -2,6 +2,7 @@
 @attribute [AllowAnonymous]
 @using System.Globalization
 @using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
 
 
 <EhulogTitle Title="Loans" />
@@ -12,8 +13,11 @@
 }
 
 @code {
+    private List<LoanApplicantDtoVM> Applicants { get; set; } = default!;
+
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
+       
         var href = "/loan/" + @trail.Id;
 
         <MudCard>
@@ -26,7 +30,7 @@
                 @{
                     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail.LoanLenders?.FirstOrDefault()?.Product?.Name));
                 }
-                
+
                 <div class="thumbnail clearfix">
                     <img src="https://picsum.photos/400/250" alt="" />
                     <div class="caption" id="@trail.Id">
@@ -49,6 +53,32 @@
                     <div class="caption" id="@trail.Id">
                         <h2>Ledger</h2>
                     </div>
+                   
+                    @if (trail.LoanApplicants is not null)
+                    {
+                        // create a new instance per item.
+                        Applicants = new();
+
+                        foreach (var item in trail.LoanApplicants)
+                        {
+                            LoanApplicantDtoVM loanApplicationDtoVM = new();
+                            loanApplicationDtoVM.AppUser = item.AppUser;
+                            loanApplicationDtoVM.Email = string.Empty;
+                            loanApplicationDtoVM.FirstName = string.Empty;
+                            loanApplicationDtoVM.LastName = string.Empty;
+                            loanApplicationDtoVM.PhoneNumber = string.Empty;
+                            loanApplicationDtoVM.ImageURL = string.Empty;
+
+                            Applicants.Add(loanApplicationDtoVM);
+                        }
+
+                        @if (Applicants.Count() > 0)
+                        {
+                            <div class="caption" id="@trail.Id">
+                                <h2>@Applicants.Count()</h2>
+                            </div>
+                        }
+                    }
                 </div>
             </MudCardContent>
         </MudCard>

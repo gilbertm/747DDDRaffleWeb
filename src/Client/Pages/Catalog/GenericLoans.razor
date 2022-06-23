@@ -172,6 +172,10 @@
 }
 
 @code {
+
+
+    private List<LoanApplicantDtoVM> Applicants { get; set; } = default!;
+
     private bool _disabledInterestSelection = false;
 
     private string _infoCollateralGeneric = "Anything of value (goods, items, memoirs, collector's items, etc) that would encourage the Lender to consider you recipient of the hard earned money.";
@@ -497,6 +501,35 @@
 
     protected RenderFragment<LoanDto> LoanApplicantsTemplate => trail => __builder =>
     {
-        <SpecificLoanApplicants IsMinimal="false" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" />
+        bool isOwner = false;
+
+        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
+        if (loanLender is { })
+        {
+            isOwner = true;
+        }
+
+        if (trail.LoanApplicants is not null)
+        {
+            // create a new instance per item.
+            Applicants = new();
+
+            foreach (var item in trail.LoanApplicants)
+            {
+                LoanApplicantDtoVM loanApplicationDtoVM = new();
+                loanApplicationDtoVM.AppUser = item.AppUser;
+                loanApplicationDtoVM.Email = string.Empty;
+                loanApplicationDtoVM.FirstName = string.Empty;
+                loanApplicationDtoVM.LastName = string.Empty;
+                loanApplicationDtoVM.PhoneNumber = string.Empty;
+                loanApplicationDtoVM.ImageURL = string.Empty;
+
+                Applicants.Add(loanApplicationDtoVM);
+            }
+
+            <SpecificLoanApplicants IsMinimal="false" LoanId="@trail.Id" IsPossibleToAppy="true" IsOwner="@isOwner" Applicants="@Applicants" />
+        }
+
     };
 }

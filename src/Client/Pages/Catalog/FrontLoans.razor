@@ -15,13 +15,17 @@
 
 @code {
 
+    private List<LoanApplicantDtoVM> Applicants { get; set; } = default!;
+
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
-        <MudCard>
+        var _imageUrl = string.IsNullOrEmpty(trail.LoanLenders?.FirstOrDefault().Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.LoanLenders?.First().Product?.Image?.ImagePath);
 
+
+        <MudCard>
             <MudCardContent>
                 @{
-                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail));
+                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(_imageUrl));
                 }
 
                 @{
@@ -29,7 +33,7 @@
                 }
 
                 <div class="thumbnail clearfix">
-                    <img src="https://picsum.photos/400/250" alt="" />
+                    <img src="@_imageUrl" alt="" />
                     <div class="caption" id="@trail.Id">
                         <MudText Typo="Typo.h5">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
 
@@ -42,7 +46,27 @@
                             @* <MudElement HtmlTag="div"><a class="btn btn-success" href="/loan/@trail.Id">Add to cart</a></MudElement> *@
                         </MudElement>
 
-                        <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" />
+                        @if (trail.LoanApplicants is not null)
+                        {
+                            // create a new instance per item.
+                            Applicants = new();
+
+                            foreach (var item in trail.LoanApplicants)
+                            {
+                                LoanApplicantDtoVM loanApplicationDtoVM = new();
+                                loanApplicationDtoVM.AppUser = item.AppUser;
+                                loanApplicationDtoVM.Email = string.Empty;
+                                loanApplicationDtoVM.FirstName = string.Empty;
+                                loanApplicationDtoVM.LastName = string.Empty;
+                                loanApplicationDtoVM.PhoneNumber = string.Empty;
+                                loanApplicationDtoVM.ImageURL = string.Empty;
+
+                                Applicants.Add(loanApplicationDtoVM);
+                            }
+
+                            <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@Applicants" />
+                        }
+                        
                     </div>
                 </div>
             </MudCardContent>

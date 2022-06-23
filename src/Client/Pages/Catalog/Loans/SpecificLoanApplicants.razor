@@ -1,6 +1,11 @@
 ﻿@using EHULOG.BlazorWebAssembly.Client.Components.Dialogs
 @if (_appUserDto is { })
 {
+    if (Applicants is not null)
+    {
+        _loanApplicantDto = Applicants?.Where(a => a.AppUser.Id.Equals(_appUserDto.Id)).SingleOrDefault();
+    }
+
     var href = "/loan/" + LoanId;
 
     if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lessee"))
@@ -89,10 +94,11 @@
         }
     }
 
+    // the parameter Applicants must be used and not the local variable _applicants
+    // the parameter will be changing and will cause the rendering triggers
+    // so ignore local for razor UI captchas
     @if (Applicants is not null && Applicants.Count() > 0)
     {
-        _loanApplicantDto = Applicants?.Where(a => a.AppUser.Id.Equals(_appUserDto.Id)).SingleOrDefault();
-
         if (Applicants?.Count() > 0)
         {
             if (IsMinimal)
@@ -106,7 +112,12 @@
                                     <MudText Typo="Typo.h6" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
                                     @foreach (var item in Applicants)
                                     {
-                                        <MudAvatar Image="https://picsum.photos/400/250" Alt="@item.AppUser.Id.ToString()" />
+                                        if (string.IsNullOrEmpty(item.ImageURL))
+                                        {
+                                            item.ImageURL = Config[ConfigNames.ApiBaseUrl] + "Files/Images/ApplicationUser/Default/System - Basic Default - 480x270.jpg";
+                                        }
+
+                                        <MudAvatar Image="@item.ImageURL" Alt="@item.AppUser.Id.ToString()" />
                                     }
                                     <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@Applicants.Count()</MudText>
                                 </MudItem>
@@ -118,15 +129,19 @@
                 {
                     <MudGrid Spacing="2" Justify="Justify.Center">
                         <MudItem xs="12" md="12" Class="text-center">
-                            @if (_applicants is { } && _applicants.Count > 0)
+                            @if (Applicants is { } && Applicants.Count > 0)
                             {
                                 <MudText Typo="Typo.caption" Class="mt-4 mb-2 d-inline" Style="display:inline" Color="Color.Success">Applicants: </MudText>
 
-                                <MudText Typo="Typo.caption" Class="mt-2" Color="Color.Success">@_applicants?.Count()</MudText>
+                                <MudText Typo="Typo.caption" Class="mt-2" Color="Color.Success">@Applicants?.Count()</MudText>
                                 <MudContainer MaxWidth="MaxWidth.False" Class="mt-2">
 
-                                    @foreach (var item in _applicants)
+                                    @foreach (var item in Applicants)
                                     {
+                                        if (string.IsNullOrEmpty(item.ImageURL))
+                                        {
+                                            item.ImageURL = Config[ConfigNames.ApiBaseUrl] + "Files/Images/ApplicationUser/Default/System - Basic Default - 480x270.jpg";
+                                        }
                                         <MudAvatar Image="@item.ImageURL" Alt="@item.AppUser.Id.ToString()" Size="Size.Small" />
                                     }
 
@@ -138,22 +153,55 @@
             }
             else
             {
-                <MudGrid Spacing="2" Justify="Justify.Center">
-                    <MudItem xs="12" md="12" Class="text-center">
-                        @if (_applicants is { } && _applicants.Count > 0)
-                        {
-                            <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
-
-                            @foreach (var item in _applicants)
+                @if (!string.IsNullOrEmpty(_appUserDto.RoleName) && (new string[] { "Admin", "Lender" }).Contains(_appUserDto.RoleName))
+                {
+                    <MudGrid Spacing="2" Justify="Justify.Center">
+                        <MudItem xs="12" md="12" Class="text-center">
+                            @* use the parameter for UI rendering checks *@
+                            @if (Applicants is { } && Applicants.Count > 0)
                             {
-                                <MudAvatar Image="@item.ImageURL" Alt="@item.AppUser.Id.ToString()" Style="cursor:pointer;" onmouseover="@(() => OpenLendersUserInspectionView(item))" onclick="@(() => OpenLendersUserInspectionView(item))" />
+                                <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
+                                @* use the local for traversal purposes *@
+                                @foreach (var item in Applicants)
+                                {
+                                    if (string.IsNullOrEmpty(item.ImageURL))
+                                    {
+                                        item.ImageURL = Config[ConfigNames.ApiBaseUrl] + "Files/Images/ApplicationUser/Default/System - Basic Default - 480x270.jpg";
+                                    }
+                                    <MudAvatar Image="@item.ImageURL" Alt="@item.AppUser.Id.ToString()" Style="cursor:pointer;" Size="Size.Large" onclick="@(() => OpenLendersUserInspectionView(item))" />
+                                }
+
+                                <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@Applicants?.Count()</MudText>
                             }
 
-                            <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@_applicants?.Count()</MudText>
-                        }
+                        </MudItem>
+                    </MudGrid>
+                }
+                else
+                {
+                    <MudGrid Spacing="2" Justify="Justify.Center">
+                        <MudItem xs="12" md="12" Class="text-center">
+                            @* use the parameter for UI rendering checks *@
+                            @if (Applicants is not null && Applicants.Count > 0)
+                            {
+                                <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Success">Applicants</MudText>
+                                @* use the local for traversal purposes *@
+                                @foreach (var item in Applicants)
+                                {
+                                    if (string.IsNullOrEmpty(item.ImageURL))
+                                    {
+                                        item.ImageURL = Config[ConfigNames.ApiBaseUrl] + "Files/Images/ApplicationUser/Default/System - Basic Default - 480x270.jpg";
+                                    }
 
-                    </MudItem>
-                </MudGrid>
+                                    <MudAvatar Image="@item.ImageURL" Alt="@item.AppUser.Id.ToString()" Style="cursor:pointer;" />
+                                }
+
+                                <MudText Typo="Typo.caption" Class="mt-2 d-block" Style="display:block;width:100%;" Color="Color.Success">@Applicants?.Count()</MudText>
+                            }
+
+                        </MudItem>
+                    </MudGrid>
+                }
             }
         }
     }

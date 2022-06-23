@@ -60,6 +60,23 @@ public partial class FrontLoans
 
                        var result = await LoansClient.SearchAsync(loanFilter);
 
+                       foreach (var item in result.Data)
+                       {
+                           var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
+
+                           if (loanLender is not null && loanLender.Product is not null)
+                           {
+
+                               var image = await InputOutputResourceClient.GetAsync(loanLender.ProductId);
+
+                               if (image.Count() > 0)
+                               {
+
+                                   loanLender.Product.Image = image.First();
+                               }
+                           }
+                       }
+
                        return result.Adapt<EntityContainerPaginationResponse<LoanDto>>();
                    },
                    template: BodyTemplate);
