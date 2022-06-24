@@ -17,21 +17,69 @@
 
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
-        var _imageUrl = string.IsNullOrEmpty(trail.LoanLenders?.FirstOrDefault().Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.LoanLenders?.First().Product?.Image?.ImagePath);
+        LoanLesseeDto _loanLesseeDto = default!;
+        LoanLenderDto _loanLenderDto = default!;
+        List<LoanLedgerDto> _loanLedgers = default!;
+        float _sumLoan = 0f;
+
+        string _imageUrl = string.Empty;
+        string _productName = string.Empty;
+
+        if (trail.LoanLenders is { })
+        {
+            _loanLenderDto = trail.LoanLenders?.FirstOrDefault() ?? default!;
+            _imageUrl = string.IsNullOrEmpty(trail.LoanLenders?.FirstOrDefault()?.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.LoanLenders?.First().Product?.Image?.ImagePath);
+            _productName = trail.LoanLenders?.FirstOrDefault()?.Product?.Name ?? string.Empty;
+        }
+
+        if (trail.LoanLessees is not null)
+        {
+            _loanLesseeDto = trail.LoanLessees?.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
+        }
+
+        if (trail.Ledgers is { })
+        {
+            _loanLedgers = trail.Ledgers?.ToList() ?? default!;
+
+            if (!(_loanLedgers.Equals(default)))
+            {
+                _sumLoan = _loanLedgers.Sum(l => l.AmountDue);
+            }
+        }
 
 
         <MudCard>
             <MudCardContent>
-                @{
-                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(_imageUrl));
+                <MudImage Fluid="true" Src="@_imageUrl" Alt="@_productName" Class="rounded-lg" />
+            </MudCardContent>
+            <MudCardContent>
+                @if (trail.LoanApplicants is not null)
+                {
+                    <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" LoanLessee="@_loanLesseeDto" LoanStatus="@trail.Status" />
                 }
+            </MudCardContent>
+            <MudCardContent>
+                <MudText Typo="Typo.body1">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
+                <MudText Typo="Typo.body1">Amount: @string.Format("{0:#,0.00}", _sumLoan)</MudText>
+                <MudPaper Class="pa-2 ma-2 text-left d-block" Elevation="0">
+                    <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@(trail.Status.Equals(LoanStatus.Published) ? Icons.Material.Filled.Check : Icons.Material.Filled.DoNotDisturb)" Title="Status" /> @trail.Status</MudText>
+                    <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Money" Title="Base Amount" /> Base: @string.Format("{0:#,0.00}", _loanLenderDto?.Product?.Amount)</MudText>
+                    <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText>
+                    <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText>
+                    <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.InterestType</MudText>
+                    <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText>
+                </MudPaper>
+            </MudCardContent>
 
-                @{
+            @* <MudCardContent>
+                @ {
                     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(trail.LoanLenders?.FirstOrDefault()?.Product?.Name));
                 }
 
                 <div class="thumbnail clearfix">
-                    <img src="@_imageUrl" alt="" />
+
+                    <MudImage Fluid="true" Src="@_imageUrl" Alt="Swedish Farm House" Class="rounded-lg" />
+
                     <div class="caption" id="@trail.Id">
                         <MudText Typo="Typo.h5">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
 
@@ -41,17 +89,12 @@
 
                         <MudElement HtmlTag="div" Class="price-buy-spacing">
                             <MudText Class="lead">@trail.Month</MudText>
-                            @* <MudElement HtmlTag="div"><a class="btn btn-success" href="/loan/@trail.Id">Add to cart</a></MudElement> *@
-                        </MudElement>
+                            @ * <MudElement HtmlTag="div"><a class="btn btn-success" href="/loan/@trail.Id">Add to cart</a></MudElement> * @
+                        </MudElement>                       
 
-                        @if (trail.LoanApplicants is not null)
-                        {
-                            <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" />
-                        }
-                        
                     </div>
                 </div>
-            </MudCardContent>
+            </MudCardContent> *@
         </MudCard>
     };
 }

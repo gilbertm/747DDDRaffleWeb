@@ -3,12 +3,11 @@ using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Shared;
+using EHULOG.BlazorWebAssembly.Client.Shared.Dialogs;
 using Mapster;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using static MudBlazor.CategoryTypes;
-
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
 
 public partial class SpecificLoanApplicants
@@ -20,6 +19,12 @@ public partial class SpecificLoanApplicants
 
     [Parameter]
     public ICollection<LoanApplicantDto> Applicants { get; set; } = default!;
+
+    [Parameter]
+    public LoanLesseeDto LoanLessee { get; set; } = default!;
+
+    [Parameter]
+    public LoanStatus LoanStatus { get; set; }
 
     [Parameter]
     public bool IsPossibleToAppy { get; set; } = false;
@@ -35,15 +40,9 @@ public partial class SpecificLoanApplicants
 
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
-    [Inject]
-    protected IPersonalClient PersonalClient { get; set; } = default!;
-
-    [Inject]
-    protected IUsersClient UsersClient { get; set; } = default!;
 
     [Inject]
     protected ILoanApplicantsClient LoanApplicantsClient { get; set; } = default!;
-
 
     private AppUserDto _appUserDto { get; set; } = default!;
 
@@ -88,7 +87,7 @@ public partial class SpecificLoanApplicants
 
     private void OpenLendersUserInspectionView(LoanApplicantDto loanApplicantDto)
     {
-        var parameters = new DialogParameters { ["LoanApplicantDto"] = loanApplicantDto, ["IsOwner"] = IsOwner };
+        var parameters = new DialogParameters { ["LoanApplicantDto"] = loanApplicantDto, ["IsOwner"] = IsOwner, ["LoanStatus"] = LoanStatus };
 
         DialogOptions noHeader = new DialogOptions() { CloseButton = true };
         Dialog.Show<LendersUserInspectionView>("User's Details", parameters, noHeader);

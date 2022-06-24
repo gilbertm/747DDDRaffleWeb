@@ -1,4 +1,4 @@
-﻿@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
+﻿@namespace EHULOG.BlazorWebAssembly.Client.Shared.Dialogs
 
 <MudDialog>
     <DialogContent>
@@ -50,28 +50,16 @@
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
-                @if (IsOwner)
+                @if (IsOwner && LoanStatus.Equals(LoanStatus.Published))
                 {
                     <MudItem xs="12">
-                        <MudButton OnClick="Submit">Grant applicant and manage loan</MudButton>
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Large" OnClick="Submit">Approve</MudButton>
+                        <MudTooltip Text="Approve this applicant as the lessee and manage this loan.">
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip>
                     </MudItem>
                 }
             </MudGrid>
         }
-
     </DialogContent>
 </MudDialog>
-@code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter] public LoanApplicantDto LoanApplicantDto { get; set; } = default!;
-
-    [Parameter] public bool IsOwner { get; set; } = default!;
-
-    private void Submit()
-    {
-        // do the needed submission and proceed to the loan page.
-        MudDialog.Close();
-    }
-
-}

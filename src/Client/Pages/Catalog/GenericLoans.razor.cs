@@ -58,6 +58,12 @@ public partial class GenericLoans
 
         if (_appUserDto is not null)
         {
+
+            // for lessee, direct to the front loans
+            if ((new string[] { "Lessee" }).Contains(_appUserDto.RoleName)) {
+                NavigationManager.NavigateTo("/");
+            }
+
             appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(_appUserDto.Id)).ToList();
 
             if (appUserProducts.Count() > 0)
@@ -300,19 +306,46 @@ public partial class GenericLoans
                         }
 
                         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-                    } /*,
+                    },
                    canUpdateEntityFunc: LoanDto =>
                    {
+                       if (new[] { LoanStatus.Draft, LoanStatus.Published }.Contains(LoanDto.Status))
+                       {
+                           if (LoanDto.LoanLessees is { })
+                           {
+                               if (LoanDto.LoanLessees.Count() > 0)
+                               {
+                                   return false;
+                               }
+                           }
+
+                           return true;
+                       }
+
                        return false;
                    },
                    canDeleteEntityFunc: LoanDto =>
                    {
+                       if (new[] { LoanStatus.Draft, LoanStatus.Published }.Contains(LoanDto.Status))
+                       {
+                           if (LoanDto.LoanLessees is { })
+                           {
+                               if (LoanDto.LoanLessees.Count() > 0)
+                               {
+                                   return false;
+                               }
+                           }
+
+                           return true;
+                       }
+
                        return false;
+
                    },
                    hasExtraActionsFunc: () =>
                    {
-                       return false;
-                   } */
+                       return true;
+                   }
                    );
         }
     }

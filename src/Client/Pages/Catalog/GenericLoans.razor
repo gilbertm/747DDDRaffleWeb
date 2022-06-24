@@ -11,7 +11,7 @@
 @if (_appUserDto is not null)
 {
     @* @ref="_table" *@
-    <EntityTable TEntity="LoanDto" TId="Guid" TRequest="LoanViewModel" Context="@Context">
+    <EntityTable TEntity="LoanDto" TId="Guid" TRequest="LoanViewModel" Context="@Context" ExtraActions="@ExtraAction">
         <EditFormContent>
 
             @if (!Context.AddEditModal.IsCreate)
@@ -498,11 +498,13 @@
 
     protected RenderFragment<LoanDto> LoanApplicantsTemplate => trail => __builder =>
     {
+        LoanLesseeDto _loanLesseeDto = default!;
+
         @if (_appUserDto is not null)
         {
             bool isOwner = false;
 
-            if (trail.LoanLenders is not null)
+            @if (trail.LoanLenders is not null)
             {
                 var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
 
@@ -512,9 +514,34 @@
                 }
             }
 
-            if (trail.LoanApplicants is not null)
+            @if (trail.LoanLessees is not null)
             {
-                <SpecificLoanApplicants IsMinimal="false" LoanId="@trail.Id" IsPossibleToAppy="true" IsOwner="@isOwner" Applicants="@trail.LoanApplicants" />
+                _loanLesseeDto = trail.LoanLessees?.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
+            }
+
+            <SpecificLoanLender LoanStatus="@trail.Status" />
+
+            @if (trail.LoanApplicants is not null)
+            {
+                <SpecificLoanApplicants IsMinimal="false" LoanId="@trail.Id" IsPossibleToAppy="true" IsOwner="@isOwner" Applicants="@trail.LoanApplicants" LoanStatus="@trail.Status" LoanLessee="@_loanLesseeDto" />
+            }
+
+        }
+
+    };
+
+    protected RenderFragment<LoanDto> ExtraAction => trail => __builder =>
+    {
+        @if (_appUserDto is not null)
+        {
+            if (trail.LoanLenders is not null)
+            {
+                var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
+                if (loanLender is { })
+                {
+                    <MudButton Href="@string.Format("/loan/{0}", trail.Id)">Manage</MudButton>
+                }
             }
 
         }

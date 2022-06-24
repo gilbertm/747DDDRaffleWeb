@@ -1,0 +1,39 @@
+﻿@using EHULOG.BlazorWebAssembly.Client.Components.Dialogs
+
+@if (_appUserDto is { })
+{
+    if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
+    {
+        @switch (LoanStatus)
+        {
+            case LoanStatus.Draft:
+                <MudContainer MaxWidth="MaxWidth.Large" Class="text-center d-block">
+                    <MudIcon Icon="@Icons.Material.Filled.EditNote" Title="Applied" Color="Color.Surface" Size="Size.Large" /><br />
+                    <MudText Typo="Typo.caption">@nameof(LoanStatus.Draft)</MudText><br />
+                    <MudTooltip Text="Drafts and non-available to public.">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                    </MudTooltip>
+                </MudContainer>
+                break;
+            case LoanStatus.Published:
+                    <MudContainer MaxWidth="MaxWidth.Large" Class="text-center d-block">
+                    <MudIcon Icon="@Icons.Material.Filled.Storefront" Title="Applied" Color="Color.Surface" Size="Size.Large" /><br />
+                        <MudText Typo="Typo.caption">@nameof(LoanStatus.Published)</MudText><br />
+                        <MudTooltip Text="Running and awaiting applicant(s).">
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip>
+                    </MudContainer>
+                break;
+            case LoanStatus.Assigned:
+                <MudContainer MaxWidth="MaxWidth.Large" Class="text-center d-block">
+                    <MudIcon Icon="@Icons.Material.Filled.SupervisorAccount" Title="Applied" Color="Color.Success" Size="Size.Large" /><br />
+                    <MudText Typo="Typo.caption">@nameof(LoanStatus.Assigned)</MudText><br />
+                    <MudTooltip Text="Lessee is assigned. Loan should be in progress.">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                    </MudTooltip>
+                </MudContainer>
+                break;
+
+        }
+    }
+}

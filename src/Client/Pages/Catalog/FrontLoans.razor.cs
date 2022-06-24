@@ -56,9 +56,11 @@ public partial class FrontLoans
             Context = new EntityContainerContext<LoanDto>(
                    searchFunc: async filter =>
                    {
-                       var loanFilter = filter.Adapt<SearchLoansRequest>();
+                       var loanFilter = filter.Adapt<SearchLoansLesseeRequest>();
 
-                       var result = await LoansClient.SearchAsync(loanFilter);
+                       loanFilter.Status = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Payment };
+
+                       var result = await LoansClient.SearchLesseeAsync(loanFilter);
 
                        foreach (var item in result.Data)
                        {

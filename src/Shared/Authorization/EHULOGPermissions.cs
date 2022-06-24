@@ -119,8 +119,8 @@ public static class EHULOGPermissions
         new("Search Loans", EHULOGAction.Search, EHULOGResource.Loans, IsLender: true, IsLessee: true, IsBasic: true),
         new("Create Loans", EHULOGAction.Create, EHULOGResource.Loans, IsLender: true, IsLessee: false),
         new("Update Loans", EHULOGAction.Update, EHULOGResource.Loans, IsLender: true, IsLessee: false),
-        new("Delete Loans", EHULOGAction.Delete, EHULOGResource.Loans),
-        new("Export Loans", EHULOGAction.Export, EHULOGResource.Loans),
+        new("Delete Loans", EHULOGAction.Delete, EHULOGResource.Loans, IsLender: true),
+        new("Export Loans", EHULOGAction.Export, EHULOGResource.Loans, IsLender: true),
 
         new("View LoanLenders", EHULOGAction.View, EHULOGResource.LoanLenders, IsLender: true, IsLessee: true),
         new("Search LoanLenders", EHULOGAction.Search, EHULOGResource.LoanLenders, IsLender: true, IsLessee: true),
@@ -131,10 +131,10 @@ public static class EHULOGPermissions
 
         new("View LoanLessees", EHULOGAction.View, EHULOGResource.LoanLessees, IsLender: true),
         new("Search LoanLessees", EHULOGAction.Search, EHULOGResource.LoanLessees, IsLender: true),
-        new("Create LoanLessees", EHULOGAction.Create, EHULOGResource.LoanLessees),
-        new("Update LoanLessees", EHULOGAction.Update, EHULOGResource.LoanLessees),
-        new("Delete LoanLessees", EHULOGAction.Delete, EHULOGResource.LoanLessees),
-        new("Export LoanLessees", EHULOGAction.Export, EHULOGResource.LoanLessees),
+        new("Create LoanLessees", EHULOGAction.Create, EHULOGResource.LoanLessees, IsLender: true),
+        new("Update LoanLessees", EHULOGAction.Update, EHULOGResource.LoanLessees, IsLender: true),
+        new("Delete LoanLessees", EHULOGAction.Delete, EHULOGResource.LoanLessees, IsLender: true),
+        new("Export LoanLessees", EHULOGAction.Export, EHULOGResource.LoanLessees, IsLender: true),
 
         new("View LoanLocations", EHULOGAction.View, EHULOGResource.LoanLocations, IsBasic: true),
         new("Search LoanLocations", EHULOGAction.Search, EHULOGResource.LoanLocations, IsBasic: true),
