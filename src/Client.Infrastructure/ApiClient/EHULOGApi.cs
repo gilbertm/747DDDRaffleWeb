@@ -11126,11 +11126,11 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
     public partial interface ILoansClient : IApiService
     {
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansRequest request);
+        System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansAnonRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansAnonRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Search loans using available filters.
@@ -11253,14 +11253,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansRequest request)
+        public virtual System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansAnonRequest request)
         {
             return SearchAnonAsync(request, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PaginationResponseOfLoanDto> SearchAnonAsync(SearchLoansAnonRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -15896,6 +15896,52 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SearchLoansAnonRequest : PaginationFilter
+    {
+        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCity { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCountry { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SearchLoansLesseeRequest : PaginationFilter
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? Id { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("interestType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public InterestType? InterestType { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanStatus> Status { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCity { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? HomeCountry { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("showApplicants", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool ShowApplicants { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("ledgers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLedgerDto>? Ledgers { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanLenders", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLenderDto>? LoanLenders { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanLessees", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanLesseeDto>? LoanLessees { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("loanApplicants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanApplicantDto>? LoanApplicants { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class SearchLoansRequest : PaginationFilter
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -15933,41 +15979,6 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("isLessee", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsLessee { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? HomeCity { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("homeCountry", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? HomeCountry { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("showApplicants", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool ShowApplicants { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("ledgers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<LoanLedgerDto>? Ledgers { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("loanLenders", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<LoanLenderDto>? LoanLenders { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("loanLessees", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<LoanLesseeDto>? LoanLessees { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("loanApplicants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<LoanApplicantDto>? LoanApplicants { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SearchLoansLesseeRequest : PaginationFilter
-    {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? Id { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("interestType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public InterestType? InterestType { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<LoanStatus> Status { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? HomeCity { get; set; } = default!;

@@ -97,87 +97,93 @@ public partial class SpecificLoan
             if (await ApiHelper.ExecuteCallGuardedAsync(
                                             async () => await LoansClient.GetAsync(loanId.Value),
                                             Snackbar,
-                                            _customValidation) is LoanDto loanDto && loanDto is not null)
+                                            _customValidation) is LoanDto loanDto)
             {
-                RequestModel.Id = loanDto.Id;
 
-                // lender
-                if (loanDto.LoanLenders is not null && loanDto.LoanLenders.Count() > 0)
+                if (loanDto is { })
                 {
-                    var loanLender = loanDto.LoanLenders.Where(ll => ll.LoanId.Equals(loanDto.Id)).First();
+                    RequestModel.Id = loanDto.Id;
 
-                    RequestModel.Product = loanLender.Product is not null ? loanLender.Product : default!;
-                    RequestModel.ProductId = !loanLender.ProductId.Equals(Guid.Empty) ? loanLender.ProductId : default;
-
-                    if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lender"))
+                    // lender
+                    if (loanDto.LoanLenders is not null && loanDto.LoanLenders.Count() > 0)
                     {
-                        // owner
-                        if (loanLender.Lender is not null && loanLender.LenderId.Equals(_appUserDto.Id))
+                        var loanLender = loanDto.LoanLenders.Where(ll => ll.LoanId.Equals(loanDto.Id)).First();
+
+                        RequestModel.Product = loanLender.Product is not null ? loanLender.Product : default!;
+                        RequestModel.ProductId = !loanLender.ProductId.Equals(Guid.Empty) ? loanLender.ProductId : default;
+
+                        if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lender"))
                         {
-                            _canUpdate = true;
-                            _canUpdateLedger = true;
+                            // owner
+                            if (loanLender.Lender is not null && loanLender.LenderId.Equals(_appUserDto.Id))
+                            {
+                                _canUpdate = true;
+                                _canUpdateLedger = true;
+                            }
+
                         }
 
-                    }
+                        // get the product image
+                        var image = await InputOutputResourceClient.GetAsync(RequestModel.ProductId);
 
-                    // get the product image
-                    var image = await InputOutputResourceClient.GetAsync(RequestModel.ProductId);
-
-                    if (image.Count() > 0)
-                    {
-                        RequestModel.Product.Image = image.First();
-                    }
-                }
-
-                // lessee
-                if (loanDto.LoanLessees is not null && loanDto.LoanLessees.Count() > 0)
-                {
-                    if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lessee"))
-                    {
-                        var loanLessee = loanDto.LoanLessees.Where(ll => ll.LoanId.Equals(loanDto.Id)).First();
-
-                        if (loanLessee.Lessee is not null && loanLessee.LesseeId.Equals(_appUserDto.Id))
+                        if (image.Count() > 0)
                         {
-                            _canUpdateLedger = true;
+                            RequestModel.Product.Image = image.First();
                         }
                     }
-                }
-                else if (loanDto.LoanLessees is null || loanDto.LoanLessees.Count() <= 0)
-                {
-                    if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lessee"))
-                    {
-                        _isPossibleToAppy = true;
-                    }
-                }
 
-                if (loanDto.LoanApplicants is { })
-                {
-                    if (loanDto.LoanApplicants.Count() > 0)
+                    // lessee
+                    if (loanDto.LoanLessees is not null && loanDto.LoanLessees.Count() > 0)
                     {
-                        foreach (var loanApplicantDto in loanDto.LoanApplicants)
+                        if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lessee"))
                         {
-                            var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicantDto.AppUser.ApplicationUserId);
+                            var loanLessee = loanDto.LoanLessees.Where(ll => ll.LoanId.Equals(loanDto.Id)).First();
 
-                            loanApplicantDto.AppUser.FirstName = userDetailsDto.FirstName;
-                            loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
-                            loanApplicantDto.AppUser.Email = userDetailsDto.Email;
-                            loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
-
+                            if (loanLessee.Lessee is not null && loanLessee.LesseeId.Equals(_appUserDto.Id))
+                            {
+                                _canUpdateLedger = true;
+                            }
                         }
                     }
+                    else if (loanDto.LoanLessees is null || loanDto.LoanLessees.Count() <= 0)
+                    {
+                        if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lessee"))
+                        {
+                            _isPossibleToAppy = true;
+                        }
+                    }
+
+                    if (loanDto.LoanApplicants is { })
+                    {
+                        if (loanDto.LoanApplicants.Count() > 0)
+                        {
+                            foreach (var loanApplicantDto in loanDto.LoanApplicants)
+                            {
+                                var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicantDto.AppUser.ApplicationUserId);
+
+                                loanApplicantDto.AppUser.FirstName = userDetailsDto.FirstName;
+                                loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
+                                loanApplicantDto.AppUser.Email = userDetailsDto.Email;
+                                loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+
+                            }
+                        }
+                    }
+
+                    RequestModel.InfoCollateral = loanDto.InfoCollateral;
+                    RequestModel.IsCollateral = loanDto.IsCollateral;
+                    RequestModel.Interest = loanDto.Interest;
+                    RequestModel.InterestType = loanDto.InterestType;
+                    RequestModel.Status = loanDto.Status;
+                    RequestModel.Month = loanDto.Month;
+                    RequestModel.StartOfPayment = loanDto.StartOfPayment;
+
+                    RequestModel.LoanApplicants = loanDto.LoanApplicants;
+                    RequestModel.Ledgers = loanDto.Ledgers;
+                    RequestModel.LoanLessees = loanDto.LoanLessees;
                 }
 
-                RequestModel.InfoCollateral = loanDto.InfoCollateral;
-                RequestModel.IsCollateral = loanDto.IsCollateral;
-                RequestModel.Interest = loanDto.Interest;
-                RequestModel.InterestType = loanDto.InterestType;
-                RequestModel.Status = loanDto.Status;
-                RequestModel.Month = loanDto.Month;
-                RequestModel.StartOfPayment = loanDto.StartOfPayment;
-
-                RequestModel.LoanApplicants = loanDto.LoanApplicants;
-                RequestModel.Ledgers = loanDto.Ledgers;
-                RequestModel.LoanLessees = loanDto.LoanLessees;
+               
             }
         }
     }

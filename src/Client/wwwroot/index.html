@@ -14,10 +14,10 @@
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="ehulog.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="ehulog.png" />
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
-    <script src='https://tiles.locationiq.com/v3/js/liq-styles-ctrl-gl.js?v=0.1.8'></script>
-    <link href='https://tiles.locationiq.com/v3/css/liq-styles-ctrl-gl.css?v=0.1.8' rel='stylesheet' />
+    <!-- @* <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' /> *@ -->
+    <!-- <script src='https://tiles.locationiq.com/v3/js/liq-styles-ctrl-gl.js?v=0.1.8'></script> -->
+    <!-- <link href='https://tiles.locationiq.com/v3/css/liq-styles-ctrl-gl.css?v=0.1.8' rel='stylesheet' /> -->
 </head>
 
 <body>
@@ -82,10 +82,12 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_content/Microsoft.Authentication.WebAssembly.Msal/AuthenticationService.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCcvepI3EDqbsthQ7AXSrnsIvY4eEOEz88&libraries=places" async defer></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCcvepI3EDqbsthQ7AXSrnsIvY4eEOEz88&libraries=places" async defer></script> -->
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="./Location.js"></script>
+    <script src="js/scriptLoader.js"></script>
+    <script src="js/cssLoader.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
     <script>
@@ -124,7 +126,7 @@
         }
 
         /* map */
-        window.dotNetToJsMapInitialize = {
+        /* window.dotNetToJsMapInitialize = {
             updateAddressDtoFromJS: function (dotNetHelper) {
                 var homeAddress = '';
                 var homeCity = '';
@@ -205,7 +207,7 @@
                         var lngLat = marker.getLngLat();
                         /* coordinates.style.display = 'block';
                         coordinates.innerHTML =
-                            'Latitude: ' + lngLat.lat + '<br />Longitude: ' + lngLat.lng; */
+                            'Latitude: ' + lngLat.lat + '<br />Longitude: ' + lngLat.lng; * /
                     });
 
                     geolocate.on('trackuserlocationstart', () => {
@@ -270,7 +272,7 @@
                         var lngLat = marker.getLngLat();
                         /* coordinates.style.display = 'block';
                         coordinates.innerHTML =
-                            'Latitude: ' + lngLat.lat + '<br />Longitude: ' + lngLat.lng; */
+                            'Latitude: ' + lngLat.lat + '<br />Longitude: ' + lngLat.lng; * /
 
                         var url = "https://us1.locationiq.com/v1/reverse.php?key=" + locationiq.key + "&lat=" + lngLat.lat + "&lon=" + lngLat.lng + "&format=json";
 
@@ -310,7 +312,7 @@
                     });
                 }
             }
-        };
+        }; */
     </script>
     <script>
         window.dotNetJS = {
@@ -332,6 +334,8 @@
             }
         };
     </script>
+
+
 </body>
 
 </html>

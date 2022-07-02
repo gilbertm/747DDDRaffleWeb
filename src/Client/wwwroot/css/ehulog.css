@@ -278,3 +278,7 @@
     .list-group-wrapper .item .caption-text {
         flex-grow: 1;
     }
+
+.list-group-wrapper > .mud-grid-item > .mud-paper {
+    display:flex !important;
+}

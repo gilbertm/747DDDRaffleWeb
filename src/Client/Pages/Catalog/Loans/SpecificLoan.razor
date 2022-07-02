@@ -10,205 +10,205 @@
 
 @if (_appUserDto is not null)
 {
-    @if (!loanId.HasValue)
-    {
-        @:None
-    }
-    else
-    {
-        @if (RequestModel is not null)
+    <CascadingValue Value="@_appUserDto" Name="__appUserDto">
+        @if (!loanId.HasValue)
         {
-            <EditForm Model="RequestModel" style="display:flex;">
-                <MudGrid Spacing="2" Justify="Justify.FlexStart">
+            @:None
+        }
+        else
+        {
+            @if (RequestModel is not null)
+            {
+                <EditForm Model="RequestModel" style="display:flex;">
+                    <MudGrid Spacing="2" Justify="Justify.FlexStart">
 
-                    @if (_canUpdate)
-                    {
-                        <MudItem xs="12" md="6" Class="d-none">
-                            <MudTextField @bind-Value="RequestModel.Id" Label="@L[$"Loan Lender Id"]" />
+                        @if (_canUpdate)
+                        {
+                            <MudItem xs="12" md="6" Class="d-none">
+                                <MudTextField @bind-Value="RequestModel.Id" Label="@L[$"Loan Lender Id"]" />
+                            </MudItem>
+                        }
+
+                        @if (RequestModel.LoanLessees is not null || RequestModel.LoanApplicants is not null)
+                        {
+                            <MudItem xs="12">
+                                <MudGrid Spacing="2" Justify="Justify.Center">
+                                    <MudItem xs="12" md="12" Class="text-center">
+                                        <SpecificLoanLessee CanUpdate="_canUpdate" />
+                                        <SpecificLoanLender LoanStatus="RequestModel.Status" />
+                                        <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" IsOwner="_canUpdate" Applicants="RequestModel.LoanApplicants" LoanStatus="RequestModel.Status" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" LoanLessee="@(RequestModel.LoanLessees.FirstOrDefault() ?? default)" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        }
+
+                        <MudItem xs="6" md="3">
+                            <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                                @if (RequestModel.Product is not null)
+                                {
+                                    <MudItem xs="12" md="12">
+                                        <ProductAutocomplete ReadOnly="@(!_canUpdate ? true : false)" Required="true" For="@(() => RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@RequestModel.Product.Name" Value="@RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+
+                                        <MudCard Elevation="0">
+                                            <MudCardHeader>
+                                                <CardHeaderContent>
+                                                    <MudText Class="d-none" Typo="Typo.body1">@RequestModel.ProductId</MudText>
+                                                    <MudText Typo="Typo.h5">@RequestModel.Product.Name</MudText>
+                                                    @if (RequestModel.Product.Category is not null && !string.IsNullOrEmpty(RequestModel.Product.Category?.Name))
+                                                    {
+                                                        <MudText Typo="Typo.caption">Category: @RequestModel.Product.Category?.Name</MudText>
+                                                    }
+                                                    @if (RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(RequestModel.Product.Brand?.Name))
+                                                    {
+                                                        <MudText Typo="Typo.caption"> Brand: @RequestModel.Product.Brand?.Name</MudText>
+                                                    }
+
+                                                </CardHeaderContent>
+                                                <CardHeaderActions>
+                                                    @if (RequestModel.Product.ProductType.Equals(ProductType.System))
+                                                    {
+                                                        <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
+                                                    }
+
+                                                </CardHeaderActions>
+                                            </MudCardHeader>
+
+                                            @if (RequestModel.Product.Image is not null && !string.IsNullOrEmpty(RequestModel.Product.Image?.ImagePath))
+                                            {
+                                                var image = Config[ConfigNames.ApiBaseUrl] + RequestModel.Product.Image?.ImagePath;
+
+                                                <MudCardMedia Image="@image" Height="150" Class="position-relative" />
+                                            }
+
+                                            @if (!string.IsNullOrEmpty(RequestModel.Product?.Description))
+                                            {
+                                                <MudCardContent>
+                                                    <MudText Typo="Typo.body1" Color="Color.Tertiary">Base amount:</MudText>
+                                                    <MudText Typo="Typo.body1" Color="Color.Tertiary">@RequestModel.Product.Amount</MudText>
+
+                                                    <MudText Typo="Typo.body2">@RequestModel.Product.Description</MudText>
+                                                </MudCardContent>
+                                            }
+                                        </MudCard>
+                                    </MudItem>
+                                }
+                            </MudGrid>
                         </MudItem>
-                    }
+                        <MudItem xs="6" md="9">
+                            <MudGrid Spacing="2" Justify="Justify.FlexStart">
 
-                    @if (RequestModel.LoanLessees is not null || RequestModel.LoanApplicants is not null)
-                    {
-                        <MudItem xs="12">
-                            <MudGrid Spacing="2" Justify="Justify.Center">
-                                <MudItem xs="12" md="12" Class="text-center">
-                                    <SpecificLoanLessee CanUpdate="_canUpdate" />
-                                    <SpecificLoanLender LoanStatus="RequestModel.Status"/>
-                                    <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" IsOwner="_canUpdate" Applicants="RequestModel.LoanApplicants" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" LoanLessee="@(RequestModel.LoanLessees.FirstOrDefault() ?? default)" />
+                                <MudItem xs="12" md="6">
+                                    <MudSelect ReadOnly="@(!_canUpdate ? true : false)" Required="true" T="int" @bind-Value="@MonthsToPay" For="@(() => RequestModel.Month)" Immediate="true" Label="Select month(s)" OpenIcon="@Icons.Material.Filled.DateRange" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
+                                        @foreach (int i in Enumerable.Range(0, 13))
+                                        {
+                                            <MudSelectItem T="int" Value="@i">@i</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                    <MudTooltip Text="Payment terms in months">
+                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudSelect ReadOnly="@(!_canUpdate ? true : _disabledInterestSelection)" Required="true" T="float" @bind-Value="@ChangeInterest" For="@(() => RequestModel.Interest)" Immediate="true" Label="Select interest rates" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
+                                        @foreach (float f in Enumerable.Range(0, 15).Select(f => f == 0 ? 0.0f : (f / 2.0f) + 0.50f))
+                                        {
+                                            <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                    <MudTooltip Text="Interest rates, applies only to compount type">
+                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudDatePicker Required="true" ReadOnly="@(!_canUpdate ? true : false)" MinDate="DateTime.Now.AddDays(-1)" Date="RequestModel.StartOfPayment" Label="Start of payment" Editable="true" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)" DateChanged="@((DateTime? val) => StartDatePayment(val))" Placeholder="Select Start of payment" TitleDateFormat="dddd, MMMM d, yyyy" DateFormat="dddd, MMMM d, yyyy" />
+                                    <MudTooltip Text="Starting payment for the leger payment cycles. The payment cycles are in months, giving enough breathing room for the lessees">
+                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudSelect ReadOnly="@(!_canUpdate ? true : false)" Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
+                                @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
+                                {
+                                    <MudSelectItem Value="@item">@item</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudTooltip Text="Interest modes, computed for diminishing and fixed for zero and ultimate do-good feeling.">
+                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                            </MudTooltip>
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSelect ReadOnly="@(!_canUpdate ? true : false)" Required="true" @bind-Value="RequestModel.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
+                                <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
+                                <MudSelectItem Value="@LoanStatus.Published">Publish</MudSelectItem>
+                            </MudSelect>
+                            <MudTooltip Text="Published will release the loan to the wild. Once published, the loan can't be updated anymore, if there's runnng transactions.">
+                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                            </MudTooltip>
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox Class="custom-mud-checkbox pl-0" ReadOnly="@(!_canUpdate ? true : false)" @bind-Checked="@IsCollateralChange" Color="@(_canUpdate ? Color.Secondary : Color.Surface)" Label="Require Collateral" CheckedIcon="@Icons.Material.Outlined.RadioButtonChecked" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
+                            <MudPaper Elevation="0" Class="pa-1" Style="@(!RequestModel.IsCollateral ? "d-none" : "")">
+                                <MudTextField Disabled="@(!RequestModel.IsCollateral ? true : false)" T="string" Label="Collateral" Variant="Variant.Outlined" @bind-bind-Value="RequestModel.InfoCollateral" Text="@(string.IsNullOrEmpty(RequestModel.InfoCollateral) ? _infoCollateralGeneric : RequestModel.InfoCollateral)" Lines="3" />
+                                @*
+                            The uplaod must be on the lessee's side'
+                            <CustomFileUpload @key="@("Collateral")" FileIdentifier="InputOutputResourceDocumentType.None" ForUploadFiles="ForUploadFiles" /> *@
+                            </MudPaper>
+                            <MudTooltip Text="@_infoCollateralGenericHelpText">
+                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                            </MudTooltip>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudGrid Spacing="2" Justify="Justify.Center">
+                        <MudItem xs="12" md="6">
+                            @* only for updating / if still able *@
+                                    @if (_canUpdate && TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
+                                    {
+                                        <MudItem xs="12" md="12">
+                                            <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
+                                            <MudText Typo="Typo.h5" Color="Color.Success">@string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
+
+                                            <MudTable Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                                                <HeaderContent>
+                                                    <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
+                                                    <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
+                                                    <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
+                                                    <MudTh><MudText Typo="Typo.caption">Balance</MudText></MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate>
+                                                    <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
+                                                    <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.Due)</MudText></MudTd>
+                                                    <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Amount)</MudText></MudTd>
+                                                    <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
+                                                </RowTemplate>
+                                            </MudTable>
+                                        </MudItem>
+                                    }
+                                    else
+                                    {
+                                        @* fron old ehulog / C:\Users\Gilbert\source\repos\ehulog\eHulogDDD.UI\Client\Pages\Loans\LoanDetailLedgers.razor *@
+                                        if (RequestModel.Ledgers is not null)
+                                        {
+                                            <SpecificLoanLedger Ledger="RequestModel.Ledgers.ToList()" CanUpdate="_canUpdateLedger" />
+                                        }
+                                    }
+
                                 </MudItem>
                             </MudGrid>
                         </MudItem>
-                    }
+                    </MudGrid>
+                </EditForm>
 
-                    <MudItem xs="6" md="3">
-                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
-                            @if (RequestModel.Product is not null)
-                            {
-                                <MudItem xs="12" md="12">
-                                    <ProductAutocomplete ReadOnly="@(!_canUpdate ? true : false)" Required="true" For="@(() => RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@RequestModel.Product.Name" Value="@RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
-
-                                    <MudCard Elevation="0">
-                                        <MudCardHeader>
-                                            <CardHeaderContent>
-                                                <MudText Class="d-none" Typo="Typo.body1">@RequestModel.ProductId</MudText>
-                                                <MudText Typo="Typo.h5">@RequestModel.Product.Name</MudText>
-                                                @if (RequestModel.Product.Category is not null && !string.IsNullOrEmpty(RequestModel.Product.Category?.Name))
-                                                {
-                                                    <MudText Typo="Typo.caption">Category: @RequestModel.Product.Category?.Name</MudText>
-                                                }
-                                                @if (RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(RequestModel.Product.Brand?.Name))
-                                                {
-                                                    <MudText Typo="Typo.caption"> Brand: @RequestModel.Product.Brand?.Name</MudText>
-                                                }
-
-                                            </CardHeaderContent>
-                                            <CardHeaderActions>
-                                                @if (RequestModel.Product.ProductType.Equals(ProductType.System))
-                                                {
-                                                    <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
-                                                }
-                                                else
-                                                {
-                                                    <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
-                                                }
-
-                                            </CardHeaderActions>
-                                        </MudCardHeader>
-
-                                        @if (RequestModel.Product.Image is not null && !string.IsNullOrEmpty(RequestModel.Product.Image?.ImagePath))
-                                        {
-                                            var image = Config[ConfigNames.ApiBaseUrl] + RequestModel.Product.Image?.ImagePath;
-
-                                            <MudCardMedia Image="@image" Height="150" Class="position-relative" />
-                                        }
-
-                                        @if (!string.IsNullOrEmpty(RequestModel.Product?.Description))
-                                        {
-                                            <MudCardContent>
-                                                <MudText Typo="Typo.body1" Color="Color.Tertiary">Base amount:</MudText>
-                                                <MudText Typo="Typo.body1" Color="Color.Tertiary">@RequestModel.Product.Amount</MudText>
-
-                                                <MudText Typo="Typo.body2">@RequestModel.Product.Description</MudText>
-                                            </MudCardContent>
-                                        }
-                                    </MudCard>
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    </MudItem>
-                    <MudItem xs="6" md="9">
-                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
-
-                            <MudItem xs="12" md="6">
-                                <MudSelect ReadOnly="@(!_canUpdate ? true : false)" Required="true" T="int" @bind-Value="@MonthsToPay" For="@(() => RequestModel.Month)" Immediate="true" Label="Select month(s)" OpenIcon="@Icons.Material.Filled.DateRange" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
-                                    @foreach (int i in Enumerable.Range(0, 13))
-                                    {
-                                        <MudSelectItem T="int" Value="@i">@i</MudSelectItem>
-                                    }
-                                </MudSelect>
-                                <MudTooltip Text="Payment terms in months">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudSelect ReadOnly="@(!_canUpdate ? true : _disabledInterestSelection)" Required="true" T="float" @bind-Value="@ChangeInterest" For="@(() => RequestModel.Interest)" Immediate="true" Label="Select interest rates" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
-                                    @foreach (float f in Enumerable.Range(0, 15).Select(f => f == 0 ? 0.0f : (f / 2.0f) + 0.50f))
-                                    {
-                                        <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
-                                    }
-                                </MudSelect>
-                                <MudTooltip Text="Interest rates, applies only to compount type">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudDatePicker Required="true" ReadOnly="@(!_canUpdate ? true : false)" MinDate="DateTime.Now.AddDays(-1)" Date="RequestModel.StartOfPayment" Label="Start of payment" Editable="true" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)" DateChanged="@((DateTime? val) => StartDatePayment(val))" Placeholder="Select Start of payment" TitleDateFormat="dddd, MMMM d, yyyy" DateFormat="dddd, MMMM d, yyyy" />
-                                <MudTooltip Text="Starting payment for the leger payment cycles. The payment cycles are in months, giving enough breathing room for the lessees">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudSelect ReadOnly="@(!_canUpdate ? true : false)" Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
-                                    @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
-                                    {
-                                        <MudSelectItem Value="@item">@item</MudSelectItem>
-                                    }
-                                </MudSelect>
-                                <MudTooltip Text="Interest modes, computed for diminishing and fixed for zero and ultimate do-good feeling.">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-
-                            <MudItem xs="12" md="6">
-                                <MudSelect ReadOnly="@(!_canUpdate ? true : false)" Required="true" @bind-Value="RequestModel.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="@(_canUpdate ? Color.Secondary : Color.Surface)">
-                                    <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
-                                    <MudSelectItem Value="@LoanStatus.Published">Publish</MudSelectItem>
-                                </MudSelect>
-                                <MudTooltip Text="Published will release the loan to the wild. Once published, the loan can't be updated anymore, if there's runnng transactions.">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-
-                            <MudItem xs="12" md="6">
-                                <MudCheckBox Class="custom-mud-checkbox pl-0" ReadOnly="@(!_canUpdate ? true : false)" @bind-Checked="@IsCollateralChange" Color="@(_canUpdate ? Color.Secondary : Color.Surface)" Label="Require Collateral" CheckedIcon="@Icons.Material.Outlined.RadioButtonChecked" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
-                                <MudPaper Elevation="0" Class="pa-1" Style="@(!RequestModel.IsCollateral ? "d-none" : "")">
-                                    <MudTextField Disabled="@(!RequestModel.IsCollateral ? true : false)" T="string" Label="Collateral" Variant="Variant.Outlined" @bind-bind-Value="RequestModel.InfoCollateral" Text="@(string.IsNullOrEmpty(RequestModel.InfoCollateral) ? _infoCollateralGeneric : RequestModel.InfoCollateral)" Lines="3" />
-                                    @*
-                        The uplaod must be on the lessee's side'
-                        <CustomFileUpload @key="@("Collateral")" FileIdentifier="InputOutputResourceDocumentType.None" ForUploadFiles="ForUploadFiles" /> *@
-                                </MudPaper>
-                                <MudTooltip Text="@_infoCollateralGenericHelpText">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-                        </MudGrid>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudGrid Spacing="2" Justify="Justify.Center">
-                            <MudItem xs="12" md="6">
-                                @* only for updating / if still able *@
-                                @if (_canUpdate && TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
-                                {
-                                    <MudItem xs="12" md="12">
-                                        <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
-                                        <MudText Typo="Typo.h5" Color="Color.Success">@string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
-
-                                        <MudTable Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
-                                            <HeaderContent>
-                                                <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
-                                                <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
-                                                <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
-                                                <MudTh><MudText Typo="Typo.caption">Balance</MudText></MudTh>
-                                            </HeaderContent>
-                                            <RowTemplate>
-                                                <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
-                                                <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.Due)</MudText></MudTd>
-                                                <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Amount)</MudText></MudTd>
-                                                <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
-                                            </RowTemplate>
-                                        </MudTable>
-                                    </MudItem>
-                                }
-                                else
-                                {
-                                    @* fron old ehulog / C:\Users\Gilbert\source\repos\ehulog\eHulogDDD.UI\Client\Pages\Loans\LoanDetailLedgers.razor *@
-                                    if (RequestModel.Ledgers is not null)
-                                    {
-                                        <SpecificLoanLedger Ledger="RequestModel.Ledgers.ToList()" CanUpdate="_canUpdateLedger" />
-                                    }
-                                }
-
-                            </MudItem>
-                        </MudGrid>
-                    </MudItem>
-                </MudGrid>
-            </EditForm>
-
+            }
         }
-    }
-
-
+    </CascadingValue>
 }
 
 @code {

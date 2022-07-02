@@ -39,12 +39,10 @@ public partial class SpecificLoanApplicants
     public Guid LoanId { get; set; }
 
     [Inject]
-    protected AppDataService AppDataService { get; set; } = default!;
-
-    [Inject]
     protected ILoanApplicantsClient LoanApplicantsClient { get; set; } = default!;
 
-    private AppUserDto _appUserDto { get; set; } = default!;
+    [CascadingParameter(Name="__appUserDto")]
+    private AppUserDto? _appUserDto { get; set; }
 
     private LoanApplicantDto? _loanApplicantDto { get; set; }
 
@@ -55,11 +53,6 @@ public partial class SpecificLoanApplicants
     protected IDialogService Dialog { get; set; } = default!;
 
     private CustomValidation? _customValidation;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _appUserDto = await AppDataService.Start();
-    }
 
     private async Task LesseeLoanApply()
     {

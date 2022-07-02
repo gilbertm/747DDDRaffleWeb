@@ -1,5 +1,11 @@
-﻿@inject IStringLocalizer<Address> L
-@inject IJSRuntime JS
+﻿@page "/account/address"
+
+@inject IStringLocalizer<DynamicMapLoad> L
+
+
+
+<EhulogTitle Title="@L["Address"]" Description="@L["Manage your account addresss. Important: Allow location, if not you will not be able to see the map and proceed."]" />
+
 
 @if (_appUserDto is not null)
 {
@@ -76,4 +82,40 @@
             </MudCardActions>
         </MudCard>
     </EditForm>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <div class="map-container embed-responsive embed-responsive-16by9">
+                <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:500px;width:100%;position:relative">
+                    <MudOverlay Visible="false" DarkBackground="true" Absolute="true">
+                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                    </MudOverlay>
+                </div>
+                <pre id="coordinates" class="coordinates"></pre>
+            </div>
+        </MudItem>
+        <MudItem xs="12" md="6">
+
+            <MudTextField T="string" id="HomeAddress" Adornment="Adornment.Start" Label="@L["Home Street Address"]" Variant="Variant.Outlined" />
+            <br />
+
+            <MudTextField T="string" id="HomeCity" Adornment="Adornment.Start" Label="@L["Home City"]" Variant="Variant.Outlined" />
+            <br />
+
+            <MudTextField T="string" id="HomeRegion" Adornment="Adornment.Start" Label="@L["Home Region"]" Variant="Variant.Outlined" />
+            <br />
+
+            <MudTextField T="string" id="HomeCountry" Adornment="Adornment.Start" Label="@L["Home Country"]" Variant="Variant.Outlined" />
+            <br />
+
+            <MudTextField T="string" id="Latitude" Adornment="Adornment.Start" Label="@L["Latitude"]" Variant="Variant.Outlined" />
+            <br />
+
+            <MudTextField T="string" id="Longitude" Adornment="Adornment.Start" Label="@L["Longitude"]" Variant="Variant.Outlined" />
+            <br />
+
+        </MudItem>
+    </MudGrid>
 }

@@ -9,6 +9,10 @@ using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Geo.MapBox.DependencyInjection;
+using Geo.MapBox.Abstractions;
+using System.Globalization;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -20,6 +24,8 @@ public class AppDataService
 
     private IHttpClientFactory _httpClientFactory { get; set; }
 
+    private IConfiguration _configuration { get; set; }
+
     protected IAppUsersClient _appUsersClient { get; set; } = default!;
 
     protected IPackagesClient _packagesClient { get; set; } = default!;
@@ -28,13 +34,19 @@ public class AppDataService
 
     private IUsersClient _usersClient { get; set; } = default!;
 
+    private IMapBoxGeocoding _mapBoxGeocoding { get; set; } = default!;
+
     private LocationService _locationService { get; set; } = default!;
 
-    public AppDataService(AuthenticationStateProvider authenticationStateProvider, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IJSRuntime jsRuntime, IHttpClientFactory httpClientFactory, LocationService locationService)
+    public AppDataService(AuthenticationStateProvider authenticationStateProvider, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IJSRuntime jsRuntime, IHttpClientFactory httpClientFactory, LocationService locationService)
     {
         _jsRuntime = jsRuntime;
 
         _httpClientFactory = httpClientFactory;
+
+        _configuration = configuration;
+
+        _mapBoxGeocoding = mapBoxGeocoding;
 
         _appUsersClient = appUsersClient;
 
@@ -94,52 +106,82 @@ public class AppDataService
 
                 if (location is not null)
                 {
-                    var obj = new
-                    {
-                        Key = "pk.bf547d628289a729866c964e450f6beb",
-                        Longitude = location.Longitude.ToString(),
-                        Latitude = location.Latitude.ToString(),
-                    };
-
                     _appUserDto.Longitude = location.Longitude.ToString();
                     _appUserDto.Latitude = location.Latitude.ToString();
 
-                    var request = new HttpRequestMessage(
-                        HttpMethod.Get,
-                        $"https://us1.locationiq.com/v1/reverse.php?key={obj.Key}&lat={obj.Latitude}&lon={obj.Longitude}&format=json");
-
-                    var client = _httpClientFactory.CreateClient();
-
-                    var response = await client.SendAsync(request);
-
-                    if (response.IsSuccessStatusCode)
+                    var responseReverseGeocoding = await _mapBoxGeocoding.ReverseGeocodingAsync(new()
                     {
-                        using var responseStream = await response.Content.ReadAsStreamAsync();
-                        var locations = await JsonSerializer.DeserializeAsync<LocationIQGeoCoding>(responseStream);
-
-                        if (locations is not null)
+                        Coordinate = new Geo.MapBox.Models.Coordinate()
                         {
-                            if (!string.IsNullOrEmpty(locations.Address.Country))
-                            {
-                                _appUserDto.HomeCountry = locations.Address.Country;
-                            }
+                            Latitude = Convert.ToDouble(_appUserDto.Latitude),
+                            Longitude = Convert.ToDouble(_appUserDto.Longitude)
+                        },
+                        EndpointType = Geo.MapBox.Enums.EndpointType.Places
+                    });
 
-                            if (!string.IsNullOrEmpty(locations.Address.County) || !string.IsNullOrEmpty(locations.Address.State))
+                    if (responseReverseGeocoding is { })
+                    {
+                        if (responseReverseGeocoding.Features.Count() > 0)
+                        {
+                            foreach (var f in responseReverseGeocoding.Features)
                             {
-                                _appUserDto.HomeCity = locations.Address.County ?? locations.Address.State;
-                            }
+                                if (f.Contexts.Count() > 0)
+                                {
+                                    foreach (var c in f.Contexts)
+                                    {
+                                        System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
+                                        System.Diagnostics.Debug.Write(c.ContextText);
 
-                            if (!string.IsNullOrEmpty(locations.Address.Region))
-                            {
-                                _appUserDto.HomeRegion = locations.Address.Region;
-                            }
+                                        if (!string.IsNullOrEmpty(c.Id))
+                                        {
+                                            switch (c.Id)
+                                            {
+                                                case string s when s.Contains("country"):
+                                                    _appUserDto.HomeCountry = c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("region"):
+                                                    _appUserDto.HomeRegion = c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("postcode"):
+                                                    _appUserDto.HomeAddress += c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("district"):
+                                                    _appUserDto.HomeCountry += c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("place"):
+                                                    _appUserDto.HomeCity = c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("locality"):
+                                                    _appUserDto.HomeAddress += c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("neighborhood"):
+                                                    _appUserDto.HomeAddress += c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("address"):
+                                                    _appUserDto.HomeAddress += c.ContextText.First().Text;
+                                                    break;
+                                                case string s when s.Contains("poi"):
+                                                    _appUserDto.HomeAddress += c.ContextText.First().Text;
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
 
-                            if (!string.IsNullOrEmpty(locations.Address.Road))
-                            {
-                                _appUserDto.HomeAddress = string.Concat(locations.Address.Suburb, " ", locations.Address.Road);
+                                if (f.Center is { })
+                                {
+                                    _appUserDto.Latitude = f.Center.Latitude.ToString();
+                                    _appUserDto.Longitude = f.Center.Longitude.ToString();
+                                }
+
+                                if (f.Properties.Address is { })
+                                {
+                                    _appUserDto.HomeAddress += f.Properties.Address;
+                                }
                             }
                         }
                     }
+
                 }
 
                 var updateAppUserRequest = new UpdateAppUserRequest
@@ -211,119 +253,4 @@ public class AppDataService
     public event Action? OnChange;
 
     private void NotifyDataChanged() => OnChange?.Invoke();
-
-    public class LocationIQGeoCoding
-    {
-        /// <summary>
-        /// Gets or Sets Distance.
-        /// </summary>
-        [JsonPropertyName("distance")]
-        public decimal Distance { get; set; }
-
-        /// <summary>
-        /// Gets or Sets PlaceId.
-        /// </summary>
-        [JsonPropertyName("place_id")]
-        public string PlaceId { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Licence.
-        /// </summary>
-        [JsonPropertyName("licence")]
-        public string Licence { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Osm_type.
-        /// </summary>
-        [JsonPropertyName("osm_type")]
-        public string Osm_type { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Osm_id.
-        /// </summary>
-        [JsonPropertyName("osm_id")]
-        public string Osm_id { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Longitude.
-        /// </summary>
-        [JsonPropertyName("lon")]
-        public string Longitude { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Latitude.
-        /// </summary>
-        [JsonPropertyName("lat")]
-        public string Latitude { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Display_name.
-        /// </summary>
-        [JsonPropertyName("display_name")]
-        public string Display_name { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Address.
-        /// </summary>
-        [JsonPropertyName("address")]
-        public LocationIQGeoCodingAddress Address { get; set; } = default!;
-
-    }
-
-    public class LocationIQGeoCodingAddress
-    {
-        /// <summary>
-        /// Gets or Sets Cafe.
-        /// </summary>
-        [JsonPropertyName("cafe")]
-        public string Cafe { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Road.
-        /// </summary>
-        [JsonPropertyName("road")]
-        public string Road { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Suburb.
-        /// </summary>
-        [JsonPropertyName("suburb")]
-        public string Suburb { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets County.
-        /// </summary>
-        [JsonPropertyName("county")]
-        public string County { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Region.
-        /// </summary>
-        [JsonPropertyName("region")]
-        public string Region { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets State.
-        /// </summary>
-        [JsonPropertyName("state")]
-        public string State { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Postal_code.
-        /// </summary>
-        [JsonPropertyName("postcode")]
-        public string Postal_code { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Country.
-        /// </summary>
-        [JsonPropertyName("country")]
-        public string Country { get; set; } = default!;
-
-        /// <summary>
-        /// Gets or Sets Country_code.
-        /// </summary>
-        [JsonPropertyName("country_code")]
-        public string Country_code { get; set; } = default!;
-    }
 }

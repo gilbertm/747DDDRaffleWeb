@@ -26,10 +26,8 @@ public partial class SpecificLoanLender
     [Parameter]
     public bool IsMinimal { get; set; } = false;
 
-    [Inject]
-    protected AppDataService AppDataService { get; set; } = default!;
-
-    private AppUserDto _appUserDto { get; set; } = default!;
+    [CascadingParameter(Name = "__appUserDto")]
+    private AppUserDto? _appUserDto { get; set; }
 
     [Parameter]
     public EventCallback OnClick { get; set; }
@@ -39,8 +37,4 @@ public partial class SpecificLoanLender
 
     private CustomValidation? _customValidation;
 
-    protected override async Task OnInitializedAsync()
-    {
-        _appUserDto = await AppDataService.Start();
-    }
 }

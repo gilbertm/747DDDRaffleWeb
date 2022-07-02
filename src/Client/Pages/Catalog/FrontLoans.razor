@@ -10,7 +10,9 @@
 
 @if (_appUserDto is not null)
 {
-    <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
+    <CascadingValue Value="@_appUserDto" Name="__appUserDto">
+        <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
+    </CascadingValue>
 }
 
 @code {
