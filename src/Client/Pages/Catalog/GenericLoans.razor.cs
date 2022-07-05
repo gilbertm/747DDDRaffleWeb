@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using Nager.Country;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
@@ -52,16 +53,33 @@ public partial class GenericLoans
 
     private CustomValidation? _customValidation;
 
+    private string _currency { get; set; } = string.Empty;
+
+
     protected override async Task OnInitializedAsync()
     {
         _appUserDto = await AppDataService.Start();
 
         if (_appUserDto is not null)
         {
-
             // for lessee, direct to the front loans
             if ((new string[] { "Lessee" }).Contains(_appUserDto.RoleName)) {
                 NavigationManager.NavigateTo("/");
+            }
+
+            if (!string.IsNullOrEmpty(_appUserDto.HomeCountry))
+            {
+                var countryProvider = new CountryProvider();
+                var countryInfo = countryProvider.GetCountryByName(_appUserDto.HomeCountry);
+
+                if (countryInfo is { })
+                {
+                    if (countryInfo.Currencies.Count() > 0)
+                    {
+                        _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                    }
+
+                }
             }
 
             appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(_appUserDto.Id)).ToList();
@@ -118,6 +136,9 @@ public partial class GenericLoans
                        }
                        else if (_appUserDto is not null && !string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Admin"))
                        {
+                           loanFilter.IsLender = true;
+                           loanFilter.IsLessee = true;
+                           loanFilter.IsLedger = true;
                        }
 
                        var result = await LoansClient.SearchAsync(loanFilter);

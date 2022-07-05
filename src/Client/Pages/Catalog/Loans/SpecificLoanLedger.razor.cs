@@ -1,5 +1,6 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using Microsoft.AspNetCore.Components;
+using Nager.Country;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
 
@@ -15,6 +16,9 @@ public partial class SpecificLoanLedger
     public List<LedgerModel> _ledgerModel { get; set; } = new();
 
     private float _runningTotal { get; set; }
+
+    [Parameter]
+    public string Currency { get; set; } = string.Empty;
 
     private float _runningBalance { get; set; }
 

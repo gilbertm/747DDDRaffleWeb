@@ -1,0 +1,57 @@
+﻿@namespace EHULOG.BlazorWebAssembly.Client.Shared.Dialogs
+
+<MudDialog>
+    <DialogContent>
+        @if (LoanLenderDto is { } && LoanLenderDto.Lender is { })
+        {
+            <MudGrid>
+                <MudItem xs="12" Class="d-block">
+                    <MudText Typo="Typo.h5" Class="text-center" Align="Align.Center" Color="Color.Primary">@LoanLenderDto.Lender.FirstName @LoanLenderDto.Lender.LastName</MudText>
+                    <MudText Typo="Typo.caption" Class="text-center" Align="Align.Center" Color="Color.Surface">Id:</MudText> <MudText Typo="Typo.caption" Class="text-center" Align="Align.Center" Color="Color.Primary">@LoanLenderDto.Lender.Id.ToString()</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="4">
+                    <MudCard Elevation="25">
+                        <MudCardContent Style="padding:0px!important">
+                            <div class="d-flex justify-center mb-4">
+                                @if (!string.IsNullOrEmpty(LoanLenderDto.Lender.ImageUrl))
+                                {
+                                    <MudAvatar Square="true" Image="@LoanLenderDto.Lender.ImageUrl" Style=" width:100%;height:auto;"> </MudAvatar>
+                                }
+                                else
+                                {
+                                    <MudAvatar Square="true" Color="Color.Primary" Style="width:100%;height:300px;">@LoanLenderDto.Lender.FirstName</MudAvatar>
+                                }
+                            </div>
+                            <MudText Align="Align.Center">@LoanLenderDto.Lender.Email</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="8">
+                    <MudCard Elevation="0">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText>Profile Details</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <MudText Typo="Typo.body2">City: @LoanLenderDto.Lender.HomeCity</MudText>
+                                    <MudText Typo="Typo.body2">Region: @LoanLenderDto.Lender.HomeRegion</MudText>
+                                    <MudText Typo="Typo.body2">Country: @LoanLenderDto.Lender.HomeCountry</MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText>Existing loans or latest history</MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText>Ratings and recent comments</MudText>
+                                </MudItem>
+
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        }
+    </DialogContent>
+</MudDialog>

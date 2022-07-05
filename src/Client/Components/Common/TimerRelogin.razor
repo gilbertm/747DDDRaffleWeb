@@ -36,7 +36,8 @@
             if (timerCount <= 0)
             {
                 timer.Dispose();
-                await AuthService.ReLoginAsync(Navigation.Uri);
+                // await AuthService.ReLoginAsync(Navigation.Uri);
+                await AuthService.ReLoginAsync("/login");
             }
             // we need StateHasChanged() because this is an async void handler
             // we need to Invoke it because we could be on the wrong Thread

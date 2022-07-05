@@ -1,4 +1,6 @@
-﻿<CascadingAuthenticationState>
+﻿@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons
+
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(BaseLayout)">
@@ -9,7 +11,7 @@
                     }
                     else
                     {
-                        <Login />
+                        <FrontAnonLoans />
                     }
                 </NotAuthorized>
             </AuthorizeRouteView>

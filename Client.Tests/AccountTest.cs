@@ -12,6 +12,7 @@ using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using Microsoft.JSInterop;
 using Moq;
+using EHULOG.BlazorWebAssembly.Client.Components.Common;
 
 namespace EHULOG.BlazorWebAssembly.Client.Tests;
 
@@ -64,7 +65,7 @@ public class AccountTest
         authContext.SetRoles("Admin");
 
         // Act
-        var cut = ctx.RenderComponent<Address>();
+        IRenderedComponent<DynamicMapLoad>? cut = ctx.RenderComponent<DynamicMapLoad>();
 
         // Assert
         string? p = cut.Find("p").TextContent;

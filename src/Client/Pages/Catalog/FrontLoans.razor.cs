@@ -5,6 +5,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Nager.Country;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
@@ -41,12 +42,29 @@ public partial class FrontLoans
 
     private List<AppUserProductDto> appUserProducts;
 
+    private string _currency { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         _appUserDto = await AppDataService.Start();
 
         if (_appUserDto is not null)
         {
+            if (!string.IsNullOrEmpty(_appUserDto.HomeCountry))
+            {
+                var countryProvider = new CountryProvider();
+                var countryInfo = countryProvider.GetCountryByName(_appUserDto.HomeCountry);
+
+                if (countryInfo is { })
+                {
+                    if (countryInfo.Currencies.Count() > 0)
+                    {
+                        _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                    }
+
+                }
+            }
+
             if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
             {
                 NavigationManager.NavigateTo("/catalog/all/loans");

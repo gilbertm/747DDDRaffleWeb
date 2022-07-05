@@ -9,16 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Pages\Identity\Account\AccountAddress.razor.cs" />
-      <Compile Remove="Pages\Identity\Account\Address.razor.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="Pages\Identity\Account\AccountAddress.razor" />
-      <Content Remove="Pages\Identity\Account\Address.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Geo.MapBox" Version="1.1.0" />
         <PackageReference Include="Mapster" Version="7.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.5" />
@@ -26,6 +16,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
         <PackageReference Include="MudBlazor" Version="6.0.10" />
+        <PackageReference Include="Nager.Country" Version="3.1.1" />
     </ItemGroup>
 
     <ItemGroup>

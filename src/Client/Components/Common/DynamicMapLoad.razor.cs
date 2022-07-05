@@ -28,6 +28,9 @@ public partial class DynamicMapLoad
 
     private List<string> _jsonLoadedScripts { get; set; } = new();
 
+    [Parameter]
+    public bool IsMapOnly { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         _objRef = DotNetObjectReference.Create(this);

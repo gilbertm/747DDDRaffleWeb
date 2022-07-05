@@ -19,6 +19,9 @@
         {
             @if (RequestModel is not null)
             {
+
+
+
                 <EditForm Model="RequestModel" style="display:flex;">
                     <MudGrid Spacing="2" Justify="Justify.FlexStart">
 
@@ -47,7 +50,10 @@
                                 @if (RequestModel.Product is not null)
                                 {
                                     <MudItem xs="12" md="12">
-                                        <ProductAutocomplete ReadOnly="@(!_canUpdate ? true : false)" Required="true" For="@(() => RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@RequestModel.Product.Name" Value="@RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+
+                                        @if ((new[] { "Admin", "Lender" }).Contains(_appUserDto.RoleName)) {
+                                            <ProductAutocomplete ReadOnly="@(!_canUpdate ? true : false)" Required="true" For="@(() => RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@RequestModel.Product.Name" Value="@RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+                                        }
 
                                         <MudCard Elevation="0">
                                             <MudCardHeader>
@@ -87,10 +93,9 @@
                                             @if (!string.IsNullOrEmpty(RequestModel.Product?.Description))
                                             {
                                                 <MudCardContent>
-                                                    <MudText Typo="Typo.body1" Color="Color.Tertiary">Base amount:</MudText>
-                                                    <MudText Typo="Typo.body1" Color="Color.Tertiary">@RequestModel.Product.Amount</MudText>
-
-                                                    <MudText Typo="Typo.body2">@RequestModel.Product.Description</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Surface" Class="d-inline-block">Base </MudText>
+                                                    <MudText Typo="Typo.body1" Color="Color.Tertiary" Class="d-inline-block">@string.Format("{0:#,0.00}", RequestModel.Product.Amount) @_currency</MudText>
+                                                    <MudText Typo="Typo.body2" Class="d-block">@RequestModel.Product.Description</MudText>
                                                 </MudCardContent>
                                             }
                                         </MudCard>
@@ -173,7 +178,7 @@
                                     {
                                         <MudItem xs="12" md="12">
                                             <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
-                                            <MudText Typo="Typo.h5" Color="Color.Success">@string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
+                                            <MudText Typo="Typo.h5" Color="Color.Success">@string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount)) @_currency</MudText>
 
                                             <MudTable Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
                                                 <HeaderContent>
@@ -196,7 +201,7 @@
                                         @* fron old ehulog / C:\Users\Gilbert\source\repos\ehulog\eHulogDDD.UI\Client\Pages\Loans\LoanDetailLedgers.razor *@
                                         if (RequestModel.Ledgers is not null)
                                         {
-                                            <SpecificLoanLedger Ledger="RequestModel.Ledgers.ToList()" CanUpdate="_canUpdateLedger" />
+                                            <SpecificLoanLedger Ledger="RequestModel.Ledgers.ToList()" CanUpdate="_canUpdateLedger" Currency="@_currency" />
                                         }
                                     }
 

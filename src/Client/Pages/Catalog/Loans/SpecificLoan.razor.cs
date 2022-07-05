@@ -5,6 +5,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Nager.Country;
 using static MudBlazor.CategoryTypes;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
@@ -43,6 +44,8 @@ public partial class SpecificLoan
 
     private AppUserDto _appUserDto { get; set; } = default!;
 
+    private string _currency { get; set; } = string.Empty;
+
     private List<ForUploadFile> ForUploadFiles { get; set; } = new();
 
     private List<AppUserProductDto> appUserProducts { get; set; } = default!;
@@ -65,6 +68,18 @@ public partial class SpecificLoan
             // show products, if lender
             if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
             {
+                var countryProvider = new CountryProvider();
+                var countryInfo = countryProvider.GetCountryByName(_appUserDto.HomeCountry);
+
+                if (countryInfo is { })
+                {
+                    if (countryInfo.Currencies.Count() > 0)
+                    {
+                        _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                    }
+
+                }
+
                 appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(_appUserDto.Id)).ToList();
 
                 if (appUserProducts.Count() > 0)
@@ -104,21 +119,40 @@ public partial class SpecificLoan
                 {
                     RequestModel.Id = loanDto.Id;
 
-                    // lender
+                    // the loan is with a lender
+                    // just casual redo checks
                     if (loanDto.LoanLenders is not null && loanDto.LoanLenders.Count() > 0)
                     {
                         var loanLender = loanDto.LoanLenders.Where(ll => ll.LoanId.Equals(loanDto.Id)).First();
 
-                        RequestModel.Product = loanLender.Product is not null ? loanLender.Product : default!;
-                        RequestModel.ProductId = !loanLender.ProductId.Equals(Guid.Empty) ? loanLender.ProductId : default;
-
-                        if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lender"))
+                        if (loanLender is { } && loanLender.Lender is { })
                         {
-                            // owner
-                            if (loanLender.Lender is not null && loanLender.LenderId.Equals(_appUserDto.Id))
+                            // get the currency from the lender
+                            var countryProvider = new CountryProvider();
+                            var countryInfo = countryProvider.GetCountryByName(loanLender.Lender.HomeCountry);
+
+                            if (countryInfo is { })
                             {
-                                _canUpdate = true;
-                                _canUpdateLedger = true;
+                                if (countryInfo.Currencies.Count() > 0)
+                                {
+                                    _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                                }
+
+                            }
+
+                            RequestModel.Product = loanLender.Product is not null ? loanLender.Product : default!;
+                            RequestModel.ProductId = !loanLender.ProductId.Equals(Guid.Empty) ? loanLender.ProductId : default;
+
+                            // lender checks
+                            if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lender"))
+                            {
+                                // owner
+                                if (loanLender.Lender is not null && loanLender.LenderId.Equals(_appUserDto.Id))
+                                {
+                                    _canUpdate = true;
+                                    _canUpdateLedger = true;
+                                }
+
                             }
 
                         }
@@ -153,6 +187,7 @@ public partial class SpecificLoan
                         }
                     }
 
+                    // applicants
                     if (loanDto.LoanApplicants is { })
                     {
                         if (loanDto.LoanApplicants.Count() > 0)
@@ -170,7 +205,7 @@ public partial class SpecificLoan
                         }
                     }
 
-                    RequestModel.InfoCollateral = loanDto.InfoCollateral;
+                    RequestModel.InfoCollateral = loanDto.InfoCollateral ?? string.Empty;
                     RequestModel.IsCollateral = loanDto.IsCollateral;
                     RequestModel.Interest = loanDto.Interest;
                     RequestModel.InterestType = loanDto.InterestType;
