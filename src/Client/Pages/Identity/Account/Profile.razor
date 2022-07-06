@@ -56,21 +56,21 @@
                         <CustomValidation @ref="_customValidation" />
                         <MudItem xs="12" md="6">
                             <MudTextField @bind-Value="@_profileModel.FirstName" For="@(() => _profileModel.FirstName)"
-                                Label="@L["First Name"]" Variant="Variant.Outlined" />
+                                Label="@L["First Name"]" Variant="Variant.Outlined" Required />
                         </MudItem>
                         <MudItem xs="12" md="6">
                             <MudTextField @bind-Value="@_profileModel.LastName" For="@(() => _profileModel.LastName)"
-                                Label="@L["Last Name"]" Variant="Variant.Outlined" />
+                                Label="@L["Last Name"]" Variant="Variant.Outlined" Required />
                         </MudItem>
                         <MudItem xs="12" md="6">
                             <MudTextField @bind-Value="@_profileModel.PhoneNumber"
                                 For="@(() => _profileModel.PhoneNumber)" Label="@L["Phone Number"]"
-                                Variant="Variant.Outlined" />
+                                Variant="Variant.Outlined" Required />
                         </MudItem>
                         <MudItem xs="12" md="6">
                             <MudTextField @bind-Value="@_profileModel.Email" Label="@L["Email"]"
                                 For="@(() => _profileModel.Email)" Variant="Variant.Outlined"
-                                InputType="InputType.Email" Disabled=true />
+                                InputType="InputType.Email" Disabled=true Required />
                         </MudItem>
                     </MudGrid>
                 </MudCardContent>

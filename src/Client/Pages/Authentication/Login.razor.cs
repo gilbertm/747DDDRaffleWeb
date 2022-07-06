@@ -5,6 +5,9 @@ using EHULOG.BlazorWebAssembly.Client.Shared;
 using EHULOG.WebApi.Shared.Multitenancy;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 using MudBlazor;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Authentication;
@@ -61,11 +64,13 @@ public partial class Login
     {
         _tokenRequest.Email = MultitenancyConstants.Root.EmailAddress;
         _tokenRequest.Password = MultitenancyConstants.DefaultPassword;
-        TenantId = MultitenancyConstants.Root.Id;
+        // TenantId = MultitenancyConstants.Root.Id;
     }
 
     private async Task SubmitAsync()
     {
+        TenantId = MultitenancyConstants.Root.Id;
+
         BusySubmitting = true;
 
         if (await ApiHelper.ExecuteCallGuardedAsync(
@@ -74,6 +79,18 @@ public partial class Login
             _customValidation))
         {
             Snackbar.Add($"Logged in as {_tokenRequest.Email}", Severity.Info);
+
+            // get our URI
+            var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+
+            bool foundQueryParameter = QueryHelpers.ParseQuery(uri.Query).TryGetValue("redirect_url", out var valueFromQueryString);
+
+            if (foundQueryParameter)
+            {
+                string redirect_url = valueFromQueryString.FirstOrDefault() ?? string.Empty;
+
+                Navigation.NavigateTo(redirect_url);
+            }
         }
 
         BusySubmitting = false;

@@ -27,10 +27,10 @@
                           For="@(() => _tokenRequest.Password)" InputType="@_passwordInput" Adornment="Adornment.End"
                           AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
         </MudItem>
-        <MudItem xs="12">
+        @* <MudItem xs="12">
             <MudTextField T="string" Label="@L["Tenant"]" Variant="Variant.Outlined" @bind-Value="TenantId"
                           For="@(() => TenantId)" Required />
-        </MudItem>
+        </MudItem> *@
 
         <MudItem xs="12" md="6">
             <MudButton StartIcon="@Icons.Filled.AppRegistration" Link="/users/self-register">@L["Register?"]</MudButton>

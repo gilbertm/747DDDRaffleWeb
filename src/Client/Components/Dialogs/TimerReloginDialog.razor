@@ -1,6 +1,6 @@
 ﻿<MudDialog>
     <DialogContent>
-        <TimerRelogin />
+        <TimerRelogin Seconds="@Seconds" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -8,6 +8,9 @@
 </MudDialog>
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public int Seconds { get; set; } = 10;
 
     void Cancel() => MudDialog.Cancel();
 }

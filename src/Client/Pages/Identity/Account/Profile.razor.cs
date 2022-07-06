@@ -41,7 +41,7 @@ public partial class Profile
             _profileModel.Email = user.GetEmail() ?? string.Empty;
             _profileModel.FirstName = user.GetFirstName() ?? string.Empty;
             _profileModel.LastName = user.GetSurname() ?? string.Empty;
-            _profileModel.PhoneNumber = user.GetPhoneNumber();
+            _profileModel.PhoneNumber = user.GetPhoneNumber() ?? string.Empty;
             _imageUrl = string.IsNullOrEmpty(user?.GetImageUrl()) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + user?.GetImageUrl());
             if (_userId is not null) _profileModel.Id = _userId;
         }
@@ -59,7 +59,7 @@ public partial class Profile
         {
             Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
 
-            DialogOptions noHeader = new DialogOptions() { NoHeader = true };
+            DialogOptions noHeader = new DialogOptions() { NoHeader = true, MaxWidth = MaxWidth.Medium, CloseButton = true, CloseOnEscapeKey = true, DisableBackdropClick = true };
             Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
 
             return;

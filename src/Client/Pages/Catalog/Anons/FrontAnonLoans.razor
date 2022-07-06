@@ -39,7 +39,7 @@
 
         string _imageUrl = string.Empty;
         string _productName = string.Empty;
-        string href = "/loan/" + @trail.Id;
+        string href = "/loan/" + @trail.Id + "?redirect_url=/login";
 
         if (trail.LoanLenders is { })
         {

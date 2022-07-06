@@ -33,6 +33,8 @@
         await AuthService.LogoutAsync();
         Snackbar.Add(@L["Logged out"], Severity.Info);
         MudDialog.Close(DialogResult.Ok(true));
+
+        Navigation.NavigateTo("/", true);
     }
 
     void Cancel() =>

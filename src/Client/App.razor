@@ -1,7 +1,7 @@
 ﻿@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons
 
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Program).Assembly">
+    <Router AppAssembly="@typeof(Program).Assembly" OnNavigateAsync="@OnNavigate">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(BaseLayout)">
                 <NotAuthorized>
@@ -23,3 +23,21 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+
+@code {
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = default!;
+
+    private void OnNavigate(NavigationContext context)
+    {
+        if (Navigation.Uri.Contains("redirect_url=/login"))
+        {
+            UriBuilder b = new UriBuilder(Navigation.Uri);
+
+            NavigationManager.NavigateTo("/login?redirect_url=" + b.Path);
+            return;
+        }
+    }
+}

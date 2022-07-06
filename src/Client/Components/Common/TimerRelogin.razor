@@ -10,12 +10,12 @@
     </MudCardHeader>
     <MudCardContent>
 
-        <MudText Typo="Typo.h6">@timerCount</MudText>      
+        <MudText Typo="Typo.h6">@Seconds</MudText>
 
-        @if (timerCount <= 1)
-        {
-            <MudText Typo="Typo.body1">Logging out.</MudText>
-        }
+        @* @if (Seconds <= 3)
+        { *@
+            <MudText Typo="Typo.body1">Account changes. Logging out.</MudText>
+        @* } *@
     </MudCardContent>
 </MudCard>
 
@@ -23,19 +23,22 @@
 
 
 @code {
+
+    [Parameter]
+    public int Seconds { get; set; } = 5;
+
     private System.Threading.Timer timer { get; set; } = default!;
-    private int timerCount = 5; // in seconds
     private int intervalPeriod = 1000; // 1 second
 
     protected override void OnInitialized()
     {
         timer = new System.Threading.Timer(async _ =>  // async void
         {
-            timerCount--;
+            Seconds--;
 
-            if (timerCount <= 0)
+            if (Seconds <= 0)
             {
-                timer.Dispose();
+                Dispose();
                 // await AuthService.ReLoginAsync(Navigation.Uri);
                 await AuthService.ReLoginAsync("/login");
             }
@@ -48,6 +51,6 @@
 
     public void Dispose()
     {
-        timer?.Dispose();
+        timer.Dispose();
     }
 }
