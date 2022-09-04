@@ -36,12 +36,12 @@
 
                                                     if (isLender.HasValue && isLender.Value == true)
                                                     {
-                                                        <MudCardMedia Image="./img/lender.png" Height="250" />
+                                                        <MudCardMedia Image="./img/lender.png" Height="250" Style="background-size:contain" />
                                                     }
 
                                                     if (isLessee.HasValue && isLessee.Value == true)
                                                     {
-                                                        <MudCardMedia Image="./img/lessee.png" Height="250" />
+                                                        <MudCardMedia Image="./img/lessee.png" Height="250" Style="background-size:contain" />
                                                     }
                                                 }
                                                 <MudCardContent>
@@ -57,12 +57,12 @@
 
                                                                 if (isLender.HasValue && isLender.Value == true)
                                                                 {
-                                                                    <MudImage Src="./img/lender.png" Height="50" />
+                                                                    <MudImage Src="./img/lender.png" Height="50" Style="background-size:contain" />
                                                                 }
 
                                                                 if (isLessee.HasValue && isLessee.Value == true)
                                                                 {
-                                                                    <MudImage Src="./img/lessee.png" Height="50" />
+                                                                    <MudImage Src="./img/lessee.png" Height="50" Style="background-size:contain" />
                                                                 }
                                                             }
                                                         </MudItem>
@@ -87,12 +87,12 @@
 
                                                             if (isLender.HasValue && isLender.Value == true)
                                                             {
-                                                                <MudImage Src="./img/lender.png" Height="80" />
+                                                                <MudImage Src="./img/lender.png" Height="80" Style="background-size:contain" />
                                                             }
 
                                                             if (isLessee.HasValue && isLessee.Value == true)
                                                             {
-                                                                <MudImage Src="./img/lessee.png" Height="80" />
+                                                                <MudImage Src="./img/lessee.png" Height="80" Style="background-size:contain" />
                                                             }
                                                         }
 
@@ -125,29 +125,29 @@
 
                                                     if (isLender)
                                                     {
-                                                        <MudCardMedia Image="./img/lender.png" Height="250" />
+                                                        <MudCardMedia Image="./img/lender.png" Height="250" Style="background-size:contain" />
                                                     }
                                                     else
                                                     {
-                                                        <MudCardMedia Image="./img/lessee.png" Height="250" />
+                                                        <MudCardMedia Image="./img/lessee.png" Height="250" Style="background-size:contain" />
                                                     }
                                                 }
                                                 <MudCardContent>
 
                                                 </MudCardContent>
                                                 <MudCardActions>
-                                                    <MudGrid>
+                                                    <MudGrid Class="text-center mx-auto">
                                                         <MudItem xs="2">
                                                             @{
                                                                 var isLender = _runningRoles?.First()?.RoleDto?.Name.Equals("Lender") ?? default;
 
                                                                 if (isLender)
                                                                 {
-                                                                    <MudCardMedia Image="./img/lender.png" Height="50" />
+                                                                    <MudCardMedia Image="./img/lender.png" Height="50" Style="background-size:contain" />
                                                                 }
                                                                 else
                                                                 {
-                                                                    <MudCardMedia Image="./img/lessee.png" Height="50" />
+                                                                    <MudCardMedia Image="./img/lessee.png" Height="50" Style="background-size:contain" />
                                                                 }
                                                             }
                                                         </MudItem>
@@ -181,38 +181,13 @@
                                         {
                                             <MudItem xs="6" md="4" lg="3" onclick="@(() => UpdatePackage(package))" onmouseover="@(() => HoverPackage(package))" Class="cursor-pointer" Style="@(package.IsVisible ? "display:block" : "display:none")">
                                                 <MudCard Class="position-relative">
-                                                    @{
-                                                        var isLender = package?.PackageDto?.IsLender;
 
-                                                        if (isLender.HasValue && isLender.Value == true)
-                                                        {
-                                                            <MudCardMedia Image="./img/lender.png" Height="250" />
-                                                        }
-                                                        else
-                                                        {
-                                                            <MudCardMedia Image="./img/lessee.png" Height="250" />
-                                                        }
-                                                    }
                                                     <MudCardContent>
-
+                                                        <MudCardMedia Image="@(Config[ConfigNames.ApiBaseUrl] + package?.PackageDto?.Image?.ImagePath)" Height="250" Style="background-size:contain" />
                                                     </MudCardContent>
                                                     <MudCardActions>
                                                         <MudGrid>
-                                                            <MudItem xs="2">
-                                                                @{
-                                                                    var isLender = package?.PackageDto?.IsLender;
-
-                                                                    if (isLender.HasValue && isLender.Value == true)
-                                                                    {
-                                                                        <MudCardMedia Image="./img/lender.png" Height="250" />
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <MudCardMedia Image="./img/lessee.png" Height="250" />
-                                                                    }
-                                                                }
-                                                            </MudItem>
-                                                            <MudItem xs="10">
+                                                            <MudItem xs="12" Class="text-center">
                                                                 <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
                                                                 <MudText Typo="Typo.body2" Color="Color.Info">@package?.PackageDto?.Description</MudText>
                                                             </MudItem>
@@ -226,18 +201,8 @@
                                                         var keepOpen = packageSelected || packageHovered ? true : false;
 
                                                         <MudOverlay Visible="@keepOpen" DarkBackground="true" Absolute="true" Class="text-center">
-                                                            @{
-                                                                var isLender = package?.PackageDto?.IsLender;
 
-                                                                if (isLender.HasValue && isLender.Value == true)
-                                                                {
-                                                                    <MudCardMedia Image="./img/lender.png" Height="50" />
-                                                                }
-                                                                else
-                                                                {
-                                                                    <MudCardMedia Image="./img/lessee.png" Height="50" />
-                                                                }
-                                                            }
+                                                            <MudCardMedia Image="@(Config[ConfigNames.ApiBaseUrl] + package?.PackageDto?.Image?.ImagePath)" Height="80" Class="mb-3" Style="background-size:contain" />
 
                                                             <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
                                                             <MudText Typo="Typo.body2" Color="Color.Info">@package?.PackageDto?.Description</MudText>
@@ -321,10 +286,10 @@
                             @* TODO:// if the role and packages are already fulfilled, these buttons must be reactive.
                 Update AppUserData service for this.
                 *@
-                            <MudButton Class="@(isForSubmission ? "d-block" : "d-none")" Variant="Variant.Filled" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll">
+                            <MudButton Class="@(isForSubmission ? "d-inline-flex" : "d-none")" Variant="Variant.Filled" OnClick="@(() => ClearAppUserDto())" StartIcon="@Icons.Filled.ClearAll">
                                 @L["Clear"]
                             </MudButton>
-                            <MudButton Class="@(isForSubmission ? "d-block ml-3" : "d-none ml-3")" Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save">
+                            <MudButton Class="@(isForSubmission ? "d-inline-flex ml-3" : "d-none ml-3")" Variant="Variant.Filled" Color="Color.Success" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save">
                                 @L["Update"]
                             </MudButton>
                         </MudGrid>

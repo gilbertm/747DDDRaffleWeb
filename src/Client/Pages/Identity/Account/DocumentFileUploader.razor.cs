@@ -14,6 +14,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
 public partial class DocumentFileUploader
 {
+    [Parameter]
+    public EventCallback OnChildChanges { get; set; }
+
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
     [Inject]
@@ -24,16 +27,33 @@ public partial class DocumentFileUploader
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
 
     [Parameter]
-    public List<ForUploadFile>? ForUploadFiles { get; set; }
+    public List<ForUploadFile>? ForUploadFiles { get; set; } = default!;
 
     [Parameter]
     public InputOutputResourceDocumentType FileIdentifier { get; set; }
 
     private CustomValidation? _customValidation;
 
+    private ForUploadFile _forUploadFile { get; set; }
+
+    private string _imageUrl { get; set; }
+
+    private string CSSCardContent { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        if (ForUploadFiles != default)
+        {
+            _forUploadFile = ForUploadFiles?.Where(f => f.FileIdentifier.Equals(FileIdentifier)).FirstOrDefault();
+
+            _imageUrl = string.IsNullOrEmpty(_forUploadFile?.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _forUploadFile?.InputOutputResourceImgUrl);
+
+            CSSCardContent = "padding: 0px!important; position: relative; opacity:" + _forUploadFile.Opacity;
+        }
+    }
+
     private void UpdateUploadedFilesAsync()
     {
-
     }
 
     private async Task UploadFiles(InputFileChangeEventArgs e, ForUploadFile? forUploadFile)
@@ -73,9 +93,18 @@ public partial class DocumentFileUploader
                 {
                     forUploadFile.InputOutputResourceImgUrl = valueTupleOfGuidAndString.Value;
                     forUploadFile.InputOutputResourceId = valueTupleOfGuidAndString.Key.ToString();
+                    forUploadFile.Opacity = "1";
+                    forUploadFile.Disabled = false;
+                    forUploadFile.isTemporarilyUploaded = true;
                 }
             }
         }
+
+        await OnChildChanges.InvokeAsync();
+
+        CSSCardContent = "padding: 0px!important; position: relative; opacity:" + forUploadFile?.Opacity;
+
+        StateHasChanged();
     }
 
     public async Task RemoveImageAsync()
@@ -93,6 +122,10 @@ public partial class DocumentFileUploader
             // _profileModel.DeleteCurrentImage = true;
             // await UpdateUploadedFilesAsync();
         }
+
+        await OnChildChanges.InvokeAsync();
+
+        StateHasChanged();
     }
 
     public void Hover(ForUploadFile forUploadFile)
@@ -123,7 +156,13 @@ public partial class DocumentFileUploader
                     forUploadFile.InputOutputResourceImgUrl = string.Empty;
                     forUploadFile.isVerified = false;
                     forUploadFile.isTemporarilyUploaded = false;
+                    forUploadFile.Opacity = "0.3";
+                    forUploadFile.Disabled = true;
                 }
+
+                CSSCardContent = "padding: 0px!important; position: relative; opacity:" + forUploadFile?.Opacity;
+
+                await OnChildChanges.InvokeAsync();
 
                 StateHasChanged();
             }

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using System.Linq;
+using static EHULOG.BlazorWebAssembly.Client.Infrastructure.Common.StorageConstants;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
@@ -24,6 +26,13 @@ public partial class Document
     private string? UserId { get; set; }
 
     private List<ForUploadFile> ForUploadFiles { get; set; } = new();
+
+    private bool PassPortCompleted { get; set; } = false;
+    private bool NationalIdCompleted { get; set; } = false;
+    private bool GovernmentIdCompleted { get; set; } = false;
+    private bool SelfieWithAtLeastOneCard { get; set; } = false;
+
+    private bool SubmitForVerficationDisabled { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,9 +61,10 @@ public partial class Document
                             UserIdReferenceId = ior.ReferenceId.ToString(),
                             InputOutputResourceImgUrl = ior.ImagePath,
                             isVerified = ior.ResourceStatusType.Equals(InputOutputResourceStatusType.Enabled) ? true : false,
-                            isTemporarilyUploaded = true
+                            isTemporarilyUploaded = true,
+                            Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? "1" : "0.3",
+                            Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? false : true
                         });
-
                     }
                 }
 
@@ -75,11 +85,88 @@ public partial class Document
                         UserIdReferenceId = UserId,
                         InputOutputResourceImgUrl = string.Empty,
                         isVerified = false,
-                        isTemporarilyUploaded = false
+                        isTemporarilyUploaded = false,
+                        Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains((InputOutputResourceDocumentType)i) ? "1" : "0.3",
+                        Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains((InputOutputResourceDocumentType)i) ? false : true
                     });
+
                 }
+
+                OnChildChanges(ForUploadFiles);
             }
         }
+    }
+
+    private void OnChildChanges(List<ForUploadFile> forUploadFiles)
+    {
+        foreach (var fuf in forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains((InputOutputResourceDocumentType)fuf.FileIdentifier)))
+        {
+            fuf.Disabled = false;
+            fuf.Opacity = "1";
+
+            if (fuf is not null && fuf.FileIdentifier.HasValue)
+            {
+                switch (fuf.FileIdentifier)
+                {
+                    case InputOutputResourceDocumentType.Passport:
+                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().Disabled = fuf.isTemporarilyUploaded ? false : true;
+                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
+                    break;
+                    case InputOutputResourceDocumentType.NationalId:
+                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().Disabled = fuf.isTemporarilyUploaded ? false : true; ;
+                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
+                    break;
+                    case InputOutputResourceDocumentType.GovernmentId:
+                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().Disabled = fuf.isTemporarilyUploaded ? false : true;
+                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
+                    break;
+
+                }
+            }
+
+        }
+
+        int validDocuments = 0;
+        bool isSubmitForVerification = false;
+
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.Passport)).First().isTemporarilyUploaded &&
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().isTemporarilyUploaded)
+        {
+            validDocuments++;
+        }
+
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalId)).First().isTemporarilyUploaded &&
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().isTemporarilyUploaded)
+        {
+            validDocuments++;
+        }
+
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentId)).First().isTemporarilyUploaded &&
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().isTemporarilyUploaded)
+        {
+            validDocuments++;
+        }
+
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().isTemporarilyUploaded)
+        {
+            isSubmitForVerification = true;
+        }
+
+        if (validDocuments > 1)
+        {
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().Disabled = false;
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().Opacity = "1";
+        }
+
+        if (validDocuments > 1 && isSubmitForVerification)
+        {
+            SubmitForVerficationDisabled = false;
+        } else
+        {
+            SubmitForVerficationDisabled = true;
+        }
+
+        StateHasChanged();
     }
 
     private async Task UpdateProfileAsync()

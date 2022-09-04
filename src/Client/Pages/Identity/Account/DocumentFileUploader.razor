@@ -1,9 +1,9 @@
 ﻿@inject IStringLocalizer<Profile> L
 
-<MudCardContent Style="padding:0px!important;position:relative">
-    @{
-        var _forUploadFile = ForUploadFiles?.Where(f => f.FileIdentifier.Equals(FileIdentifier)).FirstOrDefault();
-        var _imageUrl = string.IsNullOrEmpty(_forUploadFile?.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _forUploadFile?.InputOutputResourceImgUrl);
+@if (ForUploadFiles is not null)
+{
+    <MudCardContent Style="@(CSSCardContent)">
+
 
         <div class="d-flex justify-center mb-4">
             @if (!string.IsNullOrEmpty(_imageUrl))
@@ -12,34 +12,34 @@
                     <MudCardContent>
                         <MudAvatar Square="true" Image="@_imageUrl" Style=" width:100%;height:150px;position:relative"></MudAvatar>
 
-                         @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
-                            {
-                                case "Passport":
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Passport</MudText>
-                                    break;
-                                case "PassportBack":
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Passport</MudText>
-                                    break;
-                                case "NationalId":
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Nadtional Id</MudText>
-                                    break;
-                                case "NationalIdBack":
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>National Id</MudText>
-                                    break;
-                                case "GovernmentId":
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Government Id</MudText>
-                                    break;
-                                case "GovernmentIdBack":
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Government Id</MudText>
-                                    break;
-                                case "SelfieWithAtLeastOneCard":
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Selfie<br>With at least one of the cards above</MudText>
-                                    break;
-                                default:
-                                    <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Others</MudText>
-                                    break;
+                        @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
+                        {
+                            case "Passport":
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Passport</MudText>
+                                break;
+                            case "PassportBack":
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Passport</MudText>
+                                break;
+                            case "NationalId":
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Nadtional Id</MudText>
+                                break;
+                            case "NationalIdBack":
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>National Id</MudText>
+                                break;
+                            case "GovernmentId":
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Government Id</MudText>
+                                break;
+                            case "GovernmentIdBack":
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Government Id</MudText>
+                                break;
+                            case "SelfieWithAtLeastOneCard":
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Selfie<br>With at least one of the cards above</MudText>
+                                break;
+                            default:
+                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Others</MudText>
+                                break;
 
-                            }
+                        }
                     </MudCardContent>
 
                     <MudOverlay Visible="_forUploadFile?.isHovered ?? false" DarkBackground="true" Absolute="true" Class="text-center">
@@ -87,7 +87,7 @@
 
                             }
                             <div style="padding-top:20px;display:block;">
-                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)"><MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Upload</MudText></MudButton>
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Disabled="@(_forUploadFile.Disabled)" Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)"><MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Upload</MudText></MudButton>
                                 <br />
                                 @if (!string.IsNullOrEmpty(_imageUrl))
                                 {
@@ -105,5 +105,6 @@
                 </MudCard>
             }
         </div>
-    }
-</MudCardContent>
+
+    </MudCardContent>
+}

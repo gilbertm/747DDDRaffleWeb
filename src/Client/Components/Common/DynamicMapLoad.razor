@@ -1,6 +1,4 @@
-﻿@page "/account/address"
-
-@inject IStringLocalizer<DynamicMapLoad> L
+﻿@inject IStringLocalizer<DynamicMapLoad> L
 
 @if (!IsMapOnly)
 {
@@ -79,8 +77,8 @@
             </MudCardContent>
             <MudCardActions Class="pb-4 pl-4">
                 <MudGrid Justify="Justify.FlexEnd">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="ml-auto">
-                        @L["Save Changes"]
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="d-inline-flex ml-auto">
+                        @L["Save"]
                     </MudButton>
                 </MudGrid>
             </MudCardActions>

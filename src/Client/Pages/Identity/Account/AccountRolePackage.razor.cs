@@ -18,6 +18,9 @@ public partial class AccountRolePackage
     [Inject]
     protected IAuthenticationService AuthService { get; set; } = default!;
     [Inject]
+    protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
+
+    [Inject]
     protected IPackagesClient PackagesClient { get; set; } = default!;
     [Inject]
     private IRolesClient RolesClient { get; set; } = default!;
@@ -122,6 +125,16 @@ public partial class AccountRolePackage
                     is List<PackageDto> responsePackages)
                 {
                     _packages = responsePackages;
+
+                    foreach (var package in _packages)
+                    {
+                        var image = await InputOutputResourceClient.GetAsync(package.Id);
+
+                        if (image.Count() > 0)
+                        {
+                            package.Image = image.First();
+                        }
+                    }
                 }
 
                 if (_packages is not null)

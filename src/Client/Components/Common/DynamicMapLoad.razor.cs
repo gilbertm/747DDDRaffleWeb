@@ -12,6 +12,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
 public partial class DynamicMapLoad
 {
     [Inject]
+    public NavigationManager NavigationManager { get; set; } = default!;
+    [Inject]
     public AppDataService AppDataService { get; set; } = default!;
     [Inject]
     protected IAppUsersClient AppUsersClient { get; set; } = default!;
@@ -129,6 +131,9 @@ public partial class DynamicMapLoad
 
             var guid = await AppUsersClient.UpdateAsync(_appUserDto.Id, updateAppUserRequest);
         }
+
+        NavigationManager.NavigateTo("/account/rolepackage");
+        return;
     }
 
     [JSInvokable]
