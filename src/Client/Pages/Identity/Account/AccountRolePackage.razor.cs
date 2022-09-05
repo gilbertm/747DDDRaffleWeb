@@ -236,6 +236,12 @@ public partial class AccountRolePackage
             {
                 package.IsVisible = false;
             }
+
+            if (package.PackageDto.IsDefault)
+            {
+                package.IsSelected = true;
+                package.IsHovered = true;
+            }
         }
     }
 
@@ -253,6 +259,12 @@ public partial class AccountRolePackage
             else
             {
                 package.IsVisible = true;
+            }
+
+            if (package.PackageDto.IsDefault)
+            {
+                package.IsSelected = true;
+                package.IsHovered = true;
             }
         }
     }
