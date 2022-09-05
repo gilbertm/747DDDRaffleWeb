@@ -9,6 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Pages\Catalog\Products.razor.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Pages\Catalog\Products.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Geo.MapBox" Version="1.1.0" />
         <PackageReference Include="Mapster" Version="7.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.5" />

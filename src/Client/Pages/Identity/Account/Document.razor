@@ -15,10 +15,10 @@
         <MudCard Elevation="0">
             <MudCardContent Style="padding:0px!important" Class="text-center">
                 <MudText Typo="Typo.h5" Class="mb-1">Passport</MudText>
-                <MudPaper Class="mb-3">
+                <MudPaper Elevation="0">
                     <DocumentFileUploader OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("Passport")" FileIdentifier="InputOutputResourceDocumentType.Passport" ForUploadFiles="ForUploadFiles" />
                 </MudPaper>
-                <MudPaper>
+                <MudPaper Elevation="0">
                     <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("PassportBack")" FileIdentifier="InputOutputResourceDocumentType.PassportBack" ForUploadFiles="ForUploadFiles" />
                 </MudPaper>
             </MudCardContent>
@@ -28,10 +28,10 @@
         <MudCard Elevation="0">
             <MudCardContent Style="padding:0px!important" Class="text-center">
                 <MudText Typo="Typo.h5" Class="mb-1">National ID</MudText>
-                <MudPaper Class="mb-3">
+                <MudPaper Elevation="0">
                     <DocumentFileUploader OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("NationalId")" FileIdentifier="InputOutputResourceDocumentType.NationalId" ForUploadFiles="ForUploadFiles" />
                 </MudPaper>
-                <MudPaper>
+                <MudPaper Elevation="0">
                     <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("NationalIdBack")" FileIdentifier="InputOutputResourceDocumentType.NationalIdBack" ForUploadFiles="ForUploadFiles" />
                 </MudPaper>
             </MudCardContent>
@@ -41,10 +41,10 @@
         <MudCard Elevation="0">
             <MudCardContent Style="padding:0px!important" Class="text-center">
                 <MudText Typo="Typo.h5" Class="mb-1">Government ID</MudText>
-                <MudPaper Class="mb-3">
+                <MudPaper Elevation="0">
                     <DocumentFileUploader OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("GovernmentId")" FileIdentifier="InputOutputResourceDocumentType.GovernmentId" ForUploadFiles="ForUploadFiles" />
                 </MudPaper>
-                <MudPaper>
+                <MudPaper Elevation="0">
                     <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("GovernmentIdBack")" FileIdentifier="InputOutputResourceDocumentType.GovernmentIdBack" ForUploadFiles="ForUploadFiles" />
                 </MudPaper>
             </MudCardContent>
@@ -60,7 +60,7 @@
         <MudCard Elevation="0">
             <MudCardContent Style="padding:0px!important" Class="text-center">
                 <MudText Typo="Typo.h5" Class="mb-1">Selfie with card</MudText>
-                <MudPaper Class="mb-3">
+                <MudPaper Elevation="0">
                     <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("SelfieWithAtLeastOneCard")" FileIdentifier="InputOutputResourceDocumentType.SelfieWithAtLeastOneCard" ForUploadFiles="ForUploadFiles" />
                 </MudPaper>
             </MudCardContent>
@@ -70,6 +70,9 @@
 
 <MudGrid>
     <MudItem xs="12" Class="text-center">
-        <MudButton OnClick="UpdateProfileAsync" Disabled="@SubmitForVerficationDisabled" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Send" Color="Color.Success" Class="mb-5 px-5 py-3"><MudText Typo="Typo.button">Submit for verification</MudText></MudButton>
+        @if (!Verified)
+        {
+            <MudButton OnClick="UpdateProfileAsync" Disabled="@SubmitForVerficationDisabled" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Send" Color="Color.Success" Class="mb-5 px-5 py-3"><MudText Typo="Typo.button">Submit for verification</MudText></MudButton>
+        }
     </MudItem>
 </MudGrid>

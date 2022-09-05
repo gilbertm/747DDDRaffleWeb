@@ -30,7 +30,8 @@ public partial class NavMenu
     private bool _canViewPackages;
     private bool _canViewTenants;
     private bool _canViewLoans;
-    private bool CanViewAdministrationGroup => _canViewUsers || _canViewRoles || _canViewTenants;
+    private bool _canViewInputOutputResources;
+    private bool CanViewAdministrationGroup => _canViewUsers || _canViewRoles || _canViewTenants || _canViewInputOutputResources;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -48,5 +49,6 @@ public partial class NavMenu
         _canViewCategories = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Categories);
         _canViewPackages = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Packages);
         _canViewLoans = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Loans);
+        _canViewInputOutputResources = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.InputOutputResources);
     }
 }

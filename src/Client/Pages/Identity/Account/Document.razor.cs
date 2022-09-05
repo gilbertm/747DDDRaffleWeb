@@ -34,6 +34,8 @@ public partial class Document
 
     private bool SubmitForVerficationDisabled { get; set; } = true;
 
+    private bool Verified { get; set; } = false;
+
     protected override async Task OnInitializedAsync()
     {
         if ((await AuthState).User is { } user)
@@ -60,7 +62,7 @@ public partial class Document
                             InputOutputResourceId = ior.Id.ToString(),
                             UserIdReferenceId = ior.ReferenceId.ToString(),
                             InputOutputResourceImgUrl = ior.ImagePath,
-                            isVerified = ior.ResourceStatusType.Equals(InputOutputResourceStatusType.Enabled) ? true : false,
+                            isVerified = ior.ResourceStatusType.Equals(InputOutputResourceStatusType.EnabledAndVerified) ? true : false,
                             isTemporarilyUploaded = true,
                             Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? "1" : "0.3",
                             Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? false : true
@@ -127,6 +129,8 @@ public partial class Document
         }
 
         int validDocuments = 0;
+        int verifiedDocuments = 0;
+
         bool isSubmitForVerification = false;
 
         if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.Passport)).First().isTemporarilyUploaded &&
@@ -135,10 +139,22 @@ public partial class Document
             validDocuments++;
         }
 
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.Passport)).First().isVerified &&
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().isVerified)
+        {
+            verifiedDocuments++;
+        }
+
         if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalId)).First().isTemporarilyUploaded &&
             forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().isTemporarilyUploaded)
         {
             validDocuments++;
+        }
+
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalId)).First().isVerified &&
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().isVerified)
+        {
+            verifiedDocuments++;
         }
 
         if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentId)).First().isTemporarilyUploaded &&
@@ -147,9 +163,20 @@ public partial class Document
             validDocuments++;
         }
 
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentId)).First().isVerified &&
+            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().isVerified)
+        {
+            verifiedDocuments++;
+        }
+
         if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().isTemporarilyUploaded)
         {
             isSubmitForVerification = true;
+        }
+
+        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().isVerified)
+        {
+            verifiedDocuments++;
         }
 
         if (validDocuments > 1)
@@ -164,6 +191,11 @@ public partial class Document
         } else
         {
             SubmitForVerficationDisabled = true;
+        }
+
+        if (verifiedDocuments > 2)
+        {
+            Verified = true;
         }
 
         StateHasChanged();

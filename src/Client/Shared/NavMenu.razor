@@ -83,9 +83,17 @@
             @if (CanViewAdministrationGroup)
             {
                 <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Administration"]</MudText>
+
                 @if (_canViewUsers)
                 {
-                    <MudNavLink Match="NavLinkMatch.Prefix" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt">@L["Users"]</MudNavLink>
+                    <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.Filled.VerifiedUser">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="fsh-nav-child">@L["Users"]</MudNavLink>
+
+                        @if (_canViewInputOutputResources)
+                        {
+                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/administer/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="fsh-nav-child">@L["Verify Files and Documents"]</MudNavLink>
+                        }
+                    </MudNavGroup>
                 }
                 @if (_canViewRoles)
                 {

@@ -1,6 +1,6 @@
 ﻿@inject IStringLocalizer<Profile> L
 
-@if (ForUploadFiles is not null)
+@if (ForUploadFiles is not null && ForUploadFiles.Count() > 0)
 {
     <MudCardContent Style="@(CSSCardContent)">
 
@@ -40,10 +40,18 @@
                                 break;
 
                         }
-                    </MudCardContent>
+                        <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-1">@(_forUploadFile.isVerified ? "Verified" : "")</MudText>
+                        </MudCardContent>
 
-                    <MudOverlay Visible="_forUploadFile?.isHovered ?? false" DarkBackground="true" Absolute="true" Class="text-center">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Remove(_forUploadFile ?? default!))">Remove</MudButton>
+
+                        <MudOverlay Visible="_forUploadFile?.isHovered ?? false" DarkBackground="true" Absolute="true" Class="text-center">
+                        @if (_forUploadFile is not null && _forUploadFile.isVerified)
+                        {
+                            <MudText Color="Color.Success" Typo="Typo.h5" Class="mt-1">Verified</MudText>
+                        } else
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Remove(_forUploadFile ?? default!))">Remove</MudButton>
+                        }
                     </MudOverlay>
                 </MudCard>
             }

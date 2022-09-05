@@ -5,7 +5,9 @@
 
 <EhulogTitle Title="@L["Products"]" Description="@L["Manage Products."]" />
 
-<EntityTable @ref="_table"  TEntity="ProductDto" TId="Guid" TRequest="ProductViewModel" Context="@Context">
+@* ref="_table" *@
+
+<EntityTable   TEntity="ProductDto" TId="Guid" TRequest="ProductViewModel" Context="@Context">
 
     <AdvancedSearchContent>
         <BrandAutocomplete @bind-Value="SearchBrandId" />
@@ -41,9 +43,9 @@
         @* <MudItem xs="12" md="6">
             <MudTextField Label="@L["Rate"]" For="@(() => context.Rate)" @bind-Value="context.Rate" />
         </MudItem> *@
-        <MudItem xs="12" md="12">
+        @* <MudItem xs="12" md="12">
             <MudItem>
-                <img src="https://localhost:5001/Files/Images/ApplicationUser/09ad991332784ce2a0a4718bc2fb27a06a5ac1f0b82c4036ac347e2b0235a02f.png" />
+                @ * <img src="https://localhost:5001/Files/Images/ApplicationUser/09ad991332784ce2a0a4718bc2fb27a06a5ac1f0b82c4036ac347e2b0235a02f.png" /> * @
 
                 @if(!string.IsNullOrEmpty(context.ImageInBytes))
                 {
@@ -82,7 +84,7 @@
                 </div>
                 <InputFile id="fileInput" hidden OnChange="UploadFiles" />
             </MudItem>
-        </MudItem>
+        </MudItem> *@
     </EditFormContent>
 
 </EntityTable>

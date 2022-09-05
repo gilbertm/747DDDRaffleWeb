@@ -8,6 +8,12 @@
 @if (_appUserDto != null)
 {
     <EntityTable TEntity="AppUserProductDto" TId="Guid" TRequest="AppUserProductViewModel" Context="@Context">
+
+        <AdvancedSearchContent>
+            <BrandAutocomplete @bind-Value="SearchBrandId" />
+            <CategoryAutocomplete @bind-Value="SearchCategoryId" />
+        </AdvancedSearchContent>
+
         <EditFormContent>
             @if (!Context.AddEditModal.IsCreate)
             {

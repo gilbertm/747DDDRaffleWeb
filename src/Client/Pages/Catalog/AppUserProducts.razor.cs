@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using static MudBlazor.CategoryTypes;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
@@ -39,6 +40,8 @@ public partial class AppUserProducts
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
 
     protected EntityServerTableContext<AppUserProductDto, Guid, AppUserProductViewModel> Context { get; set; } = default!;
+
+    private EntityTable<AppUserProductDto, Guid, AppUserProductViewModel> _table = default!;
 
     private AppUserDto _appUserDto { get; set; } = default!;
 
@@ -76,6 +79,7 @@ public partial class AppUserProducts
                         new(prod => prod.Product?.ProductType, L["Type"], "Product.ProductType"),
                },
                idFunc: prod => prod.Id,
+               enableAdvancedSearch: true,
                searchFunc: async filter =>
                {
                    // only the following can be listed
@@ -256,15 +260,15 @@ public partial class AppUserProducts
                    }
 
                    return canDelete;
-               },
-               searchAction: ((Func<string>)(() =>
+               }/*,
+                searchAction: ((Func<string>)(() =>
                {
                    return string.Empty;
                }))(),
                exportAction: ((Func<string>)(() =>
                {
                    return string.Empty;
-               }))()
+               }))() */
                );
     }
 
@@ -307,6 +311,28 @@ public partial class AppUserProducts
             await imageFile.OpenReadStream(ApplicationConstants.MaxAllowedSize).ReadAsync(buffer);
             Context.AddEditModal.RequestModel.ImageInBytes = $"data:{ApplicationConstants.StandardImageFormat};base64,{Convert.ToBase64String(buffer)}";
             Context.AddEditModal.ForceRender();
+        }
+    }
+
+    private Guid _searchBrandId;
+    private Guid SearchBrandId
+    {
+        get => _searchBrandId;
+        set
+        {
+            _searchBrandId = value;
+            _ = _table.ReloadDataAsync();
+        }
+    }
+
+    private Guid _searchCategoryId;
+    private Guid SearchCategoryId
+    {
+        get => _searchCategoryId;
+        set
+        {
+            _searchCategoryId = value;
+            _ = _table.ReloadDataAsync();
         }
     }
 }

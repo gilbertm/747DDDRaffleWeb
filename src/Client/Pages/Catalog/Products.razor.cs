@@ -73,12 +73,14 @@ public partial class Products
                         var exportFilter = filter.Adapt<ExportProductsRequest>();
 
                         exportFilter.BrandId = SearchBrandId == default ? null : SearchBrandId;
-                        exportFilter.MinimumRate = SearchMinimumRate;
-                        exportFilter.MaximumRate = SearchMaximumRate;
+                        // exportFilter.MinimumRate = SearchMinimumRate;
+                        // exportFilter.MaximumRate = SearchMaximumRate;
 
                         return await ProductsClient.ExportAsync(exportFilter);
                     },
                     deleteFunc: async id => await ProductsClient.DeleteAsync(id));
+
+        System.Diagnostics.Debug.WriteLine("Test");
     }
 
     // Advanced Search
@@ -105,7 +107,7 @@ public partial class Products
         }
     }
 
-    private decimal _searchMinimumRate;
+    /* private decimal _searchMinimumRate;
     private decimal SearchMinimumRate
     {
         get => _searchMinimumRate;
@@ -125,7 +127,7 @@ public partial class Products
             _searchMaximumRate = value;
             _ = _table.ReloadDataAsync();
         }
-    }
+    } */
 
     // TODO : Make this as a shared service or something? Since it's used by Profile Component also for now, and literally any other component that will have image upload.
     // The new service should ideally return $"data:{ApplicationConstants.StandardImageFormat};base64,{Convert.ToBase64String(buffer)}"

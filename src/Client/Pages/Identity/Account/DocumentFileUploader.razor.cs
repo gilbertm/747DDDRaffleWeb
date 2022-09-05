@@ -42,13 +42,16 @@ public partial class DocumentFileUploader
 
     protected override void OnParametersSet()
     {
-        if (ForUploadFiles != default)
+        if (ForUploadFiles is not null && ForUploadFiles.Count() > 0)
         {
-            _forUploadFile = ForUploadFiles?.Where(f => f.FileIdentifier.Equals(FileIdentifier)).FirstOrDefault();
+            _forUploadFile = ForUploadFiles.Where(f => f.FileIdentifier.Equals(FileIdentifier)).First();
 
-            _imageUrl = string.IsNullOrEmpty(_forUploadFile?.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _forUploadFile?.InputOutputResourceImgUrl);
+            if (_forUploadFile is not null)
+            {
+                _imageUrl = string.IsNullOrEmpty(_forUploadFile.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _forUploadFile.InputOutputResourceImgUrl);
 
-            CSSCardContent = "padding: 0px!important; position: relative; opacity:" + _forUploadFile.Opacity;
+                CSSCardContent = "padding: 0px!important; position: relative; opacity:" + _forUploadFile.Opacity;
+            }
         }
     }
 
