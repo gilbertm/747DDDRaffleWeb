@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 using MudBlazor;
 using System.Security.Claims;
+using static EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account.AccountRolePackage;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
@@ -60,6 +61,8 @@ public partial class AccountRolePackage
 
     private Guid _oldPackage { get; set; }
 
+    private bool _lockRolePackage { get; set; }
+
     public class SelectedHoveredVisible
     {
         public bool IsSelected { get; set; }
@@ -83,6 +86,8 @@ public partial class AccountRolePackage
 
     protected override async Task OnInitializedAsync()
     {
+        _lockRolePackage = false;
+
         _appUserDto = await AppDataService.Start();
 
         if (_appUserDto is not null)
@@ -178,6 +183,8 @@ public partial class AccountRolePackage
                         });
                     }
 
+                    // handle already
+                    // have role and package
                     lenderOrLessee = lenderOrLessee.Where(r => r.Enabled).ToList();
 
                     if (lenderOrLessee.Count() == 1)
@@ -198,21 +205,14 @@ public partial class AccountRolePackage
                             IsVisible = true
                         });
 
-                        string? lenderOrLesseRoleName = lenderOrLessee.First().RoleName ?? default!;
-                        if (lenderOrLesseRoleName is not null && lenderOrLesseRoleName.Equals("Lender"))
+                        if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
                         {
-                            PackagesForLenderRole();
+                            _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).First().IsSelected = true;
+                            _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).First().IsVisible= true;
 
-                            if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
-                            {
-                                _runningPackages = _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).ToList();
+                        }
 
-                            }
-                        }
-                        else
-                        {
-                            PackagesForNonLenderRole();
-                        }
+                        _lockRolePackage = true;
 
                     }
                 }
@@ -221,58 +221,37 @@ public partial class AccountRolePackage
     }
 
     /* helper functions */
-    private void PackagesForLenderRole()
+    private void PackagesForRole(bool isLender)
     {
         foreach (var package in _runningPackages)
         {
             package.IsSelected = false;
             package.IsHovered = false;
+            package.IsVisible = false;
 
-            if (package.PackageDto.IsLender)
-            {
-                package.IsVisible = true;
-            }
-            else
-            {
-                package.IsVisible = false;
-            }
-
-            if (package.PackageDto.IsDefault)
-            {
-                package.IsSelected = true;
-                package.IsHovered = true;
-            }
-        }
-    }
-
-    private void PackagesForNonLenderRole()
-    {
-        foreach (var package in _runningPackages)
-        {
-            package.IsSelected = false;
-            package.IsHovered = false;
-
-            if (package.PackageDto.IsLender)
-            {
-                package.IsVisible = false;
-            }
-            else
+            // lender
+            if (isLender && (package.PackageDto.IsLender == isLender))
             {
                 package.IsVisible = true;
             }
 
-            if (package.PackageDto.IsDefault)
+            // non-lender
+            if (!isLender && (package.PackageDto.IsLender == isLender))
             {
-                package.IsSelected = true;
-                package.IsHovered = true;
+                package.IsVisible = true;
             }
         }
     }
 
     private void ClearRole()
     {
-        /* cancel selection */
+        if (_appUserDto is not null)
+        {
+            _appUserDto.RoleId = default!;
+            _appUserDto.RoleName = string.Empty;
+        }
 
+        /* cancel selection */
         foreach (var role in _runningRoles)
         {
             role.IsSelected = false;
@@ -280,17 +259,11 @@ public partial class AccountRolePackage
             role.IsVisible = true;
         }
 
-        PackagesForLenderRole();
-
-        PackagesForNonLenderRole();
-
         StateHasChanged();
     }
 
     private void HoverRole(ExtendedRoleDto extendedRoleDto)
     {
-        /* hover only */
-
         foreach (var role in _runningRoles)
         {
             role.IsHovered = false;
@@ -298,15 +271,18 @@ public partial class AccountRolePackage
 
         if (extendedRoleDto is not null)
         {
-            extendedRoleDto.IsHovered = true;
+            if (_runningRoles is not null && _runningRoles.Where(rr => rr.Equals(extendedRoleDto)).Count() > 0)
+            {
+                _runningRoles.Where(rr => rr.Equals(extendedRoleDto)).First().IsHovered = true;
+            }
 
             if ((extendedRoleDto.RoleDto is not null) && extendedRoleDto.RoleDto.Name.Equals("Lender"))
             {
-                PackagesForLenderRole();
+                PackagesForRole(true);
             }
             else
             {
-                PackagesForNonLenderRole();
+                PackagesForRole(false);
             }
         }
 
@@ -317,7 +293,6 @@ public partial class AccountRolePackage
 
     private void UpdateRole(ExtendedRoleDto extendedRoleDto)
     {
-        /* selected and updated the model */
         foreach (var role in _runningRoles)
         {
             role.IsSelected = false;
@@ -326,22 +301,41 @@ public partial class AccountRolePackage
 
         if (extendedRoleDto is not null)
         {
-            extendedRoleDto.IsSelected = true;
-            extendedRoleDto.IsVisible = true;
+            if (_runningRoles is not null && _runningRoles.Where(rr => rr.Equals(extendedRoleDto)).Count() > 0)
+            {
+                if (_appUserDto is not null && extendedRoleDto.RoleDto is not null)
+                {
+                    _appUserDto.RoleId = extendedRoleDto.RoleDto.Id;
+                    _appUserDto.RoleName = extendedRoleDto.RoleDto.Name;
+                }
+
+                isForSubmission = true;
+                _runningRoles.Where(rr => rr.Equals(extendedRoleDto)).First().IsSelected = true;
+                _runningRoles.Where(rr => rr.Equals(extendedRoleDto)).First().IsVisible = true;
+            }
 
             if ((extendedRoleDto.RoleDto is not null) && extendedRoleDto.RoleDto.Name.Equals("Lender"))
             {
-                PackagesForLenderRole();
+                PackagesForRole(true);
             }
             else
             {
-                PackagesForNonLenderRole();
+                PackagesForRole(false);
+            }
+
+            if (_appUserDto is not null)
+            {
+                // make default
+                // make it the default value of appuser's package id
+                if (_runningPackages is not null && _runningPackages.Where(p => p.IsVisible && p.PackageDto.IsDefault).Count() == 1)
+                {
+                    _appUserDto.PackageId = _runningPackages.Where(p => p.IsVisible && p.PackageDto.IsDefault).First().PackageDto.Id;
+                }
             }
         }
 
         SelectDefaultPackage();
 
-        _appUserDto.RoleId = extendedRoleDto?.RoleDto?.Id;
         StateHasChanged();
     }
 
@@ -352,44 +346,32 @@ public partial class AccountRolePackage
             if (package.IsVisible && package.PackageDto.IsDefault)
             {
                 package.IsSelected = true;
-                _appUserDto.PackageId = package.PackageDto.Id;
-            }
-            else
-            {
-                package.IsSelected = false;
             }
         }
-
-        StateHasChanged();
     }
 
-    private void ClearPackage(bool isLender = false)
+    private void ClearPackage()
     {
-        /* cancel selection */
+
+        if (_appUserDto is not null)
+        {
+            _appUserDto.PackageId = default!;
+        }
 
         foreach (var package in _runningPackages)
         {
             package.IsSelected = false;
             package.IsHovered = false;
-            package.IsVisible = true;
+            package.IsVisible = false;
         }
 
-        if (isLender)
-        {
-            PackagesForLenderRole();
-        }
-        else
-        {
-            PackagesForNonLenderRole();
-        }
+        SelectDefaultPackage();
 
-        StateHasChanged();
+        ClearRole();
     }
 
     private void HoverPackage(ExtendedPackageDto extendedPackageDto)
     {
-        /* hover only */
-
         foreach (var package in _runningPackages)
         {
             package.IsHovered = false;
@@ -397,7 +379,10 @@ public partial class AccountRolePackage
 
         if (extendedPackageDto is not null)
         {
-            extendedPackageDto.IsHovered = true;
+            if (_runningPackages is not null && _runningPackages.Where(rr => rr.Equals(extendedPackageDto)).Count() > 0)
+            {
+                _runningPackages.Where(rr => rr.Equals(extendedPackageDto)).First().IsHovered = true;
+            }
         }
 
         StateHasChanged();
@@ -416,9 +401,12 @@ public partial class AccountRolePackage
         {
             extendedPackageDto.IsSelected = true;
             extendedPackageDto.IsVisible = true;
-        }
 
-        _appUserDto.PackageId = extendedPackageDto?.PackageDto?.Id ?? default;
+            if (_appUserDto is not null && extendedPackageDto.PackageDto is not null)
+            {
+                _appUserDto.PackageId = extendedPackageDto.PackageDto.Id;
+            }
+        }
 
         isForSubmission = true;
 
@@ -430,9 +418,6 @@ public partial class AccountRolePackage
         ClearRole();
         ClearPackage();
 
-        _appUserDto.RoleId = null;
-        _appUserDto.PackageId = default!;
-        StateHasChanged();
     }
 
     private bool isForSubmission { get; set; } = false;
