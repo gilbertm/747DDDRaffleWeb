@@ -1,0 +1,13 @@
+{
+  "name": "aspnetmonsters-blazorgeolocation",
+  "version": "0.4.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/emscripten": "0.0.31",
+    "ts-loader": "^3.2.0",
+    "typescript": "^2.6.1"
+  }
+}
