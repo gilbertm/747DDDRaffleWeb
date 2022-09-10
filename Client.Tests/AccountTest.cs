@@ -38,7 +38,7 @@ public class AccountTest
         authContext.SetRoles("Admin");
 
         // Act
-        var cut = ctx.RenderComponent<HelloWorld>();
+        var cut = ctx.RenderComponent<Account>();
 
         // Assert
         cut.MarkupMatches("<h1>Hello world from Blazor</h1>");

@@ -6,6 +6,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
+COPY ["src/AspNetMonsters.Blazor.Geolocation.Custom/AspNetMonsters.Blazor.Geolocation.Custom.csproj", "src/AspNetMonsters.Blazor.Geolocation.Custom/"]
 COPY ["src/Host/Host.csproj", "src/Host/"]
 COPY ["src/Shared/Shared.csproj", "src/Shared/"]
 COPY ["src/Client/Client.csproj", "src/Client/"]

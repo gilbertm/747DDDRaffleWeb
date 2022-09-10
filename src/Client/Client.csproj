@@ -9,14 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Pages\Catalog\Products.razor.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="Pages\Catalog\Products.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Geo.MapBox" Version="1.1.0" />
         <PackageReference Include="Mapster" Version="7.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.5" />
@@ -28,14 +20,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\AspNetMonsters.Blazor.Geolocation.Custom\AspNetMonsters.Blazor.Geolocation.Custom.csproj" />
         <ProjectReference Include="..\Client.Infrastructure\Client.Infrastructure.csproj" />
         <ProjectReference Include="..\Shared\Shared.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="AspNetMonsters.Blazor.Geolocation.Custom">
-        <HintPath>C:\Users\Gilbert\source\repos\Blazor.Geolocation\AspNetMonsters.Blazor.Geolocation.Custom\bin\Release\net6.0\AspNetMonsters.Blazor.Geolocation.Custom.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
     <ItemGroup>
