@@ -1,15 +1,9 @@
 ﻿@inject IStringLocalizer<DynamicMapLoad> L
 
-@if (!IsMapOnly)
-{
-    <EhulogTitle Title="@L["Address"]" />
-    <MudAlert Severity="Severity.Info">Manage account address. Make sure that City, Region and Country are accurate as this will be your permanent application location.</MudAlert>
-}
-
 @if (_appUserDto is not null)
 {
     <EditForm Model="@_appUserDto" OnValidSubmit="UpdateAppUserAddress">
-        <MudCard Elevation="25">
+        <MudCard Elevation="0">
             <MudCardContent>
                 <DataAnnotationsValidator />
                 <CustomValidation @ref="_customValidation" />

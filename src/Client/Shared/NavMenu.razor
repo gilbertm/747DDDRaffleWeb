@@ -15,17 +15,22 @@
     {
         <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Filled.Dashboard">@L["Dashboard"]</MudNavLink>
     }
-    <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
-        <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="fsh-nav-child">@L["Account"]</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="fsh-nav-child">@L["Address"]</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="fsh-nav-child">@L["Role and Package"]</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="fsh-nav-child">@L["Documents"]</MudNavLink>
-    </MudNavGroup>
-
-    <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
 
     @if (_appUserDto is not null)
     {
+
+        <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd">@L["Account"]</MudNavLink>
+
+        @* <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
+    <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="fsh-nav-child">@L["Account"]</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="fsh-nav-child">@L["Address"]</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="fsh-nav-child">@L["Role and Package"]</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="fsh-nav-child">@L["Documents"]</MudNavLink>
+    </MudNavGroup> *@
+
+        <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
+
+
         bool isAdmin = (_appUserDto.RoleName is not null ? _appUserDto.RoleName : string.Empty).Equals("Admin");
 
         if ((!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender")) || isAdmin)

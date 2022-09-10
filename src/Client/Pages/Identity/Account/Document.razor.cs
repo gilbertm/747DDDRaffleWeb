@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using System.Linq;
 using static EHULOG.BlazorWebAssembly.Client.Infrastructure.Common.StorageConstants;
+using static MudBlazor.CategoryTypes;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
@@ -22,6 +23,8 @@ public partial class Document
     protected IAuthenticationService AuthService { get; set; } = default!;
     [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
+    [Inject]
+    protected IDialogService Dialog { get; set; } = default!;
 
     private string? UserId { get; set; }
 
@@ -203,6 +206,8 @@ public partial class Document
 
     private async Task UpdateProfileAsync()
     {
+        
+
         await Task.Run(() =>
         {
             /*
@@ -213,7 +218,12 @@ public partial class Document
         * Submitting will trigger verification. Informing the admins.
         * 
         */
-            Console.WriteLine("Test");
+            Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
+
+            DialogOptions noHeader = new DialogOptions() { NoHeader = true };
+            Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
+
+            return;
         });
     }
 }
