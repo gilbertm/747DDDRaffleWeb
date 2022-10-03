@@ -3,13 +3,10 @@
 @inject IStringLocalizer<Login> L
 @inject IStringLocalizer<SharedResource> LS
 
-<div class="d-flex justify-center">
-    <img src="ehulog.png" Style="height:120px" />
-</div>
-<div class="fsh-center-text">
-    <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
+<div class="text-center">
+    <MudText Typo="Typo.h4" GutterBottom="true">Login</MudText>
     <MudText>
-        @L["Enter your credentials to get started."]
+        @L["Enter credentials."]
     </MudText>
 </div>
 <br />
@@ -32,18 +29,18 @@
                           For="@(() => TenantId)" Required />
         </MudItem> *@
 
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
             <MudButton StartIcon="@Icons.Filled.AppRegistration" Link="/users/self-register">@L["Register?"]</MudButton>
         </MudItem>
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
             <MudButton StartIcon="@Icons.Filled.LockReset" Link="/account/forgot-password">@L["Forgot password?"]</MudButton>
         </MudItem>
-        <MudItem xs="12" Class="d-flex justify-center">
+        <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
             <MudButton ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Variant="Variant.Filled"
-                       Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Filled.Login" Style="width: 100%;">@L["Sign In"]</MudButton>
+                       Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Filled.Login" Style="width: 100%;">@L["Login"]</MudButton>
         </MudItem>
-        <MudItem xs="12">
+        @* <MudItem xs="12">
             <MudButton StartIcon="@Icons.Filled.Password" OnClick="FillAdministratorCredentials">@L["Fill Administrator Credentials"]</MudButton>
-        </MudItem>
+        </MudItem> *@
     </MudGrid>
 </EditForm>

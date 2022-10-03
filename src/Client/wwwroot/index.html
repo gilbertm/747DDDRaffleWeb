@@ -8,74 +8,23 @@
     <base href="/" />
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-    <!-- This file is only needed (and apparently also only generated) if there are any Page or Component specific styles used. -->
-    <!--<link href="EHULOG.BlazorWebAssembly.Client.styles.css" rel="stylesheet" />-->
+    <link href="EHULOG.BlazorWebAssembly.Client.styles.css" rel="stylesheet" />
     <link href="css/ehulog.css" rel="stylesheet" />
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="ehulog.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="ehulog.png" />
     <link rel="icon" sizes="512x512" href="./ehulog.png" />
     <link rel="icon" sizes="192x192" href="./ehulog.png" />
-    <!-- @* <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' /> *@ -->
-    <!-- <script src='https://tiles.locationiq.com/v3/js/liq-styles-ctrl-gl.js?v=0.1.8'></script> -->
-    <!-- <link href='https://tiles.locationiq.com/v3/css/liq-styles-ctrl-gl.css?v=0.1.8' rel='stylesheet' /> -->
 </head>
 
 <body>
     <div id="app">
-        <style>
-            @keyframes slide {
-                0% {
-                    transform: translateX(-25%);
-                }
-
-                100% {
-                    transform: translateX(25%);
-                }
-            }
-
-            .fsh-wasm {
-                animation: slide 3s ease-in-out infinite alternate;
-                bottom: 0;
-                left: -50%;
-                opacity: .5;
-                position: fixed;
-                right: -50%;
-                top: 0;
-                z-index: -1
-            }
-
-            .fsh-wasm-cont {
-                left: 50%;
-                padding: 10vmin;
-                position: fixed;
-                text-align: center;
-                top: 50%;
-                transform: translate(-50%, -50%)
-            }
-        </style>
-
-        <!-- MudPaper Class="d-flex align-content-center flex-wrap flex-grow-1 gap-4" MaxWidth="100%" Height="100%" Elevation="0">
-            <MudPaper Class="mud-theme-primary" Width="128px" Height="64px" />
-            <h1>Test</h1>
-        </!--MudPaper -->
-
         <div class="loader">
             <div class="load-text">
                 <div class="loaded-text">e</div>
                 <div class="loading-text">Hulog</div>
             </div>
         </div>
-
-        <!-- div style="height:100%;width:100%;margin:0;position:fixed;">
-        <div class="fsh-wasm"></div>
-        <div class="fsh-wasm" style="animation-direction:alternate-reverse;animation-duration:2s;"></div>
-        <div class="fsh-wasm" style="animation-duration:5s;"></div>
-        <div class="fsh-wasm-cont ">
-            <img src="/ehulog.png" Style="height:350px; width:350px; opacity:0.8" />
-        </div>
-        </!--div -->
     </div>
 
     <div id="blazor-error-ui">
@@ -84,7 +33,6 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_content/Microsoft.Authentication.WebAssembly.Msal/AuthenticationService.js"></script>
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCcvepI3EDqbsthQ7AXSrnsIvY4eEOEz88&libraries=places" async defer></script> -->
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="./Location.js"></script>
@@ -126,195 +74,6 @@
             anchorElement.click();
             anchorElement.remove();
         }
-
-        /* map */
-        /* window.dotNetToJsMapInitialize = {
-            updateAddressDtoFromJS: function (dotNetHelper) {
-                var homeAddress = '';
-                var homeCity = '';
-                var homeCountry = '';
-                var homeRegion = '';
-                var latitude = '';
-                var longitude = '';
-
-                if (document.getElementById("HomeAddress"))
-                    homeAddress = document.getElementById("HomeAddress").value;
-
-                if (document.getElementById("HomeCity"))
-                    homeCity = document.getElementById("HomeCity").value;
-
-                if (document.getElementById("HomeCountry"))
-                    homeCountry = document.getElementById("HomeCountry").value;
-
-                if (document.getElementById("HomeRegion"))
-                    homeRegion = document.getElementById("HomeRegion").value;
-
-                if (document.getElementById("Latitude"))
-                    latitude = document.getElementById("Latitude").value;
-
-                if (document.getElementById("Longitude"))
-                    longitude = document.getElementById("Longitude").value;
-
-                dotNetHelper.invokeMethodAsync("ChangeAddressFromJS", homeAddress, homeCity, homeCountry, homeRegion, latitude, longitude);
-            },
-            displayInitMap: function (objectFromDotNet) {
-
-                console.log(objectFromDotNet.key);
-                console.log(objectFromDotNet.longitude);
-                console.log(objectFromDotNet.latitude);
-
-
-                if (document.getElementById(objectFromDotNet.mapContainer) != undefined) {
-                    //Add your LocationIQ Maps Access Token here (not the API token!)
-                    locationiq.key = objectFromDotNet.key;
-                    //Define the map and configure the map's theme
-                    var map = new mapboxgl.Map({
-                        container: objectFromDotNet.mapContainer,
-                        attributionControl: false, //need this to show a compact attribution icon (i) instead of the whole text
-                        zoom: parseInt(objectFromDotNet.zoom),
-                        style: 'https://tiles.locationiq.com/v3/streets/vector.json?key=' + locationiq.key,
-                        center: [parseFloat(objectFromDotNet.longitude), parseFloat(objectFromDotNet.latitude)]
-                    });
-
-                    var geolocate = new mapboxgl.GeolocateControl({
-                        positionOptions: {
-                            enableHighAccuracy: true
-                        },
-                        showAccuracyCircle: true,
-                        trackUserLocation: true,
-                        showUserHeading: true,
-                        showUserLocation: true
-                    });
-
-                    map.addControl(geolocate);
-
-                    // First create DOM element for the marker
-                    var el = document.createElement('div');
-                    el.className = 'marker';
-                    // Set marker properties using JS
-                    el.style.backgroundImage = 'url(./img/marker50px.png)';
-                    el.style.width = '50px';
-                    el.style.height = '50px';
-
-
-                    map.on('load', () => {
-                        // automatic locate or go to exact location
-                        // disabled to ensure that the pin selected is always the main focal
-                        // geolocate.trigger();
-
-                        var marker = new mapboxgl.Marker(el)
-                            .setLngLat([parseFloat(objectFromDotNet.longitude), parseFloat(objectFromDotNet.latitude)])
-                            .addTo(map);
-
-                        var lngLat = marker.getLngLat();
-                        /* coordinates.style.display = 'block';
-                        coordinates.innerHTML =
-                            'Latitude: ' + lngLat.lat + '<br />Longitude: ' + lngLat.lng; * /
-                    });
-
-                    geolocate.on('trackuserlocationstart', () => {
-                        console.log('A trackuserlocationstart event has occurred.');
-                    });
-
-                    map.on('styleimagemissing', (e) => {
-                        const id = e.id; // id of the missing image
-
-                        // Check if this missing icon is
-                        // one this function can generate.
-                        const prefix = 'square-rgb-';
-                        if (!id.includes(prefix)) return;
-
-                        // Get the color from the id.
-                        const rgb = id.replace(prefix, '').split(',').map(Number);
-
-                        const width = 64; // The image will be 64 pixels square.
-                        const bytesPerPixel = 4; // Each pixel is represented by 4 bytes: red, green, blue, and alpha.
-                        const data = new Uint8Array(width * width * bytesPerPixel);
-
-                        for (let x = 0; x < width; x++) {
-                            for (let y = 0; y < width; y++) {
-                                const offset = (y * width + x) * bytesPerPixel;
-                                data[offset + 0] = rgb[0]; // red
-                                data[offset + 1] = rgb[1]; // green
-                                data[offset + 2] = rgb[2]; // blue
-                                data[offset + 3] = 255; // alpha
-                            }
-                        }
-
-                        map.addImage(id, { width: width, height: width, data: data });
-                    });
-
-                    //Define layers you want to add to the layer controls; the first element will be the default layer
-                    var layerStyles = {
-                        "Streets": "streets/vector",
-                        // "Satellite": "earth/raster",
-                        // "Hybrid": "hybrid/vector",
-                        // "Dark": "dark/vector",
-                        // "Light": "light/vector"
-                    };
-
-                    map.addControl(new mapboxgl.FullscreenControl());
-
-                    map.addControl(new locationiqLayerControl({
-                        key: locationiq.key,
-                        layerStyles: layerStyles
-                    }), 'top-left');
-
-
-                    map.on('click', function (e) {
-                        // e.point is the x, y coordinates of the mousemove event relative
-                        // to the top-left corner of the map
-                        // e.lngLat is the longitude, latitude geographical position of the event
-
-                        // Finally, create the marker where the mouse was clicked
-                        var marker = new mapboxgl.Marker(el)
-                            .setLngLat(e.lngLat.wrap())
-                            .addTo(map);
-
-                        var lngLat = marker.getLngLat();
-                        /* coordinates.style.display = 'block';
-                        coordinates.innerHTML =
-                            'Latitude: ' + lngLat.lat + '<br />Longitude: ' + lngLat.lng; * /
-
-                        var url = "https://us1.locationiq.com/v1/reverse.php?key=" + locationiq.key + "&lat=" + lngLat.lat + "&lon=" + lngLat.lng + "&format=json";
-
-                        // Making our request
-                        fetch(url, { method: 'GET' })
-                            .then(Result => Result.json())
-                            .then(location => {
-
-                                // Printing our response
-                                console.log(location);
-                                console.log(location.address.road);
-
-                                if (document.getElementById("HomeAddress"))
-                                    document.getElementById("HomeAddress").value = location.address.road + ' ' + location.address.suburb;
-
-                                if (document.getElementById("HomeCity"))
-                                    document.getElementById("HomeCity").value = location.address.city;
-
-                                if (document.getElementById("HomeRegion"))
-                                    document.getElementById("HomeRegion").value = location.address.state;
-
-                                if (document.getElementById("HomeCountry"))
-                                    document.getElementById("HomeCountry").value = location.address.country;
-
-                                if (document.getElementById("Latitude"))
-                                    document.getElementById("Latitude").value = location.lat;
-
-                                if (document.getElementById("Longitude"))
-                                    document.getElementById("Longitude").value = location.lon;
-
-                                // Printing our field of our response
-                                // console.log(`Title of our response :  ${string.title}`);
-                            })
-                            .catch(errorMsg => {
-                                console.log(errorMsg);
-                            });
-                    });
-                }
-            }
-        }; */
     </script>
     <script>
         window.dotNetJS = {

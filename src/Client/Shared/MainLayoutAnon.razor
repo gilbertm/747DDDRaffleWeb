@@ -1,15 +1,20 @@
 ﻿@inject IStringLocalizer<MainLayoutAnon> L
 
 <MudAppBar Elevation="0">
-     <MudButton Variant="Variant.Text" DisableElevation="true" Link="/">
-            @L["eHulog"]</MudButton>
+    @* <MudButton Variant="Variant.Text" DisableElevation="true" Link="/">
+    @L["eHulog"]</MudButton> *@
+
+    <MudButton Variant="Variant.Text" Class="pt-4" DisableElevation="true" Link="/">
+        <img src="./logo.svg" Style="margin-top:1rem;height:150px" />
+    </MudButton>
+
     <MudSpacer />
-    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-        <LanguageSelector />
-    </MudHidden>
+    @* <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+    <LanguageSelector />
+    </MudHidden> *@
     <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
         <ActivatorContent>
-            <MudIconButton Icon="@Icons.Filled.Person" Color="Color.Inherit" />
+            <MudIconButton Icon="@Icons.Filled.Person" Color="Color.Inherit" Size="Size.Large" />
         </ActivatorContent>
         <ChildContent>
             <div class="py-2" style="min-width: 220px">
@@ -38,3 +43,6 @@
         </MudScrollToTop>
     </MudContainer>
 </MudMainContent>
+
+
+<Footer />

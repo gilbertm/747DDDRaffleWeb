@@ -29,6 +29,10 @@
                         {
                             <MudItem xs="12" md="6" Class="d-none">
                                 <MudTextField @bind-Value="RequestModel.Id" Label="@L[$"Loan Lender Id"]" />
+                                @if (RequestModel.LoanLenders is not null && RequestModel.LoanLenders.Count() > 0)
+                                {
+                                    <MudTextField @bind-Value="RequestModel.LoanLenders.FirstOrDefault().Lender.Email" Label="@L[$"Loan Lender Email"]" />
+                                }
                             </MudItem>
                         }
 

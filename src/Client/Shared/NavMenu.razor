@@ -22,10 +22,10 @@
         <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd">@L["Account"]</MudNavLink>
 
         @* <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
-    <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="fsh-nav-child">@L["Account"]</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="fsh-nav-child">@L["Address"]</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="fsh-nav-child">@L["Role and Package"]</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="fsh-nav-child">@L["Documents"]</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="custom-nav-child">@L["Account"]</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="custom-nav-child">@L["Address"]</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="custom-nav-child">@L["Role and Package"]</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="custom-nav-child">@L["Documents"]</MudNavLink>
     </MudNavGroup> *@
 
         <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
@@ -41,7 +41,7 @@
                 <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
                     @if (_canViewLoans)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
                             @L["Loans"]
                         </MudNavLink>
                     }
@@ -54,28 +54,28 @@
                 <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.AddBox">
                     @if (_canViewPackages)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
                             @L["Packages"]
                         </MudNavLink>
                     }
                     @if (_canViewProducts)
                     {
-                        @* <MudNavLink Match="NavLinkMatch.All" Href="/catalog/products" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                        @* <MudNavLink Match="NavLinkMatch.All" Href="/catalog/products" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
         @L["Products"]
         </MudNavLink> *@
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
                             @L["Products"]
                         </MudNavLink>
                     }
                     @if (_canViewBrands)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
                             @L["Brands"]
                         </MudNavLink>
                     }
                     @if (_canViewCategories)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.ShoppingBag" Class="fsh-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
                             @L["Categories"]
                         </MudNavLink>
                     }
@@ -92,11 +92,11 @@
                 @if (_canViewUsers)
                 {
                     <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.Filled.VerifiedUser">
-                        <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="fsh-nav-child">@L["Users"]</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="custom-nav-child">@L["Users"]</MudNavLink>
 
                         @if (_canViewInputOutputResources)
                         {
-                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/administer/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="fsh-nav-child">@L["Verify Files and Documents"]</MudNavLink>
+                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/administer/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="custom-nav-child">@L["Verify Files and Documents"]</MudNavLink>
                         }
                     </MudNavGroup>
                 }

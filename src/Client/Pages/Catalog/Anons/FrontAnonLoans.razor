@@ -5,26 +5,29 @@
 @using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
 @using Nager.Country
 
-<div class="d-flex justify-center">
-    <img src="ehulog.png" Style="height:120px" />
-</div>
-<br />
-
 <MudGrid>
-    <MudItem xs="12" md="6" lg="4">
-        @* <MapBoxMap @ref="@_Map" Options="@_Options" AccessToken="pk.eyJ1IjoiZ2lsYmVydC1tYWxvbG95b24iLCJhIjoiY2w0eHJ2ZnZmMDNkODNwdWxxbnViaGJndyJ9.-RjbJ46geHdBTnQVuPp6zA"></MapBoxMap> *@
-        <DynamicMapLoad IsMapOnly=true />
+    
 
-    </MudItem>
-    <MudItem xs="12" md="6" lg="8">
-        @if (Context is not null && Context.SearchFunc is not null)
-        {
+    @if (Context is not null && Context.SearchFunc is not null)
+    {
+        <MudItem xs="12" md="6" lg="4">
+              <DynamicMapLoad IsMapOnly=true />
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="8">
+
             <MudText Class="mb-3">
                 Available loans. Closest to your <MudIcon Icon="@Icons.Material.Filled.LocationOn" Color="Color.Success" Size="Size.Small" Title="Favorite" /> location
             </MudText>
             <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
-        }
-    </MudItem>
+        </MudItem>
+    } else
+    {
+        <MudItem xs="12" Class="text-center justify-content-center">
+            <MudText Typo="Typo.h5" Class="mt-5">Seems like this location isn't helping those who are in need. Be the <a href="#">first</a>?</MudText>
+        </MudItem>        
+    }
+
 </MudGrid>
 
 @code {

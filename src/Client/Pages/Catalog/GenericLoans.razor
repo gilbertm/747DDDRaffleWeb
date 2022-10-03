@@ -409,6 +409,12 @@
     protected RenderFragment<LoanDto> LoanTemplate => trail => __builder =>
     {
         var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
+        if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Admin"))
+        {
+            loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault();
+        }
+        
         var loanLedgerTotal = trail.Ledgers?.Where(l => l.LoanId.Equals(trail.Id)).Sum(s => s.AmountDue);
 
         var _imageUrl = string.IsNullOrEmpty(loanLender?.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + loanLender?.Product?.Image?.ImagePath);
@@ -424,7 +430,7 @@
                 }
             </MudCardContent>
             <MudCardActions Class="text-center">
-                <MudButton Class="mx-auto" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ManageAccounts" Color="Color.Success">Manage</MudButton>
+                <MudButton DisableElevation="true" Class="mx-auto px-3" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ManageAccounts" Color="Color.Success">Manage</MudButton>
                 @if (_appUserDto is { })
                 {
                     if (trail.LoanLenders is { })

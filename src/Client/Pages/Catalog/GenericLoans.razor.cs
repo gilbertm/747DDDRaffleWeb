@@ -145,11 +145,31 @@ public partial class GenericLoans
 
                        foreach (var item in result.Data)
                        {
-                           var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
-
-                           if (loanLender is not null && loanLender.Product is not null)
+                           if (_appUserDto is { })
                            {
-                               loanLender.Product.Image = appUserProducts.Where(ap => ap.ProductId.Equals(loanLender.ProductId)).First()?.Product?.Image;
+                               var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+
+                               if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Admin"))
+                               {
+                                   loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
+                               }
+
+                               if (loanLender is { } && loanLender.Lender is { })
+                               {
+                                   var userLenderDetailsDto = await UsersClient.GetByIdAsync(loanLender.Lender.ApplicationUserId);
+
+                                   loanLender.Lender.Email = userLenderDetailsDto.Email;
+                                   loanLender.Lender.FirstName = userLenderDetailsDto.FirstName;
+                                   loanLender.Lender.LastName = userLenderDetailsDto.LastName;
+                                   loanLender.Lender.PhoneNumber = userLenderDetailsDto.PhoneNumber;
+
+                               }
+
+                               if (loanLender is not null && loanLender.Product is not null)
+                               {
+                                   loanLender.Product.Image = appUserProducts.Where(ap => ap.ProductId.Equals(loanLender.ProductId)).First()?.Product?.Image;
+                               }
+
                            }
 
                            if (item.LoanApplicants is { })

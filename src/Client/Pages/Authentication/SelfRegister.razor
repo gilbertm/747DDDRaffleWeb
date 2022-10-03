@@ -7,18 +7,11 @@
     <MudCard Elevation="0">
         <MudCardHeader>
             <CardHeaderContent>
-                <MudTooltip Text="Go Back">
-                    <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start"
-                                   Link="/" />
-                </MudTooltip>
-                <div class="d-flex justify-center">
-                    <img src="ehulog.png" Style="height:120px" />
-                </div>
-                <div class="fsh-center-text">
+                <div class="text-center">
                     <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
-                        @L["New User Registration"]
+                        @L["Register"]
                     </MudText>
-                    <MudText>@L["Enter your details below to set up your new account"]</MudText>
+                    <MudText>@L["New user registration"]</MudText>
                 </div>
                 <br />
             </CardHeaderContent>
@@ -72,7 +65,7 @@
             </MudGrid>
         </MudCardContent>
         <MudCardActions Class="pb-4 pl-4">
-            <MudButton StartIcon="@Icons.Filled.AppRegistration" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Class="ml-auto">
+            <MudButton StartIcon="@Icons.Filled.AppRegistration" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Class="mx-auto">
                 @L["Register"]
             </MudButton>
         </MudCardActions>
