@@ -2,7 +2,11 @@
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./Styles/ehulog.scss ***!
   \***************************************************************************************************************************************************************************************************************/
 :root {
-  --mud-appbar-height: 150px !important; }
+  --mud-appbar-height: 100px !important; }
+
+.mud-main-content {
+  min-height: 85vh !important;
+  background: #263238 !important; }
 
 .mud-table {
   padding: 20px !important;
@@ -200,6 +204,39 @@
     opacity: 0;
     z-index: -1; } }
 
+header {
+  transition: all 0.5s;
+  z-index: 997;
+  padding: 30px 0;
+  background-color: transparent !important;
+  transition: background-color 0.1s ease; }
+  header .mud-toolbar-appbar {
+    transition: height 0.1s ease; }
+  header.main-menu-app-bar.floating-fixed {
+    background-color: rgba(0, 0, 0, 0.95) !important; }
+    header.main-menu-app-bar.floating-fixed .mud-toolbar-appbar {
+      height: 65px; }
+      header.main-menu-app-bar.floating-fixed .mud-toolbar-appbar img {
+        height: 50px !important; }
+
+.hero {
+  width: 100%;
+  height: auto;
+  background-size: cover;
+  object-fit: contain;
+  background-position: center center;
+  overflow: hidden;
+  position: relative; }
+  .hero:before {
+    content: "";
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1; }
+
 footer .mud-paper {
   background: none; }
 
@@ -208,4 +245,50 @@ footer {
   background-color: #263238;
   min-height: 250px;
   padding: 10px 0px 25px 0px; }
+
+.section-header {
+  margin-bottom: 60px;
+  position: relative;
+  padding-bottom: 20px; }
+  .section-header:before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 150px;
+    height: 1px;
+    background: #999;
+    bottom: 0;
+    left: calc(50% - 75px); }
+  .section-header h2 {
+    font-size: 36px;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 10px; }
+  .section-header p {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #9195a2; }
+
+.speaker {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 30px;
+  transition-delay: 0.1s; }
+  .speaker .details {
+    background: rgba(6, 12, 34, 0.76);
+    position: absolute;
+    left: 0;
+    bottom: -40px;
+    right: 0;
+    text-align: center;
+    padding-top: 10px;
+    transition: all 300ms cubic-bezier(0.645, 0.045, 0.355, 1); }
+    .speaker .details .social {
+      height: 40px; }
+  .speaker:hover .details {
+    bottom: 0; }
 

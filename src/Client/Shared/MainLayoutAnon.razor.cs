@@ -13,16 +13,8 @@ public partial class MainLayoutAnon
     [Parameter]
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
 
-    private bool _drawerOpen;
-    private bool _rightToLeft;
+    private bool _rightToLeft = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (Navigation.Uri.Equals(Navigation.BaseUri))
-        {
-            _drawerOpen = false;
-        }
-    }
 
     private async Task RightToLeftToggle()
     {
@@ -35,10 +27,5 @@ public partial class MainLayoutAnon
     public async Task ToggleDarkMode()
     {
         await OnDarkModeToggle.InvokeAsync();
-    }
-
-    private void Profile()
-    {
-        Navigation.NavigateTo("/login");
     }
 }

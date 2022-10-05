@@ -3,44 +3,51 @@
 @inject IStringLocalizer<Login> L
 @inject IStringLocalizer<SharedResource> LS
 
-<div class="text-center">
-    <MudText Typo="Typo.h4" GutterBottom="true">Login</MudText>
-    <MudText>
-        @L["Enter credentials."]
-    </MudText>
-</div>
-<br />
-
 <EditForm Model="@_tokenRequest" OnValidSubmit="SubmitAsync">
-    <MudGrid>
-        <DataAnnotationsValidator />
-        <CustomValidation @ref="_customValidation" />
-        <MudItem xs="12">
-            <MudTextField T="string" Label="@L["E-mail"]" Variant="Variant.Outlined" @bind-Value="_tokenRequest.Email"
-                          For="@(() => _tokenRequest.Email)" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField Label="@L["Password"]" Variant="Variant.Outlined" @bind-Value="_tokenRequest.Password"
-                          For="@(() => _tokenRequest.Password)" InputType="@_passwordInput" Adornment="Adornment.End"
-                          AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
-        </MudItem>
-        @* <MudItem xs="12">
-            <MudTextField T="string" Label="@L["Tenant"]" Variant="Variant.Outlined" @bind-Value="TenantId"
-                          For="@(() => TenantId)" Required />
-        </MudItem> *@
+    <MudCard Elevation="0">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="text-center">
+                    <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
+                        @L["Login"]
+                    </MudText>
+                    <MudText>@L["Enter credentials"]</MudText>
+                </div>
+                <br />
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid>
+                <DataAnnotationsValidator />
+                <CustomValidation @ref="_customValidation" />
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="@L["E-mail"]" Variant="Variant.Outlined" @bind-Value="_tokenRequest.Email"
+                                  For="@(() => _tokenRequest.Email)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="@L["Password"]" Variant="Variant.Outlined" @bind-Value="_tokenRequest.Password"
+                                  For="@(() => _tokenRequest.Password)" InputType="@_passwordInput" Adornment="Adornment.End"
+                                  AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+                </MudItem>
+                @* <MudItem xs="12">
+                <MudTextField T="string" Label="@L["Tenant"]" Variant="Variant.Outlined" @bind-Value="TenantId"
+                For="@(() => TenantId)" Required />
+                </MudItem> *@
 
-        <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
-            <MudButton StartIcon="@Icons.Filled.AppRegistration" Link="/users/self-register">@L["Register?"]</MudButton>
-        </MudItem>
-        <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
-            <MudButton StartIcon="@Icons.Filled.LockReset" Link="/account/forgot-password">@L["Forgot password?"]</MudButton>
-        </MudItem>
-        <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
-            <MudButton ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Variant="Variant.Filled"
-                       Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Filled.Login" Style="width: 100%;">@L["Login"]</MudButton>
-        </MudItem>
-        @* <MudItem xs="12">
-            <MudButton StartIcon="@Icons.Filled.Password" OnClick="FillAdministratorCredentials">@L["Fill Administrator Credentials"]</MudButton>
-        </MudItem> *@
-    </MudGrid>
+                <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
+                    <MudButton StartIcon="@Icons.Filled.AppRegistration" Link="/users/self-register">@L["Register?"]</MudButton>
+                </MudItem>
+                <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
+                    <MudButton StartIcon="@Icons.Filled.LockReset" Link="/account/forgot-password">@L["Forgot password?"]</MudButton>
+                </MudItem>
+                <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Variant="Variant.Filled"
+                               Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Filled.Login" Style="width: 100%;">@L["Login"]</MudButton>
+                </MudItem>
+                @* <MudItem xs="12">
+                <MudButton StartIcon="@Icons.Filled.Password" OnClick="FillAdministratorCredentials">@L["Fill Administrator Credentials"]</MudButton>
+                </MudItem> *@
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
 </EditForm>

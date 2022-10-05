@@ -1,7 +1,11 @@
 ﻿:root {
-    --mud-appbar-height: 150px !important;
+    --mud-appbar-height: 100px !important;
 }
 
+.mud-main-content {
+    min-height: 85vh !important;
+    background: #263238 !important;
+}
 
 .mud-table {
     padding: 20px !important;
@@ -207,4 +211,4 @@
     }
 }
 
-@import "loading","footer";
+@import "loading","header","footer","content-header";

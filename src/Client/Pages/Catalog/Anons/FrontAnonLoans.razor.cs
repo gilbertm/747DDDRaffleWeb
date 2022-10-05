@@ -5,12 +5,14 @@ using EHULOG.BlazorWebAssembly.Client.Pages.Multitenancy;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using EHULOG.WebApi.Shared.Multitenancy;
 using Mapster;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Nager.Country;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text.Json;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
@@ -76,7 +78,7 @@ public partial class FrontAnonLoans
 
                        var anonLoans = await getAnonLoans(loanFilter);
 
-                       if (anonLoans is { })
+                       if (anonLoans is { } && anonLoans.Data.Count() > 0)
                        {
                            foreach (var item in anonLoans.Data)
                            {
@@ -94,8 +96,8 @@ public partial class FrontAnonLoans
                            }
                        }
 
-
                        return anonLoans.Adapt<EntityContainerPaginationResponse<LoanDto>>();
+
                    },
                    template: BodyTemplate);
     }
@@ -114,7 +116,7 @@ public partial class FrontAnonLoans
                 Email = MultitenancyConstants.Lessee.EmailAddress,
                 Password = MultitenancyConstants.DefaultPassword
             })),
-    };
+        };
 
         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         request.Content.Headers.Add("tenant", "root");
@@ -189,6 +191,7 @@ public partial class FrontAnonLoans
 
                 request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
+
                 // request.Content.Headers.Add("tenant", "root");
 
                 response = await HttpClient.SendAsync(request);

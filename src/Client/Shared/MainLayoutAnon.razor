@@ -1,41 +1,10 @@
 ﻿@inject IStringLocalizer<MainLayoutAnon> L
 
-<MudAppBar Elevation="0">
-    @* <MudButton Variant="Variant.Text" DisableElevation="true" Link="/">
-    @L["eHulog"]</MudButton> *@
+<HeaderAnon />
 
-    <MudButton Variant="Variant.Text" Class="pt-4" DisableElevation="true" Link="/">
-        <img src="./logo.svg" Style="margin-top:1rem;height:150px" />
-    </MudButton>
+<SliderAnon HideIfThesePages="about-us,get-started" OnHideChange=@( () => {} ) />
 
-    <MudSpacer />
-    @* <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-    <LanguageSelector />
-    </MudHidden> *@
-    <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
-        <ActivatorContent>
-            <MudIconButton Icon="@Icons.Filled.Person" Color="Color.Inherit" Size="Size.Large" />
-        </ActivatorContent>
-        <ChildContent>
-            <div class="py-2" style="min-width: 220px">
-                <MudMenuItem OnClick="Profile">
-                    <div class="d-flex">
-                        <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.Login" />
-                        <MudText>@L["Login"]</MudText>
-                    </div>
-                </MudMenuItem>
-                <MudMenuItem Link="/users/self-register">
-                    <div class="d-flex">
-                        <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.PersonAdd" />
-                        <MudText>@L["Register"]</MudText>
-                    </div>
-                </MudMenuItem>
-            </div>
-        </ChildContent>
-    </MudMenu>
-</MudAppBar>
-
-<MudMainContent>
+<MudMainContent Class="d-flex">
     <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
         @ChildContent
         <MudScrollToTop TopOffset="400" Style="z-index:2000;">
@@ -43,6 +12,5 @@
         </MudScrollToTop>
     </MudContainer>
 </MudMainContent>
-
 
 <Footer />

@@ -10,12 +10,17 @@
     {
       "src": "ehulog.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "186x112"
     },
     {
-      "src": "ehulog.png",
+      "src": "android-icon-48x48.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "48x48"
+    },
+    {
+      "src": "ms-icon-70x70.png",
+      "type": "image/png",
+      "sizes": "70x70"
     }
   ]
 }

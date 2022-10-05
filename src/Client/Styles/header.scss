@@ -1,0 +1,46 @@
+﻿header {
+    transition: all 0.5s;
+    z-index: 997;
+    padding: 30px 0;
+    background-color: transparent !important;
+    transition: background-color 0.1s ease;
+
+    .mud-toolbar-appbar {
+        transition: height 0.1s ease;
+    }
+
+    &.main-menu-app-bar {
+        &.floating-fixed {
+            background-color: rgba(0, 0, 0, 0.95) !important;
+
+            .mud-toolbar-appbar {
+                height: 65px;
+
+                img {
+                    height: 50px !important;
+                }
+            }
+        }
+    }
+}
+
+.hero {
+    width: 100%;
+    height: auto;
+    background-size: cover;
+    object-fit: contain;
+    background-position: center center;
+    overflow: hidden;
+    position: relative;
+
+    &:before {
+        content: "";
+        background: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        bottom: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index:1;
+    }
+}

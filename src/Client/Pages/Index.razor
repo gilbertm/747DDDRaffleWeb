@@ -1,9 +1,11 @@
 ﻿@page "/home"
 @page "/"
 
+@attribute [AllowAnonymous]
 @inject AppDataService AppDataService
 
 @inject IStringLocalizer<Index> L
+
 
 
 @if (_appUserDto is not null)
@@ -12,6 +14,9 @@
 }
 else
 {
+
+    <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons.FrontAnonLoans />
+
     <MudContainer>
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">

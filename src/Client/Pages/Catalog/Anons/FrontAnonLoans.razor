@@ -6,19 +6,18 @@
 @using Nager.Country
 
 <MudGrid>
-    
 
-    @if (Context is not null && Context.SearchFunc is not null)
+    @if (Context is not null)
     {
-        <MudItem xs="12" md="6" lg="4">
-              <DynamicMapLoad IsMapOnly=true />
-        </MudItem>
-
-        <MudItem xs="12" md="6" lg="8">
-
-            <MudText Class="mb-3">
+        <MudItem xs="12" Class="text-center">
+            <MudText Class="mb-3" Style="@($"color:{Colors.Shades.White};")">
                 Available loans. Closest to your <MudIcon Icon="@Icons.Material.Filled.LocationOn" Color="Color.Success" Size="Size.Small" Title="Favorite" /> location
             </MudText>
+        </MudItem>
+        <MudItem xs="12" md="6" lg="4" Class="pa-0">
+              <DynamicMapLoad IsMapOnly=true />
+        </MudItem>
+        <MudItem xs="12" md="6" lg="8">
             <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
         </MudItem>
     } else
