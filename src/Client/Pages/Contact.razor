@@ -1,0 +1,88 @@
+﻿@page "/contact-us"
+
+@attribute [AllowAnonymous]
+
+@inject IStringLocalizer<Contact> L
+@inject IStringLocalizer<SharedResource> LS
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="@($"background:{Colors.Shades.White};height:100%")">
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-sm-5 py-md-10">
+
+        <MudPaper Elevation="0" Class="section-header">
+            <MudText Typo="Typo.h2">Contact Us</MudText>
+            <MudText Typo="Typo.body1">Provide feedback, comments and recommendations.</MudText>
+        </MudPaper>
+
+        <MudGrid Justify="Justify.Center" Class="contact text-center">
+
+            <MudItem sm="6" md="4">
+                <MudPaper Class="location rounded-0" Elevation="0">
+                    <MudIcon Icon="@Icons.Filled.LocationOn" aria-label="location" Style="@($"color:{Colors.DeepOrange.Default};font-size:3rem;")"></MudIcon>
+                    <MudText Typo="Typo.h6" Class="text-uppercase" Style="@($"color:{Colors.Orange.Darken1};")">Address</MudText>
+                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.Brown.Darken1};")">Dubai, UAE</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem sm="6" md="4">
+                <MudPaper Class="phone border-r border-l rounded-0" Elevation="0">
+                    <MudIcon Icon="@Icons.Filled.Smartphone" aria-label="location" Style="@($"color:{Colors.DeepOrange.Default};font-size:3rem;")"></MudIcon>
+                    <MudText Typo="Typo.h6" Class="text-uppercase" Style="@($"color:{Colors.Orange.Darken1};")">Phone</MudText>
+                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.Brown.Darken1};")">+97x xx xxx x01</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem sm="6" md="4">
+                <MudPaper Class="email rounded-0" Elevation="0">
+                    <MudIcon Icon="@Icons.Filled.Email" aria-label="location" Style="@($"color:{Colors.DeepOrange.Default};font-size:3rem;")"></MudIcon>
+                    <MudText Typo="Typo.h6" Class="text-uppercase" Style="@($"color:{Colors.Orange.Darken1};")">Email</MudText>
+                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.Brown.Darken1};")">info@ehulog.com</MudText>
+                </MudPaper>
+            </MudItem>
+
+        </MudGrid>
+    </MudContainer>
+
+    <MudContainer>
+        <EditForm Model="@_createUserRequest" OnValidSubmit="SubmitAsync">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudGrid>
+                        <DataAnnotationsValidator />
+                        <CustomValidation @ref="_customValidation" />
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField T="string" Label="First Name" Variant="Variant.Outlined"
+                                          @bind-Value="_createUserRequest.FirstName" For="@(() => _createUserRequest.FirstName)"
+                                          InputType="InputType.Text" Adornment="Adornment.End" Required />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField T="string" Label="Last Name" Variant="Variant.Outlined"
+                                          @bind-Value="_createUserRequest.LastName" For="@(() => _createUserRequest.LastName)"
+                                          InputType="InputType.Text" Adornment="Adornment.End" Required />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField T="string" Label="E-mail" Variant="Variant.Outlined"
+                                          @bind-Value="_createUserRequest.Email" For="@(() => _createUserRequest.Email)"
+                                          InputType="InputType.Email" Adornment="Adornment.End" Required />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField T="string" Label="Phone" Variant="Variant.Outlined"
+                                          @bind-Value="_createUserRequest.PhoneNumber" For="@(() => _createUserRequest.PhoneNumber)"
+                                          InputType="InputType.Telephone" Adornment="Adornment.End" Required />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField T="string" Label="Message" Variant="Variant.Outlined" Lines="5"
+                                          @bind-Value="_createUserRequest.PhoneNumber" For="@(() => _createUserRequest.PhoneNumber)"
+                                          InputType="InputType.Text" Adornment="Adornment.End" Required />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions Class="pb-4 pl-4">
+                    <MudButton StartIcon="@Icons.Filled.AppRegistration" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Class="mx-auto">
+                        @L["Send message"]
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </MudContainer>
+</MudContainer>

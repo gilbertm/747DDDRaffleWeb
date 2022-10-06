@@ -2,9 +2,6 @@
 
 
 <MudAppBar Elevation="0" Class="py-1 main-menu-app-bar">
-    @* <MudButton Variant="Variant.Text" DisableElevation="true" Link="/">
-    @L["eHulog"]</MudButton> *@
-
     <MudButton Variant="Variant.Text" Class="pt-2 pb-2" DisableElevation="true" Link="/">
         <img src="./logo.svg" Style="height:75px" />
     </MudButton>
@@ -14,9 +11,9 @@
     <MudPaper Elevation="0" Style="background:none;border-radius:0;">
         <MudToolBar>
             <MudButton Href="/" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Home</MudText></MudButton>
-            <MudButton Href="/loans" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Loans</MudText></MudButton>
-            <MudButton Href="/about-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">About Us</MudText></MudButton>
-            <MudButton Href="/contact" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Contact</MudText></MudButton>
+            <MudButton Href="/loans" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Loan</MudText></MudButton>
+            <MudButton Href="/about-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">About</MudText></MudButton>
+            <MudButton Href="/contact-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Contact</MudText></MudButton>
             @* <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
             <ActivatorContent>
             <MudIconButton Icon="@Icons.Material.Outlined.Menu" Style="@($"color:{Colors.Shades.White};")" Class="mr-5" />

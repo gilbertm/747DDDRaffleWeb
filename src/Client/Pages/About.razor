@@ -3,7 +3,7 @@
 @attribute [AllowAnonymous]
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="@($"background:{Colors.Shades.White};height:100%")">
-    <MudContainer MaxWidth="MaxWidth.Medium" Class="py-5">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-5">
         <img src="./logo-vertical.svg" Style="height:100px;display:inline-block;float:left;padding-right:1rem;padding-bottom:1rem;" /> <MudText Typo="Typo.h6">eHulog is an idea from the belief that in each of us, there lies a kind-hearted soul that wants to connect with people and desiring the effect of change.</MudText>
         <br />
         <br />
@@ -16,16 +16,16 @@
         <MudText Typo="Typo.h6">With these visions and missions in mind, feel free to be part of this healthy community.</MudText>
     </MudContainer>
 
-    <MudContainer MaxWidth="MaxWidth.Medium" Class="py-5">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-5">
         <div class="section-header">
             <h2>Who we are</h2>
-            <p>The good hearts behind eHulog</p>
+            <p>The good hearts behind the technology</p>
         </div>
 
         <MudGrid Justify="Justify.Center" Class="text-center">
             <MudItem sm="6" md="4">
                 <MudPaper Class="speaker" Elevation="0">
-                    <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/gilbert-ehulog.jpg")" Style="max-width:100%;width:100%;"></MudImage>
+                    <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/gilbert-ehulog.jpg")" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
                     <MudPaper Elevation="0" Class="details">
                         <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Gilbert T. Maloloy-on</a></MudText>
                         <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Founder - Senior Developer</MudText>
@@ -38,35 +38,31 @@
                 </MudPaper>
             </MudItem>
             <MudItem sm="6" md="4">
-                <MudPaper Class="speaker">
-                    <MudImage Src="https://picsum.photos/416/312" Style="max-width:100%;width:100%;"></MudImage>
-                    <div class="details">
-                        <h3><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Francis Jopia</a></h3>
-                        <p>Community Director</p>
-                        <div class="social">
-                            <a href=""><i class="bi bi-twitter"></i></a>
-                            <a href=""><i class="bi bi-facebook"></i></a>
-                            <a href=""><i class="bi bi-instagram"></i></a>
-                            <a href=""><i class="bi bi-linkedin"></i></a>
-                        </div>
-                    </div>
-
+                <MudPaper Class="speaker" Elevation="0">
+                    <MudImage Src="https://picsum.photos/416/312" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
+                    <MudPaper Elevation="0" Class="details">
+                        <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Francis Jopia</a></MudText>
+                        <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Community</MudText>
+                        <MudContainer Class="social">
+                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Twitter" aria-label="twitter"></MudIconButton></MudButton>
+                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Instagram" aria-label="instagram"></MudIconButton></MudButton>
+                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.LinkedIn" aria-label="linkedin"></MudIconButton></MudButton>
+                        </MudContainer>
+                    </MudPaper>
                 </MudPaper>
             </MudItem>
             <MudItem sm="6" md="4">
-                <MudPaper Class="speaker">
-                    <MudImage Src="https://picsum.photos/416/312" Style="max-width:100%;width:100%;"></MudImage>
-                    <div class="details">
-                        <h3><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Camilo Echavia</a></h3>
-                        <p>Infrastructure</p>
-                        <div class="social">
-                            <a href=""><i class="bi bi-twitter"></i></a>
-                            <a href=""><i class="bi bi-facebook"></i></a>
-                            <a href=""><i class="bi bi-instagram"></i></a>
-                            <a href=""><i class="bi bi-linkedin"></i></a>
-                        </div>
-                    </div>
-
+                <MudPaper Class="speaker" Elevation="0">
+                    <MudImage Src="https://picsum.photos/416/312" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
+                    <MudPaper Elevation="0" Class="details">
+                        <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Armand</a></MudText>
+                        <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Infrastructure</MudText>
+                        <MudContainer Class="social">
+                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Twitter" aria-label="twitter"></MudIconButton></MudButton>
+                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Instagram" aria-label="instagram"></MudIconButton></MudButton>
+                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.LinkedIn" aria-label="linkedin"></MudIconButton></MudButton>
+                        </MudContainer>
+                    </MudPaper>
                 </MudPaper>
             </MudItem>
 
