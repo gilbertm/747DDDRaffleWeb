@@ -4,7 +4,7 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="@($"background:{Colors.Shades.White};height:100%")">
     <MudContainer MaxWidth="MaxWidth.Large" Class="py-5">
-        <img src="./logo-vertical.svg" Style="height:100px;display:inline-block;float:left;padding-right:1rem;padding-bottom:1rem;" /> <MudText Typo="Typo.h6">eHulog is an idea from the belief that in each of us, there lies a kind-hearted soul that wants to connect with people and desiring the effect of change.</MudText>
+        <img src="./logo-vertical-black-description.svg" Style="height:200px;display:inline-block;float:left;padding-right:1rem;padding-bottom:1rem;" /> <MudText Typo="Typo.h6">eHulog is a startup that believes on human's kind-hearted soul. The characteristic behavior of humans to connect and desires an effect to change.</MudText>
         <br />
         <br />
         <MudText Typo="Typo.h6">Lenders are considered the providers of this community. They create opportunity for the needing lessees to be able to get by on those emergency and rainy days.</MudText>
@@ -23,7 +23,7 @@
         </div>
 
         <MudGrid Justify="Justify.Center" Class="text-center">
-            <MudItem sm="6" md="4">
+            <MudItem xs="12" md="4">
                 <MudPaper Class="speaker" Elevation="0">
                     <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/gilbert-ehulog.jpg")" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
                     <MudPaper Elevation="0" Class="details">
@@ -37,9 +37,9 @@
                     </MudPaper>
                 </MudPaper>
             </MudItem>
-            <MudItem sm="6" md="4">
+            <MudItem xs="12" md="4">
                 <MudPaper Class="speaker" Elevation="0">
-                    <MudImage Src="https://picsum.photos/416/312" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
+                    <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/francis-jopia-ehulog.jpg")" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
                     <MudPaper Elevation="0" Class="details">
                         <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Francis Jopia</a></MudText>
                         <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Community</MudText>
@@ -51,11 +51,11 @@
                     </MudPaper>
                 </MudPaper>
             </MudItem>
-            <MudItem sm="6" md="4">
+            <MudItem xs="12" md="4">
                 <MudPaper Class="speaker" Elevation="0">
-                    <MudImage Src="https://picsum.photos/416/312" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
+                    <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/francis-jopia-ehulog.jpg")" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage>
                     <MudPaper Elevation="0" Class="details">
-                        <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Armand</a></MudText>
+                        <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Armand Malapira</a></MudText>
                         <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Infrastructure</MudText>
                         <MudContainer Class="social">
                             <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Twitter" aria-label="twitter"></MudIconButton></MudButton>
