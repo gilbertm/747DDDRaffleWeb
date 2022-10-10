@@ -23,7 +23,7 @@ public partial class Dashboard
     [Inject]
     private ICourier Courier { get; set; } = default!;
 
-    private readonly string[] _dataEnterBarChartXAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    private readonly string[] _dataEnterBarChartXAxisLabels = DateTimeFormatInfo.CurrentInfo.AbbreviatedMonthNames;
     private readonly List<MudBlazor.ChartSeries> _dataEnterBarChartSeries = new();
     private bool _loaded;
 
