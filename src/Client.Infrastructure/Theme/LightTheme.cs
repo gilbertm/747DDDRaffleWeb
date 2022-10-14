@@ -24,7 +24,7 @@ public class LightTheme : MudTheme
             DefaultBorderRadius = "5px"
         };
 
-        Typography = CustomTypography.FSHTypography;
+        Typography = CustomTypography.eHulogTypography;
         Shadows = new Shadow();
         ZIndex = new ZIndex() { Drawer = 1300 };
     }

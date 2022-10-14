@@ -4,7 +4,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
 
 public static class CustomTypography
 {
-    public static Typography FSHTypography => new Typography()
+    public static Typography eHulogTypography => new Typography()
     {
         Default = new Default()
         {
