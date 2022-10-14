@@ -5,8 +5,10 @@
   --mud-appbar-height: 100px !important; }
 
 .mud-main-content {
-  min-height: 85vh !important;
-  background: #263238 !important; }
+  min-height: 85vh !important; }
+
+.mud-table-container {
+  overflow: auto; }
 
 .mud-table {
   padding: 20px !important;
@@ -211,16 +213,21 @@ header {
   transition: all 0.5s;
   z-index: 997;
   padding: 30px 0;
-  background-color: transparent !important;
   transition: background-color 0.1s ease; }
   header .mud-toolbar-appbar {
     transition: height 0.1s ease; }
-  header.main-menu-app-bar.floating-fixed {
+  header.main-menu-app-bar.anon {
+    background-color: rgba(0, 0, 0, 0.5) !important; }
+  header.main-menu-app-bar.logged {
+    background: none !important; }
+  header.main-menu-app-bar.floating-fixed.anon {
     background-color: rgba(0, 0, 0, 0.95) !important; }
-    header.main-menu-app-bar.floating-fixed .mud-toolbar-appbar {
-      height: 65px; }
-      header.main-menu-app-bar.floating-fixed .mud-toolbar-appbar img {
-        height: 50px !important; }
+  header.main-menu-app-bar.floating-fixed.logged {
+    background: #fff !important; }
+  header.main-menu-app-bar.floating-fixed .mud-toolbar-appbar {
+    height: 65px; }
+    header.main-menu-app-bar.floating-fixed .mud-toolbar-appbar img {
+      height: 50px !important; }
 
 .hero {
   width: 100%;

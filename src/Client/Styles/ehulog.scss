@@ -4,7 +4,11 @@
 
 .mud-main-content {
     min-height: 85vh !important;
-    background: #263238 !important;
+    // background: #263238 !important;
+}
+
+.mud-table-container {
+    overflow: auto;
 }
 
 .mud-table {

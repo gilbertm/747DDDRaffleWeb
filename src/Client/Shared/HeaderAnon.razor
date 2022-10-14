@@ -1,7 +1,7 @@
 ﻿@inject IStringLocalizer<HeaderAnon> L
 
 
-<MudAppBar Elevation="0" Class="py-1 main-menu-app-bar">
+<MudAppBar Elevation="0" Class="py-1 main-menu-app-bar anon">
     <MudButton Variant="Variant.Text" Class="pt-2 pb-2" DisableElevation="true" Link="/">
         <img src="./logo.svg" Style="height:75px" />
     </MudButton>
@@ -10,10 +10,10 @@
 
     <MudPaper Elevation="0" Style="background:none;border-radius:0;">
         <MudToolBar>
-            <MudButton Href="/" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Home</MudText></MudButton>
-            <MudButton Href="/catalog/front/loans/anon" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Loan</MudText></MudButton>
-            <MudButton Href="/about-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">About</MudText></MudButton>
-            <MudButton Href="/contact-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Contact</MudText></MudButton>
+            <MudButton Href="/" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Home</MudText></MudButton>
+            <MudButton Href="/catalog/front/loans/anon" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Loan</MudText></MudButton>
+            <MudButton Href="/about-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">About</MudText></MudButton>
+            <MudButton Href="/contact-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Contact</MudText></MudButton>
             @* <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
             <ActivatorContent>
             <MudIconButton Icon="@Icons.Material.Outlined.Menu" Style="@($"color:{Colors.Shades.White};")" Class="mr-5" />
@@ -40,12 +40,18 @@
 
     <MudSpacer />
 
-    @* <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+    @* <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true"  Style="@($"color:{Colors.Shades.White};")">
     <LanguageSelector />
     </MudHidden> *@
-    <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight" Style="min-width:220px;text-align:right;justify-content:flex-end;">
+    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+        <NotificationConnectionStatus></NotificationConnectionStatus>
+    </MudHidden>
+
+    <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
+
+
         <ActivatorContent>
-            <MudIconButton Icon="@Icons.Filled.Person" Style="@($"color:{Colors.Shades.White};")" Size="Size.Medium" />
+            <MudIconButton Icon="@Icons.Filled.Person" Style="@($"color:{Colors.Shades.White};")" />
         </ActivatorContent>
         <ChildContent>
             <div class="py-2" style="min-width: 220px">
@@ -64,6 +70,7 @@
             </div>
         </ChildContent>
     </MudMenu>
+
 </MudAppBar>
 
 @code {

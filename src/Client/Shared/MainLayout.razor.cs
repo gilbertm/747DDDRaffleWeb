@@ -1,4 +1,6 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+﻿using AspNetMonsters.Blazor.Geolocation.Custom;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

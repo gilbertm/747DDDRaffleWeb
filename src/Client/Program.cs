@@ -15,9 +15,12 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddClientServices(builder.Configuration);
+builder.Services.AddGeolocationServices();
 builder.Services.AddMapBoxServices(options => options.UseKey(builder.Configuration["MapBox:Key"]));
-builder.Services.AddScoped<LocationService>();
+// builder.Services.AddScoped<LocationService>();
+builder.Services.AddTransient<IAppDataService, AppDataService>();
 builder.Services.AddScoped<AppDataService>();
+
 
 var host = builder.Build();
 

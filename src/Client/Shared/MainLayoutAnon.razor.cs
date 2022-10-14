@@ -1,6 +1,4 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -14,7 +12,6 @@ public partial class MainLayoutAnon
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
 
     private bool _rightToLeft = default!;
-
 
     private async Task RightToLeftToggle()
     {

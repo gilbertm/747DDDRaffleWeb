@@ -16,7 +16,7 @@ public class MultitenancyConstants
         public const string EmailAddress = "service_lessee@ehulog.com";
     }
 
-    public const string DefaultPassword = "123Pa$$word!";
+    public const string DefaultPassword = "@@@ZZZ123Pa$$word!@@@ZZZ$$$";
 
     public const string TenantIdName = "tenant";
 }

@@ -19,14 +19,12 @@ public partial class DynamicMapLoad
     protected IAppUsersClient AppUsersClient { get; set; } = default!;
     [Inject]
     protected IJSRuntime JSRuntime { get; set; } = default!;
-    [Inject]
-    private LocationService LocationService { get; set; } = default!;
 
-    private AppUserDto? _appUserDto { get; set; } = default!;
-
-    private CustomValidation? _customValidation;
+    private AppUserDto? _appUserDto { get; set; }
 
     private DotNetObjectReference<DynamicMapLoad>? _objRef;
+
+    private CustomValidation? _customValidation;
 
     private List<string> _jsonLoadedScripts { get; set; } = new();
 
@@ -37,7 +35,7 @@ public partial class DynamicMapLoad
     {
         _objRef = DotNetObjectReference.Create(this);
 
-        _appUserDto = await AppDataService.Start();
+        _appUserDto = AppDataService.GetAppUserDataTransferObject();
 
         await JSRuntime.InvokeVoidAsync("loadScript", "https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js", "head");
 
@@ -84,7 +82,10 @@ public partial class DynamicMapLoad
         }
         else
         {
-            var location = await LocationService.GetLocationAsync();
+
+            var position = AppDataService.GetGeolocationPosition();
+            var positionError = AppDataService.GetGeolocationPositionError();
+
 
             var obj = new
             {
@@ -92,8 +93,8 @@ public partial class DynamicMapLoad
                 MapContainer = Config["MapBox:MapContainer"],
                 Zoom = Config["MapBox:Zoom"],
                 Style = Config["MapBox:Style"],
-                Longitude = location is { } && !string.IsNullOrEmpty(location.Longitude.ToString()) ? location.Longitude.ToString() : "0",
-                Latitude = location is { } && !string.IsNullOrEmpty(location.Latitude.ToString()) ? location.Latitude.ToString() : "0"
+                Longitude = position is { } && !string.IsNullOrEmpty(position.Coords.Longitude.ToString()) ? position.Coords.Longitude.ToString() : "0",
+                Latitude = position is { } && !string.IsNullOrEmpty(position.Coords.ToString()) ? position.Coords.Latitude.ToString() : "0"
             };
 
             if (_jsonLoadedScripts is { } && _jsonLoadedScripts.Count() > 0)

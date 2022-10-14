@@ -88,7 +88,7 @@ public partial class AccountRolePackage
     {
         _lockRolePackage = false;
 
-        _appUserDto = await AppDataService.Start();
+        _appUserDto = AppDataService.GetAppUserDataTransferObject();
 
         if (_appUserDto is not null)
         {

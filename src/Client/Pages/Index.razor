@@ -3,11 +3,7 @@
 
 @attribute [AllowAnonymous]
 
-@inject AppDataService AppDataService
-@inject IStringLocalizer<Index> L
-
-
-@if (_appUserDto is { })
+@if (_isAuthenticated)
 {
     <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.FrontLoans />
 }
@@ -15,12 +11,21 @@ else
 {
     <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons.FrontAnonLoans />
 }
+
+<LossGeolocationPopup />
+
 @code {
 
-    private AppUserDto _appUserDto { get; set; } = default!;
+    [Inject]
+    protected AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    private bool _isAuthenticated { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        _appUserDto = await AppDataService.Start();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _isAuthenticated = user.Identity?.IsAuthenticated ?? false;
     }
+
 }

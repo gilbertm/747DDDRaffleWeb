@@ -2,19 +2,16 @@
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Nager.Country;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
 public partial class FrontLoans
 {
-    [CascadingParameter]
-    protected Task<AuthenticationState> AuthState { get; set; } = default!;
     [Inject]
-    protected IAuthorizationService AuthService { get; set; } = default!;
+    protected AppDataService AppDataService { get; set; } = default!;
+
     [Inject]
     protected ILoanLendersClient LoanLendersClient { get; set; } = default!;
     [Inject]
@@ -31,25 +28,28 @@ public partial class FrontLoans
     protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
     [Inject]
     public NavigationManager NavigationManager { get; set; } = default!;
-    [Inject]
-    protected AppDataService AppDataService { get; set; } = default!;
-
     protected EntityContainerContext<LoanDto> Context { get; set; } = default!;
 
     protected bool Loading { get; set; }
 
-    private AppUserDto _appUserDto;
+    private AppUserDto? _appUserDto { get; set; }
 
-    private List<AppUserProductDto> appUserProducts;
+    private List<AppUserProductDto> appUserProducts { get; set; } = default!;
 
     private string _currency { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        _appUserDto = await AppDataService.Start();
+        _appUserDto = await AppDataService.InitializationAsync();
 
         if (_appUserDto is not null)
         {
+            if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
+            {
+                NavigationManager.NavigateTo("/catalog/all/loans", true);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(_appUserDto.HomeCountry))
             {
                 var countryProvider = new CountryProvider();
@@ -65,11 +65,7 @@ public partial class FrontLoans
                 }
             }
 
-            if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
-            {
-                NavigationManager.NavigateTo("/catalog/all/loans");
-                return;
-            }
+            
 
             Context = new EntityContainerContext<LoanDto>(
                    searchFunc: async filter =>

@@ -58,7 +58,7 @@ public partial class GenericLoans
 
     protected override async Task OnInitializedAsync()
     {
-        _appUserDto = await AppDataService.Start();
+        _appUserDto = await AppDataService.InitializationAsync();
 
         if (_appUserDto is not null)
         {

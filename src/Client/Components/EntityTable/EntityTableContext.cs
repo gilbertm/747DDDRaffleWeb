@@ -127,7 +127,7 @@ public abstract class EntityTableContext<TEntity, TId, TRequest>
     /// </summary>
     public Func<TEntity, bool>? CanDeleteEntityFunc { get; set; }
 
-    public EntityTableContext(
+    protected EntityTableContext(
         List<EntityField<TEntity>> fields,
         Func<TEntity, TId>? idFunc,
         Func<Task<TRequest>>? getDefaultsFunc,

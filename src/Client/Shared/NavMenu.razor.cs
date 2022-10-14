@@ -35,7 +35,7 @@ public partial class NavMenu
 
     protected override async Task OnParametersSetAsync()
     {
-        _appUserDto = await AppDataService.Start();
+        _appUserDto = AppDataService.GetAppUserDataTransferObject();
 
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
         var user = (await AuthState).User;

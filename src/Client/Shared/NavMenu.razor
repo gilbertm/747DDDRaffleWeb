@@ -41,7 +41,7 @@
                 <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
                     @if (_canViewLoans)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.AttachMoney" Class="custom-nav-child">
                             @L["Loans"]
                         </MudNavLink>
                     }
@@ -51,10 +51,10 @@
             if (_canViewProducts || _canViewBrands)
             {
                 <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Management"]</MudText>
-                <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.AddBox">
+                <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.Storefront">
                     @if (_canViewPackages)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Outlined.Inventory2" Class="custom-nav-child">
                             @L["Packages"]
                         </MudNavLink>
                     }
@@ -63,19 +63,19 @@
                         @* <MudNavLink Match="NavLinkMatch.All" Href="/catalog/products" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
         @L["Products"]
         </MudNavLink> *@
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.Engineering" Class="custom-nav-child">
                             @L["Products"]
                         </MudNavLink>
                     }
                     @if (_canViewBrands)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.Discount" Class="custom-nav-child">
                             @L["Brands"]
                         </MudNavLink>
                     }
                     @if (_canViewCategories)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.Category" Class="custom-nav-child">
                             @L["Categories"]
                         </MudNavLink>
                     }

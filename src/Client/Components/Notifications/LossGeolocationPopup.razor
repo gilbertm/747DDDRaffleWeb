@@ -1,0 +1,77 @@
+﻿@using System.Text.Json
+@using System.Text.Json.Serialization
+@using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
+
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<Index> L
+@inject IDialogService Dialog
+@inject IGeolocationService GeolocationService
+
+@code {
+
+    private GeolocationPositionError _getGeolocationPositionError { get; set; } = default!;
+
+    private GeolocationPosition? _position;
+    private GeolocationPositionError? _positionError;
+
+    private readonly JsonSerializerOptions _opts = new()
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+    private readonly PositionOptions _options = new()
+        {
+            EnableHighAccuracy = true,
+            MaximumAge = null,
+            Timeout = 15_000
+        };
+
+    protected override void OnInitialized()
+    {
+       
+        _infoMessageWrapper = AddInfoWrapperContent();
+
+        GeolocationService.GetCurrentPosition(
+                   component: this,
+                   onSuccessCallbackMethodName: nameof(OnPositionRecieved),
+                   onErrorCallbackMethodName: nameof(OnPositionError),
+                   options: _options);
+    }
+
+    private RenderFragment _infoMessageWrapper { get; set; } = default!;
+
+
+    private RenderFragment AddInfoContent = __builder =>
+    {
+        <MudText Typo="Typo.h5" Class='mb-3' Color="Color.Error">Location error or unknown.</MudText>
+        <MudLink Class='mb-3 d-block' Href='https://support.google.com/chrome/answer/142065?hl=en&co=GENIE.Platform%3DDesktop' Target='_blank'><MudIcon Icon="@Icons.Filled.Link" Title="Start here: Enable chrome location" Size="Size.Medium" /> Google share location</MudLink>
+        <MudText Typo="Typo.caption" Class='small text-small'>Note: location is essential to this system. Please kindly correct before proceeding.</MudText>
+    };
+
+    private RenderFragment AddInfoWrapperContent() => builder =>
+    {
+        builder.AddContent(1, AddInfoContent);
+    };
+
+    [JSInvokable]
+    public void OnPositionRecieved(GeolocationPosition position)
+    {
+        _position = position;
+
+         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnPositionError(GeolocationPositionError positionError)
+    {
+        _positionError = positionError;
+
+        StateHasChanged();
+
+        Dialog.Show<Info>("Information", new DialogParameters() { ["ContentText"] = _infoMessageWrapper }, new DialogOptions() { NoHeader = false, MaxWidth = MaxWidth.ExtraLarge, CloseButton = true, CloseOnEscapeKey = true, DisableBackdropClick = true });
+
+    }
+
+}

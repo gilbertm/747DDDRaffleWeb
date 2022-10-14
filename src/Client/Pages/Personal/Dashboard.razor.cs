@@ -4,6 +4,7 @@ using EHULOG.BlazorWebAssembly.Client.Shared;
 using EHULOG.WebApi.Shared.Notifications;
 using MediatR.Courier;
 using Microsoft.AspNetCore.Components;
+using System.Globalization;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Personal;
 

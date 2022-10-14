@@ -10,20 +10,20 @@
     @if (Context is not null)
     {
         <MudItem xs="12" Class="text-center">
-            <MudText Class="mb-3" Style="@($"color:{Colors.Shades.White};")">
+            <MudText Class="mb-3">
                 Available loans. Closest to your <MudIcon Icon="@Icons.Material.Filled.LocationOn" Color="Color.Success" Size="Size.Small" Title="Favorite" /> location
             </MudText>
         </MudItem>
-        <MudItem xs="12" md="6" lg="4" Class="pa-0">
+        <MudItem xs="12" md="4" lg="3" Class="pa-0">
               <DynamicMapLoad IsMapOnly=true />
         </MudItem>
-        <MudItem xs="12" md="6" lg="8">
+        <MudItem xs="12" md="8" lg="9">
             <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
-        </MudItem>
+        </MudItem> 
     } else
     {
         <MudItem xs="12" Class="text-center justify-content-center">
-            <MudText Typo="Typo.h5" Class="mt-5">Seems like this location isn't helping those who are in need. Be the <a href="#">first</a>?</MudText>
+            <MudText Typo="Typo.h5" Class="mt-5" Style="@($"color:{Colors.Yellow.Darken1};")">Seems like this location isn't helping those who are in need. Be the <MudLink Href="#" Typo="Typo.h5" Class="mt-5" Color="Color.Primary">first</MudLink>?</MudText>
         </MudItem>        
     }
 

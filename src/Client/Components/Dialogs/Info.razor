@@ -1,0 +1,29 @@
+﻿@inject IStringLocalizer<Info> L
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Large" Color="Color.Warning" Class="mr-3 mb-n1" />
+            @L["Information"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @ContentText
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Check" Color="Color.Warning" Variant="Variant.Filled" OnClick="Submit">@L["Ok"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment? ContentText { get; set; }
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}
