@@ -61,7 +61,9 @@ public partial class AccountRolePackage
 
     private Guid _oldPackage { get; set; }
 
-    private bool _lockRolePackage { get; set; }
+    private bool _lockRole { get; set; }
+
+    private bool _lockPackage { get; set; }
 
     public class SelectedHoveredVisible
     {
@@ -86,45 +88,29 @@ public partial class AccountRolePackage
 
     protected override async Task OnInitializedAsync()
     {
-        _lockRolePackage = false;
+        _lockPackage = false;
+        _lockRole = false;
 
         _appUserDto = AppDataService.GetAppUserDataTransferObject();
 
-        if (_appUserDto is not null)
+        if (_appUserDto is { })
         {
+            // the current package
+            // TODOL: this will handle changes of subscription
             _oldPackage = _appUserDto.PackageId;
 
             if (!_appUserDto.PackageId.Equals(default!))
             {
+                // selecting a different package
+                // TODO: to be handled
+                //       payment subscription handlers
                 isForSubmission = true;
             }
 
-            /* role */
-            if (await ApiHelper.ExecuteCallGuardedAsync(
-                     () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
-                 is ICollection<UserRoleDto> response)
+            // process
+            if (_appUserDto.Id != default)
             {
-                _userRolesList = response.ToList();
-
-                /*
-                 * look for the ehulog roles (not admin or basic) that are disabled
-                 */
-                var lenderOrLessee = _userRolesList.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
-
-                /*
-                 * look for the ehulog roles (not admin or basic) that are disabled
-                 */
-                var superUsers = _userRolesList.Where(r => (new string[] { "Admin", "Administrator", "SuperUser" }).Contains(r.RoleName) && r.Enabled).ToList();
-
-                if (superUsers.Count() > 0)
-                {
-                    _hideRolePackage = true;
-                }
-            }
-
-            /* process */
-            if (_appUserDto is not null && _appUserDto.Id != default)
-            {
+                // package
                 if (await ApiHelper.ExecuteCallGuardedAsync(
                         () => PackagesClient.GetAsync(null), Snackbar)
                     is List<PackageDto> responsePackages)
@@ -133,20 +119,18 @@ public partial class AccountRolePackage
 
                     foreach (var package in _packages)
                     {
+                        // add image
                         var image = await InputOutputResourceClient.GetAsync(package.Id);
 
                         if (image.Count() > 0)
                         {
                             package.Image = image.First();
                         }
-                    }
-                }
 
-                if (_packages is not null)
-                {
-                    foreach (var package in _packages)
-                    {
+                        // application user package id match entry
+                        // mark selected and visible
                         bool selected = _appUserDto.PackageId.Equals(package.Id) ? true : false;
+
                         _runningPackages.Add(new ExtendedPackageDto()
                         {
                             PackageDto = package,
@@ -156,19 +140,30 @@ public partial class AccountRolePackage
                     }
                 }
 
-                /* role */
+                // role
                 if (await ApiHelper.ExecuteCallGuardedAsync(
                         () => UsersClient.GetRolesAsync(_appUserDto.ApplicationUserId), Snackbar)
                     is ICollection<UserRoleDto> responseRoles)
                 {
                     _userRolesList = responseRoles.ToList();
 
-                    /*
-                     * look for the ehulog roles (not admin or basic) that are disabled
-                     */
-                    var lenderOrLessee = _userRolesList.Where(r => !(new string[] { "Basic", "Admin" }).Contains(r.RoleName)).ToList();
+                    // look for the ehulog roles (not admin or basic) that are disabled
+                    var usableRoles = _userRolesList.Where(r => !(new string[] { "Basic", "Admin" }).Contains(r.RoleName)).ToList();
 
-                    foreach (var role in lenderOrLessee.Where(r => !r.Enabled).ToList())
+                    // TODO:// implement a unique scenario
+                    var superUsers = _userRolesList.Where(r => (new string[] { "Admin", "Administrator", "SuperUser" }).Contains(r.RoleName) && r.Enabled).ToList();
+
+                    if (superUsers.Count() > 0)
+                    {
+                        // TODO:// handle accordingly, nothing to do yet
+                    }
+
+                    // make visible and selectable options
+                    // these usable roles
+                    // TODO:// this is only available on first sign in
+                    //      all usable roles will be displayed
+                    //      one the application user selects, next block should always clean the unnecessary
+                    foreach (var role in usableRoles.ToList())
                     {
                         _runningRoles.Add(new ExtendedRoleDto()
                         {
@@ -183,36 +178,80 @@ public partial class AccountRolePackage
                         });
                     }
 
-                    // handle already
-                    // have role and package
-                    lenderOrLessee = lenderOrLessee.Where(r => r.Enabled).ToList();
+                    // is usable role and enabled
+                    var currentUserUsableEnabledRoles = usableRoles.Where(r => r.Enabled).ToList();
 
-                    if (lenderOrLessee.Count() == 1)
+                    // application user already assigned with specific applicaiton role (i.e. lender or lessee)
+                    // this role is non-changable
+                    if (currentUserUsableEnabledRoles.Count == 1)
                     {
-                        _appUserDto.RoleId = lenderOrLessee.First().RoleId;
+                        if (_appUserDto.RoleId != default! && !string.IsNullOrEmpty(_appUserDto.RoleId))
+                        {
+                            if (!_appUserDto.RoleId.Equals(currentUserUsableEnabledRoles.First().RoleId))
+                            {
+                                _appUserDto.RoleId = currentUserUsableEnabledRoles.First().RoleId;
+                                _appUserDto.RoleName = currentUserUsableEnabledRoles.First().RoleName;
+                            }
+                        }
 
+                        // clear, we don't want this changed anymore
+                        // not unless deem super necessary
                         _runningRoles.Clear();
 
+                        // the selectable role
+                        // is only a singular role
+                        // that has been assigned to the application user
+                        // all other roles must non-existent
                         _runningRoles.Add(new ExtendedRoleDto()
                         {
                             RoleDto = new RoleDto()
                             {
-                                Id = lenderOrLessee.First().RoleId ?? default!,
-                                Name = lenderOrLessee.First().RoleName ?? default!,
-                                Description = lenderOrLessee.First().Description,
+                                Id = currentUserUsableEnabledRoles.First().RoleId ?? default!,
+                                Name = currentUserUsableEnabledRoles.First().RoleName ?? default!,
+                                Description = currentUserUsableEnabledRoles.First().Description,
                             },
                             IsSelected = true,
                             IsVisible = true
                         });
 
-                        if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
+                        _lockRole = true;
+
+                        if (_appUserDto.PackageId != Guid.Empty && _appUserDto.PackageId != default)
                         {
-                            _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).First().IsSelected = true;
-                            _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).First().IsVisible= true;
+                            // if package is already propagated
+                            // lock the package
+                            // but since package can be selected or resubscribed
+                            // the package can be updated and upgraded to the selected subscription
+                            if (_runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).Count() == 1)
+                            {
+                                _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).First().IsSelected = true;
+                                _runningPackages.Where(rp => rp.PackageDto.Id.Equals(_appUserDto.PackageId)).First().IsVisible = true;
+
+                                _lockPackage = true;
+                            }
+                        }
+                        else
+                        {
+                            if ((_appUserDto.RoleName is { }) && _appUserDto.RoleName.Equals("Lender"))
+                            {
+                                ExtendedPackageDto defaultRecord = default!;
+
+                                PackagesForRole(true, out defaultRecord);
+
+                                if (defaultRecord != default!)
+                                    UpdatePackage(defaultRecord);
+                            }
+                            else
+                            {
+                                ExtendedPackageDto defaultRecord = default!;
+
+                                PackagesForRole(false, out defaultRecord);
+
+                                if (defaultRecord != default!)
+                                    UpdatePackage(defaultRecord);
+                            }
 
                         }
-
-                        _lockRolePackage = true;
 
                     }
                 }
@@ -220,9 +259,12 @@ public partial class AccountRolePackage
         }
     }
 
-    /* helper functions */
-    private void PackagesForRole(bool isLender)
+    // helper functions
+    // out is the default package for the specified role
+    private void PackagesForRole(bool isLender, out ExtendedPackageDto defaultRecord)
     {
+        defaultRecord = default!;
+
         foreach (var package in _runningPackages)
         {
             package.IsSelected = false;
@@ -233,12 +275,18 @@ public partial class AccountRolePackage
             if (isLender && (package.PackageDto.IsLender == isLender))
             {
                 package.IsVisible = true;
+
+                if (package.PackageDto.IsDefault)
+                    defaultRecord = package;
             }
 
             // non-lender
             if (!isLender && (package.PackageDto.IsLender == isLender))
             {
                 package.IsVisible = true;
+
+                if (package.PackageDto.IsDefault)
+                    defaultRecord = package;
             }
         }
     }
@@ -278,11 +326,11 @@ public partial class AccountRolePackage
 
             if ((extendedRoleDto.RoleDto is not null) && extendedRoleDto.RoleDto.Name.Equals("Lender"))
             {
-                PackagesForRole(true);
+                PackagesForRole(true, out _);
             }
             else
             {
-                PackagesForRole(false);
+                PackagesForRole(false, out _);
             }
         }
 
@@ -316,11 +364,11 @@ public partial class AccountRolePackage
 
             if ((extendedRoleDto.RoleDto is not null) && extendedRoleDto.RoleDto.Name.Equals("Lender"))
             {
-                PackagesForRole(true);
+                PackagesForRole(true, out _);
             }
             else
             {
-                PackagesForRole(false);
+                PackagesForRole(false, out _);
             }
 
             if (_appUserDto is not null)
@@ -367,7 +415,32 @@ public partial class AccountRolePackage
 
         SelectDefaultPackage();
 
-        ClearRole();
+        // can only clear the role selection
+        // if it is not locked and saved yet
+        if (!_lockRole)
+        {
+            ClearRole();
+        }
+        else
+        {
+            if (_runningRoles is not null)
+            {
+                var role = _runningRoles.First();
+
+                if (role != null && role.RoleDto != null)
+                {
+                    if (role.RoleDto.Name.Equals("Lender"))
+                    {
+                        PackagesForRole(true, out _);
+                    }
+                    else
+                    {
+                        PackagesForRole(false, out _);
+                    }
+                }
+            }
+        }
+
     }
 
     private void HoverPackage(ExtendedPackageDto extendedPackageDto)

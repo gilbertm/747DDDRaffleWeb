@@ -6,6 +6,8 @@
 
 .mud-main-content {
   min-height: 85vh !important; }
+  .mud-main-content.home {
+    padding-top: 2rem !important; }
 
 .mud-table-container {
   overflow: auto; }

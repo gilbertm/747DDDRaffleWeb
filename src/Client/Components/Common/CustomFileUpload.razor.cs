@@ -29,13 +29,6 @@ public partial class CustomFileUpload
     [Parameter]
     public InputOutputResourceDocumentType FileIdentifier { get; set; }
 
-    private CustomValidation? _customValidation;
-
-    private void UpdateUploadedFilesAsync()
-    {
-
-    }
-
     private async Task UploadFiles(InputFileChangeEventArgs e, ForUploadFile? forUploadFile)
     {
         var file = e.File;

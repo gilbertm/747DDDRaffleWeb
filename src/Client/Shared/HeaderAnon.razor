@@ -10,31 +10,10 @@
 
     <MudPaper Elevation="0" Style="background:none;border-radius:0;">
         <MudToolBar>
-            <MudButton Href="/" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Home</MudText></MudButton>
+            <MudButton OnClick="@(() => { Navigation.NavigateTo("/", true); })" Href="/" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Home</MudText></MudButton>
             <MudButton Href="/catalog/front/loans/anon" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Loan</MudText></MudButton>
             <MudButton Href="/about-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">About</MudText></MudButton>
             <MudButton Href="/contact-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Contact</MudText></MudButton>
-            @* <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
-            <ActivatorContent>
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Style="@($"color:{Colors.Shades.White};")" Class="mr-5" />
-            </ActivatorContent>
-            <ChildContent>
-            <div class="py-2" style="min-width: 220px">
-            <MudMenuItem OnClick="Profile">
-            <div class="d-flex">
-            <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.Login" />
-            <MudText>@L["Login"]</MudText>
-            </div>
-            </MudMenuItem>
-            <MudMenuItem Link="/users/self-register">
-            <div class="d-flex">
-            <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.PersonAdd" />
-            <MudText>@L["Register"]</MudText>
-            </div>
-            </MudMenuItem>
-            </div>
-            </ChildContent>
-            </MudMenu> *@
         </MudToolBar>
     </MudPaper>
 
@@ -74,6 +53,9 @@
 </MudAppBar>
 
 @code {
+    [Parameter]
+    public string CssClasses { get; set; } = default!;
+
     private void Profile()
     {
         Navigation.NavigateTo("/login");

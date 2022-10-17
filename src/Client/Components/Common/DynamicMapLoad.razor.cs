@@ -11,6 +11,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
 
 public partial class DynamicMapLoad
 {
+    [Parameter]
+    public bool IsMapOnly { get; set; }
+
     [Inject]
     public NavigationManager NavigationManager { get; set; } = default!;
     [Inject]
@@ -20,22 +23,44 @@ public partial class DynamicMapLoad
     [Inject]
     protected IJSRuntime JSRuntime { get; set; } = default!;
 
-    private AppUserDto? _appUserDto { get; set; }
+    private AppUserDto? AppUserDto { get; set; }
 
     private DotNetObjectReference<DynamicMapLoad>? _objRef;
 
-    private CustomValidation? _customValidation;
+    private List<string> JsonLoadedScripts { get; set; } = new();
 
-    private List<string> _jsonLoadedScripts { get; set; } = new();
+    [JSInvokable]
+    public void GetLoadedScriptsFromJS(string loadedScripts)
+    {
+        if (!string.IsNullOrEmpty(loadedScripts))
+        {
+            JsonLoadedScripts = JsonSerializer.Deserialize<List<string>>(loadedScripts) ?? new();
+        }
+    }
 
-    [Parameter]
-    public bool IsMapOnly { get; set; }
+    [JSInvokable]
+    public void ChangeAddressFromJS(string homeAddress, string homeCity, string homeCountry, string homeRegion, string latitude, string longitude)
+    {
+        if (AppUserDto is not null)
+        {
+            AppUserDto.HomeAddress = homeAddress;
+            AppUserDto.HomeCity = homeCity;
+            AppUserDto.HomeCountry = homeCountry;
+            AppUserDto.HomeRegion = homeRegion;
+            AppUserDto.Latitude = latitude;
+            AppUserDto.Longitude = longitude;
+        }
+    }
 
+    public void Dispose()
+    {
+        _objRef?.Dispose();
+    }
     protected override async Task OnInitializedAsync()
     {
         _objRef = DotNetObjectReference.Create(this);
 
-        _appUserDto = AppDataService.GetAppUserDataTransferObject();
+        AppUserDto = AppDataService.GetAppUserDataTransferObject();
 
         await JSRuntime.InvokeVoidAsync("loadScript", "https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js", "head");
 
@@ -56,24 +81,23 @@ public partial class DynamicMapLoad
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_appUserDto is not null)
+        if (AppUserDto is not null)
         {
-            if (!string.IsNullOrEmpty(_appUserDto.Latitude) && !string.IsNullOrEmpty(_appUserDto.Longitude))
+            if (!string.IsNullOrEmpty(AppUserDto.Latitude) && !string.IsNullOrEmpty(AppUserDto.Longitude))
             {
-
                 var obj = new
                 {
                     Key = Config["MapBox:Key"],
                     MapContainer = Config["MapBox:MapContainer"],
                     Zoom = Config["MapBox:Zoom"],
                     Style = Config["MapBox:Style"],
-                    Longitude = _appUserDto.Longitude,
-                    Latitude = _appUserDto.Latitude
+                    AppUserDto.Longitude,
+                    AppUserDto.Latitude
                 };
 
-                if (_jsonLoadedScripts is { } && _jsonLoadedScripts.Count() > 0)
+                if (JsonLoadedScripts is { } && JsonLoadedScripts.Count > 0)
                 {
-                    if (_jsonLoadedScripts.Contains("js/mapBox.js"))
+                    if (JsonLoadedScripts.Contains("js/mapBox.js"))
                     {
                         await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.initMap", obj);
                     }
@@ -82,10 +106,7 @@ public partial class DynamicMapLoad
         }
         else
         {
-
             var position = AppDataService.GetGeolocationPosition();
-            var positionError = AppDataService.GetGeolocationPositionError();
-
 
             var obj = new
             {
@@ -97,14 +118,13 @@ public partial class DynamicMapLoad
                 Latitude = position is { } && !string.IsNullOrEmpty(position.Coords.ToString()) ? position.Coords.Latitude.ToString() : "0"
             };
 
-            if (_jsonLoadedScripts is { } && _jsonLoadedScripts.Count() > 0)
+            if (JsonLoadedScripts is { } && JsonLoadedScripts.Count > 0)
             {
-                if (_jsonLoadedScripts.Contains("js/mapBox.js"))
+                if (JsonLoadedScripts.Contains("js/mapBox.js"))
                 {
                     await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.initMap", obj);
                 }
             }
-
         }
     }
 
@@ -114,54 +134,26 @@ public partial class DynamicMapLoad
 
         await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.updateAddressDtoFromJS", _objRef);
 
-        if (_appUserDto is not null)
+        if (AppUserDto is not null)
         {
             var updateAppUserRequest = new UpdateAppUserRequest
             {
-                ApplicationUserId = _appUserDto.ApplicationUserId,
-                HomeAddress = _appUserDto.HomeAddress,
-                HomeCity = _appUserDto.HomeCity,
-                HomeCountry = _appUserDto.HomeCountry,
-                HomeRegion = _appUserDto.HomeRegion,
-                Id = _appUserDto.Id,
-                IsVerified = _appUserDto.IsVerified,
-                Latitude = _appUserDto.Latitude,
-                Longitude = _appUserDto.Longitude,
-                PackageId = _appUserDto.PackageId
+                ApplicationUserId = AppUserDto.ApplicationUserId,
+                HomeAddress = AppUserDto.HomeAddress,
+                HomeCity = AppUserDto.HomeCity,
+                HomeCountry = AppUserDto.HomeCountry,
+                HomeRegion = AppUserDto.HomeRegion,
+                Id = AppUserDto.Id,
+                IsVerified = AppUserDto.IsVerified,
+                Latitude = AppUserDto.Latitude,
+                Longitude = AppUserDto.Longitude,
+                PackageId = AppUserDto.PackageId
             };
 
-            var guid = await AppUsersClient.UpdateAsync(_appUserDto.Id, updateAppUserRequest);
+            _ = await AppUsersClient.UpdateAsync(AppUserDto.Id, updateAppUserRequest);
         }
 
         NavigationManager.NavigateTo("/account/rolepackage");
         return;
-    }
-
-    [JSInvokable]
-    public void GetLoadedScriptsFromJS(string loadedScripts)
-    {
-        if (!string.IsNullOrEmpty(loadedScripts))
-        {
-            _jsonLoadedScripts = JsonSerializer.Deserialize<List<string>>(loadedScripts) ?? new();
-        }
-    }
-
-    [JSInvokable]
-    public void ChangeAddressFromJS(string homeAddress, string homeCity, string homeCountry, string homeRegion, string latitude, string longitude)
-    {
-        if (_appUserDto is not null)
-        {
-            _appUserDto.HomeAddress = homeAddress;
-            _appUserDto.HomeCity = homeCity;
-            _appUserDto.HomeCountry = homeCountry;
-            _appUserDto.HomeRegion = homeRegion;
-            _appUserDto.Latitude = latitude;
-            _appUserDto.Longitude = longitude;
-        }
-    }
-
-    public void Dispose()
-    {
-        _objRef?.Dispose();
     }
 }

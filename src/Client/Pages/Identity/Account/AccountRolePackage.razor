@@ -36,7 +36,7 @@
 
                                         @foreach (var role in _runningRoles)
                                         {
-                                            <MudItem xs="6" onclick="@(() => { if (!_lockRolePackage) { UpdateRole(role); }})" onmouseover="@(() => { if (!_lockRolePackage) { HoverRole(role); }})" Style="@(role.IsVisible ? "display:block" : "display:none")">
+                                            <MudItem xs="6" onclick="@(() => { if (!_lockRole) { UpdateRole(role); }})" onmouseover="@(() => { if (!_lockRole) { HoverRole(role); }})" Style="@(role.IsVisible ? "display:block" : "display:none")">
                                                 <MudCard Class="position-relative">
                                                     <MudCardContent>
                                                         @{
@@ -75,7 +75,7 @@
 
                                                         var keepOpen = roleSelected || roleHovered ? true : false;
 
-                                                        @if (_lockRolePackage)
+                                                        @if (_lockRole)
                                                         {
                                                             keepOpen = false;
                                                         }
@@ -87,7 +87,7 @@
 
                                                             @if (roleSelected)
                                                             {
-                                                                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearRole())">Cancel</MudButton>
+                                                                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearRole())">Change ehulog role</MudButton>
                                                             }
                                                             else
                                                             {
@@ -148,7 +148,7 @@
 
                                                         var keepOpen = (packageSelected || packageHovered) ? true : false;
 
-                                                        if (_lockRolePackage)
+                                                        if (_lockPackage)
                                                         {
                                                             keepOpen = false;
                                                         }
@@ -163,12 +163,14 @@
 
                                                             @if (packageSelected)
                                                             {
-                                                                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearPackage())">Cancel</MudButton>
+                                                                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => ClearPackage())">Change Package</MudButton>
                                                             }
                                                             else
                                                             {
                                                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdatePackage(package ?? default!))">Select</MudButton>
                                                             }
+                                                            <br />
+                                                            <MudText Typo="Typo.caption" Color="Color.Warning"><MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.WarningAmber" Title="Favorite" />To bel implemented: This will be permanent once you paid the subscription plan.</MudText>
                                                         </MudOverlay>
                                                     }
                                                 </MudCard>
@@ -184,7 +186,7 @@
                 </MudGrid>
 
                 @* must be unassigned role and the package is non default *@
-                @if ((new string[] { "Admin", "Lender", "Lessee" }).Contains(_appUserDto.RoleName) && !_appUserDto.PackageId.Equals(_oldPackage) && !_lockRolePackage)
+                @if ((new string[] { "Admin", "Lender", "Lessee" }).Contains(_appUserDto.RoleName) && !_appUserDto.PackageId.Equals(_oldPackage) && !_lockRole)
                 {
                     <MudCard Elevation="0">
 

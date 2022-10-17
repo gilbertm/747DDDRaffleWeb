@@ -5,6 +5,10 @@
 .mud-main-content {
     min-height: 85vh !important;
     // background: #263238 !important;
+
+    &.home {
+        padding-top: 2rem !important;
+    }
 }
 
 .mud-table-container {

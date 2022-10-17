@@ -18,31 +18,69 @@ public partial class FrontAnonLoans
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     [Inject]
-    private IProductsClient ProductsClient { get; set; } = default!;
-    [Inject]
-    private IAppUsersClient AppUsersClient { get; set; } = default!;
-    [Inject]
-    private IAppUserProductsClient AppUserProductsClient { get; set; } = default!;
-    [Inject]
-    private IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
-    [Inject]
-    private ILoansClient LoansClient { get; set; } = default!;
-    [Inject]
-    private ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
-    [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
-    private AppUserDto? appUserDto { get; set; }
-
     private EntityContainerContext<LoanDto> Context { get; set; } = default!;
 
-    private bool isAuthenticated { get; set; }
+    private bool IsAuthenticated { get; set; }
 
-    private bool Loading { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
 
-    private async Task<InputOutputResourceDto> getImage(Guid productId)
+        if (IsAuthenticated)
+        {
+            // navigate to the home (/)
+            // checking will be done by the component
+            // if logged in, the role will be used to navigate
+            // to the user's account type listing
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var anonLoans = await GetAnonLoans(new());
+
+        Context = new EntityContainerContext<LoanDto>(
+                   searchFunc: async filter =>
+                   {
+                       var loanFilter = filter.Adapt<SearchLoansRequest>();
+
+                       var anonLoans = await GetAnonLoans(loanFilter);
+
+                       if (anonLoans is { })
+                       {
+                           if (anonLoans.Data is { } && anonLoans.Data.Count > 0)
+                           {
+                               foreach (var item in anonLoans.Data)
+                               {
+                                   var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
+
+                                   if (loanLender is { })
+                                   {
+                                       var image = await GetImage(loanLender.ProductId);
+
+                                       if (loanLender.Product is { } && image is { })
+                                       {
+                                           loanLender.Product.Image = image;
+                                       }
+                                   }
+                               }
+                           }
+                       }
+
+                       if (anonLoans is { })
+                           return anonLoans.Adapt<EntityContainerPaginationResponse<LoanDto>>();
+
+                       return default!;
+                   },
+                   template: BodyTemplate);
+    }
+
+    private async Task<InputOutputResourceDto> GetImage(Guid productId)
     {
         HttpRequestMessage request;
         HttpResponseMessage response;
@@ -53,8 +91,8 @@ public partial class FrontAnonLoans
             RequestUri = new Uri($"{Config[ConfigNames.ApiBaseUrl]}api/tokens/"),
             Content = new StringContent(JsonSerializer.Serialize(new TokenRequest()
             {
-                Email = MultitenancyConstants.Lessee.EmailAddress,
-                Password = MultitenancyConstants.DefaultPassword
+                Email = MultitenancyConstants.ServiceLessee.EmailAddress,
+                Password = MultitenancyConstants.DefaultPasswordServiceLessee
             })),
         };
 
@@ -69,23 +107,21 @@ public partial class FrontAnonLoans
 
             if (tokenResponse is not null)
             {
-                using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{Config[ConfigNames.ApiBaseUrl]}api/v1/inputoutputresource/anon/{productId}")))
+                using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{Config[ConfigNames.ApiBaseUrl]}api/v1/inputoutputresource/anon/{productId}"));
+                requestMessage.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
+
+                response = await HttpClient.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    requestMessage.Headers.Authorization =
-                        new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
+                    var images = JsonSerializer.Deserialize<List<InputOutputResourceDto>>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                    response = await HttpClient.SendAsync(requestMessage);
-
-                    if (response.IsSuccessStatusCode)
+                    if (images is not null)
                     {
-                        var images = JsonSerializer.Deserialize<List<InputOutputResourceDto>>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-                        if (images is not null)
+                        if (images.Count > 0)
                         {
-                            if (images.Count > 0)
-                            {
-                                return images[0];
-                            }
+                            return images[0];
                         }
                     }
                 }
@@ -95,7 +131,7 @@ public partial class FrontAnonLoans
         return default!;
     }
 
-    private async Task<EntityContainerPaginationResponse<LoanDto>> getAnonLoans(SearchLoansRequest search)
+    private async Task<EntityContainerPaginationResponse<LoanDto>> GetAnonLoans(SearchLoansRequest search)
     {
         HttpRequestMessage request;
         HttpResponseMessage response;
@@ -106,8 +142,8 @@ public partial class FrontAnonLoans
             RequestUri = new Uri($"{Config[ConfigNames.ApiBaseUrl]}api/tokens/"),
             Content = new StringContent(JsonSerializer.Serialize(new TokenRequest()
             {
-                Email = MultitenancyConstants.Lessee.EmailAddress,
-                Password = MultitenancyConstants.DefaultPassword
+                Email = MultitenancyConstants.ServiceLessee.EmailAddress,
+                Password = MultitenancyConstants.DefaultPasswordServiceLessee
             })),
         };
 
@@ -147,63 +183,5 @@ public partial class FrontAnonLoans
         }
 
         return default!;
-    }
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
-
-
-        if (isAuthenticated)
-        {
-            // navigate to the home (/)
-            // checking will be done by the component
-            // if logged in, the role will be used to navigate
-            // to the user's account type listing
-            NavigationManager.NavigateTo("/");
-            return;
-
-        }
-
-        var anonLoans = await getAnonLoans(new());
-
-        Context = new EntityContainerContext<LoanDto>(
-                   searchFunc: async filter =>
-                   {
-                       var loanFilter = filter.Adapt<SearchLoansRequest>();
-
-                       var anonLoans = await getAnonLoans(loanFilter);
-
-                       if (anonLoans is { })
-                       {
-                           if (anonLoans.Data is { } && anonLoans.Data.Count > 0)
-                           {
-                               foreach (var item in anonLoans.Data)
-                               {
-                                   var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
-
-                                   if (loanLender is { })
-                                   {
-                                       var image = await getImage(loanLender.ProductId);
-
-                                       if (loanLender.Product is { } && image is { })
-                                       {
-                                           loanLender.Product.Image = image;
-                                       }
-                                   }
-                               }
-                           }
-
-                       }
-
-                       if (anonLoans is { })
-                           return anonLoans.Adapt<EntityContainerPaginationResponse<LoanDto>>();
-
-                       return default!;
-                   },
-                   template: BodyTemplate);
     }
 }

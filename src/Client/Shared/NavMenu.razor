@@ -2,116 +2,103 @@
 
 <PersonCard Style="background-color: var(--mud-palette-drawer-background);color: var(--mud-palette-drawer-text); margin-bottom:0px!important" />
 <MudNavMenu>
-    <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Start"]</MudText>
+
+    @* Personal *@
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">@L["Home"]</MudNavLink>
-    @* <MudNavLink Href="https://fullstackhero.net/basics/getting-started/" Match="NavLinkMatch.All" Target="_blank"
-    Icon="@Icons.Material.Filled.RocketLaunch">@L["Getting Started"]</MudNavLink> *@
-    @if (_canViewHangfire)
-    {
-        <MudNavLink Href="@_hangfireUrl" Match="NavLinkMatch.All" Target="_blank" Icon="@Icons.Material.Filled.Work">@L["Hangfire"]</MudNavLink>
-    }
+
     <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Personal"]</MudText>
     @if (_canViewDashboard)
     {
         <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Filled.Dashboard">@L["Dashboard"]</MudNavLink>
     }
+    <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
+        <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="custom-nav-child">@L["Profile"]</MudNavLink>
+        @* <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="custom-nav-child">@L["Address"]</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="custom-nav-child">@L["Role and Package"]</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="custom-nav-child">@L["Documents"]</MudNavLink> *@
+    </MudNavGroup>
 
-    @if (_appUserDto is not null)
+
+    @* Loans *@
+    @if (_canViewLoans)
     {
+        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText>
+        <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
+            @if (_canViewLoans)
+            {
+                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.AttachMoney" Class="custom-nav-child">
+                    @L["Loans"]
+                </MudNavLink>
+            }
+        </MudNavGroup>
+    }
 
-        <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd">@L["Account"]</MudNavLink>
+    @* Products *@
+    @if (_canViewProducts || _canViewBrands)
+    {
+        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText>
+        <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.Storefront">
+            @if (_canViewPackages)
+            {
+                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Outlined.Inventory2" Class="custom-nav-child">
+                    @L["Packages"]
+                </MudNavLink>
+            }
+            @if (_canViewProducts)
+            {
+                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.Engineering" Class="custom-nav-child">
+                    @L["Products"]
+                </MudNavLink>
+            }
 
-        @* <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
-    <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="custom-nav-child">@L["Account"]</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="custom-nav-child">@L["Address"]</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="custom-nav-child">@L["Role and Package"]</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="custom-nav-child">@L["Documents"]</MudNavLink>
-    </MudNavGroup> *@
+        </MudNavGroup>
+    }
+
+    @* Management *@
+    @if (CanViewAdministrationGroup)
+    {
+        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Administration"]</MudText>
+
+        @if (_canViewHangfire)
+        {
+            <MudNavLink Href="@_hangfireUrl" Match="NavLinkMatch.All" Target="_blank" Icon="@Icons.Material.Filled.Work">@L["Hangfire"]</MudNavLink>
+        }
+
+        @if (_canViewBrands)
+        {
+            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.Discount" Class="custom-nav-child">
+                @L["Brands"]
+            </MudNavLink>
+        }
+        @if (_canViewCategories)
+        {
+            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.Category" Class="custom-nav-child">
+                @L["Categories"]
+            </MudNavLink>
+        }
+
+
+        @if (_canViewUsers)
+        {
+            <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.Filled.VerifiedUser">
+                <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="custom-nav-child">@L["Users"]</MudNavLink>
+
+                @if (_canViewInputOutputResources)
+                {
+                    <MudNavLink Match="NavLinkMatch.All" Href="/catalog/administer/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="custom-nav-child">@L["Verify Files and Documents"]</MudNavLink>
+                }
+            </MudNavGroup>
+        }
+        @if (_canViewRoles)
+        {
+            <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.EmojiPeople">@L["Roles"]</MudNavLink>
+        }
+        @if (_canViewTenants)
+        {
+            <MudNavLink Href="/tenants" Icon="@Icons.Filled.GroupWork" Disabled="!_canViewTenants">@L["Tenants"]</MudNavLink>
+        }
 
         <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
-
-
-        bool isAdmin = (_appUserDto.RoleName is not null ? _appUserDto.RoleName : string.Empty).Equals("Admin");
-
-        if ((!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender")) || isAdmin)
-        {
-            if (_canViewProducts || _canViewBrands)
-            {
-                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText>
-                <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.Filled.AddBox">
-                    @if (_canViewLoans)
-                    {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/all/loans" Icon="@Icons.Filled.AttachMoney" Class="custom-nav-child">
-                            @L["Loans"]
-                        </MudNavLink>
-                    }
-                </MudNavGroup>
-            }
-
-            if (_canViewProducts || _canViewBrands)
-            {
-                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Management"]</MudText>
-                <MudNavGroup Title="@L["Catalog"]" Expanded Icon="@Icons.Filled.Storefront">
-                    @if (_canViewPackages)
-                    {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Outlined.Inventory2" Class="custom-nav-child">
-                            @L["Packages"]
-                        </MudNavLink>
-                    }
-                    @if (_canViewProducts)
-                    {
-                        @* <MudNavLink Match="NavLinkMatch.All" Href="/catalog/products" Icon="@Icons.Filled.ShoppingBag" Class="custom-nav-child">
-        @L["Products"]
-        </MudNavLink> *@
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.Engineering" Class="custom-nav-child">
-                            @L["Products"]
-                        </MudNavLink>
-                    }
-                    @if (_canViewBrands)
-                    {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.Discount" Class="custom-nav-child">
-                            @L["Brands"]
-                        </MudNavLink>
-                    }
-                    @if (_canViewCategories)
-                    {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.Category" Class="custom-nav-child">
-                            @L["Categories"]
-                        </MudNavLink>
-                    }
-                </MudNavGroup>
-            }
-        }
-
-        if (isAdmin)
-        {
-            @if (CanViewAdministrationGroup)
-            {
-                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Administration"]</MudText>
-
-                @if (_canViewUsers)
-                {
-                    <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.Filled.VerifiedUser">
-                        <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="custom-nav-child">@L["Users"]</MudNavLink>
-
-                        @if (_canViewInputOutputResources)
-                        {
-                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/administer/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="custom-nav-child">@L["Verify Files and Documents"]</MudNavLink>
-                        }
-                    </MudNavGroup>
-                }
-                @if (_canViewRoles)
-                {
-                    <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.EmojiPeople">@L["Roles"]</MudNavLink>
-                }
-                @if (_canViewTenants)
-                {
-                    <MudNavLink Href="/tenants" Icon="@Icons.Filled.GroupWork" Disabled="!_canViewTenants">@L["Tenants"]</MudNavLink>
-                }
-
-            }
-
-        }
     }
 
 </MudNavMenu>

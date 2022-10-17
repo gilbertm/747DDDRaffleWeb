@@ -1,10 +1,13 @@
-﻿@inject IStringLocalizer<MainLayoutAnon> L
+﻿@using System.Text.RegularExpressions;
+@inject IStringLocalizer<MainLayoutAnon> L
 
-<HeaderAnon />
+@inject NavigationManager NavigationManager
+
+<HeaderAnon CssClasses="@($"{_cssClasses}")" />
 
 <SliderAnon HideIfThesePages="about-us,get-started,contact-us,users,users/,login,loans,loans/,catalog,catalog/" OnHideChange=@( () => {} ) />
 
-<MudMainContent Class="d-flex">
+<MudMainContent Class="@($"d-flex {_cssClasses}")">
     <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
         @ChildContent
         <MudScrollToTop TopOffset="400" Style="z-index:2000;">
@@ -14,3 +17,29 @@
 </MudMainContent>
 
 <Footer />
+
+@code {
+
+    private string _currentUrl = default!;
+    private Uri _uri = default!;
+    private string _cssClasses = default!;
+
+    protected override void OnParametersSet()
+    {
+        _currentUrl = NavigationManager.Uri;
+
+        _uri = new Uri(_currentUrl);
+
+        if (_uri is { } && _uri.Segments.Count() > 1)
+        {
+
+            _cssClasses = _uri.Segments.ToList().ElementAt(1).ToString().ToLower();
+
+            _cssClasses = _cssClasses.Replace("/","");
+
+        } else
+        {
+            _cssClasses = "home";
+        }
+    }
+}
