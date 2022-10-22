@@ -15891,6 +15891,15 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? IsVerified { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("isAddressVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsAddressVerified { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isDocumentsVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsDocumentsVerified { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isRolePackageVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsRolePackageVerified { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? PackageId { get; set; } = default!;
 
@@ -15938,6 +15947,15 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? IsVerified { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isAddressVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsAddressVerified { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isDocumentsVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsDocumentsVerified { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isRolePackageVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsRolePackageVerified { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? PackageId { get; set; } = default!;

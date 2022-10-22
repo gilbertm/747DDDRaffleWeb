@@ -42,7 +42,7 @@ public partial class LendersUserInspectionView
 
     private async Task Submit()
     {
-        _appUserDto = AppDataService.GetAppUserDataTransferObject();
+        _appUserDto = AppDataService.AppUserDataTransferObject;
 
         if (_appUserDto is { })
         {

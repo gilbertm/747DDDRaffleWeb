@@ -7,7 +7,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Shared;
 public partial class BaseLayout
 {
     private ClientPreference? _themePreference;
-    private MudTheme _currentTheme = new LightTheme();
+    private MudTheme _currentTheme = new();
     private bool _themeDrawerOpen;
     private bool _rightToLeft;
 
@@ -39,7 +39,7 @@ public partial class BaseLayout
 
     private void SetCurrentTheme(ClientPreference themePreference)
     {
-        _currentTheme = themePreference.IsDarkMode ? new DarkTheme() : new LightTheme();
+        // _currentTheme = themePreference.IsDarkMode ? new DarkTheme() : new LightTheme();
         // _currentTheme.Palette.Primary = themePreference.PrimaryColor;
         // _currentTheme.Palette.Secondary = themePreference.SecondaryColor;
         // _currentTheme.LayoutProperties.DefaultBorderRadius = $"{themePreference.BorderRadius}px";

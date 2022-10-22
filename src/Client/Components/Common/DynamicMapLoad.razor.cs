@@ -1,5 +1,4 @@
-﻿using AspNetMonsters.Blazor.Geolocation.Custom;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
@@ -58,9 +57,11 @@ public partial class DynamicMapLoad
     }
     protected override async Task OnInitializedAsync()
     {
+        await AppDataService.InitializationAsync();
+
         _objRef = DotNetObjectReference.Create(this);
 
-        AppUserDto = AppDataService.GetAppUserDataTransferObject();
+        AppUserDto = AppDataService.AppUserDataTransferObject;
 
         await JSRuntime.InvokeVoidAsync("loadScript", "https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js", "head");
 
@@ -147,13 +148,17 @@ public partial class DynamicMapLoad
                 IsVerified = AppUserDto.IsVerified,
                 Latitude = AppUserDto.Latitude,
                 Longitude = AppUserDto.Longitude,
-                PackageId = AppUserDto.PackageId
+                PackageId = AppUserDto.PackageId,
+
+                // make it verified
+                IsAddressVerified = true,
+                IsDocumentsVerified = AppUserDto.IsDocumentsVerified,
+                IsRolePackageVerified = AppUserDto.IsRolePackageVerified
             };
 
             _ = await AppUsersClient.UpdateAsync(AppUserDto.Id, updateAppUserRequest);
         }
 
-        NavigationManager.NavigateTo("/account/rolepackage");
-        return;
+        NavigationManager.NavigateTo("/account/rolepackage", true);
     }
 }

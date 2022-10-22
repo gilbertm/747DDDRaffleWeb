@@ -5,8 +5,6 @@ namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
 public interface IAppDataService
 {
-    public AppUserDto GetAppUserDataTransferObject();
-
     public event Action? OnChange;
 
     public GeolocationPosition GetGeolocationPosition();

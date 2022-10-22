@@ -61,7 +61,7 @@ public partial class SpecificLoan
 
     protected override async Task OnInitializedAsync()
     {
-        _appUserDto = AppDataService.GetAppUserDataTransferObject();
+        _appUserDto = AppDataService.AppUserDataTransferObject;
 
         if (_appUserDto is not null)
         {

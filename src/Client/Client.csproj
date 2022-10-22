@@ -33,7 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AspNetMonsters.Blazor.Geolocation.Custom\AspNetMonsters.Blazor.Geolocation.Custom.csproj" />
         <ProjectReference Include="..\Client.Infrastructure\Client.Infrastructure.csproj" />
         <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>

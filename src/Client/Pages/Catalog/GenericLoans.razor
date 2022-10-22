@@ -8,9 +8,9 @@
 
 <EhulogTitle Title="@L["Loans"]" Description="@L["Manage Loans."]" />
 
-@if (_appUserDto is not null)
+@if (AppUserDto is not null)
 {
-    <CascadingValue Value="@_appUserDto" Name="__appUserDto">
+    <CascadingValue Value="@AppUserDto" Name="__appUserDto">
         @* @ref="_table" *@
         <EntityTable TEntity="LoanDto" TId="Guid" TRequest="LoanViewModel" Context="@Context" ExtraActions="@ExtraAction">
             <EditFormContent>
@@ -408,9 +408,9 @@
 
     protected RenderFragment<LoanDto> LoanTemplate => trail => __builder =>
     {
-        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppUserDto.Id)).FirstOrDefault();
 
-        if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Admin"))
+        if (!string.IsNullOrEmpty(AppUserDto.RoleName) && AppUserDto.RoleName.Equals("Admin"))
         {
             loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault();
         }
@@ -431,7 +431,7 @@
             </MudCardContent>
             <MudCardActions Class="text-center">
                 <MudButton DisableElevation="true" Class="mx-auto px-3" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ManageAccounts" Color="Color.Success">Manage</MudButton>
-                @if (_appUserDto is { })
+                @if (AppUserDto is { })
                 {
                     if (trail.LoanLenders is { })
                     {
@@ -439,7 +439,7 @@
 
                         if (loanLender is { })
                         {
-                            @if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Admin"))
+                            @if (!string.IsNullOrEmpty(AppUserDto.RoleName) && AppUserDto.RoleName.Equals("Admin"))
                             {
                                 <SpecificLoanLenderProfileQuickInfo LoanLender="@loanLender" />       
                             }
@@ -452,7 +452,7 @@
 
     protected RenderFragment<LoanDto> LoanDetailsTemplate => trail => __builder =>
     {
-        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppUserDto.Id)).FirstOrDefault();
 
         <MudPaper Class="pa-2 ma-2 text-left d-block" Elevation="0">
 
@@ -525,13 +525,13 @@
     {
         LoanLesseeDto _loanLesseeDto = default!;
 
-        @if (_appUserDto is not null)
+        @if (AppUserDto is not null)
         {
             bool isOwner = false;
 
             @if (trail.LoanLenders is not null)
             {
-                var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+                var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppUserDto.Id)).FirstOrDefault();
 
                 if (loanLender is { })
                 {
@@ -557,11 +557,11 @@
 
     protected RenderFragment<LoanDto> ExtraAction => trail => __builder =>
     {
-        @if (_appUserDto is not null)
+        @if (AppUserDto is not null)
         {
             if (trail.LoanLenders is not null)
             {
-                var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault();
+                var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppUserDto.Id)).FirstOrDefault();
 
                 if (loanLender is { })
                 {

@@ -1,5 +1,4 @@
 using System.Globalization;
-using AspNetMonsters.Blazor.Geolocation.Custom;
 using EHULOG.BlazorWebAssembly.Client;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
@@ -17,10 +16,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddClientServices(builder.Configuration);
 builder.Services.AddGeolocationServices();
 builder.Services.AddMapBoxServices(options => options.UseKey(builder.Configuration["MapBox:Key"]));
-// builder.Services.AddScoped<LocationService>();
 builder.Services.AddTransient<IAppDataService, AppDataService>();
 builder.Services.AddScoped<AppDataService>();
-
 
 var host = builder.Build();
 

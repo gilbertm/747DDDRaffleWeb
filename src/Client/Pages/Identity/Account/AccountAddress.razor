@@ -3,6 +3,5 @@
 @inject IStringLocalizer<AccountAddress> L
 
 <EhulogTitle Title="@L["Address"]" Description="@L["Manage account address. Make sure that City, Region and Country are accurate as this will be your permanent application location"]" />
-<MudAlert Severity="Severity.Warning">Account security update and changes requires relogin.</MudAlert>
-
+<MudText Typo="Typo.caption">Resources will be displayed according to your location settings. This setting can must be provided on first usages, failure may result to unwanted results.</MudText>
 <DynamicMapLoad />

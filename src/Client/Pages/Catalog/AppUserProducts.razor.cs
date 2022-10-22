@@ -47,7 +47,7 @@ public partial class AppUserProducts
 
     protected override async Task OnInitializedAsync()
     {
-        _appUserDto = AppDataService.GetAppUserDataTransferObject();
+        _appUserDto = AppDataService.AppUserDataTransferObject;
 
         // consolidate, add all system products, default products
         // on appuser products, so that the user can make use of them in making loans

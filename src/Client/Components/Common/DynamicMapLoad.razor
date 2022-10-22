@@ -70,10 +70,14 @@
                 </MudCard>
             </MudCardContent>
             <MudCardActions Class="pb-4 pl-4">
-                <MudGrid Justify="Justify.FlexEnd">
-                    <MudButton Variant="Variant.Filled" Color="Color.Success" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Class="d-inline-flex ml-auto">
-                        @L["Save"]
-                    </MudButton>
+                <MudGrid Justify="Justify.Center">
+                    @if (!AppUserDto.IsAddressVerified)
+                    {
+                        <MudButton Variant="Variant.Filled" DisableElevation="true" onmouseout="@(() => HoverSubmit(true))" onmouseover="@(() => HoverSubmit(false))" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" IconColor="Color.Success" Class="@_submitHoverClass" Style="@($"color:{Colors.Shades.Black};")">
+                                @L["Save"]
+                        </MudButton><br />
+                    }
+                    <MudAlert Severity="Severity.Warning">You can't modify your location once registered.</MudAlert>
                 </MudGrid>
             </MudCardActions>
         </MudCard>
@@ -121,4 +125,14 @@ else
 
 @code {
     private CustomValidation? _customValidation;
+
+    private string _submitHoverClass = "d-inline-flex mx-auto py-2 px-5 ";
+
+    private void HoverSubmit(bool isOut = false)
+    {
+        if (!isOut)
+        {
+            _submitHoverClass = "d-inline-flex mx-auto py-2 px-5 border-solid";
+        }
+    }
 }

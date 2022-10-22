@@ -8,14 +8,14 @@
 
 <EhulogTitle Title="@L["Loans"]" Description="@L["Browse"]" />
 
-@if (_appUserDto is not null)
+@if (AppUserDto is not null)
 {
-    if (!(new[] { "Lender", "Lessee" }.Contains(_appUserDto.RoleName)))
+    if (!(new[] { "Lender", "Lessee" }.Contains(AppUserDto.RoleName)))
     {
         <MudText Typo="Typo.body2" Class="text-center mb-5" Color="Color.Warning">Please complete your account profile. Services are disabled not until fulfilled.</MudText>
     }
 
-    <CascadingValue Value="@_appUserDto" Name="__appUserDto">
+    <CascadingValue Value="@AppUserDto" Name="__appUserDto">
         <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
     </CascadingValue>
 }

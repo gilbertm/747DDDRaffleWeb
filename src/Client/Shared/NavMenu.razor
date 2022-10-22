@@ -13,9 +13,35 @@
     }
     <MudNavGroup Title="@L["Account"]" Expanded Icon="@Icons.Filled.ManageAccounts">
         <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.Filled.AssignmentInd" Class="custom-nav-child">@L["Profile"]</MudNavLink>
-        @* <MudNavLink Match="NavLinkMatch.All" Href="/account/address" Icon="@Icons.Filled.Map" Class="custom-nav-child">@L["Address"]</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" Icon="@Icons.Filled.Fingerprint" Class="custom-nav-child">@L["Role and Package"]</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.All" Href="/account/document" Icon="@Icons.Filled.Face" Class="custom-nav-child">@L["Documents"]</MudNavLink> *@
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/address" ForceLoad="true" Icon="@Icons.Filled.Map" Class="custom-nav-child">@L["Address"] 
+            @if (AppUserDto != default) {
+                if (!AppUserDto.IsAddressVerified)
+                {
+
+                    <MudIcon Icon="@Icons.Filled.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" />
+                }
+            }
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/rolepackage" ForceLoad="true" Icon="@Icons.Filled.Fingerprint" Class="custom-nav-child">@L["Role and Package"] 
+            @if (AppUserDto != default)
+            {
+                if (!AppUserDto.IsRolePackageVerified)
+                {
+
+                    <MudIcon Icon="@Icons.Filled.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" />
+                }
+            }
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" Href="/account/document" ForceLoad="true" Icon="@Icons.Filled.Face" Class="custom-nav-child">@L["Documents"] 
+            @if (AppUserDto != default)
+            {
+                if (!AppUserDto.IsDocumentsVerified)
+                {
+
+                    <MudIcon Icon="@Icons.Filled.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" />
+                }
+            }
+        </MudNavLink>
     </MudNavGroup>
 
 

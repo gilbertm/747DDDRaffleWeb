@@ -17,7 +17,7 @@ public partial class NavMenu
     [Inject]
     public AppDataService AppDataService { get; set; } = default!;
 
-    private AppUserDto _appUserDto { get; set; } = default!;
+    private AppUserDto AppUserDto { get; set; } = default!;
 
     private string? _hangfireUrl;
     private bool _canViewHangfire;
@@ -35,7 +35,9 @@ public partial class NavMenu
 
     protected override async Task OnParametersSetAsync()
     {
-        _appUserDto = AppDataService.GetAppUserDataTransferObject();
+        await AppDataService.InitializationAsync();
+
+        AppUserDto = AppDataService.AppUserDataTransferObject;
 
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
         var user = (await AuthState).User;

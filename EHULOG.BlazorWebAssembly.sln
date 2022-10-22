@@ -35,8 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.Tests", "Client.Test
 		{D5DB6E8A-0161-4EF1-B4D9-467E9A7EF9A7} = {D5DB6E8A-0161-4EF1-B4D9-467E9A7EF9A7}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetMonsters.Blazor.Geolocation.Custom", "src\AspNetMonsters.Blazor.Geolocation.Custom\AspNetMonsters.Blazor.Geolocation.Custom.csproj", "{A6215E71-EA16-4322-9DE7-A55C242935B2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,10 +61,6 @@ Global
 		{582755B0-840F-4658-9154-6B5460D64649}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{582755B0-840F-4658-9154-6B5460D64649}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{582755B0-840F-4658-9154-6B5460D64649}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A6215E71-EA16-4322-9DE7-A55C242935B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6215E71-EA16-4322-9DE7-A55C242935B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6215E71-EA16-4322-9DE7-A55C242935B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6215E71-EA16-4322-9DE7-A55C242935B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

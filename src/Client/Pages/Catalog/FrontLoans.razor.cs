@@ -32,7 +32,7 @@ public partial class FrontLoans
 
     protected bool Loading { get; set; }
 
-    private AppUserDto? _appUserDto { get; set; }
+    private AppUserDto? AppUserDto { get; set; }
 
     private List<AppUserProductDto> appUserProducts { get; set; } = default!;
 
@@ -40,62 +40,67 @@ public partial class FrontLoans
 
     protected override async Task OnInitializedAsync()
     {
-        _appUserDto = await AppDataService.InitializationAsync();
+        await AppDataService.InitializationAsync();
 
-        if (_appUserDto is not null)
+        AppUserDto = AppDataService.AppUserDataTransferObject;
+
+        if (AppDataService != default)
         {
-            if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
+            if (AppUserDto is not null)
             {
-                NavigationManager.NavigateTo("/catalog/all/loans", true);
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(_appUserDto.HomeCountry))
-            {
-                var countryProvider = new CountryProvider();
-                var countryInfo = countryProvider.GetCountryByName(_appUserDto.HomeCountry);
-
-                if (countryInfo is { })
+                if (!string.IsNullOrEmpty(AppUserDto.RoleName) && AppUserDto.RoleName.Equals("Lender"))
                 {
-                    if (countryInfo.Currencies.Count() > 0)
-                    {
-                        _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
-                    }
-
+                    NavigationManager.NavigateTo("/catalog/all/loans", true);
+                    return;
                 }
-            }
 
-            
+                if (!string.IsNullOrEmpty(AppUserDto.HomeCountry))
+                {
+                    var countryProvider = new CountryProvider();
+                    var countryInfo = countryProvider.GetCountryByName(AppUserDto.HomeCountry);
 
-            Context = new EntityContainerContext<LoanDto>(
-                   searchFunc: async filter =>
-                   {
-                       var loanFilter = filter.Adapt<SearchLoansLesseeRequest>();
+                    if (countryInfo is { })
+                    {
+                        if (countryInfo.Currencies.Count() > 0)
+                        {
+                            _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                        }
 
-                       loanFilter.Status = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Payment };
+                    }
+                }
 
-                       var result = await LoansClient.SearchLesseeAsync(loanFilter);
 
-                       foreach (var item in result.Data)
+
+                Context = new EntityContainerContext<LoanDto>(
+                       searchFunc: async filter =>
                        {
-                           var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
+                           var loanFilter = filter.Adapt<SearchLoansLesseeRequest>();
 
-                           if (loanLender is not null && loanLender.Product is not null)
+                           loanFilter.Status = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Payment };
+
+                           var result = await LoansClient.SearchLesseeAsync(loanFilter);
+
+                           foreach (var item in result.Data)
                            {
+                               var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
 
-                               var image = await InputOutputResourceClient.GetAsync(loanLender.ProductId);
-
-                               if (image.Count() > 0)
+                               if (loanLender is not null && loanLender.Product is not null)
                                {
 
-                                   loanLender.Product.Image = image.First();
+                                   var image = await InputOutputResourceClient.GetAsync(loanLender.ProductId);
+
+                                   if (image.Count() > 0)
+                                   {
+
+                                       loanLender.Product.Image = image.First();
+                                   }
                                }
                            }
-                       }
 
-                       return result.Adapt<EntityContainerPaginationResponse<LoanDto>>();
-                   },
-                   template: BodyTemplate);
+                           return result.Adapt<EntityContainerPaginationResponse<LoanDto>>();
+                       },
+                       template: BodyTemplate);
+            }
         }
     }
 }
