@@ -19,16 +19,24 @@ public partial class Document
 {
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
+
     [Inject]
     protected IAuthenticationService AuthService { get; set; } = default!;
+
     [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
+
+    [Inject]
+    protected AppDataService AppDataService { get; set; } = default!;
+    [Inject]
+    private IAppUsersClient AppUsersClient { get; set; } = default!;
+
     [Inject]
     protected IDialogService Dialog { get; set; } = default!;
 
-    private string? UserId { get; set; }
-
     private List<ForUploadFile> ForUploadFiles { get; set; } = new();
+
+    private UpdateAppUserRequest UpdateAppUserRequest { get; set; } = default!;
 
     private bool PassPortCompleted { get; set; } = false;
     private bool NationalIdCompleted { get; set; } = false;
@@ -41,15 +49,15 @@ public partial class Document
 
     protected override async Task OnInitializedAsync()
     {
-        if ((await AuthState).User is { } user)
-        {
-            UserId = user.GetUserId();
+        await AppDataService.InitializationAsync();
 
-            if (UserId is not null)
+        if (AppDataService != default && AppDataService.AppUser != default)
+        {
+            if (AppDataService.AppUser.ApplicationUserId != default)
             {
                 /* current uploaded but not verified, this happens when the user uploads files */
                 Guid guidUserId = default!;
-                Guid.TryParse(UserId, out guidUserId);
+                Guid.TryParse(AppDataService.AppUser.ApplicationUserId, out guidUserId);
                 var referenceIdIOResources = await InputOutputResourceClient.GetAsync(guidUserId);
 
                 if (referenceIdIOResources is not null)
@@ -87,7 +95,7 @@ public partial class Document
                     {
                         FileIdentifier = (InputOutputResourceDocumentType)i,
                         InputOutputResourceId = string.Empty,
-                        UserIdReferenceId = UserId,
+                        UserIdReferenceId = AppDataService.AppUser.ApplicationUserId,
                         InputOutputResourceImgUrl = string.Empty,
                         isVerified = false,
                         isTemporarilyUploaded = false,
@@ -114,17 +122,17 @@ public partial class Document
                 switch (fuf.FileIdentifier)
                 {
                     case InputOutputResourceDocumentType.Passport:
-                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().Disabled = fuf.isTemporarilyUploaded ? false : true;
-                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
-                    break;
+                        forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).Disabled = !fuf.isTemporarilyUploaded; // toggle disabled upload box, if there's temporary uploaded document
+                        forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
+                        break;
                     case InputOutputResourceDocumentType.NationalId:
-                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().Disabled = fuf.isTemporarilyUploaded ? false : true; ;
-                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
-                    break;
+                        forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).Disabled = !fuf.isTemporarilyUploaded; // toggle disabled upload box, if there's temporary uploaded document
+                        forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
+                        break;
                     case InputOutputResourceDocumentType.GovernmentId:
-                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().Disabled = fuf.isTemporarilyUploaded ? false : true;
-                        forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
-                    break;
+                        forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).Disabled = !fuf.isTemporarilyUploaded; // toggle disabled upload box, if there's temporary uploaded document
+                        forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).Opacity = fuf.isTemporarilyUploaded ? "1" : "0.3";
+                        break;
 
                 }
             }
@@ -136,62 +144,63 @@ public partial class Document
 
         bool isSubmitForVerification = false;
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.Passport)).First().isTemporarilyUploaded &&
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().isTemporarilyUploaded)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.Passport)).isTemporarilyUploaded &&
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).isTemporarilyUploaded)
         {
             validDocuments++;
         }
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.Passport)).First().isVerified &&
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).First().isVerified)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.Passport)).isVerified &&
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.PassportBack)).isVerified)
         {
             verifiedDocuments++;
         }
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalId)).First().isTemporarilyUploaded &&
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().isTemporarilyUploaded)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalId)).isTemporarilyUploaded &&
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).isTemporarilyUploaded)
         {
             validDocuments++;
         }
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalId)).First().isVerified &&
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).First().isVerified)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalId)).isVerified &&
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.NationalIdBack)).isVerified)
         {
             verifiedDocuments++;
         }
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentId)).First().isTemporarilyUploaded &&
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().isTemporarilyUploaded)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentId)).isTemporarilyUploaded &&
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).isTemporarilyUploaded)
         {
             validDocuments++;
         }
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentId)).First().isVerified &&
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).First().isVerified)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentId)).isVerified &&
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.GovernmentIdBack)).isVerified)
         {
             verifiedDocuments++;
         }
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().isTemporarilyUploaded)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).isTemporarilyUploaded)
         {
             isSubmitForVerification = true;
         }
 
-        if (forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().isVerified)
+        if (forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).isVerified)
         {
             verifiedDocuments++;
         }
 
         if (validDocuments > 1)
         {
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().Disabled = false;
-            forUploadFiles.Where(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).First().Opacity = "1";
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).Disabled = false;
+            forUploadFiles.First(fuf => fuf.FileIdentifier.HasValue && fuf.FileIdentifier.Equals(InputOutputResourceDocumentType.SelfieWithAtLeastOneCard)).Opacity = "1";
         }
 
         if (validDocuments > 1 && isSubmitForVerification)
         {
             SubmitForVerficationDisabled = false;
-        } else
+        }
+        else
         {
             SubmitForVerficationDisabled = true;
         }
@@ -206,24 +215,48 @@ public partial class Document
 
     private async Task UpdateProfileAsync()
     {
-        
+        DialogOptions noHeader = new DialogOptions() { NoHeader = true };
+        var result = await DialogService.Show<DocumentsForVerification>("For Verification", noHeader).Result;
 
-        await Task.Run(() =>
+        if (!result.Cancelled)
         {
-            /*
-        * TODO:// 
-        * a. notification to all admins that can check and verify the documents
-        * b. flag down that the documents is for checking
-        * 
-        * Submitting will trigger verification. Informing the admins.
-        * 
-        */
-            Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
+            if ((bool)(result.Data ?? false))
+            {
+                UpdateAppUsersDocumentsForAdminVerification();
+            }
+        }
+    }
 
-            DialogOptions noHeader = new DialogOptions() { NoHeader = true };
-            Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
+    private async Task UpdateAppUsersDocumentsForAdminVerification()
+    {
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
 
-            return;
-        });
+                UpdateAppUserRequest = new()
+                {
+                    Id = AppDataService.AppUser.Id,
+                    ApplicationUserId = AppDataService.AppUser.ApplicationUserId,
+
+                    //// submitted but yet to be verified
+                    DocumentsStatus = VerificationStatus.Submitted,
+                };
+
+                if (await ApiHelper.ExecuteCallGuardedAsync(() => AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, UpdateAppUserRequest), Snackbar, null, L["AppUser updated. "]) is Guid guid)
+                {
+                    Snackbar.Add(L["For verification images submitted."], Severity.Success);
+
+                    var timer = new Timer(
+                        new TimerCallback(_ =>
+                        {
+                            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                        }),
+                        null,
+                        2000,
+                        2000);
+                }
+            }
+        }
     }
 }

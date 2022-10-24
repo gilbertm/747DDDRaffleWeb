@@ -25,6 +25,17 @@
                             </MudItem>
 
                         }
+                    } else
+                    {
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudPaper Elevation="1" Class="mb-5 px-5 py-5">
+                                    <MudText Typo="Typo.h5" Color="Color.Surface" Align="Align.Center">
+                                        No available loans in this location. Be the first, be a good <MudLink Typo="Typo.h5" Href="/account/login"><strong>lender</strong></MudLink>. See <MudLink Typo="Typo.h5" Href="/loan/lending/benefits"><strong>benefits</strong></MudLink>.
+                                    </MudText>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
                     }
                 </MudPaper>
             </EhulogContainer>

@@ -55,7 +55,7 @@ public class AppDataService : IAppDataService
 
     }
 
-    public Task Initialization { get; private set; }
+    public Task Initialization { get; private set; } = default!;
 
     private readonly PositionOptions _options = new()
     {
@@ -66,7 +66,7 @@ public class AppDataService : IAppDataService
 
     private AppUserDto? _appUserDto;
 
-    public AppUserDto AppUserDataTransferObject
+    public AppUserDto AppUser
     {
         get
         {
@@ -105,175 +105,179 @@ public class AppDataService : IAppDataService
 
             string? userId = userClaimsPrincipal.GetUserId() ?? string.Empty;
 
-            AppUserDataTransferObject = await AppUsersClient.GetAsync(userId);
-
-            if (AppUserDataTransferObject != default)
+            if (!string.IsNullOrEmpty(userId))
             {
-                Console.WriteLine("------------------------ AppDataService - AppUserDataTransferObject");
+                AppUser = await AppUsersClient.GetAsync(userId);
 
-                if (AppUserDataTransferObject.Id == Guid.Empty || string.IsNullOrEmpty(AppUserDataTransferObject.ApplicationUserId))
+                if (AppUser != default)
                 {
-                    IsNewUser = true;
+                    Console.WriteLine("------------------------ AppDataService - AppUser");
 
-                    // create the app user defaults
-                    var createAppUserRequest = new CreateAppUserRequest
+                    if (AppUser.Id == Guid.Empty || string.IsNullOrEmpty(AppUser.ApplicationUserId))
                     {
-                        ApplicationUserId = userId ?? default!
-                    };
+                        IsNewUser = true;
 
-                    var guid = await AppUsersClient.CreateAsync(createAppUserRequest);
+                        // create the app user defaults
+                        var createAppUserRequest = new CreateAppUserRequest
+                        {
+                            ApplicationUserId = userId ?? default!
+                        };
 
-                    /* NOT applicable: assign default role
-                       role is basic at this stage, so this part is complete
-                       the user will be opted to select between lesser and lessee on the role and packages dashboard
+                        var guid = await AppUsersClient.CreateAsync(createAppUserRequest);
 
-                       NOT applicable: assign default package
-                       as the package is subject to the role selection, this can be done during the dashboard selection/completion states */
+                        /* NOT applicable: assign default role
+                           role is basic at this stage, so this part is complete
+                           the user will be opted to select between lesser and lessee on the role and packages dashboard
 
-                    AppUserDataTransferObject = await AppUsersClient.GetAsync(userId);
-                }
+                           NOT applicable: assign default package
+                           as the package is subject to the role selection, this can be done during the dashboard selection/completion states */
 
-                if (IsNewUser || (string.IsNullOrEmpty(AppUserDataTransferObject.Latitude) && string.IsNullOrEmpty(AppUserDataTransferObject.Longitude)))
-                {
-                    if (_position is { })
+                        AppUser = await AppUsersClient.GetAsync(userId);
+                    }
+
+                    if (IsNewUser || (string.IsNullOrEmpty(AppUser.Latitude) && string.IsNullOrEmpty(AppUser.Longitude)))
                     {
-                        AppUserDataTransferObject.Longitude = _position.Coords.Longitude.ToString();
-                        AppUserDataTransferObject.Latitude = _position.Coords.Latitude.ToString();
-
-                        var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
+                        if (_position is { })
                         {
-                            Coordinate = new Geo.MapBox.Models.Coordinate()
-                            {
-                                Latitude = Convert.ToDouble(AppUserDataTransferObject.Latitude),
-                                Longitude = Convert.ToDouble(AppUserDataTransferObject.Longitude)
-                            },
-                            EndpointType = Geo.MapBox.Enums.EndpointType.Places
-                        });
+                            AppUser.Longitude = _position.Coords.Longitude.ToString();
+                            AppUser.Latitude = _position.Coords.Latitude.ToString();
 
-                        if (responseReverseGeocoding is { })
-                        {
-                            if (responseReverseGeocoding.Features.Count > 0)
+                            var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
                             {
-                                foreach (var f in responseReverseGeocoding.Features)
+                                Coordinate = new Geo.MapBox.Models.Coordinate()
                                 {
-                                    if (f.Contexts.Count > 0)
-                                    {
-                                        foreach (var c in f.Contexts)
-                                        {
-                                            // System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
-                                            // System.Diagnostics.Debug.Write(c.ContextText);
+                                    Latitude = Convert.ToDouble(AppUser.Latitude),
+                                    Longitude = Convert.ToDouble(AppUser.Longitude)
+                                },
+                                EndpointType = Geo.MapBox.Enums.EndpointType.Places
+                            });
 
-                                            if (!string.IsNullOrEmpty(c.Id))
+                            if (responseReverseGeocoding is { })
+                            {
+                                if (responseReverseGeocoding.Features.Count > 0)
+                                {
+                                    foreach (var f in responseReverseGeocoding.Features)
+                                    {
+                                        if (f.Contexts.Count > 0)
+                                        {
+                                            foreach (var c in f.Contexts)
                                             {
-                                                switch (c.Id)
+                                                // System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
+                                                // System.Diagnostics.Debug.Write(c.ContextText);
+
+                                                if (!string.IsNullOrEmpty(c.Id))
                                                 {
-                                                    case string s when s.Contains("country"):
-                                                        AppUserDataTransferObject.HomeCountry = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("region"):
-                                                        AppUserDataTransferObject.HomeRegion = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("postcode"):
-                                                        AppUserDataTransferObject.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("district"):
-                                                        AppUserDataTransferObject.HomeCountry += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("place"):
-                                                        AppUserDataTransferObject.HomeCity = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("locality"):
-                                                        AppUserDataTransferObject.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("neighborhood"):
-                                                        AppUserDataTransferObject.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("address"):
-                                                        AppUserDataTransferObject.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("poi"):
-                                                        AppUserDataTransferObject.HomeAddress += c.ContextText[0].Text;
-                                                        break;
+                                                    switch (c.Id)
+                                                    {
+                                                        case string s when s.Contains("country"):
+                                                            AppUser.HomeCountry = c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("region"):
+                                                            AppUser.HomeRegion = c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("postcode"):
+                                                            AppUser.HomeAddress += c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("district"):
+                                                            AppUser.HomeCountry += c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("place"):
+                                                            AppUser.HomeCity = c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("locality"):
+                                                            AppUser.HomeAddress += c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("neighborhood"):
+                                                            AppUser.HomeAddress += c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("address"):
+                                                            AppUser.HomeAddress += c.ContextText[0].Text;
+                                                            break;
+                                                        case string s when s.Contains("poi"):
+                                                            AppUser.HomeAddress += c.ContextText[0].Text;
+                                                            break;
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
-                                    if (f.Center is { })
-                                    {
-                                        AppUserDataTransferObject.Latitude = f.Center.Latitude.ToString();
-                                        AppUserDataTransferObject.Longitude = f.Center.Longitude.ToString();
-                                    }
+                                        if (f.Center is { })
+                                        {
+                                            AppUser.Latitude = f.Center.Latitude.ToString();
+                                            AppUser.Longitude = f.Center.Longitude.ToString();
+                                        }
 
-                                    if (f.Properties.Address is { })
-                                    {
-                                        AppUserDataTransferObject.HomeAddress += f.Properties.Address;
+                                        if (f.Properties.Address is { })
+                                        {
+                                            AppUser.HomeAddress += f.Properties.Address;
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        var updateAppUserRequest = new UpdateAppUserRequest
+                        {
+                            ApplicationUserId = AppUser.ApplicationUserId,
+                            HomeAddress = AppUser.HomeAddress,
+                            HomeCity = AppUser.HomeCity,
+                            HomeCountry = AppUser.HomeCountry,
+                            HomeRegion = AppUser.HomeRegion,
+                            Id = AppUser.Id,
+                            IsVerified = AppUser.IsVerified,
+                            Latitude = AppUser.Latitude,
+                            Longitude = AppUser.Longitude,
+                            PackageId = AppUser.PackageId
+                        };
+
+                        var guid = await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequest);
                     }
 
-                    var updateAppUserRequest = new UpdateAppUserRequest
+                    // get application user role, the selected if exists
+                    // if not just assign the other roles
+                    // this is used for checking on some parts of the system.
+                    var userRoles = await UsersClient.GetRolesAsync(userId);
+                    if (userRoles != null)
                     {
-                        ApplicationUserId = AppUserDataTransferObject.ApplicationUserId,
-                        HomeAddress = AppUserDataTransferObject.HomeAddress,
-                        HomeCity = AppUserDataTransferObject.HomeCity,
-                        HomeCountry = AppUserDataTransferObject.HomeCountry,
-                        HomeRegion = AppUserDataTransferObject.HomeRegion,
-                        Id = AppUserDataTransferObject.Id,
-                        IsVerified = AppUserDataTransferObject.IsVerified,
-                        Latitude = AppUserDataTransferObject.Latitude,
-                        Longitude = AppUserDataTransferObject.Longitude,
-                        PackageId = AppUserDataTransferObject.PackageId
-                    };
-
-                    var guid = await AppUsersClient.UpdateAsync(AppUserDataTransferObject.Id, updateAppUserRequest);
-                }
-
-                // get application user role, the selected if exists
-                // if not just assign the other roles
-                // this is used for checking on some parts of the system.
-                var userRoles = await UsersClient.GetRolesAsync(userId);
-                if (userRoles != null)
-                {
-                    if (!string.IsNullOrEmpty(AppUserDataTransferObject.RoleId))
-                    {
-                        if (_appUserDto is { })
+                        if (!string.IsNullOrEmpty(AppUser.RoleId))
                         {
-                            var userRole = userRoles.FirstOrDefault(ur => (ur.RoleId is not null) && ur.RoleId.Equals(_appUserDto.RoleId) && ur.Enabled);
-
-                            if (userRole is not null)
+                            if (_appUserDto is { })
                             {
-                                AppUserDataTransferObject.RoleId = userRole.RoleId;
-                                AppUserDataTransferObject.RoleName = userRole.RoleName;
+                                var userRole = userRoles.FirstOrDefault(ur => (ur.RoleId is not null) && ur.RoleId.Equals(AppUser.RoleId) && ur.Enabled);
+
+                                if (userRole is not null)
+                                {
+                                    AppUser.RoleId = userRole.RoleId;
+                                    AppUser.RoleName = userRole.RoleName;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var lenderOrLessee = userRoles.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
+                            if (lenderOrLessee.Count == 1)
+                            {
+                                // assigned properly with one application role
+                                AppUser.RoleId = lenderOrLessee[0].RoleId;
+                                AppUser.RoleName = lenderOrLessee[0].RoleName;
+                            }
+
+                            var basic = userRoles.Where(r => (new string[] { "Basic" }).Contains(r.RoleName) && r.Enabled).ToList();
+                            if (basic.Count > 0)
+                            {
+                                AppUser.RoleId = basic[0].RoleId;
+                                AppUser.RoleName = basic[0].RoleName;
+                            }
+
+                            var admin = userRoles.Where(r => (new string[] { "Admin" }).Contains(r.RoleName) && r.Enabled).ToList();
+                            if (admin.Count > 0)
+                            {
+                                AppUser.RoleId = admin[0].RoleId;
+                                AppUser.RoleName = admin[0].RoleName;
                             }
                         }
                     }
-                    else
-                    {
-                        var lenderOrLessee = userRoles.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
-                        if (lenderOrLessee.Count == 1)
-                        {
-                            // assigned properly with one application role
-                            AppUserDataTransferObject.RoleId = lenderOrLessee[0].RoleId;
-                            AppUserDataTransferObject.RoleName = lenderOrLessee[0].RoleName;
-                        }
 
-                        var basic = userRoles.Where(r => (new string[] { "Basic" }).Contains(r.RoleName) && r.Enabled).ToList();
-                        if (basic.Count > 0)
-                        {
-                            AppUserDataTransferObject.RoleId = basic[0].RoleId;
-                            AppUserDataTransferObject.RoleName = basic[0].RoleName;
-                        }
-
-                        var admin = userRoles.Where(r => (new string[] { "Admin" }).Contains(r.RoleName) && r.Enabled).ToList();
-                        if (admin.Count > 0)
-                        {
-                            AppUserDataTransferObject.RoleId = admin[0].RoleId;
-                            AppUserDataTransferObject.RoleName = admin[0].RoleName;
-                        }
-                    }
                 }
 
             }
@@ -304,6 +308,8 @@ public class AppDataService : IAppDataService
     {
         _positionError = positionError;
         NotifyDataChanged();
+
     }
+
     private void NotifyDataChanged() => OnChange?.Invoke();
 }

@@ -74,12 +74,8 @@ public partial class EntityContainer<TEntity>
             PageSize = 12
         };
 
-
         return filter;
     }
 
-    protected async override Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JS.InvokeVoidAsync("dotNetJS.containerGrid");
-    }
+    protected async override Task OnAfterRenderAsync(bool firstRender) => await JS.InvokeVoidAsync("dotNetJS.containerGrid");
 }

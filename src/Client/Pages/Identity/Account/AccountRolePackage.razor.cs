@@ -71,13 +71,13 @@ public partial class AccountRolePackage
 
         if (AppDataService != default)
         {
-            if (AppDataService.AppUserDataTransferObject != default)
+            if (AppDataService.AppUser != default)
             {
                 // the current package
-                // TODOL: this will handle changes of subscription
-                OldPackage = AppDataService.AppUserDataTransferObject.PackageId;
+                // TODO: this will handle changes of subscription
+                OldPackage = AppDataService.AppUser.PackageId;
 
-                if (!AppDataService.AppUserDataTransferObject.PackageId.Equals(default!))
+                if (!AppDataService.AppUser.PackageId.Equals(default!))
                 {
                     // selecting a different package
                     // TODO: to be handled
@@ -86,7 +86,7 @@ public partial class AccountRolePackage
                 }
 
                 // process
-                if (AppDataService.AppUserDataTransferObject.Id != default)
+                if (AppDataService.AppUser.Id != default)
                 {
                     // package
                     if (await ApiHelper.ExecuteCallGuardedAsync(
@@ -107,7 +107,7 @@ public partial class AccountRolePackage
 
                             // application user package id match entry
                             // mark selected and visible
-                            bool selected = AppDataService.AppUserDataTransferObject.PackageId.Equals(package.Id);
+                            bool selected = AppDataService.AppUser.PackageId.Equals(package.Id);
 
                             _runningPackages.Add(new ExtendedPackageDto()
                             {
@@ -120,7 +120,7 @@ public partial class AccountRolePackage
 
                     // role
                     if (await ApiHelper.ExecuteCallGuardedAsync(
-                            () => UsersClient.GetRolesAsync(AppDataService.AppUserDataTransferObject.ApplicationUserId), Snackbar)
+                            () => UsersClient.GetRolesAsync(AppDataService.AppUser.ApplicationUserId), Snackbar)
                         is ICollection<UserRoleDto> responseRoles)
                     {
                         _userRolesList = responseRoles.ToList();
@@ -163,12 +163,12 @@ public partial class AccountRolePackage
                         // this role is non-changable
                         if (currentUserUsableEnabledRoles.Count == 1)
                         {
-                            if (AppDataService.AppUserDataTransferObject.RoleId != default! && !string.IsNullOrEmpty(AppDataService.AppUserDataTransferObject.RoleId))
+                            if (AppDataService.AppUser.RoleId != default! && !string.IsNullOrEmpty(AppDataService.AppUser.RoleId))
                             {
-                                if (!AppDataService.AppUserDataTransferObject.RoleId.Equals(currentUserUsableEnabledRoles[0].RoleId))
+                                if (!AppDataService.AppUser.RoleId.Equals(currentUserUsableEnabledRoles[0].RoleId))
                                 {
-                                    AppDataService.AppUserDataTransferObject.RoleId = currentUserUsableEnabledRoles[0].RoleId;
-                                    AppDataService.AppUserDataTransferObject.RoleName = currentUserUsableEnabledRoles[0].RoleName;
+                                    AppDataService.AppUser.RoleId = currentUserUsableEnabledRoles[0].RoleId;
+                                    AppDataService.AppUser.RoleName = currentUserUsableEnabledRoles[0].RoleName;
                                 }
                             }
 
@@ -194,23 +194,23 @@ public partial class AccountRolePackage
 
                             LockRole = true;
 
-                            if (AppDataService.AppUserDataTransferObject.PackageId != Guid.Empty && AppDataService.AppUserDataTransferObject.PackageId != default)
+                            if (AppDataService.AppUser.PackageId != Guid.Empty && AppDataService.AppUser.PackageId != default)
                             {
                                 // if package is already propagated
                                 // lock the package
                                 // but since package can be selected or resubscribed
                                 // the package can be updated and upgraded to the selected subscription
-                                if (_runningPackages.Find(rp => rp.PackageDto.Id.Equals(AppDataService.AppUserDataTransferObject.PackageId)) != default!)
+                                if (_runningPackages.Find(rp => rp.PackageDto.Id.Equals(AppDataService.AppUser.PackageId)) != default!)
                                 {
-                                    _runningPackages.First(rp => rp.PackageDto.Id.Equals(AppDataService.AppUserDataTransferObject.PackageId)).IsSelected = true;
-                                    _runningPackages.First(rp => rp.PackageDto.Id.Equals(AppDataService.AppUserDataTransferObject.PackageId)).IsVisible = true;
+                                    _runningPackages.First(rp => rp.PackageDto.Id.Equals(AppDataService.AppUser.PackageId)).IsSelected = true;
+                                    _runningPackages.First(rp => rp.PackageDto.Id.Equals(AppDataService.AppUser.PackageId)).IsVisible = true;
 
                                     LockPackage = true;
                                 }
                             }
                             else
                             {
-                                if ((AppDataService.AppUserDataTransferObject.RoleName is { }) && AppDataService.AppUserDataTransferObject.RoleName.Equals("Lender"))
+                                if ((AppDataService.AppUser.RoleName is { }) && AppDataService.AppUser.RoleName.Equals("Lender"))
                                 {
                                     ExtendedPackageDto defaultRecord = default!;
 
@@ -270,10 +270,10 @@ public partial class AccountRolePackage
 
     private void ClearRole()
     {
-        if (AppDataService.AppUserDataTransferObject is not null)
+        if (AppDataService.AppUser is not null)
         {
-            AppDataService.AppUserDataTransferObject.RoleId = default!;
-            AppDataService.AppUserDataTransferObject.RoleName = string.Empty;
+            AppDataService.AppUser.RoleId = default!;
+            AppDataService.AppUser.RoleName = string.Empty;
         }
 
         /* cancel selection */
@@ -328,10 +328,10 @@ public partial class AccountRolePackage
         {
             if (_runningRoles is { } && _runningRoles.Find(rr => rr.Equals(extendedRoleDto)) is { })
             {
-                if (AppDataService.AppUserDataTransferObject is { } && extendedRoleDto.RoleDto is { })
+                if (AppDataService.AppUser is { } && extendedRoleDto.RoleDto is { })
                 {
-                    AppDataService.AppUserDataTransferObject.RoleId = extendedRoleDto.RoleDto.Id;
-                    AppDataService.AppUserDataTransferObject.RoleName = extendedRoleDto.RoleDto.Name;
+                    AppDataService.AppUser.RoleId = extendedRoleDto.RoleDto.Id;
+                    AppDataService.AppUser.RoleName = extendedRoleDto.RoleDto.Name;
                 }
 
                 IsForSubmission = true;
@@ -349,13 +349,13 @@ public partial class AccountRolePackage
                 PackagesForRole(false, out _);
             }
 
-            if (AppDataService.AppUserDataTransferObject is { })
+            if (AppDataService.AppUser is { })
             {
                 // make default
                 // make it the default value of appuser's package id
                 if (_runningPackages is { } && _runningPackages.Find(p => p.IsVisible && p.PackageDto.IsDefault) is { })
                 {
-                    AppDataService.AppUserDataTransferObject.PackageId = _runningPackages.First(p => p.IsVisible && p.PackageDto.IsDefault).PackageDto.Id;
+                    AppDataService.AppUser.PackageId = _runningPackages.First(p => p.IsVisible && p.PackageDto.IsDefault).PackageDto.Id;
                 }
             }
         }
@@ -382,9 +382,9 @@ public partial class AccountRolePackage
     {
         LockPackage = false;
 
-        if (AppDataService.AppUserDataTransferObject is not null)
+        if (AppDataService.AppUser is not null)
         {
-            AppDataService.AppUserDataTransferObject.PackageId = default!;
+            AppDataService.AppUser.PackageId = default!;
         }
 
         foreach (var package in _runningPackages)
@@ -455,9 +455,9 @@ public partial class AccountRolePackage
             extendedPackageDto.IsSelected = true;
             extendedPackageDto.IsVisible = true;
 
-            if (AppDataService.AppUserDataTransferObject is not null && extendedPackageDto.PackageDto is not null)
+            if (AppDataService.AppUser is not null && extendedPackageDto.PackageDto is not null)
             {
-                AppDataService.AppUserDataTransferObject.PackageId = extendedPackageDto.PackageDto.Id;
+                AppDataService.AppUser.PackageId = extendedPackageDto.PackageDto.Id;
             }
         }
 
@@ -468,90 +468,102 @@ public partial class AccountRolePackage
 
     private void ClearReload()
     {
-        Navigation.NavigateTo("/account/rolepackage", true);
+        var timer = new Timer(
+            new TimerCallback(_ =>
+                {
+                    Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                }),
+            null,
+            2000,
+            2000);
     }
 
     private bool IsForSubmission { get; set; } = false;
 
     private async Task UpdateAppUserRoleAndPackage()
     {
-        if (AppDataService.AppUserDataTransferObject is not null)
+        if (AppDataService != default)
         {
-            /*
-       * role
-       * _runningRoles is greater than 1, if lessee or lender is not yet selected
-       */
-            if (!string.IsNullOrEmpty(AppDataService.AppUserDataTransferObject.RoleId) && _runningRoles.Count > 1)
+            if (AppDataService.AppUser != default)
             {
-                if (await ApiHelper.ExecuteCallGuardedAsync(
-                    () => UsersClient.GetRolesAsync(AppDataService.AppUserDataTransferObject.ApplicationUserId), Snackbar)
-                is ICollection<UserRoleDto> response)
+                /*
+           * role
+           * _runningRoles is greater than 1, if lessee or lender is not yet selected
+           */
+                if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleId) && _runningRoles.Count > 1)
                 {
-                    _userRolesList = response.ToList();
-
-                    _userRolesList.ForEach(userRole =>
-                    {
-                        if (!string.IsNullOrEmpty(userRole.RoleId) && userRole.RoleId.Equals(AppDataService.AppUserDataTransferObject.RoleId))
-                        {
-                            userRole.Enabled = true;
-                            AppDataService.AppUserDataTransferObject.RoleId = userRole.RoleId;
-                        }
-                        else
-                        {
-                            userRole.Enabled = false;
-                        }
-                    });
-
                     if (await ApiHelper.ExecuteCallGuardedAsync(
-                        () => UsersClient.AssignRolesAsync(AppDataService.AppUserDataTransferObject.ApplicationUserId, new UserRolesRequest
-                        {
-                            UserRoles = _userRolesList
-                        }),
-                        Snackbar,
-                        successMessage: L["Updated User Roles."]) is not null)
+                        () => UsersClient.GetRolesAsync(AppDataService.AppUser.ApplicationUserId), Snackbar)
+                    is ICollection<UserRoleDto> response)
                     {
+                        _userRolesList = response.ToList();
+
+                        _userRolesList.ForEach(userRole =>
+                        {
+                            if (!string.IsNullOrEmpty(userRole.RoleId) && userRole.RoleId.Equals(AppDataService.AppUser.RoleId))
+                            {
+                                userRole.Enabled = true;
+                                AppDataService.AppUser.RoleId = userRole.RoleId;
+                            }
+                            else
+                            {
+                                userRole.Enabled = false;
+                            }
+                        });
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(
+                            () => UsersClient.AssignRolesAsync(AppDataService.AppUser.ApplicationUserId, new UserRolesRequest
+                            {
+                                UserRoles = _userRolesList
+                            }),
+                            Snackbar,
+                            successMessage: L["Updated User Roles."]) is not null)
+                        {
+                        }
                     }
                 }
-            }
 
-            if (Guid.TryParse(AppDataService.AppUserDataTransferObject.PackageId.ToString(), out _) && _runningPackages.Count(p => p.IsSelected) == 1)
-            {
-                /******************************************************************************/
-                /******************************************************************************/
-
-                //TODO:// This needs to be IMPLEMENTED, MONETIZATION
-
-                /******************************************************************************/
-                /******************************************************************************/
-                /******************************************************************************/
-                /******************************************************************************/
-
-                /* create appuser */
-                UpdateAppUserRequest = new()
+                if (Guid.TryParse(AppDataService.AppUser.PackageId.ToString(), out _) && _runningPackages.Count(p => p.IsSelected) == 1)
                 {
-                    Id = AppDataService.AppUserDataTransferObject.Id,
-                    ApplicationUserId = AppDataService.AppUserDataTransferObject.ApplicationUserId,
-                    PackageId = AppDataService.AppUserDataTransferObject.PackageId
-                };
+                    // TODO:// This needs to be IMPLEMENTED, MONETIZATION
+                    /******************************************************************************/
+                    /******************************************************************************/
+                    /******************************************************************************/
+                    /******************************************************************************/
 
-                if (await ApiHelper.ExecuteCallGuardedAsync(
-                    () => AppUsersClient.UpdateAsync(AppDataService.AppUserDataTransferObject.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
-                {
-                    // Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
-                    // Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
+                    /* create appuser */
+                    UpdateAppUserRequest = new()
+                    {
+                        Id = AppDataService.AppUser.Id,
+                        ApplicationUserId = AppDataService.AppUser.ApplicationUserId,
+                        PackageId = AppDataService.AppUser.PackageId,
+                        RolePackageStatus = VerificationStatus.Submitted
+                    };
 
-                    // DialogOptions noHeader = new DialogOptions() { NoHeader = true };
-                    // Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
+                    if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
+                    {
+                        // Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
+                        // Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
 
-                    Snackbar.Add(L["Package updated. If paid subscription, ensure that you have fulfilled payment."], Severity.Success);
+                        // DialogOptions noHeader = new DialogOptions() { NoHeader = true };
+                        // Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
 
-                    Navigation.NavigateTo("/account/rolepackage", true);
+                        Snackbar.Add(L["Role and package submitted. If paid subscription, ensure that you have fulfilled payment."], Severity.Success);
 
-                    return;
+                        var timer = new Timer(
+                            new TimerCallback(_ =>
+                            {
+                                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                            }),
+                            null,
+                            2000,
+                            2000);
+                    }
                 }
             }
         }
 
-        Navigation.NavigateTo("/account", true);
+        Navigation.NavigateTo(Navigation.Uri, true);
     }
 }

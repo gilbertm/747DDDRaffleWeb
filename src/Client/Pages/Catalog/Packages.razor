@@ -98,7 +98,7 @@
     {
         var _imageUrl = string.IsNullOrEmpty(@trail.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.Image?.ImagePath);
 
-        <MudCard>
+        <MudCard Elevation="0">
             <MudCardContent>
                 @if (!string.IsNullOrEmpty(_imageUrl))
                 {

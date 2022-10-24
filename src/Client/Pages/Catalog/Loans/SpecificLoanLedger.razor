@@ -1,9 +1,9 @@
-﻿@if (_ledgerModel is not null && _ledgerModel.Count() > 0)
+﻿@if (LedgerModel is not null && LedgerModel.Count() > 0)
 {
     <MudText Typo="Typo.body1" Color="Color.Surface" Class="d-inline-block">Total </MudText>
-    <MudText Typo="Typo.h5" Color="Color.Success" Class="d-inline-block mb-3">@string.Format("{0:#,0.00}", _ledgerModel.Sum(s => s.AmountDue)) @Currency</MudText>
+    <MudText Typo="Typo.h5" Color="Color.Success" Class="d-inline-block mb-3">@string.Format("{0:#,0.00}", LedgerModel.Sum(s => s.AmountDue)) @Currency</MudText>
 
-    <MudTable Items="@_ledgerModel" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+    <MudTable Items="@LedgerModel" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
         <HeaderContent>
             <MudTh><MudText Typo="Typo.caption">No.</MudText></MudTh>
             <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>

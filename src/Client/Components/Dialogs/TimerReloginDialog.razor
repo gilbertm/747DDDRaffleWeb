@@ -7,7 +7,8 @@
     </DialogActions>
 </MudDialog>
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter]
     public int Seconds { get; set; } = 10;

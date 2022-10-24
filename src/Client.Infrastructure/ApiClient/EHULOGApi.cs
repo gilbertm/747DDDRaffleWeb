@@ -15517,14 +15517,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsVerified { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isAddressVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsAddressVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("addressStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus? AddressStatus { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isDocumentsVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsDocumentsVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("documentsStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus? DocumentsStatus { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isRolePackageVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsRolePackageVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("rolePackageStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus? RolePackageStatus { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid PackageId { get; set; } = default!;
@@ -15549,6 +15549,20 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("imageUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? ImageUrl { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum VerificationStatus
+    {
+
+        Initial = 0,
+
+        Submitted = 1,
+
+        Error = 2,
+
+        Verified = 100,
 
     }
 
@@ -15891,14 +15905,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? IsVerified { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isAddressVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsAddressVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("addressStatus", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus AddressStatus { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isDocumentsVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsDocumentsVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("documentsStatus", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus DocumentsStatus { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isRolePackageVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsRolePackageVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("rolePackageStatus", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus RolePackageStatus { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? PackageId { get; set; } = default!;
@@ -15948,14 +15962,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? IsVerified { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isAddressVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsAddressVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("addressStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus? AddressStatus { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isDocumentsVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsDocumentsVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("documentsStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus? DocumentsStatus { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isRolePackageVerified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsRolePackageVerified { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("rolePackageStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public VerificationStatus? RolePackageStatus { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? PackageId { get; set; } = default!;
@@ -16956,11 +16970,11 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public LoanStatus Status { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("isCollateral", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsCollateral { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("isCollateral", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsCollateral { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("infoCollateral", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string InfoCollateral { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("infoCollateral", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? InfoCollateral { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("ledgers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<LoanLedgerDto>? Ledgers { get; set; } = default!;

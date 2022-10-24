@@ -8,7 +8,8 @@ public partial class BaseLayout
 {
     private ClientPreference? _themePreference;
     private MudTheme _currentTheme = new();
-    private bool _themeDrawerOpen;
+
+    // private bool _themeDrawerOpen;
     private bool _rightToLeft;
 
     protected override async Task OnInitializedAsync()

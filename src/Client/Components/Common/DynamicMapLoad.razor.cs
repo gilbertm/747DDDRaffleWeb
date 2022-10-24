@@ -22,8 +22,6 @@ public partial class DynamicMapLoad
     [Inject]
     protected IJSRuntime JSRuntime { get; set; } = default!;
 
-    private AppUserDto? AppUserDto { get; set; }
-
     private DotNetObjectReference<DynamicMapLoad>? _objRef;
 
     private List<string> JsonLoadedScripts { get; set; } = new();
@@ -40,14 +38,18 @@ public partial class DynamicMapLoad
     [JSInvokable]
     public void ChangeAddressFromJS(string homeAddress, string homeCity, string homeCountry, string homeRegion, string latitude, string longitude)
     {
-        if (AppUserDto is not null)
+        if (AppDataService != default)
         {
-            AppUserDto.HomeAddress = homeAddress;
-            AppUserDto.HomeCity = homeCity;
-            AppUserDto.HomeCountry = homeCountry;
-            AppUserDto.HomeRegion = homeRegion;
-            AppUserDto.Latitude = latitude;
-            AppUserDto.Longitude = longitude;
+            if (AppDataService.AppUser != default)
+            {
+                AppDataService.AppUser.HomeAddress = homeAddress;
+                AppDataService.AppUser.HomeCity = homeCity;
+                AppDataService.AppUser.HomeCountry = homeCountry;
+                AppDataService.AppUser.HomeRegion = homeRegion;
+                AppDataService.AppUser.Latitude = latitude;
+                AppDataService.AppUser.Longitude = longitude;
+
+            }
         }
     }
 
@@ -55,13 +57,12 @@ public partial class DynamicMapLoad
     {
         _objRef?.Dispose();
     }
+
     protected override async Task OnInitializedAsync()
     {
-        await AppDataService.InitializationAsync();
-
         _objRef = DotNetObjectReference.Create(this);
 
-        AppUserDto = AppDataService.AppUserDataTransferObject;
+        await AppDataService.InitializationAsync();
 
         await JSRuntime.InvokeVoidAsync("loadScript", "https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js", "head");
 
@@ -82,18 +83,43 @@ public partial class DynamicMapLoad
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (AppUserDto is not null)
+        if (AppDataService != default)
         {
-            if (!string.IsNullOrEmpty(AppUserDto.Latitude) && !string.IsNullOrEmpty(AppUserDto.Longitude))
+            if (AppDataService.AppUser != default)
             {
+                if (!string.IsNullOrEmpty(AppDataService.AppUser.Latitude) && !string.IsNullOrEmpty(AppDataService.AppUser.Longitude))
+                {
+                    var obj = new
+                    {
+                        Key = Config["MapBox:Key"],
+                        MapContainer = Config["MapBox:MapContainer"],
+                        Zoom = Config["MapBox:Zoom"],
+                        Style = Config["MapBox:Style"],
+                        AppDataService.AppUser.Longitude,
+                        AppDataService.AppUser.Latitude
+                    };
+
+                    if (JsonLoadedScripts is { } && JsonLoadedScripts.Count > 0)
+                    {
+                        if (JsonLoadedScripts.Contains("js/mapBox.js"))
+                        {
+                            await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.initMap", obj);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var position = AppDataService.GetGeolocationPosition();
+
                 var obj = new
                 {
                     Key = Config["MapBox:Key"],
                     MapContainer = Config["MapBox:MapContainer"],
                     Zoom = Config["MapBox:Zoom"],
                     Style = Config["MapBox:Style"],
-                    AppUserDto.Longitude,
-                    AppUserDto.Latitude
+                    Longitude = position is { } && !string.IsNullOrEmpty(position.Coords.Longitude.ToString()) ? position.Coords.Longitude.ToString() : "0",
+                    Latitude = position is { } && !string.IsNullOrEmpty(position.Coords.ToString()) ? position.Coords.Latitude.ToString() : "0"
                 };
 
                 if (JsonLoadedScripts is { } && JsonLoadedScripts.Count > 0)
@@ -104,28 +130,7 @@ public partial class DynamicMapLoad
                     }
                 }
             }
-        }
-        else
-        {
-            var position = AppDataService.GetGeolocationPosition();
 
-            var obj = new
-            {
-                Key = Config["MapBox:Key"],
-                MapContainer = Config["MapBox:MapContainer"],
-                Zoom = Config["MapBox:Zoom"],
-                Style = Config["MapBox:Style"],
-                Longitude = position is { } && !string.IsNullOrEmpty(position.Coords.Longitude.ToString()) ? position.Coords.Longitude.ToString() : "0",
-                Latitude = position is { } && !string.IsNullOrEmpty(position.Coords.ToString()) ? position.Coords.Latitude.ToString() : "0"
-            };
-
-            if (JsonLoadedScripts is { } && JsonLoadedScripts.Count > 0)
-            {
-                if (JsonLoadedScripts.Contains("js/mapBox.js"))
-                {
-                    await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.initMap", obj);
-                }
-            }
         }
     }
 
@@ -135,28 +140,32 @@ public partial class DynamicMapLoad
 
         await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.updateAddressDtoFromJS", _objRef);
 
-        if (AppUserDto is not null)
+        if (AppDataService != default)
         {
-            var updateAppUserRequest = new UpdateAppUserRequest
+            if (AppDataService.AppUser != default)
             {
-                ApplicationUserId = AppUserDto.ApplicationUserId,
-                HomeAddress = AppUserDto.HomeAddress,
-                HomeCity = AppUserDto.HomeCity,
-                HomeCountry = AppUserDto.HomeCountry,
-                HomeRegion = AppUserDto.HomeRegion,
-                Id = AppUserDto.Id,
-                IsVerified = AppUserDto.IsVerified,
-                Latitude = AppUserDto.Latitude,
-                Longitude = AppUserDto.Longitude,
-                PackageId = AppUserDto.PackageId,
+                var updateAppUserRequest = new UpdateAppUserRequest
+                {
+                    ApplicationUserId = AppDataService.AppUser.ApplicationUserId,
+                    HomeAddress = AppDataService.AppUser.HomeAddress,
+                    HomeCity = AppDataService.AppUser.HomeCity,
+                    HomeCountry = AppDataService.AppUser.HomeCountry,
+                    HomeRegion = AppDataService.AppUser.HomeRegion,
+                    Id = AppDataService.AppUser.Id,
+                    IsVerified = AppDataService.AppUser.IsVerified,
+                    Latitude = AppDataService.AppUser.Latitude,
+                    Longitude = AppDataService.AppUser.Longitude,
+                    PackageId = AppDataService.AppUser.PackageId,
 
-                // make it verified
-                IsAddressVerified = true,
-                IsDocumentsVerified = AppUserDto.IsDocumentsVerified,
-                IsRolePackageVerified = AppUserDto.IsRolePackageVerified
-            };
+                    // significant statuses
+                    AddressStatus = VerificationStatus.Verified,
 
-            _ = await AppUsersClient.UpdateAsync(AppUserDto.Id, updateAppUserRequest);
+                    DocumentsStatus = AppDataService.AppUser.DocumentsStatus,
+                    RolePackageStatus = AppDataService.AppUser.RolePackageStatus
+                };
+
+                _ = await AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, updateAppUserRequest);
+            }
         }
 
         NavigationManager.NavigateTo("/account/rolepackage", true);

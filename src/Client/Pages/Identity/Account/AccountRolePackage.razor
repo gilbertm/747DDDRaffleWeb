@@ -5,9 +5,9 @@
 
 <EhulogTitle Title="@L["Role and Package"]" Description="@L["Manage your account role and package subscription. Important: Allow location, if not you will not be able to see the map and proceed."]" />
 
-@if (AppDataService != default && AppDataService.AppUserDataTransferObject != default)
+@if (AppDataService != default && AppDataService.AppUser != default)
 {
-    <EditForm Model="@AppDataService.AppUserDataTransferObject" OnValidSubmit="UpdateAppUserRoleAndPackage">
+    <EditForm Model="@AppDataService.AppUser" OnValidSubmit="UpdateAppUserRoleAndPackage">
 
         <MudPaper Elevation="0">
             <DataAnnotationsValidator />
@@ -20,8 +20,8 @@
                         <MudCard Elevation="0">
                             <MudCardHeader>
                                 <CardHeaderContent>
-                                    <MudText Align="Align.Center" Typo="Typo.h5">@(AppDataService.AppUserDataTransferObject.RoleId is not null && AppDataService.AppUserDataTransferObject.RoleId.Equals(string.Empty) ? L["Roles"] : L["Role"])</MudText>
-                                        @if (AppDataService.AppUserDataTransferObject.RoleId is not null && AppDataService.AppUserDataTransferObject.RoleId.Equals(string.Empty))
+                                    <MudText Align="Align.Center" Typo="Typo.h5">@(AppDataService.AppUser.RoleId is not null && AppDataService.AppUser.RoleId.Equals(string.Empty) ? L["Roles"] : L["Role"])</MudText>
+                                        @if (AppDataService.AppUser.RoleId is not null && AppDataService.AppUser.RoleId.Equals(string.Empty))
                                     {
                                         <MudText Align="Align.Center" Typo="Typo.caption" Class="d-block w-100">@L["Select your role. This role determines how you will be interacting the system."]</MudText>
                                     }
@@ -112,7 +112,7 @@
                             <MudCardHeader>
                                 <CardHeaderContent>
                                     <MudText Align="Align.Center" Typo="Typo.h5">
-                                        @(AppDataService.AppUserDataTransferObject is not null && AppDataService.AppUserDataTransferObject.PackageId.Equals(default) ? L["Packages"] : L["Package"])
+                                        @(AppDataService.AppUser is not null && AppDataService.AppUser.PackageId.Equals(default) ? L["Packages"] : L["Package"])
                                     </MudText>
                                 </CardHeaderContent>
                             </MudCardHeader>
@@ -257,7 +257,7 @@
                                                                         </MudPaper>
                                                                     </MudItem>
 
-                                                                    @if (!AppDataService.AppUserDataTransferObject.IsRolePackageVerified)
+                                                                    @if (AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Initial))
                                                                     {
                                                                         <MudItem xs="12" Class="text-center">
                                                                             <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
@@ -294,7 +294,7 @@
             </MudGrid>
 
             @* must be unassigned role and the package is non default *@
-            @if ((new string[] { "Admin", "Lender", "Lessee" }).Contains(AppDataService.AppUserDataTransferObject.RoleName) && !AppDataService.AppUserDataTransferObject.PackageId.Equals(OldPackage) && (!LockRole || !LockPackage))
+            @if ((new string[] { "Admin", "Lender", "Lessee" }).Contains(AppDataService.AppUser.RoleName) && !AppDataService.AppUser.PackageId.Equals(OldPackage) && (!LockRole || !LockPackage))
             {
                 <MudCard Elevation="0">
 
@@ -303,12 +303,21 @@
                         <MudCardActions Class="pb-4 pl-4">
                             <MudGrid Justify="Justify.Center">
                                 @* TODO:// if the role and packages are already fulfilled, these buttons must be reactive. Update AppUserData service for this. *@
-                                <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" OnClick="@(() => ClearReload())" StartIcon="@Icons.Filled.ClearAll">
-                                    @L["Reload"]
-                                </MudButton>
-                                <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Success">
-                                    @L["Save"]
-                                </MudButton>
+                                @if (AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Initial))
+                                {
+                                    <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" OnClick="@(() => ClearReload())" StartIcon="@Icons.Filled.ClearAll">
+                                        @L["Reload"]
+                                    </MudButton>
+                                    <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Success">
+                                        @L["Save"]
+                                    </MudButton>
+                                }
+                                else if (AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Submitted))
+                                {
+                                    <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Success">
+                                        @L["Payment"]
+                                    </MudButton>
+                                }
                             </MudGrid>
                         </MudCardActions>
                     </MudCardContent>

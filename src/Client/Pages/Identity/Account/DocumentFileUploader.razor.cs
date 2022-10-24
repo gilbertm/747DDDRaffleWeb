@@ -32,17 +32,17 @@ public partial class DocumentFileUploader
     [Parameter]
     public InputOutputResourceDocumentType FileIdentifier { get; set; }
 
-    private CustomValidation? _customValidation;
+    // private CustomValidation? _customValidation;
 
-    private ForUploadFile _forUploadFile { get; set; }
+    private ForUploadFile? _forUploadFile { get; set; }
 
-    private string _imageUrl { get; set; }
+    private string? _imageUrl { get; set; }
 
     private string CSSCardContent { get; set; } = default!;
 
     protected override void OnParametersSet()
     {
-        if (ForUploadFiles is not null && ForUploadFiles.Count() > 0)
+        if (ForUploadFiles is not null && ForUploadFiles.Count > 0)
         {
             _forUploadFile = ForUploadFiles.Where(f => f.FileIdentifier.Equals(FileIdentifier)).First();
 

@@ -37,69 +37,62 @@ public partial class GenericLoans
     [Inject]
     protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
     [Inject]
-    public NavigationManager NavigationManager { get; set; } = default!;
+    protected NavigationManager NavigationManager { get; set; } = default!;
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
 
     protected EntityServerTableContext<LoanDto, Guid, LoanViewModel> Context { get; set; } = default!;
 
-    private EntityTable<LoanDto, Guid, LoanViewModel> _table = default!;
+    // private readonly EntityTable<LoanDto, Guid, LoanViewModel> _table = default!;
 
-    private AppUserDto AppUserDto { get; set; } = default!;
+    // private List<ForUploadFile> ForUploadFiles { get; set; } = new();
 
-    private List<ForUploadFile> ForUploadFiles { get; set; } = new();
+    private List<AppUserProductDto> AppUserProducts { get; set; } = default!;
 
-    private List<AppUserProductDto> appUserProducts { get; set; } = default!;
+    private readonly CustomValidation? _customValidation;
 
-    private CustomValidation? _customValidation;
-
-    private string _currency { get; set; } = string.Empty;
-
+    private string Currency { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await AppDataService.InitializationAsync();
 
-        AppUserDto = AppDataService.AppUserDataTransferObject;
-
         if (AppDataService != default)
         {
-            if (AppUserDto is not null)
+            if (AppDataService.AppUser is not null)
             {
                 // for lessee, direct to the front loans
-                if ((new string[] { "Lessee" }).Contains(AppUserDto.RoleName))
+                if ((new string[] { "Lessee" }).Contains(AppDataService.AppUser.RoleName))
                 {
                     NavigationManager.NavigateTo("/");
                 }
 
-                if (!string.IsNullOrEmpty(AppUserDto.HomeCountry))
+                if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
                 {
                     var countryProvider = new CountryProvider();
-                    var countryInfo = countryProvider.GetCountryByName(AppUserDto.HomeCountry);
+                    var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
 
                     if (countryInfo is { })
                     {
-                        if (countryInfo.Currencies.Count() > 0)
+                        if (countryInfo.Currencies.Length > 0)
                         {
-                            _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                            Currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
                         }
-
                     }
                 }
 
-                appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(AppUserDto.Id)).ToList();
+                AppUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(AppDataService.AppUser.Id)).ToList();
 
-                if (appUserProducts.Count() > 0)
+                if (AppUserProducts.Count > 0)
                 {
-                    foreach (var item in appUserProducts)
+                    foreach (var item in AppUserProducts)
                     {
                         if (item.Product is not null)
                         {
                             var image = await InputOutputResourceClient.GetAsync(item.Product.Id);
 
-                            if (image.Count() > 0)
+                            if (image.Count > 0)
                             {
-
                                 item.Product.Image = image.First();
                             }
                         }
@@ -115,8 +108,10 @@ public partial class GenericLoans
                        {
                         new(loan => loan.Id, L["Id"], Template: LoanTemplate),
                         new(loan => loan.StartOfPayment, L["Loan"], "StartOfPayment", Template: LoanDetailsTemplate),
+
                         // new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
                         new(loan => loan.Id, L["Applicants"], Template: LoanApplicantsTemplate),
+
                         // new(loan => loan.LoanLenders?.Where(l => l.LoanId.Equals(loan.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault()?.ProductId, L["ProductId"], "LoanLenders.ProductId"),
                         new(loan => loan.Id, L["Ledger"], Template: LoanLedgersTemplate),
                        },
@@ -125,21 +120,21 @@ public partial class GenericLoans
                        {
                            var loanFilter = filter.Adapt<SearchLoansRequest>();
 
-                           if (AppUserDto is not null && !string.IsNullOrEmpty(AppUserDto.RoleName) && AppUserDto.RoleName.Equals("Lender"))
+                           if (AppDataService.AppUser is not null && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
                            {
-                               loanFilter.LenderId = AppUserDto.Id;
+                               loanFilter.LenderId = AppDataService.AppUser.Id;
                                loanFilter.IsLender = true;
                                loanFilter.IsLedger = true;
                                loanFilter.IsLessee = false;
                            }
-                           else if (AppUserDto is not null && !string.IsNullOrEmpty(AppUserDto.RoleName) && AppUserDto.RoleName.Equals("Lessee"))
+                           else if (AppDataService.AppUser is not null && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lessee"))
                            {
-                               loanFilter.LesseeId = AppUserDto.Id;
+                               loanFilter.LesseeId = AppDataService.AppUser.Id;
                                loanFilter.IsLender = false;
                                loanFilter.IsLessee = true;
                                loanFilter.IsLedger = true;
                            }
-                           else if (AppUserDto is not null && !string.IsNullOrEmpty(AppUserDto.RoleName) && AppUserDto.RoleName.Equals("Admin"))
+                           else if (AppDataService.AppUser is not null && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
                            {
                                loanFilter.IsLender = true;
                                loanFilter.IsLessee = true;
@@ -150,11 +145,11 @@ public partial class GenericLoans
 
                            foreach (var item in result.Data)
                            {
-                               if (AppUserDto is { })
+                               if (AppDataService.AppUser is { })
                                {
-                                   var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id) && l.LenderId.Equals(AppUserDto.Id)).FirstOrDefault();
+                                   var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
 
-                                   if (!string.IsNullOrEmpty(AppUserDto.RoleName) && AppUserDto.RoleName.Equals("Admin"))
+                                   if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
                                    {
                                        loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
                                    }
@@ -167,19 +162,17 @@ public partial class GenericLoans
                                        loanLender.Lender.FirstName = userLenderDetailsDto.FirstName;
                                        loanLender.Lender.LastName = userLenderDetailsDto.LastName;
                                        loanLender.Lender.PhoneNumber = userLenderDetailsDto.PhoneNumber;
-
                                    }
 
                                    if (loanLender is not null && loanLender.Product is not null)
                                    {
-                                       loanLender.Product.Image = appUserProducts.Where(ap => ap.ProductId.Equals(loanLender.ProductId)).First()?.Product?.Image;
+                                       loanLender.Product.Image = AppUserProducts.First(ap => ap.ProductId.Equals(loanLender.ProductId))?.Product?.Image;
                                    }
-
                                }
 
                                if (item.LoanApplicants is { })
                                {
-                                   if (item.LoanApplicants.Count() > 0)
+                                   if (item.LoanApplicants.Count > 0)
                                    {
                                        foreach (var loanApplicantDto in item.LoanApplicants)
                                        {
@@ -189,7 +182,6 @@ public partial class GenericLoans
                                            loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
                                            loanApplicantDto.AppUser.Email = userDetailsDto.Email;
                                            loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
-
                                        }
                                    }
                                }
@@ -222,7 +214,7 @@ public partial class GenericLoans
                                {
                                    var createLoanLenderRequest = new CreateLoanLenderRequest()
                                    {
-                                       LenderId = AppUserDto.Id,
+                                       LenderId = AppDataService.AppUser.Id,
                                        LoanId = loanId,
                                        ProductId = loan.ProductId
                                    };
@@ -260,9 +252,9 @@ public partial class GenericLoans
                        {
                            await Task.Run(async () =>
                            {
-                               var loanLender = Context.AddEditModal.RequestModel.LoanLenders?.Where(l => l.LoanId.Equals(Context.AddEditModal.RequestModel.Id) && l.LenderId.Equals(AppUserDto.Id)).FirstOrDefault();
+                               var loanLender = Context.AddEditModal.RequestModel.LoanLenders?.Where(l => l.LoanId.Equals(Context.AddEditModal.RequestModel.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
 
-                               _disabledInterestSelection = Context.AddEditModal.RequestModel.InterestType.Equals(InterestType.Zero) ? true : false;
+                               _disabledInterestSelection = Context.AddEditModal.RequestModel.InterestType.Equals(InterestType.Zero);
 
                                if (loanLender is not null)
                                {
@@ -271,7 +263,6 @@ public partial class GenericLoans
 
                                    if (loanLender.Product is not null)
                                    {
-
                                        Context.AddEditModal.RequestModel.Product = new();
                                        Context.AddEditModal.RequestModel.Product.Image = new();
                                        Context.AddEditModal.RequestModel.Product.Brand = new();
@@ -359,7 +350,7 @@ public partial class GenericLoans
                            {
                                if (LoanDto.LoanLessees is { })
                                {
-                                   if (LoanDto.LoanLessees.Count() > 0)
+                                   if (LoanDto.LoanLessees.Count > 0)
                                    {
                                        return false;
                                    }
@@ -376,7 +367,7 @@ public partial class GenericLoans
                            {
                                if (LoanDto.LoanLessees is { })
                                {
-                                   if (LoanDto.LoanLessees.Count() > 0)
+                                   if (LoanDto.LoanLessees.Count > 0)
                                    {
                                        return false;
                                    }
@@ -388,6 +379,7 @@ public partial class GenericLoans
                            return false;
 
                        },
+                       exportAction: string.Empty,
                        hasExtraActionsFunc: () =>
                        {
                            return true;

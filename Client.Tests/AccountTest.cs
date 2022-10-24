@@ -19,9 +19,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Tests;
 public class AccountTest
 {
     [Fact]
-    public void HelloWorld_Renders_Correctly()
+    public void HelloWorldRendersCorrectly()
     {
-
         // Arrange
         IConfiguration config = new ConfigurationBuilder()
             .Build();
@@ -45,9 +44,8 @@ public class AccountTest
     }
 
     [Fact]
-    public void Address_Renders_Properly()
+    public void AddressRendersProperly()
     {
-
         // Arrange
         IConfiguration config = new ConfigurationBuilder()
             .Build();
@@ -74,7 +72,7 @@ public class AccountTest
     }
 
     [Fact]
-    public void Account_Access_Component_Test()
+    public void AccountAccessComponentTest()
     {
         /* https://bunit.dev/docs/test-doubles/faking-auth.html */
 
@@ -92,6 +90,7 @@ public class AccountTest
         ctx.Services.AddSingleton<IConfiguration>(Configuration);
 
         var authContext = ctx.AddTestAuthorization();
+
         // authContext.SetAuthorized("Admin");
         // authContext.SetRoles("Admin");
 
@@ -115,7 +114,7 @@ public class AccountTest
    parElement.MarkupMatches("<p>Current count: 1</p>"); */
     }
 
-    private IConfiguration _config;
+    private IConfiguration? _config;
 
     public IConfiguration Configuration
     {
@@ -123,14 +122,15 @@ public class AccountTest
         {
             var myConfiguration = new Dictionary<string, string>
             {
-                {"Key1", "Value1"},
-                {"Nested:Key1", "NestedValue1"},
-                {"Nested:Key2", "NestedValue2"}
+                { "Key1", "Value1" },
+                { "Nested:Key1", "NestedValue1" },
+                { "Nested:Key2", "NestedValue2" }
             };
 
             if (_config == null)
             {
                 var builder = new ConfigurationBuilder();
+
                 // .AddJsonFile($"testsettings.json", optional: false);
 
                 builder.AddInMemoryCollection(myConfiguration);
@@ -167,4 +167,3 @@ public class AuthenticationService : IAuthenticationService
         throw new NotImplementedException();
     }
 }
-

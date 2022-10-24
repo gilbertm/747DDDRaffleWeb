@@ -156,7 +156,7 @@ public partial class Category
 
 public class CategoryViewModel : UpdateCategoryRequest
 {
-    public InputOutputResourceDto Image { get; set; } = new();
+    public new InputOutputResourceDto Image { get; set; } = new();
 
     public string? ImagePath { get; set; }
     public string? ImageInBytes { get; set; }

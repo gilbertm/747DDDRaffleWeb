@@ -8,16 +8,20 @@
 
 <EhulogTitle Title="@L["Loans"]" Description="@L["Browse"]" />
 
-@if (AppUserDto is not null)
+@if (AppDataService != default)
 {
-    if (!(new[] { "Lender", "Lessee" }.Contains(AppUserDto.RoleName)))
+    if (AppDataService.AppUser != default)
     {
-        <MudText Typo="Typo.body2" Class="text-center mb-5" Color="Color.Warning">Please complete your account profile. Services are disabled not until fulfilled.</MudText>
-    }
+        if (!(new[] { "Lender", "Lessee" }.Contains(AppDataService.AppUser.RoleName)))
+        {
+            <MudText Typo="Typo.body2" Class="text-center mb-5" Color="Color.Warning">Please complete your account profile. Services are disabled not until fulfilled.</MudText>
+        }
 
-    <CascadingValue Value="@AppUserDto" Name="__appUserDto">
-        <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
-    </CascadingValue>
+        if (Context != default)
+        {
+            <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
+        }
+    }
 }
 
 <LossGeolocationPopup />

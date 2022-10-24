@@ -19,9 +19,9 @@ public partial class FilesDocuments
     [Inject]
     protected IAuthorizationService AuthService { get; set; } = default!;
     [Inject]
-    public AppDataService AppDataService { get; set; } = default!;
+    protected AppDataService AppDataService { get; set; } = default!;
     [Inject]
-    public NavigationManager NavigationManager { get; set; } = default!;
+    protected NavigationManager NavigationManager { get; set; } = default!;
 
     [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
@@ -35,7 +35,6 @@ public partial class FilesDocuments
             entityResource: EHULOGResource.InputOutputResources,
             fields: new()
             {
-
                 new(resource => resource.Id, L["IO Resource"], "Id", Template: InputOutputResourceDtoTemplate),
                 new(resource => resource.Id, L["Id"], "Id", Template: InputOutputResourceDtoIdTemplate)
             },
@@ -46,7 +45,6 @@ public partial class FilesDocuments
 
                 searchInputOutputResourcesFilter.ResourceType = InputOutputResourceType.Identification;
                 searchInputOutputResourcesFilter.StatusType = InputOutputResourceStatusType.Enabled; // all submitted for verification are enabled by the submit verification on document uploads
-
 
                 var result = await InputOutputResourceClient.SearchAsync(searchInputOutputResourcesFilter);
 

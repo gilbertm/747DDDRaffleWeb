@@ -42,15 +42,12 @@ public partial class SpecificLoan
     // lessee
     private bool _isPossibleToAppy { get; set; } = false;
 
-    private AppUserDto _appUserDto { get; set; } = default!;
-
     private string _currency { get; set; } = string.Empty;
 
     private List<ForUploadFile> ForUploadFiles { get; set; } = new();
 
     private List<AppUserProductDto> appUserProducts { get; set; } = default!;
 
-    private CustomValidation? _customValidation;
 
     public async Task OnClickChildComponent(Guid? loanId)
     {
@@ -61,48 +58,53 @@ public partial class SpecificLoan
 
     protected override async Task OnInitializedAsync()
     {
-        _appUserDto = AppDataService.AppUserDataTransferObject;
+        await AppDataService.InitializationAsync();
 
-        if (_appUserDto is not null)
+        if (AppDataService != default)
         {
-            // show products, if lender
-            if (!string.IsNullOrEmpty(_appUserDto.RoleName) && _appUserDto.RoleName.Equals("Lender"))
+            if (AppDataService.AppUser != default)
             {
-                var countryProvider = new CountryProvider();
-                var countryInfo = countryProvider.GetCountryByName(_appUserDto.HomeCountry);
-
-                if (countryInfo is { })
+                // show products, if lender
+                if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
                 {
-                    if (countryInfo.Currencies.Count() > 0)
+                    var countryProvider = new CountryProvider();
+                    var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
+
+                    if (countryInfo is { })
                     {
-                        _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                        if (countryInfo.Currencies.Count() > 0)
+                        {
+                            _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                        }
+
                     }
 
-                }
+                    appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(AppDataService.AppUser.Id)).ToList();
 
-                appUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(_appUserDto.Id)).ToList();
-
-                if (appUserProducts.Count() > 0)
-                {
-                    foreach (var item in appUserProducts)
+                    if (appUserProducts.Count() > 0)
                     {
-                        if (item.Product is not null)
+                        foreach (var item in appUserProducts)
                         {
-                            var image = await InputOutputResourceClient.GetAsync(item.Product.Id);
-
-                            if (image.Count() > 0)
+                            if (item.Product is not null)
                             {
+                                var image = await InputOutputResourceClient.GetAsync(item.Product.Id);
 
-                                item.Product.Image = image.First();
+                                if (image.Count() > 0)
+                                {
+
+                                    item.Product.Image = image.First();
+                                }
                             }
                         }
                     }
                 }
+
+                await Update(loanId);
+
+
+
             }
-
-            await Update(loanId);
-
-           }
+        }
     }
 
     private async Task Update(Guid? loanId)
@@ -112,7 +114,7 @@ public partial class SpecificLoan
             if (await ApiHelper.ExecuteCallGuardedAsync(
                                             async () => await LoansClient.GetAsync(loanId.Value),
                                             Snackbar,
-                                            _customValidation) is LoanDto loanDto)
+                                            null) is LoanDto loanDto)
             {
 
                 if (loanDto is { })
@@ -144,10 +146,10 @@ public partial class SpecificLoan
                             RequestModel.ProductId = !loanLender.ProductId.Equals(Guid.Empty) ? loanLender.ProductId : default;
 
                             // lender checks
-                            if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lender"))
+                            if (AppDataService.AppUser.RoleName is not null && AppDataService.AppUser.RoleName.Equals("Lender"))
                             {
                                 // owner
-                                if (loanLender.Lender is not null && loanLender.LenderId.Equals(_appUserDto.Id))
+                                if (loanLender.Lender is not null && loanLender.LenderId.Equals(AppDataService.AppUser.Id))
                                 {
                                     _canUpdate = true;
                                     _canUpdateLedger = true;
@@ -169,11 +171,11 @@ public partial class SpecificLoan
                     // lessee
                     if (loanDto.LoanLessees is not null && loanDto.LoanLessees.Count() > 0)
                     {
-                        if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lessee"))
+                        if (AppDataService.AppUser.RoleName is not null && AppDataService.AppUser.RoleName.Equals("Lessee"))
                         {
                             var loanLessee = loanDto.LoanLessees.Where(ll => ll.LoanId.Equals(loanDto.Id)).First();
 
-                            if (loanLessee.Lessee is not null && loanLessee.LesseeId.Equals(_appUserDto.Id))
+                            if (loanLessee.Lessee is not null && loanLessee.LesseeId.Equals(AppDataService.AppUser.Id))
                             {
                                 _canUpdateLedger = true;
                             }
@@ -181,7 +183,7 @@ public partial class SpecificLoan
                     }
                     else if (loanDto.LoanLessees is null || loanDto.LoanLessees.Count() <= 0)
                     {
-                        if (_appUserDto.RoleName is not null && _appUserDto.RoleName.Equals("Lessee"))
+                        if (AppDataService.AppUser.RoleName is not null && AppDataService.AppUser.RoleName.Equals("Lessee"))
                         {
                             _isPossibleToAppy = true;
                         }
@@ -218,7 +220,7 @@ public partial class SpecificLoan
                     RequestModel.LoanLessees = loanDto.LoanLessees;
                 }
 
-               
+
             }
         }
     }

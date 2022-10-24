@@ -40,7 +40,11 @@
                                 break;
 
                         }
-                        <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-1">@(_forUploadFile.isVerified ? "Verified" : "")</MudText>
+                        @if (_forUploadFile != default)
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-1">@(_forUploadFile.isVerified ? "Verified" : ""
+)</MudText>
+                        }
                         </MudCardContent>
 
 
@@ -95,7 +99,17 @@
 
                             }
                             <div style="padding-top:20px;display:block;">
-                                <MudButton HtmlTag="label" Variant="Variant.Filled" Disabled="@(_forUploadFile.Disabled)" Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)"><MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Upload</MudText></MudButton>
+
+                                @{
+                                    var _forUploadFileDisabled = false;
+
+                                    if (_forUploadFile != default)
+                                    {
+                                        _forUploadFileDisabled = _forUploadFile.Disabled;
+                                    }
+                                }
+
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Disabled="@(_forUploadFileDisabled)" Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)"><MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Upload</MudText></MudButton>
                                 <br />
                                 @if (!string.IsNullOrEmpty(_imageUrl))
                                 {

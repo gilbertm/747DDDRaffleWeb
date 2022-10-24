@@ -1,0 +1,36 @@
+﻿@using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
+
+@inject IStringLocalizer<Info> L
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Large" Color="Color.Warning" Class="mr-3 mb-n1" />
+            @L["Submit documents for verification"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.body1">These documents will be sent for verification.</MudText>
+        <MudText Typo="Typo.body1">You hereby agree to the terms and conditions.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Cancel" Color="Color.Surface" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
+        <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Check" Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">@L["Ok"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = default!;
+
+
+    public void Cancel() => MudDialog.Cancel();
+
+    public void Submit()
+    {        
+        MudDialog.Close(DialogResult.Ok(true));
+
+    }
+
+    
+}

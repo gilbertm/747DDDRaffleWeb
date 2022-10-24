@@ -97,7 +97,7 @@ public partial class FrontAnonLoans
         };
 
         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        request.Content.Headers.Add("tenant", "root");
+        request.Content.Headers.Add("tenant", "ehulog");
 
         response = await HttpClient.SendAsync(request);
 
@@ -148,7 +148,7 @@ public partial class FrontAnonLoans
         };
 
         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        request.Content.Headers.Add("tenant", "root");
+        request.Content.Headers.Add("tenant", "ehulog");
 
         response = await HttpClient.SendAsync(request);
 
@@ -168,7 +168,7 @@ public partial class FrontAnonLoans
                 request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
 
-                // request.Content.Headers.Add("tenant", "root");
+                request.Content.Headers.Add("tenant", "ehulog");
 
                 response = await HttpClient.SendAsync(request);
 

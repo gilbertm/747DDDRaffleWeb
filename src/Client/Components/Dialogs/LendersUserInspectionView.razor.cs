@@ -10,12 +10,6 @@ namespace EHULOG.BlazorWebAssembly.Client.Shared.Dialogs;
 
 public partial class LendersUserInspectionView
 {
-    [CascadingParameter]
-    protected Task<AuthenticationState> AuthState { get; set; } = default!;
-
-    [CascadingParameter]
-    protected MudDialogInstance MudDialog { get; set; } = default!;
-
     [Parameter]
     public LoanApplicantDto LoanApplicantDto { get; set; } = default!;
 
@@ -24,6 +18,12 @@ public partial class LendersUserInspectionView
 
     [Parameter]
     public LoanStatus LoanStatus { get; set; } = default!;
+
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    [CascadingParameter]
+    protected MudDialogInstance MudDialog { get; set; } = default!;
 
     [Inject]
     protected IAuthenticationService AuthService { get; set; } = default!;
@@ -36,52 +36,54 @@ public partial class LendersUserInspectionView
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
 
-    private CustomValidation? _customValidation;
-
-    private AppUserDto _appUserDto { get; set; } = default!;
 
     private async Task Submit()
     {
-        _appUserDto = AppDataService.AppUserDataTransferObject;
+        await AppDataService.InitializationAsync();
 
-        if (_appUserDto is { })
+        if (AppDataService != default!)
         {
-            if (!string.IsNullOrEmpty(LoanApplicantDto.LoanId.ToString()) && !LoanApplicantDto.LoanId.Equals(Guid.Empty))
+            if (AppDataService.AppUser != default)
             {
-                if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.GetAsync(LoanApplicantDto.LoanId), Snackbar, _customValidation) is LoanDto loan)
                 {
-                    if (loan is { })
+                    if (!string.IsNullOrEmpty(LoanApplicantDto.LoanId.ToString()) && !LoanApplicantDto.LoanId.Equals(Guid.Empty))
                     {
-                        var updateLoanStatusRequest = loan.Adapt<UpdateLoanStatusRequest>();
-
-                        updateLoanStatusRequest.Status = LoanStatus.Assigned;
-
-                        if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.UpdateStatusAsync(LoanApplicantDto.LoanId, updateLoanStatusRequest), Snackbar, _customValidation) is Guid loanId)
+                        if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.GetAsync(LoanApplicantDto.LoanId), Snackbar, null) is LoanDto loan)
                         {
-                            if (!string.IsNullOrEmpty(loanId.ToString()) && !loanId.Equals(Guid.Empty))
+                            if (loan is { })
                             {
-                                Snackbar.Add("Granted", Severity.Success);
+                                var updateLoanStatusRequest = loan.Adapt<UpdateLoanStatusRequest>();
 
-                                var createLoanLesseeRequest = new CreateLoanLesseeRequest()
-                                {
-                                    LesseeId = LoanApplicantDto.AppUserId,
-                                    LoanId = loanId
-                                };
+                                updateLoanStatusRequest.Status = LoanStatus.Assigned;
 
-                                if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanLesseesClient.CreateAsync(createLoanLesseeRequest), Snackbar, _customValidation) is Guid loanLesseeId)
+                                if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.UpdateStatusAsync(LoanApplicantDto.LoanId, updateLoanStatusRequest), Snackbar, null) is Guid loanId)
                                 {
-                                    if (!string.IsNullOrEmpty(loanLesseeId.ToString()) && !loanLesseeId.Equals(Guid.Empty))
+                                    if (!string.IsNullOrEmpty(loanId.ToString()) && !loanId.Equals(Guid.Empty))
                                     {
-                                        Snackbar.Add("Loan / Lessee record updated.", Severity.Success);
+                                        Snackbar.Add("Granted", Severity.Success);
+
+                                        var createLoanLesseeRequest = new CreateLoanLesseeRequest()
+                                        {
+                                            LesseeId = LoanApplicantDto.AppUserId,
+                                            LoanId = loanId
+                                        };
+
+                                        if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanLesseesClient.CreateAsync(createLoanLesseeRequest), Snackbar, null) is Guid loanLesseeId)
+                                        {
+                                            if (!string.IsNullOrEmpty(loanLesseeId.ToString()) && !loanLesseeId.Equals(Guid.Empty))
+                                            {
+                                                Snackbar.Add("Loan / Lessee record updated.", Severity.Success);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+                    MudDialog.Close();
                 }
             }
         }
-
-        MudDialog.Close();
     }
 }

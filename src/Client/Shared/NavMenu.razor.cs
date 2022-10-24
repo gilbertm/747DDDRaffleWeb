@@ -17,8 +17,6 @@ public partial class NavMenu
     [Inject]
     public AppDataService AppDataService { get; set; } = default!;
 
-    private AppUserDto AppUserDto { get; set; } = default!;
-
     private string? _hangfireUrl;
     private bool _canViewHangfire;
     private bool _canViewDashboard;
@@ -31,13 +29,11 @@ public partial class NavMenu
     private bool _canViewTenants;
     private bool _canViewLoans;
     private bool _canViewInputOutputResources;
-    private bool CanViewAdministrationGroup => _canViewUsers || _canViewRoles || _canViewTenants || _canViewInputOutputResources;
+    private bool CanViewAdministrationGroup => _canViewTenants;
 
     protected override async Task OnParametersSetAsync()
     {
         await AppDataService.InitializationAsync();
-
-        AppUserDto = AppDataService.AppUserDataTransferObject;
 
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
         var user = (await AuthState).User;
@@ -52,5 +48,7 @@ public partial class NavMenu
         _canViewPackages = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Packages);
         _canViewLoans = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Loans);
         _canViewInputOutputResources = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.InputOutputResources);
+
+
     }
 }

@@ -13,7 +13,7 @@ public partial class SpecificLoanLedger
     [Parameter]
     public bool CanUpdate { get; set; } = false;
 
-    public List<LedgerModel> _ledgerModel { get; set; } = new();
+    public List<LedgerModel> LedgerModel { get; set; } = new();
 
     private float _runningTotal { get; set; }
 
@@ -24,9 +24,9 @@ public partial class SpecificLoanLedger
 
     private bool _showNextLedgerAvailablePosition { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        if (Ledger is not null && Ledger.Count() > 0)
+        if (Ledger is not null && Ledger.Count > 0)
         {
             _runningTotal = Ledger.Sum(l => l.AmountDue);
 
@@ -36,7 +36,7 @@ public partial class SpecificLoanLedger
             {
                 _runningBalance -= item.AmountDue;
 
-                _ledgerModel.Add(new()
+                LedgerModel.Add(new()
                 {
                     Id = item.Id,
                     Position = item.Position,
