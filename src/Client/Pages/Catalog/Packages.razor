@@ -5,84 +5,94 @@
 
 <EhulogTitle Title="@L["Packages"]" Description="@L["Manage Packages."]" />
 
-<EntityTable TEntity="PackageDto" TId="Guid" TRequest="PackageViewModel" Context="@Context">
-
-    <EditFormContent>
-        @if (!Context.AddEditModal.IsCreate)
+        @if (AppDataService != default)
+{
+    if (AppDataService.AppUser != default)
+    {
+        if (Context != default)
         {
-            <MudItem xs="12" md="6">
-                <MudTextField Value="context.Id" ReadOnly DisableUnderLine Label="@L[$"Package Id"]" />
-            </MudItem>
-        }
-        <MudItem xs="12" md="6">
-            <MudTextField T="string" For="@(() => context.Name)" @bind-Value="context.Name" Label="@L["Name"]" />
-        </MudItem>
+            <EntityTable TEntity="PackageDto" TId="Guid" TRequest="PackageViewModel" Context="@Context">
 
-        <MudItem xs="12" md="6">
-            <MudTextField For="@(() => context.Description)" @bind-Value="context.Description"
-                          Label="@L["Description"]" />
-        </MudItem>
-        <MudItem xs="12" md="12">
-            <MudItem xs="6">
-                <MudSwitch T="bool" For="@(() => context.IsLender)" Checked="context.IsLender" CheckedChanged="((bool val) => ToggleLender(val))" Color="Color.Success" UnCheckedColor="Color.Dark" Label="@(context.IsLender ? "Lender" : "Lessee")" />
-            </MudItem>
-            <MudItem xs="6">
-                <MudSwitch For="@(() => context.IsDefault)" @bind-Checked="@context.IsDefault" Color="Color.Success" UnCheckedColor="Color.Dark" Label="Is Default" />
-            </MudItem>
-        </MudItem>
-
-        <MudItem xs="12" md="6" Class="@(context.IsLender ? "d-none" : "d-block")">
-            <MudTextField T="int" For="@(() => context.MaxLenders)" @bind-Value="context.MaxLenders"
-                          Label="@L["Maximum Lenders"]" HelperText="Maximum number of lenders that a lessee can apply intent for loan. Lessees specific" />
-        </MudItem>
-
-        <MudItem xs="12" md="6" Class="@(context.IsLender ? "d-block" : "d-none")">
-            <MudTextField T="int" For="@(() => context.MaxLessees)" @bind-Value="context.MaxLessees"
-                          Label="@L["Maximum Lessees"]" HelperText="Maximum number of lessees that can get loans from the lender. Lender specific" />
-        </MudItem>
-
-        <MudItem xs="12" md="6" Class="@(context.IsLender ? "d-none" : "d-block")">
-            <MudTextField T="int" For="@(() => context.MaxApplications)" @bind-Value="context.MaxApplications"
-                          Label="@L["Maximum Applications"]" HelperText="Maximum of applications that the lessees can submit. Lessees Specific" />
-        </MudItem>
-
-        <MudItem xs="12" md="6">
-            <MudTextField T="float" For="@(() => context.MaxAmounts)" @bind-Value="context.MaxAmounts"
-                          Label="@L["Total amount"]" HelperText="Maximum total amount that the lender or lessee can loan or apply. Both" />
-        </MudItem>
-
-
-        <MudItem xs="12" md="12">
-            <MudItem>
-                @if (!string.IsNullOrEmpty(context.ImageInBytes))
-                {
-                    <MudAvatar Image="@context.ImageInBytes" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
-                }
-                else
-                {
-                    <MudAvatar Image="@(string.IsNullOrEmpty(@context?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + @context.Image.ImagePath))" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
-                }
-            </MudItem>
-            <MudItem>
-                <div>
-                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
-                               StartIcon="@Icons.Filled.CloudUpload" for="fileInput">
-                        @L["Upload"]
-                    </MudButton>
-                    @if (!Context.AddEditModal.IsCreate && !string.IsNullOrEmpty(context.ImagePath) && string.IsNullOrEmpty(context.ImageInBytes))
+                <EditFormContent>
+                    @if (!Context.AddEditModal.IsCreate)
                     {
-                        <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank"
-                               StartIcon="@Icons.Filled.RemoveRedEye" Link="@(Config[ConfigNames.ApiBaseUrl] + @context.ImagePath)" Style="margin-left: 5px;">
-                            @L["View"]
-                        </MudButton>
+                        <MudItem xs="12" md="6">
+                            <MudTextField Value="context.Id" ReadOnly DisableUnderLine Label="@L[$"Package Id"]" />
+                        </MudItem>
                     }
-                </div>
-                <InputFile id="fileInput" hidden OnChange="UploadFiles" />
-            </MudItem>
-        </MudItem>
-    </EditFormContent>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" For="@(() => context.Name)" @bind-Value="context.Name" Label="@L["Name"]" />
+                    </MudItem>
 
-</EntityTable>
+                    <MudItem xs="12" md="6">
+                        <MudTextField For="@(() => context.Description)" @bind-Value="context.Description"
+                          Label="@L["Description"]" />
+                    </MudItem>
+                    <MudItem xs="12" md="12">
+                        <MudItem xs="6">
+                            <MudSwitch T="bool" For="@(() => context.IsLender)" Checked="context.IsLender" CheckedChanged="((bool val) => ToggleLender(val))" Color="Color.Success" UnCheckedColor="Color.Dark" Label="@(context.IsLender ? "Lender" : "Lessee")" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSwitch For="@(() => context.IsDefault)" @bind-Checked="@context.IsDefault" Color="Color.Success" UnCheckedColor="Color.Dark" Label="Is Default" />
+                        </MudItem>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6" Class="@(context.IsLender ? "d-none" : "d-block")">
+                        <MudTextField T="int" For="@(() => context.MaxLenders)" @bind-Value="context.MaxLenders"
+                          Label="@L["Maximum Lenders"]" HelperText="Maximum number of lenders that a lessee can apply intent for loan. Lessees specific" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6" Class="@(context.IsLender ? "d-block" : "d-none")">
+                        <MudTextField T="int" For="@(() => context.MaxLessees)" @bind-Value="context.MaxLessees"
+                          Label="@L["Maximum Lessees"]" HelperText="Maximum number of lessees that can get loans from the lender. Lender specific" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6" Class="@(context.IsLender ? "d-none" : "d-block")">
+                        <MudTextField T="int" For="@(() => context.MaxApplications)" @bind-Value="context.MaxApplications"
+                          Label="@L["Maximum Applications"]" HelperText="Maximum of applications that the lessees can submit. Lessees Specific" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="float" For="@(() => context.MaxAmounts)" @bind-Value="context.MaxAmounts"
+                          Label="@L["Total amount"]" HelperText="Maximum total amount that the lender or lessee can loan or apply. Both" />
+                    </MudItem>
+
+
+                    <MudItem xs="12" md="12">
+                        <MudItem>
+                            @if (!string.IsNullOrEmpty(context.ImageInBytes))
+                            {
+                                <MudAvatar Image="@context.ImageInBytes" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                            }
+                            else
+                            {
+                                <MudAvatar Image="@(string.IsNullOrEmpty(@context?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + @context.Image.ImagePath))" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                            }
+                        </MudItem>
+                        <MudItem>
+                            <div>
+                                <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                               StartIcon="@Icons.Filled.CloudUpload" for="fileInput">
+                                    @L["Upload"]
+                                </MudButton>
+                                @if (!Context.AddEditModal.IsCreate && !string.IsNullOrEmpty(context.ImagePath) && string.IsNullOrEmpty(context.ImageInBytes))
+                                {
+                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank"
+                               StartIcon="@Icons.Filled.RemoveRedEye" Link="@(Config[ConfigNames.ApiBaseUrl] + @context.ImagePath)" Style="margin-left: 5px;">
+                                        @L["View"]
+                                    </MudButton>
+                                }
+                            </div>
+                            <InputFile id="fileInput" hidden OnChange="UploadFiles" />
+                        </MudItem>
+                    </MudItem>
+                </EditFormContent>
+
+            </EntityTable>
+
+        }
+    }
+}
 
 @code {
 
@@ -102,11 +112,85 @@
             <MudCardContent>
                 @if (!string.IsNullOrEmpty(_imageUrl))
                 {
-                    <MudAvatar Square="true" Image="@_imageUrl" Style=" width:150px;height:100px;position:relative"></MudAvatar>
+                    <MudAvatar Square="true" Image="@_imageUrl" Style="width:auto;height:125px;position:relative;background-color:transparent !important"></MudAvatar>
                 }
-                <MudText Typo="Typo.h5">@trail.Name</MudText>
+                <MudText Typo="Typo.h4" Style="@($"color:{Colors.Amber.Darken2}")">@trail.Name</MudText>
                 <MudText Typo="Typo.caption">@trail.Description</MudText>
             </MudCardContent>
         </MudCard>
+    };
+
+    protected RenderFragment<PackageDto> PackageDtoFeaturesTemplate => trail => __builder =>
+    {
+        <MudGrid>
+            <MudItem xs="12" Class="text-center">
+                @if (trail.IsLender)
+                {
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudPaper Elevation="0">
+                                <MudText Typo="Typo.caption">
+                                    Maximum Amount: @string.Format("{0:#,0.00}", trail.MaxAmounts)
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Elevation="0" >
+                                <MudText Typo="Typo.caption">
+                                    Maximum Lessees: @trail.MaxLessees
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                        @if (trail.SubscriptionPrice > 0)
+                        {
+                            <MudItem xs="6">
+                                <MudPaper Elevation="0">
+                                    <MudText Typo="Typo.caption">
+                                        Monthly subscription fee:  @string.Format("{0:#,0.00}",trail.SubscriptionPrice)
+                                    </MudText>
+                                </MudPaper>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+                else
+                {
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudPaper Elevation="0">
+                                <MudText Typo="Typo.caption">
+                                    Maximum Amounts: @string.Format("{0:#,0.00}", @trail.MaxAmounts)
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Elevation="0">
+                                <MudText Typo="Typo.caption">
+                                    Maximum Applications: @trail.MaxApplications
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Elevation="0">
+                                <MudText Typo="Typo.caption">
+                                    Maximum Lenders: @trail.MaxLenders
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                        @if (trail.SubscriptionPrice > 0)
+                        {
+                            <MudItem xs="6">
+                                <MudPaper Elevation="0">
+                                    <MudText Typo="Typo.caption">
+                                        Monthly subscription:  @string.Format("{0:#,0.00}",trail.SubscriptionPrice)
+                                    </MudText>
+                                </MudPaper>
+                            </MudItem>
+                        }
+
+                    </MudGrid>
+                }
+            </MudItem>
+        </MudGrid>
     };
 }

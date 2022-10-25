@@ -1,7 +1,10 @@
 ﻿@page "/catalog/all/loans"
+@page "/loans/lender"
 @using System.Linq
 @using System.Globalization
 @using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components
+
 @attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)]
 
 @inject IStringLocalizer<GenericLoans> L
@@ -12,107 +15,108 @@
 {
     if (AppDataService.AppUser != default)
     {
-        if (Context != default)
-        {
-            <EntityTable TEntity="LoanDto" TId="Guid" TRequest="LoanViewModel" Context="@Context" ExtraActions="@ExtraAction">
-                <EditFormContent>
+        <CascadingValue Value="@AppDataService.AppUser" Name="AppUser">
+            @if (Context != default)
+            {
+                <EntityTable TEntity="LoanDto" TId="Guid" TRequest="LoanViewModel" Context="@Context" ExtraActions="@ExtraAction">
+                    <EditFormContent>
 
-                    @if (!Context.AddEditModal.IsCreate)
-                    {
-                        <MudItem xs="12" md="6" Class="d-none">
-                            <MudTextField Value="Context.AddEditModal.RequestModel.Id" ReadOnly DisableUnderLine Label="@L[$"Loan Lender Id"]" />
-                        </MudItem>
-                    }
-
-                    <MudItem xs="12" md="4">
-
-                        @* Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" *@
-                        <ProductAutocomplete Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@Context.AddEditModal.RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
-
-                        @if (Context.AddEditModal.RequestModel.Product is not null)
+                        @if (!Context.AddEditModal.IsCreate)
                         {
-                            <MudCard Elevation="0">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Class="d-none" Typo="Typo.body1">@Context.AddEditModal.RequestModel.ProductId</MudText>
-                                        <MudText Typo="Typo.h5">@Context.AddEditModal.RequestModel.Product.Name</MudText>
-                                        @if (Context.AddEditModal.RequestModel.Product.Category is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Category?.Name))
-                                        {
-                                            <MudText Typo="Typo.caption">Category: @Context.AddEditModal.RequestModel.Product.Category?.Name</MudText>
-                                        }
-                                        @if (Context.AddEditModal.RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Brand?.Name))
-                                        {
-                                            <MudText Typo="Typo.caption"> Brand: @Context.AddEditModal.RequestModel.Product.Brand?.Name</MudText>
-                                        }
-
-                                    </CardHeaderContent>
-                                    <CardHeaderActions>
-                                        @if (Context.AddEditModal.RequestModel.Product.ProductType.Equals(ProductType.System))
-                                        {
-                                            <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
-                                        }
-                                        else
-                                        {
-                                            <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
-                                        }
-
-                                    </CardHeaderActions>
-                                </MudCardHeader>
-
-                                @if (Context.AddEditModal.RequestModel.Product.Image is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Image?.ImagePath))
-                                {
-                                    var image = Config[ConfigNames.ApiBaseUrl] + Context.AddEditModal.RequestModel.Product.Image?.ImagePath;
-
-                                    <MudCardMedia Image="@image" Height="150" Class="position-relative" />
-                                }
-
-                                @if (!string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product?.Description))
-                                {
-                                    <MudCardContent>
-                                        <MudText Typo="Typo.body1" Color="Color.Tertiary">Base amount:</MudText>
-                                        <MudText Typo="Typo.body1" Color="Color.Tertiary">@Context.AddEditModal.RequestModel.Product.Amount</MudText>
-
-                                        <MudText Typo="Typo.body2">@Context.AddEditModal.RequestModel.Product.Description</MudText>
-                                    </MudCardContent>
-                                }
-                            </MudCard>
+                            <MudItem xs="12" md="6" Class="d-none">
+                                <MudTextField Value="Context.AddEditModal.RequestModel.Id" ReadOnly DisableUnderLine Label="@L[$"Loan Lender Id"]" />
+                            </MudItem>
                         }
-                    </MudItem>
 
-                    <MudItem xs="12" md="8">
-                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                        <MudItem xs="12" md="4">
 
-                            <MudItem xs="12" md="6">
-                                <MudSelect Required="true" T="int" @bind-Value="@MonthsToPay" For="@(() => Context.AddEditModal.RequestModel.Month)" Immediate="true" Label="Select month(s)" OpenIcon="@Icons.Material.Filled.DateRange" AdornmentColor="Color.Secondary">
-                                    @foreach (int i in Enumerable.Range(0, 13))
+                            @* Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" *@
+                            <ProductAutocomplete Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@Context.AddEditModal.RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+
+                            @if (Context.AddEditModal.RequestModel.Product is not null)
+                            {
+                                <MudCard Elevation="0">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Class="d-none" Typo="Typo.body1">@Context.AddEditModal.RequestModel.ProductId</MudText>
+                                            <MudText Typo="Typo.h5">@Context.AddEditModal.RequestModel.Product.Name</MudText>
+                                            @if (Context.AddEditModal.RequestModel.Product.Category is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Category?.Name))
+                                            {
+                                                <MudText Typo="Typo.caption">Category: @Context.AddEditModal.RequestModel.Product.Category?.Name</MudText>
+                                            }
+                                            @if (Context.AddEditModal.RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Brand?.Name))
+                                            {
+                                                <MudText Typo="Typo.caption"> Brand: @Context.AddEditModal.RequestModel.Product.Brand?.Name</MudText>
+                                            }
+
+                                        </CardHeaderContent>
+                                        <CardHeaderActions>
+                                            @if (Context.AddEditModal.RequestModel.Product.ProductType.Equals(ProductType.System))
+                                            {
+                                                <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
+                                            }
+                                            else
+                                            {
+                                                <MudIconButton Icon="@Icons.Filled.DashboardCustomize" Color="Color.Default" Disabled="true" />
+                                            }
+
+                                        </CardHeaderActions>
+                                    </MudCardHeader>
+
+                                    @if (Context.AddEditModal.RequestModel.Product.Image is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Image?.ImagePath))
                                     {
-                                        <MudSelectItem T="int" Value="@i">@i</MudSelectItem>
+                                        var image = Config[ConfigNames.ApiBaseUrl] + Context.AddEditModal.RequestModel.Product.Image?.ImagePath;
+
+                                        <MudCardMedia Image="@image" Height="150" Class="position-relative" />
                                     }
-                                </MudSelect>
-                                <MudTooltip Text="Payment terms in months">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudSelect Disabled="_disabledInterestSelection" ReadOnly="_disabledInterestSelection" Required="true" T="float" @bind-Value="@ChangeInterest" For="@(() => Context.AddEditModal.RequestModel.Interest)" Immediate="true" Label="Select interest rates" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="Color.Secondary">
-                                    @foreach (float f in Enumerable.Range(0, 15).Select(f => f == 0 ? 0.0f : (f / 2.0f) + 0.50f))
+
+                                    @if (!string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product?.Description))
                                     {
-                                        <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.body1" Color="Color.Tertiary">Base amount:</MudText>
+                                            <MudText Typo="Typo.body1" Color="Color.Tertiary">@Context.AddEditModal.RequestModel.Product.Amount</MudText>
+
+                                            <MudText Typo="Typo.body2">@Context.AddEditModal.RequestModel.Product.Description</MudText>
+                                        </MudCardContent>
                                     }
-                                </MudSelect>
-                                <MudTooltip Text="Interest rates, applies only to compount type">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudDatePicker Required="true" Date="@DateTime.Now" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of loan terms" Editable="true" MinDate="DateTime.Now.AddDays(-1)" AdornmentColor="Color.Secondary" Text="@DateIsNewlyCreated(Context.AddEditModal.RequestModel.StartOfPayment)" DateChanged="@((DateTime? val) => StartDatePayment(val))" PickerClosed="@(() => HandleInterest())" Placeholder="Select start of loan terms" DateFormat="dddd, MMMM d, yyyy" />
-                                <MudTooltip Text="Starting payment for the ledger payment cycles. The payment cycles are in months, giving enough breathing room for the lessees">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudSelect Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="Color.Secondary">
-                                    @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
+                                </MudCard>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12" md="8">
+                            <MudGrid Spacing="2" Justify="Justify.FlexStart">
+
+                                <MudItem xs="12" md="6">
+                                    <MudSelect Required="true" T="int" @bind-Value="@MonthsToPay" For="@(() => Context.AddEditModal.RequestModel.Month)" Immediate="true" Label="Select month(s)" OpenIcon="@Icons.Material.Filled.DateRange" AdornmentColor="Color.Secondary">
+                                        @foreach (int i in Enumerable.Range(0, 13))
+                                        {
+                                            <MudSelectItem T="int" Value="@i">@i</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                    <MudTooltip Text="Payment terms in months">
+                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudSelect Disabled="_disabledInterestSelection" ReadOnly="_disabledInterestSelection" Required="true" T="float" @bind-Value="@ChangeInterest" For="@(() => Context.AddEditModal.RequestModel.Interest)" Immediate="true" Label="Select interest rates" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="Color.Secondary">
+                                        @foreach (float f in Enumerable.Range(0, 15).Select(f => f == 0 ? 0.0f : (f / 2.0f) + 0.50f))
+                                        {
+                                            <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                    <MudTooltip Text="Interest rates, applies only to compount type">
+                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudDatePicker Required="true" Date="@DateTime.Now" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of loan terms" Editable="true" MinDate="DateTime.Now.AddDays(-1)" AdornmentColor="Color.Secondary" Text="@DateIsNewlyCreated(Context.AddEditModal.RequestModel.StartOfPayment)" DateChanged="@((DateTime? val) => StartDatePayment(val))" PickerClosed="@(() => HandleInterest())" Placeholder="Select start of loan terms" DateFormat="dddd, MMMM d, yyyy" />
+                                    <MudTooltip Text="Starting payment for the ledger payment cycles. The payment cycles are in months, giving enough breathing room for the lessees">
+                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudSelect Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="Color.Secondary">
+                                        @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
                                     {
                                         <MudSelectItem Value="@item">@item</MudSelectItem>
                                     }
@@ -137,8 +141,8 @@
                                 <MudPaper Elevation="0" Class="pa-1" Style="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? "d-none" : "")">
                                     <MudTextField Disabled="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? true : false)" T="string" Label="Collateral" Variant="Variant.Outlined" @bind-Value="Context.AddEditModal.RequestModel.InfoCollateral" Text="@(string.IsNullOrEmpty(Context.AddEditModal.RequestModel.InfoCollateral) ? _infoCollateralGeneric : Context.AddEditModal.RequestModel.InfoCollateral)" Lines="3" />
                                     @*
-                        The uplaod must be on the lessee's side'
-                        <CustomFileUpload @key="@("Collateral")" FileIdentifier="InputOutputResourceDocumentType.None" ForUploadFiles="ForUploadFiles" /> *@
+                            The uplaod must be on the lessee's side'
+                            <CustomFileUpload @key="@("Collateral")" FileIdentifier="InputOutputResourceDocumentType.None" ForUploadFiles="ForUploadFiles" /> *@
                                 </MudPaper>
                                 <MudTooltip Text="@_infoCollateralGenericHelpText">
                                     <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
@@ -146,33 +150,34 @@
                             </MudItem>
 
                             @if (TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
-                            {
-                                <MudItem xs="12" md="12">
-                                    <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
-                                    <MudText Typo="Typo.h5" Color="Color.Success">@string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
+                                {
+                                    <MudItem xs="12" md="12">
+                                        <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
+                                        <MudText Typo="Typo.h5" Color="Color.Success">@string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
 
-                                    <MudTable Class="ehulog-mud-table-compact" Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
-                                        <HeaderContent>
-                                            <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
-                                            <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
-                                            <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
-                                            <MudTh><MudText Typo="Typo.caption">Balance</MudText></MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate>
-                                            <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
-                                            <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.Due)</MudText></MudTd>
-                                            <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Amount)</MudText></MudTd>
-                                            <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
-                                        </RowTemplate>
-                                    </MudTable>
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    </MudItem>
+                                        <MudTable Class="ehulog-mud-table-compact" Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                                            <HeaderContent>
+                                                <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
+                                                <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
+                                                <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
+                                                <MudTh><MudText Typo="Typo.caption">Balance</MudText></MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate>
+                                                <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
+                                                <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.Due)</MudText></MudTd>
+                                                <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Amount)</MudText></MudTd>
+                                                <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
+                                            </RowTemplate>
+                                        </MudTable>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudItem>
 
-                </EditFormContent>
-            </EntityTable>
-        }
+                    </EditFormContent>
+                </EntityTable>
+            }
+        </CascadingValue>
     }
 }
 
@@ -412,62 +417,101 @@
 
     protected RenderFragment<LoanDto> LoanTemplate => trail => __builder =>
     {
-        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
-
-        if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
+        if (AppDataService != default)
         {
-            loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault();
-        }
-
-        var loanLedgerTotal = trail.Ledgers?.Where(l => l.LoanId.Equals(trail.Id)).Sum(s => s.AmountDue);
-
-        var _imageUrl = string.IsNullOrEmpty(loanLender?.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + loanLender?.Product?.Image?.ImagePath);
-
-        <MudCard Elevation="0">
-            <MudCardHeader Class="text-center">
-                <MudText Typo="Typo.h5" Class="mx-auto">@string.Format("{0:#,0.00}", loanLedgerTotal) @Currency</MudText>
-            </MudCardHeader>
-            <MudCardContent Class="text-center">
-                @if (!string.IsNullOrEmpty(_imageUrl))
+            if (AppDataService.AppUser != default)
+            {
+                if (trail.LoanLenders != default)
                 {
-                    <MudAvatar Square="true" Image="@_imageUrl" Style=" width:150px;height:100px;position:relative"></MudAvatar>
-                }
-            </MudCardContent>
-            <MudCardActions Class="text-center">
-                <MudButton DisableElevation="true" Class="mx-auto px-3" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ManageAccounts" Color="Color.Success">Manage</MudButton>
-                @if (AppDataService.AppUser is { })
-                {
-                    if (trail.LoanLenders is { })
+                    var loanLender = trail.LoanLenders.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault() ?? default!;
+
+                    if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
                     {
-                        var loanLender = trail.LoanLenders?.FirstOrDefault();
+                        loanLender = trail.LoanLenders.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default;
+                    }
 
-                        if (loanLender is { })
+                    float loanLedgerTotal = 0.0f;
+
+                    if (trail.Ledgers != default)
+                    {
+                        loanLedgerTotal = trail.Ledgers.Where(l => l.LoanId.Equals(trail.Id)).Sum(s => s.AmountDue);
+                    }
+
+                    string imageUrl = string.Empty;
+
+                    if (loanLender != default)
+                    {
+                        if (loanLender.Product != default)
                         {
-                            @if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
+                            if (loanLender.Product.Image != default)
                             {
-                                <SpecificLoanLenderProfileQuickInfo LoanLender="@loanLender" />
+                                imageUrl = string.IsNullOrEmpty(loanLender.Product.Image.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + loanLender.Product.Image.ImagePath);
                             }
                         }
                     }
+
+                    <MudCard Elevation="0">
+                        <MudCardHeader Class="text-center">
+                            <MudText Typo="Typo.h5" Class="mx-auto">@string.Format("{0:#,0.00}", loanLedgerTotal) @Currency</MudText>
+                        </MudCardHeader>
+                        <MudCardContent Class="text-center">
+                            @if (!string.IsNullOrEmpty(imageUrl))
+                            {
+                                <MudAvatar Square="true" Image="@imageUrl" Style=" width:150px;height:100px;position:relative"></MudAvatar>
+                            }
+                        </MudCardContent>
+                        <MudCardActions Class="text-center">
+                            <MudButton DisableElevation="true" Class="mx-auto px-3" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ManageAccounts" Color="Color.Success">Manage</MudButton>
+                            @if (trail.LoanLenders != default)
+                            {
+                                var loanLender = trail.LoanLenders.FirstOrDefault() ?? default;
+
+                                if (loanLender is { })
+                                {
+                                    @if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
+                                    {
+                                        <SpecificLoanLenderProfileQuickInfo LoanLender="@loanLender" />
+                                    }
+                                }
+                            }
+                        </MudCardActions>
+                    </MudCard>
                 }
-            </MudCardActions>
-        </MudCard>
+            }
+        }
+
     };
 
     protected RenderFragment<LoanDto> LoanDetailsTemplate => trail => __builder =>
     {
-        var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                if (trail.LoanLenders != default)
+                {
+                    var loanLender = trail.LoanLenders.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault() ?? default;
 
-        <MudPaper Class="pa-2 ma-2 text-left d-block" Elevation="0">
+                    <MudPaper Class="pa-2 ma-2 text-left d-block" Elevation="0">
 
-            <MudText Typo="Typo.h6"><MudIcon Size="Size.Small" Icon="@(trail.Status.Equals(LoanStatus.Published) ? Icons.Material.Filled.Check : Icons.Material.Filled.DoNotDisturb)" Title="Status" /> @trail.Status</MudText>
+                        <MudText Typo="Typo.h6"><MudIcon Size="Size.Small" Icon="@(trail.Status.Equals(LoanStatus.Published) ? Icons.Material.Filled.Check : Icons.Material.Filled.DoNotDisturb)" Title="Status" /> @trail.Status</MudText>
 
-            <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Money" Title="Base Amount" /> Base: @string.Format("{0:#,0.00}", loanLender?.Product?.Amount) @Currency</MudText>
-            <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText>
-            <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText>
-            <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.InterestType</MudText>
-            <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText>
-        </MudPaper>
+                        @if (loanLender != default)
+                        {
+                            if (loanLender.Product != default)
+                            {
+                                <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Money" Title="Base Amount" /> Base: @string.Format("{0:#,0.00}", loanLender.Product.Amount) @Currency</MudText>
+                            }
+                        }
+
+                        <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText>
+                        <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText>
+                        <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.InterestType</MudText>
+                        <MudText Typo="Typo.body2"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText>
+                    </MudPaper>
+                }
+            }
+        }
     };
 
     protected RenderFragment<LoanDto> LoanStatusTemplate => trail => __builder =>
@@ -502,78 +546,95 @@
 
     protected RenderFragment<LoanDto> LoanLedgersTemplate => trail => __builder =>
     {
-        var ledgers = trail.Ledgers?.Where(l => l.LoanId.Equals(trail.Id)).OrderBy(o => o.Position).ToList();
+        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            @if (trail.Ledgers != default)
+            {
+                var ledgers = trail.Ledgers.Where(l => l.LoanId.Equals(trail.Id)).OrderBy(o => o.Position);
 
-        if (ledgers is not null && ledgers.Count() > 0)
-        {
-            <MudTable Items="@ledgers" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
-                <HeaderContent>
-                    <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
-                    <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
-                    <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
-                    <MudTh><MudText Typo="Typo.caption">Paid</MudText></MudTh>
-                    <MudTh><MudText Typo="Typo.caption">Status</MudText></MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@context.Position</MudText></MudTd>
-                    <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", context.DateDue)</MudText></MudTd>
-                    <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", context.AmountDue)</MudText></MudTd>
-                    <MudTd DataLabel="Paid"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", context.DatePaid)</MudText></MudTd>
-                    <MudTd DataLabel="Status"><MudText Typo="Typo.caption">@context.Status</MudText></MudTd>
-                </RowTemplate>
-            </MudTable>
-        }
+                if (ledgers != default)
+                {
+                    if (ledgers.Count() > 0)
+                    {
+                        <MudTable Items="@ledgers" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                            <HeaderContent>
+                                <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
+                                <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
+                                <MudTh><MudText Typo="Typo.caption">Amount</MudText></MudTh>
+                                <MudTh><MudText Typo="Typo.caption">Paid</MudText></MudTh>
+                                <MudTh><MudText Typo="Typo.caption">Status</MudText></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@context.Position</MudText></MudTd>
+                                <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", context.DateDue)</MudText></MudTd>
+                                <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", context.AmountDue)</MudText></MudTd>
+                                <MudTd DataLabel="Paid"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", context.DatePaid)</MudText></MudTd>
+                                <MudTd DataLabel="Status"><MudText Typo="Typo.caption">@context.Status</MudText></MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                }
+            }
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert="true">
+            <MudButton Style="text-transform:capitalize" DisableElevation="true" Class="mx-auto px-3" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Text" Color="Color.Success">See Manage</MudButton>
+        </MudHidden>
     };
 
     protected RenderFragment<LoanDto> LoanApplicantsTemplate => trail => __builder =>
     {
-        LoanLesseeDto _loanLesseeDto = default!;
-
-        @if (AppDataService.AppUser is not null)
+        if (AppDataService != default)
         {
-            bool isOwner = false;
+            LoanLesseeDto _loanLesseeDto = default!;
 
-            @if (trail.LoanLenders is not null)
+            if (AppDataService.AppUser != default)
             {
-                var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
+                bool isOwner = false;
 
-                if (loanLender is { })
+                if (trail.LoanLenders != default)
                 {
-                    isOwner = true;
+                    var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
+
+                    if (loanLender is { })
+                    {
+                        isOwner = true;
+                    }
                 }
+
+                if (trail.LoanLessees != default)
+                {
+                    _loanLesseeDto = trail.LoanLessees.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
+                }
+
+                <SpecificLoanLender LoanStatus="@trail.Status" />
+
+                if (trail.LoanApplicants != default)
+                {
+                    <BlockInfoLoanApplicants Loan="@trail" />
+                    @* <SpecificLoanApplicants IsMinimal="false" LoanId="@trail.Id" IsPossibleToAppy="true" IsOwner="@isOwner" Applicants="@trail.LoanApplicants" LoanStatus="@trail.Status" LoanLessee="@_loanLesseeDto" /> *@
+                }
+
             }
-
-            @if (trail.LoanLessees is not null)
-            {
-                _loanLesseeDto = trail.LoanLessees?.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
-            }
-
-            <SpecificLoanLender LoanStatus="@trail.Status" />
-
-            @if (trail.LoanApplicants is not null)
-            {
-                <SpecificLoanApplicants IsMinimal="false" LoanId="@trail.Id" IsPossibleToAppy="true" IsOwner="@isOwner" Applicants="@trail.LoanApplicants" LoanStatus="@trail.Status" LoanLessee="@_loanLesseeDto" />
-            }
-
         }
 
     };
 
     protected RenderFragment<LoanDto> ExtraAction => trail => __builder =>
     {
-        @if (AppDataService.AppUser is not null)
+        if (AppDataService != default)
         {
-            if (trail.LoanLenders is not null)
+            if (AppDataService.AppUser != default)
             {
-                var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
-
-                if (loanLender is { })
+                if (trail.LoanLenders != default)
                 {
-                    <MudButton Href="@string.Format("/loan/{0}", trail.Id)">Manage</MudButton>
+                    var loanLender = trail.LoanLenders.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault() ?? default;
+
+                    if (loanLender is { })
+                    {
+                        <MudButton Href="@($"/loan/{trail.Id}")">Manage</MudButton>
+                    }
                 }
+
             }
-
         }
-
     };
 }

@@ -8808,14 +8808,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Update a loanApplicant.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid loanId, System.Guid? appUserId, string loanApplicantUserId, UpdateLoanApplicantRequest request);
+        System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid? loanId, System.Guid? appUserId, UpdateLoanApplicantRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Update a loanApplicant.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid loanId, System.Guid? appUserId, string loanApplicantUserId, UpdateLoanApplicantRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid? loanId, System.Guid? appUserId, UpdateLoanApplicantRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a loanApplicant.
@@ -9072,9 +9072,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Update a loanApplicant.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid loanId, System.Guid? appUserId, string loanApplicantUserId, UpdateLoanApplicantRequest request)
+        public virtual System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid? loanId, System.Guid? appUserId, UpdateLoanApplicantRequest request)
         {
-            return UpdateAsync(loanId, appUserId, loanApplicantUserId, request, System.Threading.CancellationToken.None);
+            return UpdateAsync(loanId, appUserId, request, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -9082,21 +9082,17 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Update a loanApplicant.
         /// </summary>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid loanId, System.Guid? appUserId, string loanApplicantUserId, UpdateLoanApplicantRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Guid> UpdateAsync(System.Guid? loanId, System.Guid? appUserId, UpdateLoanApplicantRequest request, System.Threading.CancellationToken cancellationToken)
         {
-            if (loanId == null)
-                throw new System.ArgumentNullException("loanId");
-
-            if (loanApplicantUserId == null)
-                throw new System.ArgumentNullException("loanApplicantUserId");
-
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("api/v1/loanapplicants/{loanId}/{loanApplicantUserId}?");
-            urlBuilder_.Replace("{loanId}", System.Uri.EscapeDataString(ConvertToString(loanId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{loanApplicantUserId}", System.Uri.EscapeDataString(ConvertToString(loanApplicantUserId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append("api/v1/loanapplicants?");
+            if (loanId != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("loanId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(loanId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
             if (appUserId != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("appUserId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(appUserId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -17070,6 +17066,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
     {
         [Newtonsoft.Json.JsonProperty("packageId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? PackageId { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isLender", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? IsLender { get; set; } = default!;
 
     }
 

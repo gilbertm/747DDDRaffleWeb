@@ -85,44 +85,56 @@
         </MudNavGroup>
     }
 
-    @* Products *@
-    @if (_canViewProducts || _canViewBrands || _canViewCategories)
+    @if (AppDataService != default)
     {
-        @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
-        <MudNavGroup Title="@L["Dependencies"]" Expanded Icon="@Icons.Filled.Storefront">
-            @if (_canViewProducts)
+        if (AppDataService.AppUser != default)
+        {
+            if (AppDataService.AppUser?.RoleName?.Equals("Lender") == true)
             {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.Engineering" Class="custom-nav-child">
-                    @L["Products"]
-                </MudNavLink>
+                if (_canViewAppUserProducts || _canViewBrands || _canViewCategories)
+                {
+                    @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
+                    <MudNavGroup Title="@L["Dependencies"]" Expanded Icon="@Icons.Filled.Storefront">
+                        @if (_canViewAppUserProducts)
+                        {
+                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.Filled.Engineering" Class="custom-nav-child">
+                                @L["Products"]
+                            </MudNavLink>
+                        }
+                        @if (_canViewBrands)
+                        {
+                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.Discount" Class="custom-nav-child">
+                                @L["Brands"]
+                            </MudNavLink>
+                        }
+                        @if (_canViewCategories)
+                        {
+                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.Category" Class="custom-nav-child">
+                                @L["Categories"]
+                            </MudNavLink>
+                        }
+                    </MudNavGroup>
+                }
+
             }
-            @if (_canViewBrands)
+
+            if (_canViewPackages)
             {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/brands" Icon="@Icons.Filled.Discount" Class="custom-nav-child">
-                    @L["Brands"]
-                </MudNavLink>
+                @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
+                <MudNavGroup Title="@L["Packages"]" Expanded Icon="@Icons.Outlined.Inventory2">
+                    @if (_canViewPackages)
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Outlined.Inventory2" Class="custom-nav-child">
+                            @L["Packages"]
+                        </MudNavLink>
+                    }
+                </MudNavGroup>
             }
-            @if (_canViewCategories)
-            {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/categories" Icon="@Icons.Filled.Category" Class="custom-nav-child">
-                    @L["Categories"]
-                </MudNavLink>
-            }
-        </MudNavGroup>
+        }
     }
 
-    @if (_canViewPackages)
-    {
-        @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
-        <MudNavGroup Title="@L["Packages"]" Expanded Icon="@Icons.Outlined.Inventory2">
-            @if (_canViewPackages)
-            {
-                <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Outlined.Inventory2" Class="custom-nav-child">
-                    @L["Packages"]
-                </MudNavLink>
-            }
-        </MudNavGroup>
-    }
+
+
 
     @* Management *@
     @if (CanViewAdministrationGroup)
@@ -134,10 +146,6 @@
         {
             <MudNavLink Href="@_hangfireUrl" Match="NavLinkMatch.All" Target="_blank" Icon="@Icons.Material.Filled.Work">@L["Hangfire"]</MudNavLink>
         }
-
-
-
-
 
         @if (_canViewUsers)
         {

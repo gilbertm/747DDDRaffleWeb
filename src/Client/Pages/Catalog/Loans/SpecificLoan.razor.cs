@@ -33,6 +33,8 @@ public partial class SpecificLoan
 
     private LoanViewModel RequestModel { get; set; } = new();
 
+    private LoanDto Loan { get; set; } = default!;
+
     // lender
     private bool _canUpdate { get; set; } = false;
 
@@ -59,6 +61,36 @@ public partial class SpecificLoan
     protected override async Task OnInitializedAsync()
     {
         await AppDataService.InitializationAsync();
+
+        if (loanId != default! && loanId != Guid.Empty)
+        {
+            if (await ApiHelper.ExecuteCallGuardedAsync(
+                                                    async () => await LoansClient.GetAsync(loanId.GetValueOrDefault()),
+                                                    Snackbar,
+                                                    null) is LoanDto loanDto)
+            {
+                Loan = loanDto;
+
+                if (Loan != default)
+                {
+                    if (Loan.LoanApplicants != default)
+                    {
+                        if (Loan.LoanApplicants.Count > 0)
+                        {
+                            foreach (var loanApplicantDto in Loan.LoanApplicants)
+                            {
+                                var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicantDto.AppUser.ApplicationUserId);
+
+                                loanApplicantDto.AppUser.FirstName = userDetailsDto.FirstName;
+                                loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
+                                loanApplicantDto.AppUser.Email = userDetailsDto.Email;
+                                loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if (AppDataService != default)
         {

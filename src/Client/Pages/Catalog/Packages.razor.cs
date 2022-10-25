@@ -30,108 +30,128 @@ public partial class Packages
 
     protected EntityServerTableContext<PackageDto, Guid, PackageViewModel> Context { get; set; } = default!;
 
-    protected override void OnInitialized() =>
-        Context = new(
-            entityName: L["Package"],
-            entityNamePlural: L["Packages"],
-            entityResource: EHULOGResource.Packages,
-            fields: new()
+    protected override async Task OnInitializedAsync()
+    {
+        await AppDataService.InitializationAsync();
+
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
             {
+
+                Context = new(
+       entityName: L["Package"],
+       entityNamePlural: L["Packages"],
+       entityResource: EHULOGResource.Packages,
+       fields: new()
+       {
                 new(package => package.Id, L["Id"], "Id", Template: PackageDtoTemplate),
-                new(package => package.Name, L["Name"], "Name"),
-                new(package => package.Description, L["Description"], "Description"),
-                new(package => package.IsDefault, L["Default"], "IsDefault"),
+                new(package => package.Name, L["Features"], "Name", Template: PackageDtoFeaturesTemplate),
                 new(package => package.IsLender, L["Lender"], "IsLender"),
-            },
-            idFunc: package => package.Id,
-            searchFunc: async filter =>
-            {
-                var result = await PackagesClient.SearchAsync(filter.Adapt<SearchPackagesRequest>());
+       },
+       idFunc: package => package.Id,
+       searchFunc: async filter =>
+       {
+           var packageSearchFilter = filter.Adapt<SearchPackagesRequest>();
 
-                if (result.Data.Count() > 0)
-                {
-                    foreach (var item in result.Data)
-                    {
-                        var image = await InputOutputResourceClient.GetAsync(item.Id);
+           if (AppDataService.AppUser.RoleName?.Equals("Lender") == true)
+           {
+               packageSearchFilter.IsLender = true;
+           }
+           else if (AppDataService.AppUser.RoleName?.Equals("Lessee") == true)
+           {
+               packageSearchFilter.IsLender = false;
+           }
 
-                        if (image.Count() > 0)
-                        {
-                            item.Image = image.First();
-                        }
-                    }
-                }
+           var result = await PackagesClient.SearchAsync(packageSearchFilter);
 
-                return result.Adapt<PaginationResponse<PackageDto>>();
-            },
-            createFunc: async package =>
-            {
-                var createPackageRequestGuid = await PackagesClient.CreateAsync(package.Adapt<CreatePackageRequest>());
+           if (result.Data.Count() > 0)
+           {
+               foreach (var item in result.Data)
+               {
+                   var image = await InputOutputResourceClient.GetAsync(item.Id);
 
-                if (!string.IsNullOrEmpty(package.ImageInBytes))
-                {
-                    var imageCreate = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
-                    {
-                        ReferenceId = createPackageRequestGuid,
-                        InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
-                        Image = new FileUploadRequest()
-                        {
-                            Data = package.ImageInBytes ?? default!,
-                            Extension = package.ImageExtension ?? string.Empty,
-                            Name = $"{package.Name}_{Guid.NewGuid():N}"
-                        },
-                        InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
-                        InputOutputResourceType = InputOutputResourceType.Package
-                    });
-                }
+                   if (image.Count() > 0)
+                   {
+                       item.Image = image.First();
+                   }
+               }
+           }
 
-                package.ImageInBytes = string.Empty;
+           return result.Adapt<PaginationResponse<PackageDto>>();
+       },
+       createFunc: async package =>
+       {
+           var createPackageRequestGuid = await PackagesClient.CreateAsync(package.Adapt<CreatePackageRequest>());
 
-                NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-            },
-            updateFunc: async (id, package) =>
-            {
-                var updatePackageRequest = package.Adapt<UpdatePackageRequest>();
+           if (!string.IsNullOrEmpty(package.ImageInBytes))
+           {
+               var imageCreate = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
+               {
+                   ReferenceId = createPackageRequestGuid,
+                   InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
+                   Image = new FileUploadRequest()
+                   {
+                       Data = package.ImageInBytes ?? default!,
+                       Extension = package.ImageExtension ?? string.Empty,
+                       Name = $"{package.Name}_{Guid.NewGuid():N}"
+                   },
+                   InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
+                   InputOutputResourceType = InputOutputResourceType.Package
+               });
+           }
 
-                Guid packageId = await PackagesClient.UpdateAsync(id, updatePackageRequest);
+           package.ImageInBytes = string.Empty;
 
-                var image = await InputOutputResourceClient.GetAsync(packageId);
+           NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+       },
+       updateFunc: async (id, package) =>
+       {
+           var updatePackageRequest = package.Adapt<UpdatePackageRequest>();
 
-                if (!string.IsNullOrEmpty(package.ImageInBytes))
-                {
-                    var deleteImage = await InputOutputResourceClient.DeleteAsync(package.Id);
+           Guid packageId = await PackagesClient.UpdateAsync(id, updatePackageRequest);
 
-                    if (!string.IsNullOrEmpty(deleteImage.ToString()))
-                    {
-                        var updateImage = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
-                        {
-                            ReferenceId = packageId,
-                            InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
-                            Image = new FileUploadRequest()
-                            {
-                                Data = package.ImageInBytes ?? default!,
-                                Extension = package.ImageExtension ?? string.Empty,
-                                Name = $"{package.Name}_{Guid.NewGuid():N}"
-                            },
-                            InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
-                            InputOutputResourceType = InputOutputResourceType.Package
-                        });
-                    }
-                }
+           var image = await InputOutputResourceClient.GetAsync(packageId);
 
-                package.ImageInBytes = string.Empty;
+           if (!string.IsNullOrEmpty(package.ImageInBytes))
+           {
+               var deleteImage = await InputOutputResourceClient.DeleteAsync(package.Id);
 
-                NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-            },
-            deleteFunc: async id =>
-            {
-                var deletePackageId = await PackagesClient.DeleteAsync(id);
+               if (!string.IsNullOrEmpty(deleteImage.ToString()))
+               {
+                   var updateImage = await InputOutputResourceClient.CreateAsync(new CreateInputOutputResourceRequest()
+                   {
+                       ReferenceId = packageId,
+                       InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
+                       Image = new FileUploadRequest()
+                       {
+                           Data = package.ImageInBytes ?? default!,
+                           Extension = package.ImageExtension ?? string.Empty,
+                           Name = $"{package.Name}_{Guid.NewGuid():N}"
+                       },
+                       InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
+                       InputOutputResourceType = InputOutputResourceType.Package
+                   });
+               }
+           }
 
-                if (deletePackageId != default!)
-                {
-                    var deleteImage = await InputOutputResourceClient.DeleteAsync(deletePackageId);
-                }
-            },
-            exportAction: string.Empty);
+           package.ImageInBytes = string.Empty;
+
+           NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+       },
+       deleteFunc: async id =>
+       {
+           var deletePackageId = await PackagesClient.DeleteAsync(id);
+
+           if (deletePackageId != default!)
+           {
+               var deleteImage = await InputOutputResourceClient.DeleteAsync(deletePackageId);
+           }
+       },
+       exportAction: string.Empty);
+            }
+        }
+    }
 
     private async Task UploadFiles(InputFileChangeEventArgs e)
     {

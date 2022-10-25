@@ -2,6 +2,7 @@
 @page "/loan/{loanId:guid}"
 @using System.Linq
 @using System.Globalization
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components
 @* attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)] *@
 
 @inject IStringLocalizer<SpecificLoan> L
@@ -12,7 +13,7 @@
 {
     @if (AppDataService.AppUser != default)
     {
-        <CascadingValue Value="@AppDataService.AppUser" Name="__appUserDto">
+        <CascadingValue Value="@AppDataService.AppUser" Name="AppUser">
             @if (!loanId.HasValue)
             {
                 @:None
@@ -43,9 +44,11 @@
                                 <MudItem xs="12">
                                     <MudGrid Spacing="2" Justify="Justify.Center">
                                         <MudItem xs="12" md="12" Class="text-center">
-                                            <SpecificLoanLessee CanUpdate="_canUpdate" />
+                                            @* <SpecificLoanLessee CanUpdate="_canUpdate" />
                                             <SpecificLoanLender LoanStatus="RequestModel.Status" />
-                                            <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" IsOwner="_canUpdate" Applicants="RequestModel.LoanApplicants" LoanStatus="RequestModel.Status" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" LoanLessee="@(RequestModel?.LoanLessees?.FirstOrDefault() ?? default)" />
+                                            <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" IsOwner="_canUpdate" Applicants="RequestModel.LoanApplicants" LoanStatus="RequestModel.Status" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" LoanLessee="@(RequestModel?.LoanLessees?.FirstOrDefault() ?? default)" /> *@
+                                            <BlockInfoLoanApplicants Loan="Loan" />
+
                                         </MudItem>
                                     </MudGrid>
                                 </MudItem>

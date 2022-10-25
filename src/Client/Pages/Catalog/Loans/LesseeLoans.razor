@@ -1,0 +1,105 @@
+﻿@page "/loans/lessee"
+@using System.Globalization
+@using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components
+
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)]
+
+@inject IStringLocalizer<FrontLoans> L
+
+<EhulogTitle Title="@L["Loans"]" Description="@L["Browse"]" />
+
+@if (AppDataService != default)
+{
+    if (AppDataService.AppUser != default)
+    {
+        if (!(new[] { "Lender", "Lessee" }.Contains(AppDataService.AppUser.RoleName)))
+        {
+            <MudText Typo="Typo.body2" Class="text-center mb-5" Color="Color.Error">Please complete your account profile. Features may not work as intended, if you have not completed this process.</MudText>
+        }
+
+        if (Context != default)
+        {
+            <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
+        }
+    }
+}
+
+<LossGeolocationPopup />
+
+@code {
+
+    protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
+    {
+        LoanLesseeDto _loanLesseeDto = default!;
+        LoanLenderDto _loanLenderDto = default!;
+        List<LoanLedgerDto> _loanLedgers = default!;
+        float _sumLoan = 0f;
+        string href = "/loan/" + @trail.Id;
+
+        string _imageUrl = string.Empty;
+        string _productName = string.Empty;
+
+        if (trail.LoanLenders is { })
+        {
+            _loanLenderDto = trail.LoanLenders.FirstOrDefault() ?? default!;
+            _imageUrl = string.IsNullOrEmpty(trail.LoanLenders.FirstOrDefault()?.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + trail.LoanLenders.First().Product?.Image?.ImagePath);
+            _productName = trail.LoanLenders.FirstOrDefault()?.Product?.Name ?? string.Empty;
+        }
+
+        if (trail.LoanLessees != default)
+        {
+            _loanLesseeDto = trail.LoanLessees.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
+        }
+
+        if (trail.Ledgers is { })
+        {
+            _loanLedgers = trail.Ledgers.ToList() ?? default!;
+
+            if (!(_loanLedgers.Equals(default)))
+            {
+                _sumLoan = _loanLedgers.Sum(l => l.AmountDue);
+            }
+        }
+
+
+        <MudCard>
+            <MudCardContent Class="py-0">
+                <MudImage Fluid="true" Src="@_imageUrl" Alt="@_productName" Class="rounded-lg" />
+            </MudCardContent>
+            <MudCardContent Class="py-0 text-center">
+                @if (trail.LoanApplicants is not null)
+                {
+                    <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" LoanLessee="@_loanLesseeDto" LoanStatus="@trail.Status" />
+                }
+                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{Colors.Amber.Darken2}")">@string.Format("{0:#,0.00}", _sumLoan)</MudText> <MudText Typo="Typo.body1" Class="d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@_currency</MudText><br />
+                <MudText Typo="Typo.caption" Style="@($"color:{Colors.Brown.Lighten1}")">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
+            </MudCardContent>
+            <MudCardContent Class="py-0">
+                <MudPaper Class="text-left d-block" Elevation="0">
+                    <MudGrid>
+                        <MudItem xs="6" Class="py-1">
+                            <MudField InnerPadding="false" Label="Month(s)" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.CalendarMonth" IconSize="Size.Small"><MudText Typo="Typo.caption">@trail.Month</MudText></MudField>
+                        </MudItem>
+                        <MudItem xs="6" Class="py-1">
+                            <MudField InnerPadding="false" Label="Interest" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Percent" IconSize="Size.Small"><MudText Typo="Typo.caption">@trail.Interest</MudText></MudField>
+                        </MudItem>
+                        <MudItem xs="12" Class="py-1">
+                            <MudField InnerPadding="false" Label="Payment start" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Today" IconSize="Size.Small"> <MudText Typo="Typo.caption">@string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText></MudField>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudCardContent>
+            <MudCardActions>
+                @if (AppDataService != default)
+                {
+                    if (AppDataService.AppUser != default)
+                    {
+                        <MinimalBlockInfoLoanStatus Role="@($"{AppDataService.AppUser.RoleName}")" AppUserId="@AppDataService.AppUser.Id" ApplicationUserId="@AppDataService.AppUser.ApplicationUserId" CanApply="true" Href="@href" Loan="@trail" />
+                    }
+                }
+            </MudCardActions>
+        </MudCard>
+    };
+}

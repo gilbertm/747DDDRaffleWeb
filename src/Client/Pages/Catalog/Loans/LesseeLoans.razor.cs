@@ -5,9 +5,9 @@ using Mapster;
 using Microsoft.AspNetCore.Components;
 using Nager.Country;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
 
-public partial class FrontLoans
+public partial class LesseeLoans
 {
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
@@ -63,9 +63,7 @@ public partial class FrontLoans
                         }
                     }
 
-                    NavigationManager.NavigateTo("/loans/lessee", true);
-
-                    /* Context = new EntityContainerContext<LoanDto>(
+                    Context = new EntityContainerContext<LoanDto>(
                            searchFunc: async filter =>
                            {
                                var loanFilter = filter.Adapt<SearchLoansLesseeRequest>();
@@ -93,7 +91,7 @@ public partial class FrontLoans
 
                                return result.Adapt<EntityContainerPaginationResponse<LoanDto>>();
                            },
-                           template: BodyTemplate); */
+                           template: BodyTemplate);
                 }
             }
         }
