@@ -9,6 +9,21 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Pages\Catalog\FrontLoans.razor.cs" />
+      <Compile Remove="Pages\Catalog\Loans\SpecificLoanApplicants.razor.cs" />
+      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLedger.razor.cs" />
+      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLender.razor.cs" />
+      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLenderProfileQuickInfo.razor.cs" />
+      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLessee.razor.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Pages\Catalog\FrontLoans.razor" />
+      <Content Remove="Pages\Catalog\Loans\SpecificLoanApplicants.razor" />
+      <Content Remove="Pages\Catalog\Loans\SpecificLoanLedger.razor" />
+      <Content Remove="Pages\Catalog\Loans\SpecificLoanLender.razor" />
+      <Content Remove="Pages\Catalog\Loans\SpecificLoanLenderProfileQuickInfo.razor" />
+      <Content Remove="Pages\Catalog\Loans\SpecificLoanLessee.razor" />
       <Content Remove="wwwroot\js\locationIQ.js" />
     </ItemGroup>
 

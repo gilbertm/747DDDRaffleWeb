@@ -8,6 +8,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components;
 
 public partial class BlockInfoLoanApplicants
 {
+    [CascadingParameter(Name = "AppDataService")]
+    private AppDataService AppDataService { get; set; } = default!;
+
     [Parameter]
     public LoanDto Loan { get; set; } = default!;
 
@@ -20,9 +23,6 @@ public partial class BlockInfoLoanApplicants
     [Inject]
     protected ILoansClient ILoansClient { get; set; } = default!;
 
-    [CascadingParameter(Name = "AppUser")]
-    private AppUserDto AppUser { get; set; } = default!;
-
     private LoanApplicantDto MyselfApplicant { get; set; } = default!;
 
     private LoanLenderDto MyselfLender { get; set; } = default!;
@@ -31,7 +31,10 @@ public partial class BlockInfoLoanApplicants
 
     private bool IsOwner { get; set; } = false;
 
-    private void OpenLendersUserInspectionView(LoanApplicantDto loanApplicant)
+    [Parameter]
+    public EventCallback OnClickApprove { get; set; } = default!;
+
+    private async Task OpenLendersUserInspectionView(LoanApplicantDto loanApplicant)
     {
         var parameters = new DialogParameters { ["LoanApplicantDto"] = loanApplicant, ["IsOwner"] = IsOwner, ["LoanStatus"] = Loan.Status };
 
@@ -39,7 +42,18 @@ public partial class BlockInfoLoanApplicants
 
         if (MyselfLender != default)
         {
-            Dialog.Show<LendersUserInspectionView>("User's Details", parameters, noHeader);
+            var dialog = Dialog.Show<LendersUserInspectionView>("User's Details", parameters, noHeader);
+
+            var resultDialog = await dialog.Result;
+
+            if (!resultDialog.Cancelled)
+            {
+                if (resultDialog.Data is string resultLoanLesseeId)
+                {
+                    await OnClickApprove.InvokeAsync();
+                }
+            }
+
         }
     }
 }

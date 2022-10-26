@@ -1,13 +1,10 @@
 ﻿@page "/home"
 @page "/"
+@using Nager.Country;
 
 @attribute [AllowAnonymous]
 
-@if (_isAuthenticated)
-{
-    <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.FrontLoans />
-}
-else
+@if (!_isAuthenticated)
 {
     <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons.FrontAnonLoans />
 }
@@ -19,13 +16,49 @@ else
     [Inject]
     protected AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
+    [Inject]
+    protected AppDataService AppDataService { get; set; } = default!;
+
     private bool _isAuthenticated { get; set; } = false;
+
+    private string _currency { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         _isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+
+        await AppDataService.InitializationAsync();
+
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
+                {
+                    Navigation.NavigateTo("/catalog/all/loans");
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
+                    {
+                        var countryProvider = new CountryProvider();
+                        var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
+
+                        if (countryInfo is { })
+                        {
+                            if (countryInfo.Currencies.Count() > 0)
+                            {
+                                _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                            }
+                        }
+                    }
+
+                    Navigation.NavigateTo("/loans/lessee");   
+                }
+            }
+        }
     }
 
 }

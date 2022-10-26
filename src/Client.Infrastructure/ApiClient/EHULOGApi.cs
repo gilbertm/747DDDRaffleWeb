@@ -16830,6 +16830,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<LoanStatus> Status { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("appUserId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? AppUserId { get; set; } = default!;
+
         [Newtonsoft.Json.JsonProperty("homeCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? HomeCity { get; set; } = default!;
 

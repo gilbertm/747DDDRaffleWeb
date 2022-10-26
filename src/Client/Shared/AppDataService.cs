@@ -10,6 +10,7 @@ using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -28,12 +29,13 @@ public class AppDataService : IAppDataService
     private IPackagesClient PackagesClient { get; set; } = default!;
 
     private IRolesClient RolesClient { get; set; } = default!;
+    private ILoansClient LoansClient { get; set; } = default!;
 
     private IUsersClient UsersClient { get; set; } = default!;
 
     private IMapBoxGeocoding MapBoxGeocoding { get; set; } = default!;
 
-    public AppDataService(IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory)
+    public AppDataService(IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient)
     {
         GeolocationService = geolocationService;
 
@@ -52,6 +54,8 @@ public class AppDataService : IAppDataService
         RolesClient = rolesClient;
 
         AuthenticationStateProvider = authenticationStateProvider;
+
+        LoansClient = loansClient;
 
     }
 
@@ -285,6 +289,7 @@ public class AppDataService : IAppDataService
     }
 
     public event Action? OnChange;
+
     public GeolocationPosition GetGeolocationPosition()
     {
         return _position ?? default!;
@@ -294,6 +299,70 @@ public class AppDataService : IAppDataService
     {
         return _positionError ?? default!;
     }
+
+    /*                                                      ------ Business Logics ------                                                       */
+    //TODO:// business logics
+
+    private bool _isAnApplicant = false;
+    private bool _isLessee = false;
+    private bool _isApplicantFlagNormal = false;
+    public async Task<bool> IsLesseeCanApplyAsync(Guid loanId)
+    {
+
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (AppUser.RoleName.Equals("Lessee"))
+                {
+                    _isLessee = true;
+                }
+            }
+
+            // check if an applicant
+            if (await LoansClient.GetAsync(loanId) is LoanDto loan)
+            {
+                if (loan != default)
+                {
+                    if (loan.LoanApplicants != default)
+                    {
+                        var applicant = loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppUser.Id));
+                        if (applicant != default)
+                        {
+                            _isAnApplicant = true;
+                        }
+                    }
+                }
+            }
+
+            // check if all the amount loaned is below package limit
+            // don't calculate the payment
+            // just the ballpark/basetotal from each loan is enough
+            float packageLimit = 1000f;
+            float amountTotalLoanedTotal = 100f;
+            if (amountTotalLoanedTotal < packageLimit)
+            {
+
+            }
+
+            // check if all the amount loaned is below package limit
+            int packageLenderLimit = 2;
+            int lenderLimitTotal = 1;
+            if (lenderLimitTotal < packageLenderLimit)
+            {
+
+            }
+
+            if (_isLessee && !_isAnApplicant)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*                                                      ------ Business Logics ------                                                       */
 
     [JSInvokable]
     public void OnPositionRecieved(GeolocationPosition position)

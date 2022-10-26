@@ -1,5 +1,6 @@
 ﻿:root {
     --mud-appbar-height: 100px !important;
+    --mud-palette-secondary: #dfa958 !important;
 }
 
 .mud-main-content {
@@ -220,6 +221,12 @@
 
     > .mud-grid-item > .mud-paper {
         display: flex !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .mud-table-cell {
+        justify-content:initial !important;
     }
 }
 

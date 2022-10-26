@@ -26,7 +26,7 @@
 
 <LossGeolocationPopup />
 
-@code {
+@* code {
 
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
@@ -76,7 +76,7 @@
             </MudCardContent>
             <MudCardContent>
                 <MudPaper Class="text-left d-block" Elevation="0">
-                    @* <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@(trail.Status.Equals(LoanStatus.Published) ? Icons.Material.Filled.Check : Icons.Material.Filled.DoNotDisturb)" Title="Status" /> @trail.Status</MudText> *@
+                    @* <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@(trail.Status.Equals(LoanStatus.Published) ? Icons.Material.Filled.Check : Icons.Material.Filled.DoNotDisturb)" Title="Status" /> @trail.Status</MudText> * @
                     <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Money" Title="Base Amount" /> Base: @string.Format("{0:#,0.00}", _loanLenderDto?.Product?.Amount)</MudText>
                     <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText>
                     <MudText Typo="Typo.caption" Class="d-block"><MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText>
@@ -91,4 +91,4 @@
             </MudCardActions>
         </MudCard>
     };
-}
+} *@

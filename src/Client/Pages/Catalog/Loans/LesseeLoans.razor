@@ -6,23 +6,25 @@
 
 @attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)]
 
-@inject IStringLocalizer<FrontLoans> L
+@inject IStringLocalizer<LesseeLoans> L
 
 <EhulogTitle Title="@L["Loans"]" Description="@L["Browse"]" />
 
 @if (AppDataService != default)
 {
-    if (AppDataService.AppUser != default)
+    @if (AppDataService.AppUser != default)
     {
-        if (!(new[] { "Lender", "Lessee" }.Contains(AppDataService.AppUser.RoleName)))
+        @if (!(new[] { "Lender", "Lessee" }.Contains(AppDataService.AppUser.RoleName)))
         {
             <MudText Typo="Typo.body2" Class="text-center mb-5" Color="Color.Error">Please complete your account profile. Features may not work as intended, if you have not completed this process.</MudText>
         }
+        <CascadingValue Value="AppDataService" Name="AppDataService">
+            @if (Context != default)
+            {
+                <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
 
-        if (Context != default)
-        {
-            <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
-        }
+            }
+        </CascadingValue>
     }
 }
 
@@ -35,8 +37,9 @@
         LoanLesseeDto _loanLesseeDto = default!;
         LoanLenderDto _loanLenderDto = default!;
         List<LoanLedgerDto> _loanLedgers = default!;
+
         float _sumLoan = 0f;
-        string href = "/loan/" + @trail.Id;
+        string _href = "/loan/" + @trail.Id;
 
         string _imageUrl = string.Empty;
         string _productName = string.Empty;
@@ -69,12 +72,40 @@
                 <MudImage Fluid="true" Src="@_imageUrl" Alt="@_productName" Class="rounded-lg" />
             </MudCardContent>
             <MudCardContent Class="py-0 text-center">
-                @if (trail.LoanApplicants is not null)
+                @* if (trail.LoanApplicants is not null)
+        {
+        <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" LoanLessee="@_loanLesseeDto" LoanStatus="@trail.Status" />
+        } *@
+
+                @if (trail != default)
                 {
-                    <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" LoanLessee="@_loanLesseeDto" LoanStatus="@trail.Status" />
+                    if (trail.Status < LoanStatus.Assigned)
+                    {
+                        <BlockInfoLoanApplicants Loan="trail" />
+                    }
+
+                    if (trail.Status >= LoanStatus.Assigned)
+                    {
+                        <BlockInfoLoanLessee Loan="trail" />
+                    }
+
+                    <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{Colors.Amber.Darken2}")">@string.Format("{0:#,0.00}", _sumLoan)</MudText> <MudText Typo="Typo.body1" Class="d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@_currency</MudText>
+                    @if (@trail.LoanLenders != default)
+                    {
+                        <br />
+                        @if (@trail.LoanLenders.FirstOrDefault() != default)
+                        {
+                            var loanLender = @trail.LoanLenders.First();
+
+                            if (loanLender.Product != default)
+                            {
+                                <MudText Typo="Typo.caption" Style="@($"color:{Colors.Brown.Lighten1}")">@loanLender.Product.Name</MudText>
+                            }
+                        }
+                    }
+
                 }
-                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{Colors.Amber.Darken2}")">@string.Format("{0:#,0.00}", _sumLoan)</MudText> <MudText Typo="Typo.body1" Class="d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@_currency</MudText><br />
-                <MudText Typo="Typo.caption" Style="@($"color:{Colors.Brown.Lighten1}")">@trail.LoanLenders?.FirstOrDefault()?.Product?.Name</MudText>
+               
             </MudCardContent>
             <MudCardContent Class="py-0">
                 <MudPaper Class="text-left d-block" Elevation="0">
@@ -86,19 +117,13 @@
                             <MudField InnerPadding="false" Label="Interest" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Percent" IconSize="Size.Small"><MudText Typo="Typo.caption">@trail.Interest</MudText></MudField>
                         </MudItem>
                         <MudItem xs="12" Class="py-1">
-                            <MudField InnerPadding="false" Label="Payment start" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Today" IconSize="Size.Small"> <MudText Typo="Typo.caption">@string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText></MudField>
+                            <MudField InnerPadding="false" Label="Loan available" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Today" IconSize="Size.Small"> <MudText Typo="Typo.caption">@string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText></MudField>
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
             </MudCardContent>
             <MudCardActions>
-                @if (AppDataService != default)
-                {
-                    if (AppDataService.AppUser != default)
-                    {
-                        <MinimalBlockInfoLoanStatus Role="@($"{AppDataService.AppUser.RoleName}")" AppUserId="@AppDataService.AppUser.Id" ApplicationUserId="@AppDataService.AppUser.ApplicationUserId" CanApply="true" Href="@href" Loan="@trail" />
-                    }
-                }
+                <MinimalBlockInfoLoanStatus Loan="@trail" />
             </MudCardActions>
         </MudCard>
     };

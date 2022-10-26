@@ -1,4 +1,4 @@
-﻿@if (AppUser != default)
+﻿@if (AppDataService.AppUser != default)
 {
     if (Loan != default)
     {
@@ -6,7 +6,7 @@
         {
             if (Loan.LoanApplicants.Count > 0)
             {
-                MyselfApplicant = Loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppUser.Id)) ?? default!;
+                MyselfApplicant = Loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppDataService.AppUser.Id)) ?? default!;
             }
         }
 
@@ -15,7 +15,7 @@
         {
             if (Loan.LoanLenders.Count > 0)
             {
-                MyselfLender = Loan.LoanLenders.FirstOrDefault(ll => ll.LenderId.Equals(AppUser.Id)) ?? default!;
+                MyselfLender = Loan.LoanLenders.FirstOrDefault(ll => ll.LenderId.Equals(AppDataService.AppUser.Id)) ?? default!;
 
                 if (MyselfLender != default)
                 {
@@ -29,29 +29,31 @@
         {
             if (Loan.LoanLessees.Count > 0)
             {
-                MyselfLessee = Loan.LoanLessees.FirstOrDefault(ll => ll.LesseeId.Equals(AppUser.Id)) ?? default!;
+                MyselfLessee = Loan.LoanLessees.FirstOrDefault(ll => ll.LesseeId.Equals(AppDataService.AppUser.Id)) ?? default!;
             }
         }
 
         if (Loan.LoanApplicants != default)
         {
-            if (Loan.LoanApplicants.Count > 0)
+
+            // this loan applicants that is flagged 0 = without issues
+            if (Loan.LoanApplicants.Count > 0 && Loan.LoanApplicants.Where(la => la.Flag == 0).Count() > 0)
             {
-                if (!string.IsNullOrEmpty(AppUser.RoleName) && (new string[] { "Admin", "Lender", "Lessee" }).Contains(AppUser.RoleName))
+                if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && (new string[] { "Admin", "Lender", "Lessee" }).Contains(AppDataService.AppUser.RoleName))
                 {
                     <MudGrid Spacing="2" Justify="Justify.Center">
                         <MudItem xs="12" md="12" Class="text-center">
-                            <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Surface">@(MyselfLessee != default ? "Lessee and Applicants" : "Applicants")</MudText>
+                            <MudText Typo="Typo.h6" Class="my-2" Color="Color.Surface">Applicants</MudText>
                                 <MudGrid Justify="Justify.Center">
                                     @foreach (var item in Loan.LoanApplicants.Where(la => la.Flag == 0))
                                 {
-                                    <MudPaper Elevation="@(MyselfLessee != default ? 15 : 3)" Class="mx-1 px-3 py-3">
+                                    <MudPaper Elevation="0" Class="mx-1" Style="background:none!important;">
                                         @if (string.IsNullOrEmpty(item.AppUser.ImageUrl))
                                         {
-                                            item.AppUser.ImageUrl = Config[ConfigNames.ApiBaseUrl] + "Files/Images/ApplicationUser/Default/System - Basic Default - 480x270.jpg";
+                                            item.AppUser.ImageUrl = Config[ConfigNames.ApiBaseUrl] + "Files/Images/ApplicationUser/Default/System---Basic-Default---480x270.png";
                                         }
 
-                                        @if ((new string[] { "Admin", "Lender" }).Contains(AppUser.RoleName))
+                                        @if ((new string[] { "Admin", "Lender" }).Contains(AppDataService.AppUser.RoleName))
                                         {
                                             <MudPaper Elevation="0" onclick="@(() => OpenLendersUserInspectionView(item))" Style="@(clickableApplicantCSS)">
                                                 <MudAvatar Image="@item.AppUser.ImageUrl" Alt="@item.AppUser.Id.ToString()" Size="Size.Large" />

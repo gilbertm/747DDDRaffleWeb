@@ -37,8 +37,6 @@ public partial class GenericLoans
     [Inject]
     protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
     [Inject]
-    protected NavigationManager NavigationManager { get; set; } = default!;
-    [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
 
     protected EntityServerTableContext<LoanDto, Guid, LoanViewModel> Context { get; set; } = default!;
@@ -56,7 +54,12 @@ public partial class GenericLoans
     protected override async Task OnInitializedAsync()
     {
         await AppDataService.InitializationAsync();
+        await LoadContext();
 
+    }
+
+    private async Task LoadContext()
+    {
         if (AppDataService != default)
         {
             if (AppDataService.AppUser is not null)
@@ -64,7 +67,7 @@ public partial class GenericLoans
                 // for lessee, direct to the front loans
                 if ((new string[] { "Lessee" }).Contains(AppDataService.AppUser.RoleName))
                 {
-                    NavigationManager.NavigateTo("/");
+                    Navigation.NavigateTo("/");
                 }
 
                 if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
@@ -110,7 +113,7 @@ public partial class GenericLoans
                         new(loan => loan.StartOfPayment, L["Loan"], "StartOfPayment", Template: LoanDetailsTemplate),
 
                         // new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
-                        new(loan => loan.Id, L["Applicants"], Template: LoanApplicantsTemplate),
+                        new(loan => loan.Id, L["Audience"], Template: LoanApplicantsTemplate),
 
                         // new(loan => loan.LoanLenders?.Where(l => l.LoanId.Equals(loan.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault()?.ProductId, L["ProductId"], "LoanLenders.ProductId"),
                         new(loan => loan.Id, L["Ledger"], Template: LoanLedgersTemplate),
@@ -185,6 +188,25 @@ public partial class GenericLoans
                                        }
                                    }
                                }
+
+                               if (item.LoanLessees is { })
+                               {
+                                   if (item.LoanLessees.Count > 0)
+                                   {
+                                       foreach (var loanLesseeDto in item.LoanLessees)
+                                       {
+                                           var userDetailsDto = await UsersClient.GetByIdAsync(loanLesseeDto.Lessee.ApplicationUserId);
+
+                                           if (loanLesseeDto.Lessee != default)
+                                           {
+                                               loanLesseeDto.Lessee.FirstName = userDetailsDto.FirstName;
+                                               loanLesseeDto.Lessee.LastName = userDetailsDto.LastName;
+                                               loanLesseeDto.Lessee.Email = userDetailsDto.Email;
+                                               loanLesseeDto.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                           }
+                                       }
+                                   }
+                               }
                            }
 
                            return result.Adapt<PaginationResponse<LoanDto>>();
@@ -240,7 +262,7 @@ public partial class GenericLoans
                                                {
                                                    Snackbar.Add(L["Loan successfully created."], Severity.Success);
 
-                                                   NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+                                                   Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
                                                }
                                            }
                                        }
@@ -297,53 +319,53 @@ public partial class GenericLoans
                            });
                        },
                        updateFunc: async (id, loan) =>
-                        {
-                            // Restriction:
-                            // Prevent unnecessary loan changes
-                            // updating a product is not permitted
+                       {
+                           // Restriction:
+                           // Prevent unnecessary loan changes
+                           // updating a product is not permitted
 
-                            // TODO://
-                            // can only create if, packages is still allows
-                            // Business logic of the number allowed
-                            // loans that can be created
-                            // amount
-                            // etc.
+                           // TODO://
+                           // can only create if, packages is still allows
+                           // Business logic of the number allowed
+                           // loans that can be created
+                           // amount
+                           // etc.
 
-                            // CAN ONLY BE CHANGED, if the criteria of allowed limits is still okay
-                            // this loan is not yet a running loan
-                            // that there's already a lessee assigned.
-                            var updateLoanRequest = loan.Adapt<UpdateLoanRequest>();
+                           // CAN ONLY BE CHANGED, if the criteria of allowed limits is still okay
+                           // this loan is not yet a running loan
+                           // that there's already a lessee assigned.
+                           var updateLoanRequest = loan.Adapt<UpdateLoanRequest>();
 
-                            if (await ApiHelper.ExecuteCallGuardedAsync(
-                               async () => await LoansClient.UpdateAsync(id, updateLoanRequest),
-                               Snackbar,
-                               _customValidation) is Guid loanId)
-                            {
-                                if (id.Equals(loanId))
-                                {
-                                    var createLoanLedgerRequest = new CreateLoanLedgerRequest()
-                                    {
-                                        LoanId = loanId
-                                    };
+                           if (await ApiHelper.ExecuteCallGuardedAsync(
+                              async () => await LoansClient.UpdateAsync(id, updateLoanRequest),
+                              Snackbar,
+                              _customValidation) is Guid loanId)
+                           {
+                               if (id.Equals(loanId))
+                               {
+                                   var createLoanLedgerRequest = new CreateLoanLedgerRequest()
+                                   {
+                                       LoanId = loanId
+                                   };
 
-                                    if (await ApiHelper.ExecuteCallGuardedAsync(
-                                        async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
-                                        Snackbar,
-                                        _customValidation) is Guid loanLedgerId)
-                                    {
-                                        if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
-                                        {
-                                            Snackbar.Add(L["Loan successfully updated."], Severity.Success);
+                                   if (await ApiHelper.ExecuteCallGuardedAsync(
+                                       async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
+                                       Snackbar,
+                                       _customValidation) is Guid loanLedgerId)
+                                   {
+                                       if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
+                                       {
+                                           Snackbar.Add(L["Loan successfully updated."], Severity.Success);
 
-                                            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-                                        }
-                                    }
-                                }
+                                           Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                                       }
+                                   }
+                               }
 
-                            }
+                           }
 
-                            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-                        },
+                           Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                       },
                        canUpdateEntityFunc: LoanDto =>
                        {
                            if (new[] { LoanStatus.Draft, LoanStatus.Published }.Contains(LoanDto.Status))
@@ -387,6 +409,15 @@ public partial class GenericLoans
                        );
             }
         }
+
+    }
+
+
+    private async Task OnClickApproveChildCallBack()
+    {
+        Context = default!;
+
+        await LoadContext();
     }
 }
 

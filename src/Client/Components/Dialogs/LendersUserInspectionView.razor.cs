@@ -36,7 +36,6 @@ public partial class LendersUserInspectionView
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
 
-
     private async Task Submit()
     {
         await AppDataService.InitializationAsync();
@@ -45,44 +44,44 @@ public partial class LendersUserInspectionView
         {
             if (AppDataService.AppUser != default)
             {
+                if (!string.IsNullOrEmpty(LoanApplicantDto.LoanId.ToString()) && !LoanApplicantDto.LoanId.Equals(Guid.Empty))
                 {
-                    if (!string.IsNullOrEmpty(LoanApplicantDto.LoanId.ToString()) && !LoanApplicantDto.LoanId.Equals(Guid.Empty))
+                    if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.GetAsync(LoanApplicantDto.LoanId), Snackbar, null) is LoanDto loan)
                     {
-                        if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.GetAsync(LoanApplicantDto.LoanId), Snackbar, null) is LoanDto loan)
+                        if (loan is { })
                         {
-                            if (loan is { })
+                            var updateLoanStatusRequest = loan.Adapt<UpdateLoanStatusRequest>();
+
+                            updateLoanStatusRequest.Status = LoanStatus.Assigned;
+
+                            if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.UpdateStatusAsync(LoanApplicantDto.LoanId, updateLoanStatusRequest), Snackbar, null) is Guid loanId)
                             {
-                                var updateLoanStatusRequest = loan.Adapt<UpdateLoanStatusRequest>();
-
-                                updateLoanStatusRequest.Status = LoanStatus.Assigned;
-
-                                if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.UpdateStatusAsync(LoanApplicantDto.LoanId, updateLoanStatusRequest), Snackbar, null) is Guid loanId)
+                                if (!string.IsNullOrEmpty(loanId.ToString()) && !loanId.Equals(Guid.Empty))
                                 {
-                                    if (!string.IsNullOrEmpty(loanId.ToString()) && !loanId.Equals(Guid.Empty))
+                                    Snackbar.Add("Granted", Severity.Success);
+
+                                    var createLoanLesseeRequest = new CreateLoanLesseeRequest()
                                     {
-                                        Snackbar.Add("Granted", Severity.Success);
+                                        LesseeId = LoanApplicantDto.AppUserId,
+                                        LoanId = loanId
+                                    };
 
-                                        var createLoanLesseeRequest = new CreateLoanLesseeRequest()
+                                    if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanLesseesClient.CreateAsync(createLoanLesseeRequest), Snackbar, null) is Guid loanLesseeId)
+                                    {
+                                        if (!string.IsNullOrEmpty(loanLesseeId.ToString()) && !loanLesseeId.Equals(Guid.Empty))
                                         {
-                                            LesseeId = LoanApplicantDto.AppUserId,
-                                            LoanId = loanId
-                                        };
+                                            Snackbar.Add("Loan / Lessee record updated.", Severity.Success);
 
-                                        if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanLesseesClient.CreateAsync(createLoanLesseeRequest), Snackbar, null) is Guid loanLesseeId)
-                                        {
-                                            if (!string.IsNullOrEmpty(loanLesseeId.ToString()) && !loanLesseeId.Equals(Guid.Empty))
-                                            {
-                                                Snackbar.Add("Loan / Lessee record updated.", Severity.Success);
-                                            }
+                                            MudDialog.Close(DialogResult.Ok(loanLesseeId.ToString()));
                                         }
                                     }
                                 }
                             }
                         }
                     }
-
-                    MudDialog.Close();
                 }
+
+                MudDialog.Close(DialogResult.Cancel());
             }
         }
     }

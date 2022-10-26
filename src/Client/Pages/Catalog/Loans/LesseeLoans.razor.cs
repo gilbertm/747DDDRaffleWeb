@@ -69,6 +69,7 @@ public partial class LesseeLoans
                                var loanFilter = filter.Adapt<SearchLoansLesseeRequest>();
 
                                loanFilter.Status = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Payment };
+                               loanFilter.AppUserId = AppDataService.AppUser.Id;
 
                                var result = await LoansClient.SearchLesseeAsync(loanFilter);
 

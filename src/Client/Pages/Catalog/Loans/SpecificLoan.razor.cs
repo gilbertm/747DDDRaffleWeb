@@ -50,7 +50,6 @@ public partial class SpecificLoan
 
     private List<AppUserProductDto> appUserProducts { get; set; } = default!;
 
-
     public async Task OnClickChildComponent(Guid? loanId)
     {
         await Update(loanId);
@@ -77,14 +76,36 @@ public partial class SpecificLoan
                     {
                         if (Loan.LoanApplicants.Count > 0)
                         {
-                            foreach (var loanApplicantDto in Loan.LoanApplicants)
+                            foreach (var loanApplicant in Loan.LoanApplicants)
                             {
-                                var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicantDto.AppUser.ApplicationUserId);
+                                if (loanApplicant.AppUser != default)
+                                {
+                                    var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicant.AppUser.ApplicationUserId);
 
-                                loanApplicantDto.AppUser.FirstName = userDetailsDto.FirstName;
-                                loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
-                                loanApplicantDto.AppUser.Email = userDetailsDto.Email;
-                                loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                    loanApplicant.AppUser.FirstName = userDetailsDto.FirstName;
+                                    loanApplicant.AppUser.LastName = userDetailsDto.LastName;
+                                    loanApplicant.AppUser.Email = userDetailsDto.Email;
+                                    loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                }
+                            }
+                        }
+                    }
+
+                    if (Loan.LoanLessees != default)
+                    {
+                        if (Loan.LoanLessees.Count > 0)
+                        {
+                            foreach (var loanLessee in Loan.LoanLessees)
+                            {
+                                if (loanLessee.Lessee != default)
+                                {
+                                    var userDetailsDto = await UsersClient.GetByIdAsync(loanLessee.Lessee.ApplicationUserId);
+
+                                    loanLessee.Lessee.FirstName = userDetailsDto.FirstName;
+                                    loanLessee.Lessee.LastName = userDetailsDto.LastName;
+                                    loanLessee.Lessee.Email = userDetailsDto.Email;
+                                    loanLessee.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                }
                             }
                         }
                     }

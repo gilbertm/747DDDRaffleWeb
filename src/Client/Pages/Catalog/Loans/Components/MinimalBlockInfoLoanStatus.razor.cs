@@ -7,6 +7,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components;
 
 public partial class MinimalBlockInfoLoanStatus
 {
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
+
     [Inject]
     protected ILoanApplicantsClient LoanApplicantsClient { get; set; } = default!;
 
@@ -16,23 +19,18 @@ public partial class MinimalBlockInfoLoanStatus
     [Parameter]
     public LoanDto Loan { get; set; } = default!;
 
-    [Parameter]
-    public string Role { get; set; } = default!;
+    private bool _isLesseeCanApply;
 
-    [Parameter]
-    public Guid AppUserId { get; set; } = default!;
-
-    [Parameter]
-    public string ApplicationUserId { get; set; } = default!;
-
-    [Parameter]
-    public string? Href { get; set; }
-
-    // can apply if
-    // 1. not yet an applicant
-    // 2. meets conditions, as per packages
-    [Parameter]
-    public bool CanApply { get; set; } = default!;
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                _isLesseeCanApply = await AppDataService.IsLesseeCanApplyAsync(Loan.Id);
+            }
+        }
+    }
 
     protected async Task Apply()
     {
@@ -40,7 +38,7 @@ public partial class MinimalBlockInfoLoanStatus
         {
             var createLoanApplicant = new CreateLoanApplicantRequest()
             {
-                AppUserId = AppUserId,
+                AppUserId = AppDataService.AppUser.Id,
                 LoanId = Loan.Id,
                 Flag = 0,
                 Reason = "Init"
@@ -58,10 +56,17 @@ public partial class MinimalBlockInfoLoanStatus
                         {
                             Snackbar.Add("Applied", Severity.Success);
 
-                            // reload the load
                             // reloads the loan
                             // without the need to refresh
                             Loan = loan;
+
+                            if (AppDataService != default)
+                            {
+                                if (AppDataService.AppUser != default)
+                                {
+                                    _isLesseeCanApply = await AppDataService.IsLesseeCanApplyAsync(Loan.Id);
+                                }
+                            }
                         }
                     }
                 }
@@ -77,13 +82,13 @@ public partial class MinimalBlockInfoLoanStatus
         {
             var updateLoanApplicant = new UpdateLoanApplicantRequest()
             {
-                AppUserId = AppUserId,
+                AppUserId = AppDataService.AppUser.Id,
                 LoanId = Loan.Id,
                 Flag = 0,
                 Reason = "Reapply."
             };
 
-            if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanApplicantsClient.UpdateAsync(Loan.Id, AppUserId, updateLoanApplicant), Snackbar, null, "Success") is Guid loanApplicantId)
+            if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanApplicantsClient.UpdateAsync(Loan.Id, AppDataService.AppUser.Id, updateLoanApplicant), Snackbar, null, "Success") is Guid loanApplicantId)
             {
                 if (!string.IsNullOrEmpty(loanApplicantId.ToString()) && !loanApplicantId.Equals(Guid.Empty))
                 {
@@ -95,10 +100,17 @@ public partial class MinimalBlockInfoLoanStatus
                         {
                             Snackbar.Add("Reapplied", Severity.Success);
 
-                            // reload the load
                             // reloads the loan
                             // without the need to refresh
                             Loan = loan;
+
+                            if (AppDataService != default)
+                            {
+                                if (AppDataService.AppUser != default)
+                                {
+                                    _isLesseeCanApply = await AppDataService.IsLesseeCanApplyAsync(Loan.Id);
+                                }
+                            }
                         }
                     }
                 }
@@ -114,13 +126,13 @@ public partial class MinimalBlockInfoLoanStatus
         {
             var updateLoanApplicant = new UpdateLoanApplicantRequest()
             {
-                AppUserId = AppUserId,
+                AppUserId = AppDataService.AppUser.Id,
                 LoanId = Loan.Id,
                 Flag = 2,
                 Reason = "Cancelled."
             };
 
-            if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanApplicantsClient.UpdateAsync(Loan.Id, AppUserId, updateLoanApplicant), Snackbar, null, "Success") is Guid loanApplicantId)
+            if (await ApiHelper.ExecuteCallGuardedAsync(() => LoanApplicantsClient.UpdateAsync(Loan.Id, AppDataService.AppUser.Id, updateLoanApplicant), Snackbar, null, "Success") is Guid loanApplicantId)
             {
                 if (!string.IsNullOrEmpty(loanApplicantId.ToString()) && !loanApplicantId.Equals(Guid.Empty))
                 {
@@ -132,10 +144,17 @@ public partial class MinimalBlockInfoLoanStatus
                         {
                             Snackbar.Add("Applied", Severity.Success);
 
-                            // reload the load
                             // reloads the loan
                             // without the need to refresh
                             Loan = loan;
+
+                            if (AppDataService != default)
+                            {
+                                if (AppDataService.AppUser != default)
+                                {
+                                    _isLesseeCanApply = await AppDataService.IsLesseeCanApplyAsync(Loan.Id);
+                                }
+                            }
                         }
                     }
                 }

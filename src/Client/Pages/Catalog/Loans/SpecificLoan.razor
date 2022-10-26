@@ -13,14 +13,14 @@
 {
     @if (AppDataService.AppUser != default)
     {
-        <CascadingValue Value="@AppDataService.AppUser" Name="AppUser">
+        <CascadingValue Value="@AppDataService" Name="AppDataService">
             @if (!loanId.HasValue)
             {
                 @:None
             }
             else
             {
-                @if (RequestModel is not null)
+                @if (RequestModel != default)
                 {
                     <EditForm Model="RequestModel" style="display:flex;">
                         <MudGrid Spacing="2" Justify="Justify.FlexStart">
@@ -29,7 +29,7 @@
                             {
                                 <MudItem xs="12" md="6" Class="d-none">
                                     <MudTextField @bind-Value="RequestModel.Id" Label="@L[$"Loan Lender Id"]" />
-                                    @if (RequestModel.LoanLenders is not null)
+                                    @if (RequestModel.LoanLenders != default)
                                     {
                                         if (RequestModel.LoanLenders.Count() > 0 && RequestModel.LoanLenders.FirstOrDefault() is { })
                                         {
@@ -39,15 +39,30 @@
                                 </MudItem>
                             }
 
-                            @if (RequestModel.LoanLessees is not null || RequestModel.LoanApplicants is not null)
+                            @if (RequestModel.LoanLessees != default || RequestModel.LoanApplicants != default)
                             {
                                 <MudItem xs="12">
                                     <MudGrid Spacing="2" Justify="Justify.Center">
                                         <MudItem xs="12" md="12" Class="text-center">
                                             @* <SpecificLoanLessee CanUpdate="_canUpdate" />
-                                            <SpecificLoanLender LoanStatus="RequestModel.Status" />
-                                            <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" IsOwner="_canUpdate" Applicants="RequestModel.LoanApplicants" LoanStatus="RequestModel.Status" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" LoanLessee="@(RequestModel?.LoanLessees?.FirstOrDefault() ?? default)" /> *@
-                                            <BlockInfoLoanApplicants Loan="Loan" />
+                        <SpecificLoanLender LoanStatus="RequestModel.Status" />
+                        <SpecificLoanApplicants IsMinimal="false" LoanId="RequestModel.Id" IsPossibleToAppy="_isPossibleToAppy" IsOwner="_canUpdate" Applicants="RequestModel.LoanApplicants" LoanStatus="RequestModel.Status" OnClick="@(() => OnClickChildComponent(RequestModel.Id))" LoanLessee="@(RequestModel?.LoanLessees?.FirstOrDefault() ?? default)" /> *@
+
+                                            @if (Loan != default)
+                                            {
+                                                <MinimalBlockInfoLoanStatus Loan="Loan" />
+
+
+                                                if (Loan.Status < LoanStatus.Assigned)
+                                                {
+                                                    <BlockInfoLoanApplicants Loan="Loan" />
+                                                }
+
+                                                if (Loan.Status >= LoanStatus.Assigned)
+                                                {
+                                                    <BlockInfoLoanLessee Loan="Loan" />
+                                                }
+                                            }
 
                                         </MudItem>
                                     </MudGrid>
@@ -56,7 +71,7 @@
 
                             <MudItem xs="6" md="3">
                                 <MudGrid Spacing="2" Justify="Justify.FlexStart">
-                                    @if (RequestModel.Product is not null)
+                                    @if (RequestModel.Product != default)
                                     {
                                         <MudItem xs="12" md="12">
 
@@ -70,11 +85,11 @@
                                                     <CardHeaderContent>
                                                         <MudText Class="d-none" Typo="Typo.body1">@RequestModel.ProductId</MudText>
                                                         <MudText Typo="Typo.h5">@RequestModel.Product.Name</MudText>
-                                                        @if (RequestModel.Product.Category is not null && !string.IsNullOrEmpty(RequestModel.Product.Category?.Name))
+                                                        @if (RequestModel.Product.Category != default && !string.IsNullOrEmpty(RequestModel.Product.Category?.Name))
                                                         {
                                                             <MudText Typo="Typo.caption">Category: @RequestModel.Product.Category?.Name</MudText>
                                                         }
-                                                        @if (RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(RequestModel.Product.Brand?.Name))
+                                                        @if (RequestModel.Product.Brand != default && !string.IsNullOrEmpty(RequestModel.Product.Brand?.Name))
                                                         {
                                                             <MudText Typo="Typo.caption"> Brand: @RequestModel.Product.Brand?.Name</MudText>
                                                         }
@@ -93,7 +108,7 @@
                                                     </CardHeaderActions>
                                                 </MudCardHeader>
 
-                                                @if (RequestModel.Product.Image is not null && !string.IsNullOrEmpty(RequestModel.Product.Image?.ImagePath))
+                                                @if (RequestModel.Product.Image != default && !string.IsNullOrEmpty(RequestModel.Product.Image?.ImagePath))
                                                 {
                                                     var image = Config[ConfigNames.ApiBaseUrl] + RequestModel.Product.Image?.ImagePath;
 
@@ -184,7 +199,7 @@
                         <MudGrid Spacing="2" Justify="Justify.Center">
                             <MudItem xs="12" md="6">
                                 @* only for updating / if still able *@
-                                @if (_canUpdate && TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
+                                @if (_canUpdate && TemporaryLedgerTable != default && TemporaryLedgerTable.Count() > 0)
                                         {
                                             <MudItem xs="12" md="12">
                                                 <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
@@ -209,7 +224,7 @@
                                         else
                                         {
                                             @* fron old ehulog / C:\Users\Gilbert\source\repos\ehulog\eHulogDDD.UI\Client\Pages\Loans\LoanDetailLedgers.razor *@
-                                            if (RequestModel.Ledgers is not null)
+                                            if (RequestModel.Ledgers != default)
                                             {
                                                 <SpecificLoanLedger Ledger="RequestModel.Ledgers.ToList()" CanUpdate="_canUpdateLedger" Currency="@_currency" />
                                             }
@@ -350,7 +365,7 @@
             {
                 var dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, Dictionary<string, object>>>(resultDict);
 
-                if (dictionary is not null && dictionary.Count > 0)
+                if (dictionary != default && dictionary.Count > 0)
                 {
                     foreach (var item in dictionary)
                     {
@@ -413,7 +428,7 @@
 
     public void StartDatePayment(DateTime? dateTime)
     {
-        if (dateTime is not null)
+        if (dateTime != default)
             RequestModel.StartOfPayment = dateTime.Value;
     }
 
@@ -422,9 +437,9 @@
         if (!_canUpdate)
             return;
 
-        var userProduct = appUserProducts.Where(ap => (ap.Product is not null) && ap.Product.Id.Equals(id)).FirstOrDefault();
+        var userProduct = appUserProducts.Where(ap => (ap.Product != default) && ap.Product.Id.Equals(id)).FirstOrDefault();
 
-        if (userProduct is not null)
+        if (userProduct != default)
         {
             RequestModel.ProductId = default!;
             RequestModel.Product = new();
@@ -432,24 +447,24 @@
             RequestModel.Product.Brand = new();
             RequestModel.Product.Category = new();
 
-            if (userProduct.Product is not null)
+            if (userProduct.Product != default)
             {
                 RequestModel.ProductId = userProduct.Product.Id;
                 RequestModel.Product.Id = userProduct.Product.Id;
                 RequestModel.Product.Name = userProduct.Product.Name;
                 RequestModel.Product.Amount = userProduct.Product.Amount;
 
-                if (userProduct.Product.Category is not null)
+                if (userProduct.Product.Category != default)
                 {
                     RequestModel.Product.Category = userProduct.Product.Category;
                 }
 
-                if (userProduct.Product.Brand is not null)
+                if (userProduct.Product.Brand != default)
                 {
                     RequestModel.Product.Brand = userProduct.Product.Brand;
                 }
 
-                if (userProduct.Product.Image is not null)
+                if (userProduct.Product.Image != default)
                 {
                     RequestModel.Product.Image = userProduct.Product.Image;
                 }
