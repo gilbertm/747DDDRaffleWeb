@@ -107,6 +107,7 @@ public partial class GenericLoans
                        entityNamePlural: L["Loans"],
                        entityResource: EHULOGResource.Loans,
                        enableAdvancedSearch: false,
+                       searchAction: string.Empty,
                        fields: new()
                        {
                         new(loan => loan.Id, L["Id"], Template: LoanTemplate),

@@ -129,10 +129,10 @@ public static class EHULOGPermissions
         new("Delete LoanLenders", EHULOGAction.Delete, EHULOGResource.LoanLenders),
         new("Export LoanLenders", EHULOGAction.Export, EHULOGResource.LoanLenders),
 
-        new("View LoanLessees", EHULOGAction.View, EHULOGResource.LoanLessees, IsLender: true),
-        new("Search LoanLessees", EHULOGAction.Search, EHULOGResource.LoanLessees, IsLender: true),
-        new("Create LoanLessees", EHULOGAction.Create, EHULOGResource.LoanLessees, IsLender: true),
-        new("Update LoanLessees", EHULOGAction.Update, EHULOGResource.LoanLessees, IsLender: true),
+        new("View LoanLessees", EHULOGAction.View, EHULOGResource.LoanLessees, IsLender: true, IsLessee: true),
+        new("Search LoanLessees", EHULOGAction.Search, EHULOGResource.LoanLessees, IsLender: true, IsLessee: true),
+        new("Create LoanLessees", EHULOGAction.Create, EHULOGResource.LoanLessees, IsLender: true, IsLessee: true),
+        new("Update LoanLessees", EHULOGAction.Update, EHULOGResource.LoanLessees, IsLender: true, IsLessee: true),
         new("Delete LoanLessees", EHULOGAction.Delete, EHULOGResource.LoanLessees, IsLender: true),
         new("Export LoanLessees", EHULOGAction.Export, EHULOGResource.LoanLessees, IsLender: true),
 

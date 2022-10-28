@@ -1,0 +1,108 @@
+﻿<MudCard Elevation="0">
+    <MudCardContent Class="py-0">
+        <MudImage Fluid="true" Src="@imageUrl" Alt="@productName" Class="rounded-lg" />
+    </MudCardContent>
+    <MudCardContent Class="py-0 text-center">
+        @* if (trail.LoanApplicants is not null)
+        {
+        <SpecificLoanApplicants IsMinimal="true" LoanId="@trail.Id" IsPossibleToAppy="true" Applicants="@trail.LoanApplicants" LoanLessee="@_loanLesseeDto" LoanStatus="@trail.Status" />
+        } *@
+
+        @if (Loan != default)
+        {           
+            <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{Colors.Amber.Darken2}")">@string.Format("{0:#,0.00}", sumLoan)</MudText> <MudText Typo="Typo.body1" Class="d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrency()</MudText>
+            @if (@Loan.LoanLenders != default)
+            {
+                <br />
+                @if (@Loan.LoanLenders.FirstOrDefault() != default)
+                {
+                    var loanLender = @Loan.LoanLenders.First();
+
+                    if (loanLender.Product != default)
+                    {
+                        <MudText Typo="Typo.caption" Style="@($"color:{Colors.Brown.Lighten1}")">@loanLender.Product.Name</MudText>
+                    }
+                }
+            }
+
+        }
+
+    </MudCardContent>
+    <MudCardContent Class="py-0">
+        <MudPaper Class="text-left d-block" Elevation="0">
+            <MudGrid>
+                <MudItem xs="6" Class="py-1">
+                    <MudField InnerPadding="false" Label="Month(s)" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.CalendarMonth" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Month</MudText></MudField>
+                </MudItem>
+                <MudItem xs="6" Class="py-1">
+                    <MudField InnerPadding="false" Label="Interest" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Percent" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Interest</MudText></MudField>
+                </MudItem>
+                <MudItem xs="12" Class="py-1">
+                    <MudField InnerPadding="false" Label="Loan available" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Today" IconSize="Size.Small"> <MudText Typo="Typo.caption">@string.Format("{0:dddd, MMMM d, yyyy}", Loan.StartOfPayment)</MudText></MudField>
+                </MudItem>
+                @if (Loan.IsCollateral)
+                {
+                    if (!string.IsNullOrEmpty(Loan.InfoCollateral))
+                    {
+                        <MudItem xs="12" Class="py-1">
+                            <MudField InnerPadding="false" Label="Collateral" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.DevicesOther" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.InfoCollateral</MudText></MudField>
+                        </MudItem>
+                    }
+                }
+            </MudGrid>
+        </MudPaper>
+    </MudCardContent>
+    @if (!DisableStatus)
+    {
+        <MudCardActions>
+            <MinimalBlockInfoLoanStatus Loan="@Loan" OnUpdatedLoan="UpdateLoan" />
+        </MudCardActions>
+    }
+
+    <MudCardActions>
+         @if (Loan.Status < LoanStatus.Assigned)
+            {
+                <BlockInfoLoanApplicants Loan="Loan" />
+            }
+
+    </MudCardActions>
+</MudCard>
+
+
+@code {
+    LoanLesseeDto loanLesseeDto = default!;
+    LoanLenderDto loanLenderDto = default!;
+    List<LoanLedgerDto> loanLedgers = default!;
+    float sumLoan = 0f;
+    string imageUrl = string.Empty;
+    string productName = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        string href = "/loan/" + @Loan.Id;
+
+
+
+        if (Loan.LoanLenders is { })
+        {
+            loanLenderDto = Loan.LoanLenders.FirstOrDefault() ?? default!;
+            imageUrl = string.IsNullOrEmpty(Loan.LoanLenders.FirstOrDefault()?.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + Loan.LoanLenders.First().Product?.Image?.ImagePath);
+            productName = Loan.LoanLenders.FirstOrDefault()?.Product?.Name ?? string.Empty;
+        }
+
+        if (Loan.LoanLessees != default)
+        {
+            loanLesseeDto = Loan.LoanLessees.Where(l => l.LoanId.Equals(Loan.Id)).FirstOrDefault() ?? default!;
+        }
+
+        if (Loan.Ledgers is { })
+        {
+            loanLedgers = Loan.Ledgers.ToList() ?? default!;
+
+            if (!(loanLedgers.Equals(default)))
+            {
+                sumLoan = loanLedgers.Sum(l => l.AmountDue);
+            }
+        }
+    }
+}

@@ -1,5 +1,5 @@
-﻿@page "/loan"
-@page "/loan/{loanId:guid}"
+﻿@page "/loan/old"
+@page "/loan/old/{loanId:guid}"
 @using System.Linq
 @using System.Globalization
 @using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components
@@ -16,7 +16,7 @@
         <CascadingValue Value="@AppDataService" Name="AppDataService">
             @if (!loanId.HasValue)
             {
-                @:None
+                <MudText>Empty</MudText>
             }
             else
             {
@@ -50,7 +50,7 @@
 
                                             @if (Loan != default)
                                             {
-                                                <MinimalBlockInfoLoanStatus Loan="Loan" />
+                                                <MinimalBlockInfoLoanStatus Loan="Loan" DisableDetailButton="true" DisableViewButton="true" />
 
 
                                                 if (Loan.Status < LoanStatus.Assigned)
@@ -226,7 +226,7 @@
                                             @* fron old ehulog / C:\Users\Gilbert\source\repos\ehulog\eHulogDDD.UI\Client\Pages\Loans\LoanDetailLedgers.razor *@
                                             if (RequestModel.Ledgers != default)
                                             {
-                                                <SpecificLoanLedger Ledger="RequestModel.Ledgers.ToList()" CanUpdate="_canUpdateLedger" Currency="@_currency" />
+                                                @* <SpecificLoanLedger Ledger="RequestModel.Ledgers.ToList()" CanUpdate="_canUpdateLedger" Currency="@_currency" /> *@
                                             }
                                         }
 

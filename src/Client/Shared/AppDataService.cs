@@ -11,6 +11,7 @@ using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Nager.Country;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -127,6 +128,8 @@ public class AppDataService : IAppDataService
                             ApplicationUserId = userId ?? default!
                         };
 
+                        //TODO: needs to be double checked
+                        // some errors / failing on initial creation
                         var guid = await AppUsersClient.CreateAsync(createAppUserRequest);
 
                         /* NOT applicable: assign default role
@@ -300,14 +303,33 @@ public class AppDataService : IAppDataService
         return _positionError ?? default!;
     }
 
+    public string GetCurrency()
+    {
+        var countryProvider = new CountryProvider();
+        var countryInfo = countryProvider.GetCountryByName(AppUser.HomeCountry);
+
+        if (AppUser != default)
+        {
+            if (countryInfo is { })
+            {
+                if (countryInfo.Currencies.Count() > 0)
+                {
+                    return countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                }
+
+            }
+        }
+
+        return string.Empty;
+    }
+
     /*                                                      ------ Business Logics ------                                                       */
     //TODO:// business logics
 
-    private bool _isAnApplicant = false;
-    private bool _isLessee = false;
-    private bool _isApplicantFlagNormal = false;
-    public async Task<bool> IsLesseeCanApplyAsync(Guid loanId)
+    public bool IsLesseeOfThisLoan(LoanDto Loan)
     {
+        bool isAssignedLesseeOnThisLoan = false;
+        bool isLessee = false;
 
         if (AppUser != default)
         {
@@ -315,22 +337,57 @@ public class AppDataService : IAppDataService
             {
                 if (AppUser.RoleName.Equals("Lessee"))
                 {
-                    _isLessee = true;
+                    isLessee = true;
                 }
             }
 
             // check if an applicant
-            if (await LoansClient.GetAsync(loanId) is LoanDto loan)
+            if (Loan != default)
             {
-                if (loan != default)
+                if (Loan.LoanLessees != default)
                 {
-                    if (loan.LoanApplicants != default)
+                    var loanLessee = Loan.LoanLessees.FirstOrDefault(la => la.LesseeId.Equals(AppUser.Id)) ?? default;
+                    if (loanLessee != default)
                     {
-                        var applicant = loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppUser.Id));
-                        if (applicant != default)
-                        {
-                            _isAnApplicant = true;
-                        }
+                        isAssignedLesseeOnThisLoan = true;
+                    }
+                }
+            }
+
+            if (isLessee && isAssignedLesseeOnThisLoan)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool IsLesseeCanApply(LoanDto Loan)
+    {
+        bool isAnApplicantOfThisLoan = false;
+        bool isLessee = false;
+        bool isApplicantFlagNormal = false;
+
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (AppUser.RoleName.Equals("Lessee"))
+                {
+                    isLessee = true;
+                }
+            }
+
+            // check if an applicant
+            if (Loan != default)
+            {
+                if (Loan.LoanApplicants != default)
+                {
+                    var applicant = Loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppUser.Id)) ?? default;
+                    if (applicant != default)
+                    {
+                        isAnApplicantOfThisLoan = true;
                     }
                 }
             }
@@ -353,7 +410,62 @@ public class AppDataService : IAppDataService
 
             }
 
-            if (_isLessee && !_isAnApplicant)
+            if (isLessee && !isAnApplicantOfThisLoan)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool IsLenderCanUpdateLoan(LoanDto Loan)
+    {
+        bool isTheLenderOfThisLoan = false;
+        bool isLender = false;
+
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (AppUser.RoleName.Equals("Lender"))
+                {
+                    isLender = true;
+                }
+            }
+
+            // check if THE lender
+            if (Loan != default)
+            {
+                if (Loan.LoanLenders != default)
+                {
+                    var lender = Loan.LoanLenders.FirstOrDefault(la => la.LenderId.Equals(AppUser.Id)) ?? default;
+                    if (lender != default)
+                    {
+                        isTheLenderOfThisLoan = true;
+                    }
+                }
+            }
+
+            // check if all the amount loaned is below package limit
+            // don't calculate the payment
+            // just the ballpark/basetotal from each loan is enough
+            float packageLimit = 1000f;
+            float amountTotalLoanedTotal = 100f;
+            if (amountTotalLoanedTotal < packageLimit)
+            {
+
+            }
+
+            // check if all the amount loaned is below package limit
+            int packageLenderLimit = 2;
+            int lenderLimitTotal = 1;
+            if (lenderLimitTotal < packageLenderLimit)
+            {
+
+            }
+
+            if (isLender && isTheLenderOfThisLoan)
             {
                 return true;
             }

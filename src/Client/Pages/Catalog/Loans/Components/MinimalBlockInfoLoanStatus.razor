@@ -1,151 +1,193 @@
-﻿@if (AppDataService.AppUser != default)
+﻿@if (AppDataService != default)
 {
-    if (Loan != default)
+    if (AppDataService.AppUser != default)
     {
-        LoanApplicantDto loanApplicant = default!;
-
-        if (Loan.LoanApplicants != default)
+        if (Loan != default)
         {
-            if (Loan.LoanApplicants.Count > 0)
-            {
-                loanApplicant = Loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppDataService.AppUser.Id)) ?? default!;
-            }
-        }
+            LoanApplicantDto loanApplicant = default!;
 
-
-        if (Loan.Status != default && Loan.Status > LoanStatus.Draft)
-        {
-            if (AppDataService.AppUser.RoleName != default)
+            if (Loan.LoanApplicants != default)
             {
-                if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                if (Loan.LoanApplicants.Count > 0)
                 {
-                    if (Loan.Status.Equals(LoanStatus.Published))
+                    loanApplicant = Loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppDataService.AppUser.Id)) ?? default!;
+                }
+            }
+
+            <MudGrid>
+
+                @if ((new[] { LoanStatus.Draft, LoanStatus.Published }).Contains(Loan.Status))
+                {
+                    if (AppDataService.AppUser.RoleName != default)
                     {
-                        @if (_isLesseeCanApply)
+                        if (AppDataService.AppUser.RoleName.Equals("Lessee"))
                         {
-                            <MudGrid>
-                                @if (Loan.Status.Equals(LoanStatus.Published))
+                            if (Loan.Status.Equals(LoanStatus.Published))
+                            {
+                                IsLesseeCanApply = AppDataService.IsLesseeCanApply(Loan);
+
+                                if (IsLesseeCanApply)
                                 {
-                                    <MudItem xs="6">
-                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Small" OnClick="(() => Apply())">Apply</MudButton>
+                                    @if (Loan.Status.Equals(LoanStatus.Published))
+                                    {
+                                        <MudItem xs="6">
+                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Small" OnClick="(() => Apply())">Apply</MudButton>
+                                        </MudItem>
+                                    }
+                                    @if (!DisableDetailButton)
+                                    {
+                                        <MudItem xs="6">
+                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Small" Href="@($"/loan/{Loan.Id}")">Details</MudButton>
+                                        </MudItem>
+                                    }
+                                }
+                                else
+                                {
+                                    @if (!DisableViewButton)
+                                    {
+                                        <MudItem xs="12" Class="py-0">
+                                            <MudButton Variant="Variant.Filled" FullWidth="true" Class="text-center full-width py-3" EndIcon="@Icons.Filled.RemoveRedEye" IconColor="Color.Success" Size="Size.Small" Href="@($"/loan/{Loan.Id}")">View</MudButton>
+                                        </MudItem>
+                                    }
+                                    <MudItem xs="12" Class="py-1">
+                                        @if (loanApplicant != default)
+                                        {
+                                            switch (loanApplicant.Flag)
+                                            {
+                                                case 1:
+                                                    <MudText Class="py-3" Typo="Typo.caption">You are not allowed on this loan</MudText>
+                                                    break;
+                                                case 2:
+                                                    @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
+                                                    <MudText Typo="Typo.caption">You applied but removed yourself from this Loan.</MudText>
+                                                    <MudButton Variant="Variant.Text" Class="d-inline py-0" OnClick="(() => ReApply())"><MudText Typo="Typo.caption">Reapply?</MudText></MudButton>
+                                                    break;
+                                                case 3:
+                                                    @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
+                                                    <MudText Class="py-3" Typo="Typo.caption">The Lender removed you from applying from loan.</MudText>
+                                                    break;
+                                                case 400:
+                                                    @*Lender blocked you from applying this loan*@
+                                                    <MudAlert Severity="Severity.Error">Declined. You are declined, you can not do anything with this listing. For whatever reasons, please proceed with dispute process, if you need to.</MudAlert>
+                                                    break;
+
+                                                default:
+                                                    if (loanApplicant is { })
+                                                    {
+                                                        switch (Loan.Status)
+                                                        {
+                                                            case LoanStatus.Assigned:
+                                                                <MudContainer MaxWidth="MaxWidth.Large" Class="text-center">
+                                                                    <MudIcon Icon="@Icons.Material.Filled.SentimentSatisfied" Title="Assigned" Color="Color.Success" Size="Size.Small" /> <MudText Typo="Typo.button">Awarded</MudText>
+                                                                    <MudTooltip Text="You are the lessee of this loan.">
+                                                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                                                    </MudTooltip>
+
+                                                                </MudContainer>
+                                                                break;
+                                                            default:
+                                                                <MudContainer MaxWidth="MaxWidth.Large" Class="text-center">
+                                                                    <MudGrid>
+                                                                        <MudItem xs="12" Class="pt-2 pb-0">
+                                                                            <MudText Typo="Typo.h6" class="d-inline" Style="@($"color:{Colors.Amber.Accent4}")">Applied</MudText>
+                                                                            <MudText Typo="Typo.caption" Style="@($"color:{Colors.BlueGrey.Darken1}")">
+                                                                                @if (Loan != default)
+                                                                                {
+                                                                                    if (Loan.LoanApplicants != default)
+                                                                                    {
+                                                                                        <text>[@($"+{Loan.LoanApplicants.Count} other(s)")]</text>
+                                                                                    }
+                                                                                }
+
+                                                                            </MudText>
+                                                                        </MudItem>
+                                                                        <MudItem xs="12">
+                                                                            <MudButton OnClick="(() => CancelApply())" EndIcon="@Icons.TwoTone.Cancel" Size="Size.Small" Color="Color.Warning">Cancel</MudButton><br />
+                                                                            <MudTooltip Text="If you wish to cancel your application, click action. Awaiting lender's acceptance and approval.">
+                                                                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                                                            </MudTooltip>
+                                                                        </MudItem>
+                                                                    </MudGrid>
+
+                                                                </MudContainer>
+                                                                break;
+                                                        }
+                                                    }
+                                                    break;
+                                            }
+
+                                        }
                                     </MudItem>
                                 }
-                                <MudItem xs="6">
-                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Small" Href="@($"/loan/{Loan.Id}")">Details</MudButton>
-                                </MudItem>
-                            </MudGrid>
-
-
-
+                            }
+                            else if (Loan.Status.Equals(LoanStatus.Assigned))
+                            {
+                                @if (!DisableViewButton)
+                                {
+                                    <MudItem xs="12" Class="py-0">
+                                        <MudButton Variant="Variant.Filled" FullWidth="true" Class="text-center full-width py-3" EndIcon="@Icons.Filled.RemoveRedEye" IconColor="Color.Success" Size="Size.Small" Href="@($"/loan/{Loan.Id}")">View</MudButton>
+                                    </MudItem>
+                                }
+                            }
                         }
-                        else
+                        else if (AppDataService.AppUser.RoleName.Equals("Lender"))
                         {
-                            <MudGrid>
-                                <MudItem xs="12" Class="py-0">
-                                    <MudButton Variant="Variant.Filled" FullWidth="true" Class="text-center full-width py-3" EndIcon="@Icons.Filled.RemoveRedEye" IconColor="Color.Success" Size="Size.Small" Href="@($"/loan/{Loan.Id}")">View</MudButton>
-                                </MudItem>
-                                <MudItem xs="12" Class="py-1">
-                                    @if (loanApplicant != default)
-                                    {
-                                        switch (loanApplicant.Flag)
+                            <MudItem xs="12">
+                                <MudCard Elevation="0" Class="text-center pa-0" Style="margin-bottom:0!important;">
+                                    <MudCardContent Class="pa-0">
+                                        @switch (Loan.Status)
                                         {
-                                            case 1:
-                                                <MudText Class="py-3" Typo="Typo.caption">You are not allowed on this loan</MudText>
+                                            case LoanStatus.Draft:
+                                                <MudIcon Color="Color.Success" Size="Size.Large" Icon="@Icons.Material.Filled.EditNote" Title="Published Status" />
+                                                <MudText Color="Color.Success" Typo="Typo.body1">@Loan.Status</MudText>
                                                 break;
-                                            case 2:
-                                                @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
-                                                <MudText Typo="Typo.caption">You applied but removed yourself from this Loan.</MudText>
-                                                <MudButton Variant="Variant.Text" Class="d-inline py-0" OnClick="(() => ReApply())"><MudText Typo="Typo.caption">Reapply?</MudText></MudButton>
-                                                break;
-                                            case 3:
-                                                @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
-                                                <MudText Class="py-3" Typo="Typo.caption">The Lender removed you from applying from loan.</MudText>
-                                                break;
-                                            case 400:
-                                                @*Lender blocked you from applying this loan*@
-                                                <MudAlert Severity="Severity.Error">Declined. You are declined, you can not do anything with this listing. For whatever reasons, please proceed with dispute process, if you need to.</MudAlert>
-                                                break;
-
-                                            default:
-                                                if (loanApplicant is { })
-                                                {
-                                                    switch (Loan.Status)
-                                                    {
-                                                        case LoanStatus.Assigned:
-                                                            <MudContainer MaxWidth="MaxWidth.Large" Class="text-center">
-                                                                <MudIcon Icon="@Icons.Material.Filled.SentimentSatisfied" Title="Assigned" Color="Color.Success" Size="Size.Small" /> <MudText Typo="Typo.button">Awarded</MudText>
-                                                                <MudTooltip Text="You are the lessee of this loan.">
-                                                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                                                </MudTooltip>
-
-                                                            </MudContainer>
-                                                            break;
-                                                        default:
-                                                            <MudContainer MaxWidth="MaxWidth.Large" Class="text-center">
-                                                                <MudGrid>
-                                                                    <MudItem xs="12" Class="pt-2 pb-0">
-                                                                        <MudText Typo="Typo.h6" class="d-inline" Style="@($"color:{Colors.Amber.Accent4}")">Applied</MudText>
-                                                                        <MudText Typo="Typo.caption" Style="@($"color:{Colors.BlueGrey.Darken1}")">
-                                                                            @if (Loan != default)
-                                                                            {
-                                                                                if (Loan.LoanApplicants != default)
-                                                                                {
-                                                                                    <text>[@($"+{Loan.LoanApplicants.Count} other(s)")]</text>
-                                                                                }
-                                                                            }
-
-                                                                        </MudText>
-                                                                    </MudItem>
-                                                                    <MudItem xs="12">
-                                                                        <MudButton OnClick="(() => CancelApply())" EndIcon="@Icons.TwoTone.Cancel" Size="Size.Small" Color="Color.Warning">Cancel</MudButton><br />
-                                                                        <MudTooltip Text="If you wish to cancel your application, click action. Awaiting lender's acceptance and approval.">
-                                                                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                                                        </MudTooltip>
-                                                                    </MudItem>
-                                                                </MudGrid>
-
-                                                            </MudContainer>
-                                                            break;
-                                                    }
-                                                }
+                                            case LoanStatus.Published:
+                                                <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Title="Draft Status" />
+                                                <MudText Typo="Typo.body1">@Loan.Status</MudText>
                                                 break;
                                         }
 
-                                    }
-                                </MudItem>
-                            </MudGrid>
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudItem>
                         }
                     }
-
                 }
-                else if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                else if ((new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }).Contains(Loan.Status))
                 {
-                    <MudCard Elevation="0" Class="text-center pa-0" Style="margin-bottom:0!important;">
-                        <MudCardContent Class="pa-0">
-                            @switch (Loan.Status)
-                            {
-                                case LoanStatus.Draft:
-                                    <MudIcon Color="Color.Success" Size="Size.Large" Icon="@Icons.Material.Filled.EditNote" Title="Published Status" />
-                                    <MudText Color="Color.Success" Typo="Typo.body1">@Loan.Status</MudText>
-                                    break;
-                                case LoanStatus.Published:
-                                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Title="Draft Status" />
-                                    <MudText Typo="Typo.body1">@Loan.Status</MudText>
-                                    break;
-                                default:
-                                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.Settings" Title="Status" />
-                                    <MudText Typo="Typo.body1">@Loan.Status</MudText>
-                                    break;
-                            }
-
-                        </MudCardContent>
-                    </MudCard>
+                    <MudItem xs="12" Class="text-center">
+                        <SingleFileUpload ForUploadFiles="ForUploadFiles" />
+                        <MudAlert Class="mb-3 mb-md-5" Severity="Severity.Error" Icon="@Icons.Filled.PhotoCameraBack">
+                            Meetup. Receipt. Snap. Required to proceed. <MudTooltip Text="A picture or receipt taken during meetup or first handshake/turnover of product.">
+                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                            </MudTooltip>
+                        </MudAlert>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudCard Elevation="0" Class="text-center pa-0" Style="margin-bottom:0!important;">
+                            <MudCardContent Class="pa-0">
+                                @switch (Loan.Status)
+                                {
+                                    case LoanStatus.Assigned:
+                                        <MudText Color="Color.Success" Typo="Typo.caption"> <MudIcon Color="Color.Success" Size="Size.Large" Icon="@Icons.Filled.PersonOutline" Title="Assigned Status" /><br />@Loan.Status</MudText>
+                                        break;
+                                    case LoanStatus.Payment:
+                                        <MudText Typo="Typo.caption"><MudIcon Size="Size.Large" Icon="@Icons.Filled.TableView" Title="Draft Status" /><br />@Loan.Status</MudText>
+                                        break;
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
                 }
-            }
-        }
-        else
-        {
-            <MudButton Variant="Variant.Outlined" Class="mt-2 mx-auto" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Success" Size="Size.Medium" Href="@($"/loan/{Loan.Id}")">Apply</MudButton>
+                else
+                {
+                    <MudItem xs="12">
+                        <MudButton Variant="Variant.Outlined" Class="mt-2 mx-auto" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Success" Size="Size.Medium" Href="@($"/loan/{Loan.Id}")">Apply</MudButton>
+                    </MudItem>
+                }
+
+            </MudGrid>
+
         }
     }
 }

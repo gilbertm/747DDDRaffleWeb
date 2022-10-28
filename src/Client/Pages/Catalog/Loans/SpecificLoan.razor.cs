@@ -50,6 +50,7 @@ public partial class SpecificLoan
 
     private List<AppUserProductDto> appUserProducts { get; set; } = default!;
 
+
     public async Task OnClickChildComponent(Guid? loanId)
     {
         await Update(loanId);
@@ -153,9 +154,6 @@ public partial class SpecificLoan
                 }
 
                 await Update(loanId);
-
-
-
             }
         }
     }
@@ -272,24 +270,22 @@ public partial class SpecificLoan
                     RequestModel.Ledgers = loanDto.Ledgers;
                     RequestModel.LoanLessees = loanDto.LoanLessees;
                 }
-
-
             }
         }
     }
-}
 
-public class LoanViewModel : UpdateLoanRequest
-{
-    public Guid ProductId { get; set; }
+    protected class LoanViewModel : UpdateLoanRequest
+    {
+        public Guid ProductId { get; set; }
 
-    public ProductDto Product { get; set; } = new();
-}
+        public ProductDto Product { get; set; } = new();
+    }
 
-public class TemporaryLedgerTableElement
-{
-    public int Position { get; set; }
-    public DateTime Due { get; set; }
-    public float Amount { get; set; }
-    public float Balance { get; set; }
+    protected class TemporaryLedgerTableElement
+    {
+        public int Position { get; set; }
+        public DateTime Due { get; set; }
+        public float Amount { get; set; }
+        public float Balance { get; set; }
+    }
 }

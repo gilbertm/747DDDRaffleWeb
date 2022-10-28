@@ -1,49 +1,33 @@
-﻿@page "/loans/lessee"
-@using System.Globalization
-@using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer
-@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
-@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components
+﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Shared;
+using Microsoft.AspNetCore.Components;
+using Nager.Country;
 
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.LoanLessees)]
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components;
 
-@inject IStringLocalizer<LesseeLoans> L
-
-<EhulogTitle Title="@L["Loans"]" Description="@L["Browse"]" />
-
-@if (AppDataService != default)
+public partial class BlockLoan
 {
-    @if (AppDataService.AppUser != default)
-    {
-        @if (!(new[] { "Lender", "Lessee" }.Contains(AppDataService.AppUser.RoleName)))
-        {
-            <MudText Typo="Typo.body2" Class="text-center mb-5" Color="Color.Error">Please complete your account profile. Features may not work as intended, if you have not completed this process.</MudText>
-        }
-        <CascadingValue Value="AppDataService" Name="AppDataService">
-            @if (Context != default)
-            {
-                <EntityContainer TEntity="LoanDto" Context="@Context"></EntityContainer>
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
 
-            }
-        </CascadingValue>
-    }
-}
-
-<LossGeolocationPopup />
-
-@code {
-    private LoanDto Loan { get; set; } = default!;
-
-    protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
-    {
-        @*
-            in one cascading component
-            ensures cascading change of loan value once updated from this main component
-         *@
-        <BlockLoan Loan="trail" />
-    };
-}
-
-@code {
+    [Inject]
+    protected ILoanLendersClient LoanLendersClient { get; set; } = default!;
+    [Inject]
+    protected IProductsClient ProductsClient { get; set; } = default!;
+    [Inject]
+    protected IAppUsersClient AppUsersClient { get; set; } = default!;
+    [Inject]
+    protected IAppUserProductsClient AppUserProductsClient { get; set; } = default!;
+    [Inject]
+    protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
+    [Inject]
+    protected ILoansClient LoansClient { get; set; } = default!;
+    [Inject]
+    protected IUsersClient UsersClient { get; set; } = default!;
+    [Parameter]
+    public LoanDto Loan { get; set; } = default!;
+    [Parameter]
+    public bool DisableStatus { get; set; } = default!;
 
     private async Task UpdateLoan(Guid loanId)
     {
@@ -100,4 +84,3 @@
     }
 
 }
-

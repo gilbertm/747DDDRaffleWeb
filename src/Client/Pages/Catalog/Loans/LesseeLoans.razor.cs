@@ -3,6 +3,7 @@ using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Mapster;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Nager.Country;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
@@ -25,6 +26,8 @@ public partial class LesseeLoans
     [Inject]
     protected ILoansClient LoansClient { get; set; } = default!;
     [Inject]
+    protected IUsersClient UsersClient { get; set; } = default!;
+    [Inject]
     protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
     [Inject]
     public NavigationManager NavigationManager { get; set; } = default!;
@@ -40,30 +43,29 @@ public partial class LesseeLoans
     {
         await AppDataService.InitializationAsync();
 
-        if (AppDataService != default)
+        if (AppDataService.AppUser != default)
         {
-            if (AppDataService.AppUser != default)
+            if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
             {
-                if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
+                NavigationManager.NavigateTo("/catalog/all/loans", true);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
                 {
-                    NavigationManager.NavigateTo("/catalog/all/loans", true);
-                } else
-                {
-                    if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
-                    {
-                        var countryProvider = new CountryProvider();
-                        var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
+                    var countryProvider = new CountryProvider();
+                    var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
 
-                        if (countryInfo is { })
+                    if (countryInfo is { })
+                    {
+                        if (countryInfo.Currencies.Count() > 0)
                         {
-                            if (countryInfo.Currencies.Count() > 0)
-                            {
-                                _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
-                            }
+                            _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
                         }
                     }
+                }
 
-                    Context = new EntityContainerContext<LoanDto>(
+                Context = new EntityContainerContext<LoanDto>(
                            searchFunc: async filter =>
                            {
                                var loanFilter = filter.Adapt<SearchLoansLesseeRequest>();
@@ -93,7 +95,6 @@ public partial class LesseeLoans
                                return result.Adapt<EntityContainerPaginationResponse<LoanDto>>();
                            },
                            template: BodyTemplate);
-                }
             }
         }
     }

@@ -1,0 +1,69 @@
+﻿@page "/loan"
+@page "/loan/{loanId:guid}"
+@using System.Linq
+@using System.Globalization
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components.Block
+@* attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)] *@
+
+@inject IStringLocalizer<TheLoan> L
+
+<EhulogTitle Title="@(CanUpdate ? @L["Loan (MINE)"] : @L["Loan"])" Description="@(CanUpdate ? @L["Manage this loan"] : @L["View"])" />
+
+@if (AppDataService != default)
+{
+    @if (AppDataService.AppUser != default)
+    {
+        <CascadingValue Value="@AppDataService" Name="AppDataService">
+
+            @* allow edit on draft mode only and lender with business logic checks *@
+            @if (Loan != default)
+            {
+                if ((new[] { LoanStatus.Draft, LoanStatus.Published }).Contains(Loan.Status))
+                {
+                    @* <CreateUpdateLoan Loan="Loan" /> *@
+
+                    <MudGrid>
+                        <MudItem xs="6" md="6">
+                            <BlockLoan Loan="Loan" DisableStatus="true" />
+                        </MudItem>
+                        <MudItem xs="6" md="6">
+                            @if (Loan.Ledgers != default)
+                            {
+                                <LoanLedger Ledger="Loan.Ledgers.ToList()" DisableStatusPaymentColumns="true" />
+                            }
+                        </MudItem>
+                        
+                    </MudGrid>
+                }
+                else if ((new[] { LoanStatus.Assigned }).Contains(Loan.Status))
+                {
+                    if (CanUpdate)
+                    {
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                @if (Loan.Ledgers != default)
+                                {
+                                    <LoanLedger Ledger="Loan.Ledgers.ToList()" />
+                                }
+                            </MudItem>
+                            <MudItem xs="6" md="3">
+                                <BlockLoan Loan="Loan" DisableStatus="true" />
+                            </MudItem>
+                            <MudItem xs="6" md="3" Class="text-center border-bottom">
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.h5" Style="@($"color:{Colors.BlueGrey.Lighten2}")">Archives</MudText>
+                                        <BlockInfoLoanApplicants Loan="Loan" />
+                                    </MudItem>                                    
+                                </MudGrid>
+                            </MudItem>
+                        </MudGrid>
+                    }
+                }
+
+            }
+        </CascadingValue>
+    }
+
+}

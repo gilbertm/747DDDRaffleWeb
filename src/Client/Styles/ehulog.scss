@@ -1,6 +1,19 @@
 ﻿:root {
     --mud-appbar-height: 100px !important;
     --mud-palette-secondary: #dfa958 !important;
+    --mud-palette-success: #008336 !important;
+}
+
+.mud-table-root .mud-table-body:last-child .mud-table-row:last-child .mud-table-root .mud-table-cell {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.mud-table-root .mud-table-body:last-child .mud-table-row:last-child .mud-table-root .mud-table-row:last-child .mud-table-cell {
+    border-bottom: none;
+}
+
+.mud-table-smalldevices-sortselect {
+    display: none !important;
 }
 
 .mud-main-content {
