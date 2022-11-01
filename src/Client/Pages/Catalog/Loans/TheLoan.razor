@@ -16,6 +16,7 @@
     {
         <CascadingValue Value="@AppDataService" Name="AppDataService">
 
+       
             @* allow edit on draft mode only and lender with business logic checks *@
             @if (Loan != default)
             {
@@ -30,10 +31,10 @@
                         <MudItem xs="6" md="6">
                             @if (Loan.Ledgers != default)
                             {
-                                <LoanLedger Ledger="Loan.Ledgers.ToList()" DisableStatusPaymentColumns="true" />
+                                <LoanLedger Ledger="Loan.Ledgers.ToList()" DisableStatusPaymentColumns="true" DisableHeader="true" />
                             }
                         </MudItem>
-                        
+
                     </MudGrid>
                 }
                 else if ((new[] { LoanStatus.Assigned }).Contains(Loan.Status))
@@ -55,7 +56,7 @@
                                     <MudItem xs="12">
                                         <MudText Typo="Typo.h5" Style="@($"color:{Colors.BlueGrey.Lighten2}")">Archives</MudText>
                                         <BlockInfoLoanApplicants Loan="Loan" />
-                                    </MudItem>                                    
+                                    </MudItem>
                                 </MudGrid>
                             </MudItem>
                         </MudGrid>
@@ -66,4 +67,8 @@
         </CascadingValue>
     }
 
+}
+
+@code {
+   
 }

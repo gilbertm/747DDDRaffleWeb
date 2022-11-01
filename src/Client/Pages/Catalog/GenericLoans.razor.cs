@@ -110,8 +110,8 @@ public partial class GenericLoans
                        searchAction: string.Empty,
                        fields: new()
                        {
-                        new(loan => loan.Id, L["Id"], Template: LoanTemplate),
-                        new(loan => loan.StartOfPayment, L["Loan"], "StartOfPayment", Template: LoanDetailsTemplate),
+                        new(loan => loan.Id, L["Loan"], Template: LoanTemplate),
+                        new(loan => loan.StartOfPayment, L["Status"], "StartOfPayment", Template: LoanDetailsTemplate),
 
                         // new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
                         new(loan => loan.Id, L["Audience"], Template: LoanApplicantsTemplate),

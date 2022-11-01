@@ -14,6 +14,11 @@ public partial class LoanLedger
     public bool CanUpdate { get; set; } = false;
     [Parameter]
     public bool DisableStatusPaymentColumns { get; set; } = false;
+    [Parameter]
+    public bool DisableHeader { get; set; } = false;
+    [Parameter]
+    public bool Dense { get; set; } = false;
+
 
     public List<LedgerModel> LedgerModel { get; set; } = new();
 

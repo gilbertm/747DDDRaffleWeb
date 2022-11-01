@@ -29,28 +29,7 @@
 
     </MudCardContent>
     <MudCardContent Class="py-0">
-        <MudPaper Class="text-left d-block" Elevation="0">
-            <MudGrid>
-                <MudItem xs="6" Class="py-1">
-                    <MudField InnerPadding="false" Label="Month(s)" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.CalendarMonth" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Month</MudText></MudField>
-                </MudItem>
-                <MudItem xs="6" Class="py-1">
-                    <MudField InnerPadding="false" Label="Interest" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Percent" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Interest</MudText></MudField>
-                </MudItem>
-                <MudItem xs="12" Class="py-1">
-                    <MudField InnerPadding="false" Label="Loan available" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Today" IconSize="Size.Small"> <MudText Typo="Typo.caption">@string.Format("{0:dddd, MMMM d, yyyy}", Loan.StartOfPayment)</MudText></MudField>
-                </MudItem>
-                @if (Loan.IsCollateral)
-                {
-                    if (!string.IsNullOrEmpty(Loan.InfoCollateral))
-                    {
-                        <MudItem xs="12" Class="py-1">
-                            <MudField InnerPadding="false" Label="Collateral" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.DevicesOther" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.InfoCollateral</MudText></MudField>
-                        </MudItem>
-                    }
-                }
-            </MudGrid>
-        </MudPaper>
+        <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components.Block.MinimalLoanMainDetails Loan="Loan" />
     </MudCardContent>
     @if (!DisableStatus)
     {
