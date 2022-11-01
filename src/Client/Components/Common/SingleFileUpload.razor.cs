@@ -20,18 +20,27 @@ public partial class SingleFileUpload
     protected IAuthenticationService AuthService { get; set; } = default!;
     [Inject]
     protected IPersonalClient PersonalClient { get; set; } = default!;
-    [Inject]
-    protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
+    [Parameter]
+    public string ImageUrl { get; set; } = default!;
+
+    [CascadingParameter(Name = "FileUpload")]
+    public FileUploadRequest FileUpload { get; set; } = default!;
 
     [Parameter]
-    public List<ForUploadFile>? ForUploadFiles { get; set; }
+    public string ForName { get; set; } = default!;
 
     [Parameter]
-    public InputOutputResourceDocumentType FileIdentifier { get; set; }
+    public EventCallback OnRemoveImage { get; set; } = default!;
 
-    private ForUploadFile? _forUploadFile { get; set; } = new();
+    [Parameter]
+    public EventCallback<FileUploadRequest> OnUploadImage { get; set; } = default!;
 
-    private async Task UploadFiles(InputFileChangeEventArgs e)
+    [Parameter]
+    public string UserId { get; set; } = default!;
+
+    private bool _isHovered = false;
+
+    private async Task UploadFile(InputFileChangeEventArgs e)
     {
         var file = e.File;
 
@@ -44,83 +53,37 @@ public partial class SingleFileUpload
                 return;
             }
 
-            string? fileName = $"{Guid.NewGuid():N}";
+            string? fileName = $"{UserId}-{Guid.NewGuid():N}";
             fileName = fileName[..Math.Min(fileName.Length, 90)];
             var imageFile = await file.RequestImageFileAsync(ApplicationConstants.StandardImageFormat, ApplicationConstants.MaxImageWidth, ApplicationConstants.MaxImageHeight);
             byte[]? buffer = new byte[imageFile.Size];
             await imageFile.OpenReadStream(ApplicationConstants.MaxAllowedSize).ReadAsync(buffer);
             string? base64String = $"data:{ApplicationConstants.StandardImageFormat};base64,{Convert.ToBase64String(buffer)}";
+            FileUpload = new FileUploadRequest() { Name = fileName, Data = base64String, Extension = extension };
 
-            if (Guid.TryParse(fileName, out var referenceId))
-            {
-                CreateInputOutputResourceRequest createInputOutputResourceRequest = new CreateInputOutputResourceRequest()
-                {
-                    ReferenceId = referenceId == Guid.Empty ? default! : referenceId,
-                    Image = new FileUploadRequest() { Name = fileName, Data = base64String, Extension = extension },
-                    InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
-                    InputOutputResourceType = InputOutputResourceType.Loan
-                };
+            await OnUploadImage.InvokeAsync(FileUpload);
 
-                var valueTupleOfGuidAndString = await InputOutputResourceClient.CreateAsync(createInputOutputResourceRequest);
-
-                _forUploadFile.InputOutputResourceImgUrl = valueTupleOfGuidAndString.Value;
-                _forUploadFile.InputOutputResourceId = valueTupleOfGuidAndString.Key.ToString();
-                _forUploadFile.Opacity = "1";
-                _forUploadFile.Disabled = false;
-                _forUploadFile.isTemporarilyUploaded = true;
-            }
         }
     }
 
-    public async Task RemoveImageAsync()
+    public void Hover()
     {
-        string deleteContent = "You're sure you want to delete your Profile Image?";
-        var parameters = new DialogParameters
-        {
-            { nameof(DeleteConfirmation.ContentText), deleteContent }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
-        var dialog = DialogService.Show<DeleteConfirmation>("Delete", parameters, options);
-        var result = await dialog.Result;
-        if (!result.Cancelled)
-        {
-            // _profileModel.DeleteCurrentImage = true;
-            // await UpdateUploadedFilesAsync();
-        }
-    }
-
-    public void Hover(ForUploadFile forUploadFile)
-    {
-        forUploadFile.isHovered = true;
+        _isHovered = true;
         StateHasChanged();
     }
 
-    public void ClearHover(ForUploadFile forUploadFile)
+    public void ClearHover()
     {
-        forUploadFile.isHovered = false;
+        _isHovered = false;
         StateHasChanged();
     }
 
-    public async Task Remove(ForUploadFile? forUploadFile)
+    public void Remove()
     {
-        if (forUploadFile is not null)
-        {
-            string id = forUploadFile.InputOutputResourceId ?? string.Empty;
+        ImageUrl = string.Empty;
 
-            if (!string.IsNullOrEmpty(id))
-            {
-                Guid guid = await InputOutputResourceClient.DeleteByIdAsync(Guid.Parse(id));
+        FileUpload = default!;
 
-                if (forUploadFile is not null)
-                {
-                    forUploadFile.InputOutputResourceId = string.Empty;
-                    forUploadFile.InputOutputResourceImgUrl = string.Empty;
-                    forUploadFile.isVerified = false;
-                    forUploadFile.isTemporarilyUploaded = false;
-                }
-
-                StateHasChanged();
-            }
-        }
+        StateHasChanged();
     }
 }

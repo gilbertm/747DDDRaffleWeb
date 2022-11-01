@@ -1,52 +1,35 @@
-﻿<MudCardContent Style="padding:0px!important;position:relative">
-    @{
-        // var _forUploadFile = ForUploadFiles?.Where(f => f.FileIdentifier.Equals(FileIdentifier)).FirstOrDefault();
-        var _imageUrl = string.IsNullOrEmpty(_forUploadFile?.InputOutputResourceImgUrl) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _forUploadFile?.InputOutputResourceImgUrl);
-
-        /* if (_forUploadFile != default)
-        {
-            @_forUploadFile.InputOutputResourceImgUrl
-        } */
-
+﻿<MudGrid Justify="Justify.Center">
+    @{            
         <div class="d-flex justify-center mb-4">
-            @if (!string.IsNullOrEmpty(_imageUrl))
+            @if (!string.IsNullOrEmpty(ImageUrl))
             {
-                <MudCard Class="position-relative text-center" @onmouseover="@(() => Hover(_forUploadFile ?? default!))" @onmouseleave="@(() => ClearHover(_forUploadFile ?? default!))">
-                    <MudCardContent>
-                        <MudAvatar Square="true" Image="@_imageUrl" Style=" width:100%;height:150px;position:relative"></MudAvatar>
-                    </MudCardContent>
-
-                    @* <MudOverlay Visible="_forUploadFile?.isHovered ?? false" DarkBackground="true" Absolute="true" Class="text-center"> 
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Remove(_forUploadFile ?? default!))">Remove</MudButton>
-                    </MudOverlay> *@
-                </MudCard>
+                <MudItem xs="12">
+                    <MudCard Class="position-relative text-center" @onmouseover="@(() => Hover())" @onmouseleave="@(() => ClearHover())">
+                        <MudCardContent>
+                            <MudAvatar Square="true" Image="@ImageUrl" Style=" width:100%;height:auto;position:relative"></MudAvatar>
+                        </MudCardContent>
+                        <MudOverlay Visible="@_isHovered" DarkBackground="true" Absolute="true" Class="text-center">
+                            <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Filled.RemoveRedEye" Link="@ImageUrl" Style="margin-left:5px;">
+                                View
+                            </MudButton> <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.RemoveCircleOutline" Size="Size.Small" OnClick="@(async () => { Remove(); await OnRemoveImage.InvokeAsync();})">Remove</MudButton>
+                        </MudOverlay>
+                    </MudCard>
+                </MudItem>
             }
             else
             {
-                <MudCard Class="position-relative" Elevation="0">
-                    <MudCardContent Class="align-center text-center">
-                        <MudAvatar Color="Color.Error" Variant="Variant.Outlined" Style=" width:100px;height:100px;position:relative"><MudText Typo="Typo.caption">Upload</MudText></MudAvatar>
-                    </MudCardContent>
-                    <MudCardActions Class="d-block align-center text-center">
-                        @{
-
-                            <InputFile id="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)" OnChange="@((InputFileChangeEventArgs e) => UploadFiles(e))" capture hidden accept=".jpg,.jpeg,.png" />
-                            <div style="padding-top:20px;display:block;">
-                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Filled.CloudUpload" for="@Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier)"><MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Upload</MudText></MudButton>
-                                <br />
-                                @if (!string.IsNullOrEmpty(_imageUrl))
-                                {
-                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Filled.RemoveRedEye" Link="@_imageUrl" Style="margin-left: 5px;">View
-                                    </MudButton>
-
-                                    <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" StartIcon="@Icons.Filled.Delete" OnClick="RemoveImageAsync" Style="margin-left: 5px;">Delete
-                                    </MudButton>
-                                }
-                            </div>
-                        }
-                    </MudCardActions>
-                </MudCard>
+                <MudItem xs="12">
+                    <MudCard Class="position-relative" Elevation="0">
+                        <MudCardContent Class="align-center text-center">
+                            <MudButton HtmlTag="label" Variant="Variant.Text" DisableElevation="true" Style="@($"color:{Colors.Shades.Transparent}")" for="@ForName">
+                                <MudIcon Icon="@EhulogIcon.CameraEyeball" Style="@($"color:{EhulogColor.GreenMoney};font-size:7.5rem;")" />
+                            </MudButton>
+                            <br />
+                            <MudText Typo="Typo.caption" Class="d-block w-100" Style="@($"color:{Colors.BlueGrey.Lighten2}")">Upload</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
             }
         </div>
     }
-</MudCardContent>
+</MudGrid>

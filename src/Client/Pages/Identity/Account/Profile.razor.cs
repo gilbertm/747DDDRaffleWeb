@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Security.Claims;
+using System.Threading;
 using EHULOG.BlazorWebAssembly.Client.Components.Common;
 using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Shared;
+using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.VisualBasic.FileIO;
 using MudBlazor;
 using static MudBlazor.CategoryTypes;
 
@@ -24,12 +27,16 @@ public partial class Profile
     protected IPersonalClient PersonalClient { get; set; } = default!;
     [Inject]
     protected IDialogService Dialog { get; set; } = default!;
+    [Inject]
+    protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
 
     private readonly UpdateUserRequest _profileModel = new();
 
     private string? _imageUrl;
     private string? _userId;
     private char _firstLetterOfName;
+
+    private FileUploadRequest FileUpload { get; set; } = default!;
 
     private CustomValidation? _customValidation;
 
@@ -46,7 +53,8 @@ public partial class Profile
         if (!result.Cancelled)
         {
             _profileModel.DeleteCurrentImage = true;
-            await UpdateProfileAsync();
+
+            _imageUrl = default;
         }
     }
 
@@ -85,27 +93,29 @@ public partial class Profile
         }
     }
 
-    private async Task UploadFiles(InputFileChangeEventArgs e)
+    private async Task UploadFileAsync(FileUploadRequest fileUpload)
     {
-        var file = e.File;
-        if (file is not null)
+        if (_userId != default)
         {
-            string? extension = Path.GetExtension(file.Name);
-            if (!ApplicationConstants.SupportedImageFormats.Contains(extension.ToLower()))
+            _profileModel.Image = fileUpload;
+
+            CreateInputOutputResourceRequest createInputOutputResourceRequest = new CreateInputOutputResourceRequest
             {
-                Snackbar.Add("Image Format Not Supported.", Severity.Error);
-                return;
+                ReferenceId = Guid.NewGuid(),
+                Image = fileUpload,
+                InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
+                InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
+                InputOutputResourceType = InputOutputResourceType.AppUser
+            };
+
+            var valueTupleOfGuidAndString = await InputOutputResourceClient.CreateAsync(createInputOutputResourceRequest);
+
+            if (valueTupleOfGuidAndString != default)
+            {
+                _imageUrl = string.IsNullOrEmpty(valueTupleOfGuidAndString.Value) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + valueTupleOfGuidAndString.Value);
             }
 
-            string? fileName = $"{_userId}-{Guid.NewGuid():N}";
-            fileName = fileName[..Math.Min(fileName.Length, 90)];
-            var imageFile = await file.RequestImageFileAsync(ApplicationConstants.StandardImageFormat, ApplicationConstants.MaxImageWidth, ApplicationConstants.MaxImageHeight);
-            byte[]? buffer = new byte[imageFile.Size];
-            await imageFile.OpenReadStream(ApplicationConstants.MaxAllowedSize).ReadAsync(buffer);
-            string? base64String = $"data:{ApplicationConstants.StandardImageFormat};base64,{Convert.ToBase64String(buffer)}";
-            _profileModel.Image = new FileUploadRequest() { Name = fileName, Data = base64String, Extension = extension };
-
-            await UpdateProfileAsync();
+            StateHasChanged();
         }
     }
 }
