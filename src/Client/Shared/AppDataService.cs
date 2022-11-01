@@ -12,6 +12,7 @@ using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Nager.Country;
+using EHULOG.BlazorWebAssembly.Client.Components.Common;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -36,11 +37,15 @@ public class AppDataService : IAppDataService
 
     private IMapBoxGeocoding MapBoxGeocoding { get; set; } = default!;
 
-    public AppDataService(IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient)
+    private ISnackbar Snackbar { get; set; } = default!;
+
+    public AppDataService(IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, ISnackbar snackbar, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient)
     {
         GeolocationService = geolocationService;
 
         HttpClientFactory = httpClientFactory;
+
+        Snackbar = snackbar;
 
         Configuration = configuration;
 
@@ -106,45 +111,32 @@ public class AppDataService : IAppDataService
                    onErrorCallbackMethodName: nameof(OnPositionError),
                    options: _options);
 
-            Console.WriteLine("------------------------ AppDataService - InitializationAsync");
-
-            string? userId = userClaimsPrincipal.GetUserId() ?? string.Empty;
+            string userId = userClaimsPrincipal.GetUserId() ?? string.Empty;
 
             if (!string.IsNullOrEmpty(userId))
             {
-                AppUser = await AppUsersClient.GetAsync(userId);
+                // if not found / not found exception
+                // create a silent custom helper
+                if (await ApiHelper.ExecuteCallGuardedCustomAsync(async () => await AppUsersClient.GetAsync(userId), Snackbar, default) == false)
+                {
+                    var createAppUserRequest = new CreateAppUserRequest
+                    {
+                        ApplicationUserId = userId
+                    };
+
+                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.CreateAsync(createAppUserRequest), Snackbar, default!, "Personal application profile created") is Guid guid)
+                    {
+                        IsNewUser = true;
+                    }
+                }
+
+                AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(userId), Snackbar, default!) ?? default!;
 
                 if (AppUser != default)
                 {
-                    Console.WriteLine("------------------------ AppDataService - AppUser");
-
-                    if (AppUser.Id == Guid.Empty || string.IsNullOrEmpty(AppUser.ApplicationUserId))
+                    if (IsNewUser)
                     {
-                        IsNewUser = true;
-
-                        // create the app user defaults
-                        var createAppUserRequest = new CreateAppUserRequest
-                        {
-                            ApplicationUserId = userId ?? default!
-                        };
-
-                        //TODO: needs to be double checked
-                        // some errors / failing on initial creation
-                        var guid = await AppUsersClient.CreateAsync(createAppUserRequest);
-
-                        /* NOT applicable: assign default role
-                           role is basic at this stage, so this part is complete
-                           the user will be opted to select between lesser and lessee on the role and packages dashboard
-
-                           NOT applicable: assign default package
-                           as the package is subject to the role selection, this can be done during the dashboard selection/completion states */
-
-                        AppUser = await AppUsersClient.GetAsync(userId);
-                    }
-
-                    if (IsNewUser || (string.IsNullOrEmpty(AppUser.Latitude) && string.IsNullOrEmpty(AppUser.Longitude)))
-                    {
-                        if (_position is { })
+                        if (_position != default)
                         {
                             AppUser.Longitude = _position.Coords.Longitude.ToString();
                             AppUser.Latitude = _position.Coords.Latitude.ToString();
@@ -237,7 +229,10 @@ public class AppDataService : IAppDataService
                             PackageId = AppUser.PackageId
                         };
 
-                        var guid = await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequest);
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequest), Snackbar, null) is Guid guid)
+                        {
+                            AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(userId), Snackbar, null) ?? default!;
+                        }
                     }
 
                     // get application user role, the selected if exists

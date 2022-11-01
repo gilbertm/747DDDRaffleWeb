@@ -83,4 +83,37 @@ public static class ApiHelper
 
         return false;
     }
+
+    public static async Task<bool> ExecuteCallGuardedCustomAsync(
+        Func<Task> call,
+        ISnackbar snackbar,
+        CustomValidation? customValidation = null,
+        string? successMessage = null)
+    {
+        customValidation?.ClearErrors();
+        try
+        {
+            await call();
+
+            if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                snackbar.Add(successMessage, Severity.Success);
+            }
+
+            return true;
+        }
+        catch (ApiException<HttpValidationProblemDetails> ex)
+        {
+            if (ex.Result.Errors is not null)
+            {
+                customValidation?.DisplayErrors(ex.Result.Errors);
+            }
+        }
+        catch (ApiException<ErrorResult> ex)
+        {
+
+        }
+
+        return false;
+    }
 }
