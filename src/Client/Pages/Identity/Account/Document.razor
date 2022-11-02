@@ -11,11 +11,11 @@
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
                 <MudText Typo="Typo.h6" Align="Align.Center">Minimum of two (2) valid identifications.</MudText>
-                <MudList>
-                    <MudListItem Style="padding-bottom:5px;font-size:small">Identifications are manually checked and validators will approved according to the quality of these documents provided.</MudListItem>
-                    <MudListItem Style="padding-bottom:5px;font-size:small">Ensuring that eHulog users are legitimate and intents are for the betterment of majority, it is hereby imperative to provide real identification for full verification.</MudListItem>
-                    <MudListItem Style="padding-bottom:5px;font-size:small">Full verification of these documents will ensure usage of the ehulog system.</MudListItem>
-                </MudList>
+                <MudText Typo="Typo.body1">Identifications are manually checked by human validators.</MudText>
+                <MudText Typo="Typo.body1">The clarity and relevance of the documents can expedite the checking process.</MudText>
+                <MudText Typo="Typo.body1">The process ensures legitimacy and identity of eHulog users thus upholding high standards, values and pure intentions for the betterment of majority</MudText>
+                <MudText Typo="Typo.body1">Once approved, the eHulog user will be able to fully utilize the system with the resources provided according to the subscribed package.</MudText>
+                <MudText Typo="Typo.body1">Privacy policies, rules and guidelines are freely available for guidance on the correct usage of eHulog system.</MudText>
             </MudItem>
             <MudItem xs="6" md="3" Class="mb-3 mx-auto">
                 <MudCard Elevation="0">
@@ -56,12 +56,6 @@
                     </MudCardContent>
                 </MudCard>
             </MudItem>
-        </MudGrid>
-
-        <MudGrid>
-            <MudItem xs="12">
-                <MudText Typo="Typo.h6" Align="Align.Center">One (1) Selfie with the submitted identifications</MudText>
-            </MudItem>
             <MudItem xs="6" md="3" Class="mb-3 mx-auto">
                 <MudCard Elevation="0">
                     <MudCardContent Style="padding:0px!important" Class="text-center">
@@ -70,6 +64,9 @@
                             <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("SelfieWithAtLeastOneCard")" FileIdentifier="InputOutputResourceDocumentType.SelfieWithAtLeastOneCard" ForUploadFiles="ForUploadFiles" />
                         </MudPaper>
                     </MudCardContent>
+                    <MudCardActions>
+                        <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="text-center">One (1) required selfie with one of the three (3) IDs from the left side.</MudAlert>
+                    </MudCardActions>
                 </MudCard>
             </MudItem>
         </MudGrid>
@@ -79,16 +76,27 @@
                 @switch (AppDataService.AppUser.DocumentsStatus)
                 {
                     case VerificationStatus.Initial:
-                        <MudButton OnClick="UpdateProfileAsync" Disabled="@SubmitForVerficationDisabled" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Send" Color="Color.Surface" Class="mb-5 px-5 py-3"><MudText Typo="Typo.button">Submit for verification</MudText></MudButton>
+                        <MudButton OnClick="UpdateProfileAsync" Disabled="@SubmitForVerficationDisabled" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Send" Color="Color.Surface" Class="mb-5"><MudText Typo="Typo.button">Submit for verification</MudText></MudButton>
                         break;
                     case VerificationStatus.Submitted:
                         <MudPaper Elevation="0">
-                            <MudText Typo="Typo.h5" Class="mb-5 py-3 px-3" Color="Color.Primary">Under review</MudText>
+                            <MudAlert NoIcon="true" Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.Info" /> <MudText Typo="Typo.h5">Under review</MudText>
+                            </MudAlert>
                         </MudPaper>
                         break;
                     case VerificationStatus.Verified:
                         <MudPaper Elevation="0">
-                            <MudText Typo="Typo.h5" Class="mb-5 py-3 px-3" Color="Color.Success">Verified</MudText>
+                            <MudAlert NoIcon="true" Severity="Severity.Success" ContentAlignment="HorizontalAlignment.Center">
+                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.CheckCircleOutline" /> <MudText Typo="Typo.h5">Verified</MudText>
+                            </MudAlert>
+                        </MudPaper>
+                        break;
+                    default:
+                        <MudPaper Elevation="0">
+                            <MudAlert NoIcon="true" Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center">
+                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.Close" /> <MudText Typo="Typo.h5">Error. Please contact us.</MudText>
+                            </MudAlert>
                         </MudPaper>
                         break;
                 }

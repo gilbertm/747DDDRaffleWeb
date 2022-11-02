@@ -73,21 +73,24 @@
                 </MudCardContent>
                 <MudCardActions Class="pb-4 pl-4">
                     <MudGrid Justify="Justify.Center">
-                        @if (AppDataService.AppUser.AddressStatus.Equals(VerificationStatus.Initial))
-                        {
-                            <MudButton Variant="Variant.Filled" DisableElevation="true" onmouseout="@(() => HoverSubmit(true))" onmouseover="@(() => HoverSubmit(false))" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" IconColor="Color.Success" Class="@_submitHoverClass" Style="@($"color:{Colors.Shades.Black};")">
-                                @L["Save"]
-                            </MudButton>
+                        <MudItem xs="12" Class="text-center">
+                            @if (AppDataService.AppUser.AddressStatus.Equals(VerificationStatus.Initial))
+                            {
+                                <MudButton Variant="Variant.Filled" DisableElevation="true" onmouseout="@(() => HoverSubmit(true))" onmouseover="@(() => HoverSubmit(false))" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" IconColor="Color.Success" Class="@_submitHoverClass" Style="@($"color:{Colors.Shades.Black};")">
+                                    @L["Save"]
+                                </MudButton>
+                            }
+                            else if (AppDataService.AppUser.AddressStatus.Equals(VerificationStatus.Submitted))
+                            {
+                                <MudText Color="Color.Surface">For approval, pending verification.</MudText>
+                            }
 
-                            <br />
-                        }
-                        else if (AppDataService.AppUser.AddressStatus.Equals(VerificationStatus.Submitted))
-                        {
-                            <MudText Color="Color.Surface">For approval, pending verification.</MudText>
-                            <br />
-                        }
-
-                        <MudAlert Severity="Severity.Warning">You can't modify your location once registered.</MudAlert>
+                            
+                        </MudItem>
+                        <MudItem xs="12" Class="text-center">
+                            <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="text-center">You can't modify your location once registered.</MudAlert>
+                        </MudItem>
+                        
                     </MudGrid>
                 </MudCardActions>
             </MudCard>
