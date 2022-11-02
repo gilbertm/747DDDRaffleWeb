@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using Nager.Country;
+using System.ComponentModel.DataAnnotations;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
 
@@ -217,59 +218,62 @@ public partial class GenericLoans
                            if (loan.ProductId == Guid.Empty || loan.ProductId.Equals(default))
                            {
                                Snackbar.Add("Product is required.", Severity.Error);
-                               throw new FormatException("Product is required.");
+                               // throw new FormatException("Product is required.");
                            }
-
-                           // TODO://
-                           // can only create if, packages is still allows
-                           // Business logic of the number allowed
-                           // loans that can be created
-                           // amount
-                           // etc.
-                           var createLoanRequest = loan.Adapt<CreateLoanRequest>();
-
-                           if (await ApiHelper.ExecuteCallGuardedAsync(
-                               async () => await LoansClient.CreateAsync(createLoanRequest),
-                               Snackbar,
-                               _customValidation) is Guid loanId)
+                           else
                            {
-                               if (loanId != Guid.Empty && loanId != default!)
+                               // TODO://
+                               // can only create if, packages is still allows
+                               // Business logic of the number allowed
+                               // loans that can be created
+                               // amount
+                               // etc.
+                               var createLoanRequest = loan.Adapt<CreateLoanRequest>();
+
+                               if (await ApiHelper.ExecuteCallGuardedAsync(
+                                   async () => await LoansClient.CreateAsync(createLoanRequest),
+                                   Snackbar,
+                                   _customValidation) is Guid loanId)
                                {
-                                   var createLoanLenderRequest = new CreateLoanLenderRequest()
+                                   if (loanId != Guid.Empty && loanId != default!)
                                    {
-                                       LenderId = AppDataService.AppUser.Id,
-                                       LoanId = loanId,
-                                       ProductId = loan.ProductId
-                                   };
-
-                                   if (await ApiHelper.ExecuteCallGuardedAsync(
-                                       async () => await LoanLendersClient.CreateAsync(createLoanLenderRequest),
-                                       Snackbar,
-                                       _customValidation) is Guid loanLenderId)
-                                   {
-                                       if (loanLenderId != Guid.Empty && loanLenderId != default!)
+                                       var createLoanLenderRequest = new CreateLoanLenderRequest()
                                        {
-                                           var createLoanLedgerRequest = new CreateLoanLedgerRequest()
-                                           {
-                                               LoanId = loanId
-                                           };
+                                           LenderId = AppDataService.AppUser.Id,
+                                           LoanId = loanId,
+                                           ProductId = loan.ProductId
+                                       };
 
-                                           if (await ApiHelper.ExecuteCallGuardedAsync(
-                                               async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
-                                               Snackbar,
-                                               _customValidation) is Guid loanLedgerId)
+                                       if (await ApiHelper.ExecuteCallGuardedAsync(
+                                           async () => await LoanLendersClient.CreateAsync(createLoanLenderRequest),
+                                           Snackbar,
+                                           _customValidation) is Guid loanLenderId)
+                                       {
+                                           if (loanLenderId != Guid.Empty && loanLenderId != default!)
                                            {
-                                               if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
+                                               var createLoanLedgerRequest = new CreateLoanLedgerRequest()
                                                {
-                                                   Snackbar.Add(L["Loan successfully created."], Severity.Success);
+                                                   LoanId = loanId
+                                               };
 
-                                                   Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                                               if (await ApiHelper.ExecuteCallGuardedAsync(
+                                                   async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
+                                                   Snackbar,
+                                                   _customValidation) is Guid loanLedgerId)
+                                               {
+                                                   if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
+                                                   {
+                                                       Snackbar.Add(L["Loan successfully created."], Severity.Success);
+
+                                                       Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                                                   }
                                                }
                                            }
                                        }
                                    }
                                }
                            }
+
                        },
                        editFormInitializedFunc: async () =>
                        {
@@ -281,11 +285,9 @@ public partial class GenericLoans
 
                                if (loanLender is not null)
                                {
-                                   Context.AddEditModal.RequestModel.ProductId = default!;
-                                   Context.AddEditModal.RequestModel.ProductId = loanLender.ProductId;
-
                                    if (loanLender.Product is not null)
                                    {
+                                       Context.AddEditModal.RequestModel.IndicatorProductId = 1;
                                        Context.AddEditModal.RequestModel.Product = new();
                                        Context.AddEditModal.RequestModel.Product.Image = new();
                                        Context.AddEditModal.RequestModel.Product.Brand = new();
@@ -413,7 +415,6 @@ public partial class GenericLoans
 
     }
 
-
     private async Task OnClickApproveChildCallBack()
     {
         Context = default!;
@@ -424,7 +425,7 @@ public partial class GenericLoans
 
 public class LoanViewModel : UpdateLoanRequest
 {
-    public Guid ProductId { get; set; }
+    public Guid ProductId { get; set; } = default!;
 
     public ProductDto Product { get; set; } = new();
 }

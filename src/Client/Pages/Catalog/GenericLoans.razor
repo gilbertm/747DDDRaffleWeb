@@ -32,7 +32,7 @@
                         <MudItem xs="12" md="4">
 
                             @* Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" *@
-                            <ProductAutocomplete Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@Context.AddEditModal.RequestModel.ProductId" ValueChanged="@((Guid val) => AutocompleteProductChange(val))" />
+                            <ProductAutocomplete RequiredError="Required" Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@(Context.AddEditModal.RequestModel.ProductId == Guid.Empty ? Guid.Empty : Context.AddEditModal.RequestModel.ProductId)" ValueChanged="@( async (Guid val) => await AutocompleteProductChange(val))" />
 
                             @if (Context.AddEditModal.RequestModel.Product is not null)
                             {
@@ -85,11 +85,50 @@
                                     }
                                 </MudCard>
                             }
+
+                            <MudAlert Severity="Severity.Warning" NoIcon="true" ContentAlignment="HorizontalAlignment.Left" Class="text-center">
+                                <MudToggleIconButton @bind-Toggled="@ToggleProductIndicator"
+                                         Icon="@Icons.Material.Filled.Close" Color="@Color.Error" Title="Draft"
+                                         ToggledIcon="@Icons.Material.Filled.Check" ToggledColor="@Color.Success" ToggledTitle="Published" />
+                                Product is @(ToggleProductIndicator ? "selected" : "Empty. Required.")
+                            </MudAlert>
+
+                            <MudInput Required="true" T="int" Style="visibility:hidden;" @bind-Value="@Context.AddEditModal.RequestModel.IndicatorProductId" For="@(() => Context.AddEditModal.RequestModel.IndicatorProductId)" Immediate="true" Label="Indicator" AdornmentColor="Color.Secondary"></MudInput>
+
                         </MudItem>
 
                         <MudItem xs="12" md="8">
                             <MudGrid Spacing="2" Justify="Justify.FlexStart">
 
+                                <MudItem xs="12" md="6">
+                                    <MudSelect Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Interest modes, computed for diminishing and fixed for zero." OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="Color.Secondary">
+                                        @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
+                                    {
+                                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                @* <MudTooltip Text="Interest modes, computed for diminishing and fixed for zero and ultimate do-good feeling.">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip> *@
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudSelect HelperText="Interest rates, applies only to compound type." Disabled="_disabledInterestSelection" ReadOnly="_disabledInterestSelection" Required="true" T="float" @bind-Value="@ChangeInterest" For="@(() => Context.AddEditModal.RequestModel.Interest)" Immediate="true" Label="Select interest rates" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="Color.Secondary">
+                                    @foreach (float f in Enumerable.Range(0, 15).Select(f => f == 0 ? 0.0f : (f / 2.0f) + 0.50f))
+                                        {
+                                            <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                    @* <MudTooltip Text="Interest rates, applies only to compount type">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip> *@
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudDatePicker HelperText="Starting for the ledger payment cycles. First meetup/handshake will adjust this value" Required="true" Date="@DateTime.UtcNow" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of loan terms" Editable="true" MinDate="DateTime.UtcNow.AddDays(-1)" AdornmentColor="Color.Secondary" Text="@DateIsNewlyCreated(Context.AddEditModal.RequestModel.StartOfPayment)" DateChanged="@((DateTime? val) => StartDatePayment(val))" PickerClosed="@(() => HandleInterest())" Placeholder="Select start of loan terms" DateFormat="dddd, MMMM d, yyyy" />
+                                    @* <MudTooltip Text="Starting payment for the ledger payment cycles. The payment cycles are in months, giving enough breathing room for the lessees">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip> *@
+                                </MudItem>
                                 <MudItem xs="12" md="6">
                                     <MudSelect Required="true" T="int" @bind-Value="@MonthsToPay" For="@(() => Context.AddEditModal.RequestModel.Month)" Immediate="true" Label="Select month(s)" OpenIcon="@Icons.Material.Filled.DateRange" AdornmentColor="Color.Secondary">
                                         @foreach (int i in Enumerable.Range(0, 13))
@@ -97,63 +136,50 @@
                                             <MudSelectItem T="int" Value="@i">@i</MudSelectItem>
                                         }
                                     </MudSelect>
-                                    <MudTooltip Text="Payment terms in months">
-                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                    </MudTooltip>
+                                    @* <MudTooltip Text="Payment terms in months">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip> *@
                                 </MudItem>
                                 <MudItem xs="12" md="6">
-                                    <MudSelect Disabled="_disabledInterestSelection" ReadOnly="_disabledInterestSelection" Required="true" T="float" @bind-Value="@ChangeInterest" For="@(() => Context.AddEditModal.RequestModel.Interest)" Immediate="true" Label="Select interest rates" OpenIcon="@Icons.Material.Filled.PieChartOutline" AdornmentColor="Color.Secondary">
-                                        @foreach (float f in Enumerable.Range(0, 15).Select(f => f == 0 ? 0.0f : (f / 2.0f) + 0.50f))
-                                        {
-                                            <MudSelectItem T="float" Value="@f">@f</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                    <MudTooltip Text="Interest rates, applies only to compount type">
-                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                    </MudTooltip>
-                                </MudItem>
-                                <MudItem xs="12" md="6">
-                                    <MudDatePicker Required="true" Date="@DateTime.UtcNow" IsDateDisabledFunc="@((DateTime val) => DisableOldDates(val))" Label="Start of loan terms" Editable="true" MinDate="DateTime.UtcNow.AddDays(-1)" AdornmentColor="Color.Secondary" Text="@DateIsNewlyCreated(Context.AddEditModal.RequestModel.StartOfPayment)" DateChanged="@((DateTime? val) => StartDatePayment(val))" PickerClosed="@(() => HandleInterest())" Placeholder="Select start of loan terms" DateFormat="dddd, MMMM d, yyyy" />
-                                    <MudTooltip Text="Starting payment for the ledger payment cycles. The payment cycles are in months, giving enough breathing room for the lessees">
-                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                    </MudTooltip>
-                                </MudItem>
-                                <MudItem xs="12" md="6">
-                                    <MudSelect Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Enum" OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="Color.Secondary">
-                                        @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
+
+                                    @if (Context.AddEditModal.RequestModel.Status.Equals(LoanStatus.Draft))
                                     {
-                                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                                        ToggleLoanStatus = false;
                                     }
-                                </MudSelect>
-                                <MudTooltip Text="Interest modes, computed for diminishing and fixed for zero and ultimate do-good feeling.">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
+                                    else
+                                    {
+                                        ToggleLoanStatus = true;
+                                    }
 
-                            <MudItem xs="12" md="6">
-                                <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
-                                    <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
-                                    <MudSelectItem Value="@LoanStatus.Published">Publish</MudSelectItem>
-                                </MudSelect>
-                                <MudTooltip Text="Published will release the loan to the wild. Once published, the loan can't be updated anymore, if there's runnng transactions.">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
+                                    <MudToggleIconButton @bind-Toggled="@ToggleLoanStatus"
+                                             Icon="@Icons.Material.Filled.Unpublished" Color="@Color.Error" Title="Draft"
+                                             ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="Published" />
 
-                            <MudItem xs="12" md="6">
-                                <MudCheckBox @bind-Checked="@IsCollateralChange" Color="Color.Secondary" Label="Require Collateral" CheckedIcon="@Icons.Material.Outlined.RadioButtonChecked" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
-                                <MudPaper Elevation="0" Class="pa-1" Style="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? "d-none" : "")">
-                                    <MudTextField Disabled="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? true : false)" T="string" Label="Collateral" Variant="Variant.Outlined" @bind-Value="Context.AddEditModal.RequestModel.InfoCollateral" Text="@(string.IsNullOrEmpty(Context.AddEditModal.RequestModel.InfoCollateral) ? _infoCollateralGeneric : Context.AddEditModal.RequestModel.InfoCollateral)" Lines="3" />
-                                    @*
+                                    <span>Loan is @(ToggleLoanStatus ? "Published" : "Draft")</span>
+
+                                    @* <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
+                        <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
+                        <MudSelectItem Value="@LoanStatus.Published">Publish</MudSelectItem>
+                        </MudSelect> *@
+                                    @* <MudTooltip Text="Published will release the loan to the wild. Once published, the loan can't be updated anymore, if there's runnng transactions.">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip> *@
+                                </MudItem>
+
+                                <MudItem xs="12" md="6">
+                                    <MudCheckBox @bind-Checked="@IsCollateralChange" Color="Color.Secondary" Label="Require Collateral" CheckedIcon="@Icons.Material.Outlined.RadioButtonChecked" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
+                                    <MudPaper Elevation="0" Class="pa-1" Style="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? "d-none" : "")">
+                                        <MudTextField HelperText="@_infoCollateralGenericHelpText" Disabled="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? true : false)" T="string" Label="Collateral" Variant="Variant.Outlined" @bind-Value="Context.AddEditModal.RequestModel.InfoCollateral" Text="@(string.IsNullOrEmpty(Context.AddEditModal.RequestModel.InfoCollateral) ? (Context.AddEditModal.RequestModel.IsCollateral == true ? "" :_infoCollateralGeneric) : Context.AddEditModal.RequestModel.InfoCollateral)" Lines="3" />
+                                        @*
                             The uplaod must be on the lessee's side'
                             <CustomFileUpload @key="@("Collateral")" FileIdentifier="InputOutputResourceDocumentType.None" ForUploadFiles="ForUploadFiles" /> *@
-                                </MudPaper>
-                                <MudTooltip Text="@_infoCollateralGenericHelpText">
-                                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                </MudTooltip>
-                            </MudItem>
+                                    </MudPaper>
+                                    @* <MudTooltip Text="@_infoCollateralGenericHelpText">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                        </MudTooltip> *@
+                                </MudItem>
 
-                            @if (TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
+                                @if (TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
                                 {
                                     <MudItem xs="12" md="12">
                                         <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
@@ -187,6 +213,52 @@
 
 
 @code {
+
+    private bool _toggleLoanStatus;
+
+    public bool ToggleLoanStatus
+    {
+        get { return _toggleLoanStatus; }
+        set
+        {
+
+            if (value == false)
+            {
+                Context.AddEditModal.RequestModel.Status = LoanStatus.Draft;
+            }
+            if (value == true)
+            {
+                Context.AddEditModal.RequestModel.Status = LoanStatus.Published;
+            }
+            _toggleLoanStatus = value;
+
+            StateHasChanged();
+        }
+    }
+
+    public bool ToggleProductIndicator
+    {
+        get
+        {
+            return Context.AddEditModal.RequestModel.IndicatorProductId > 0 ? true : false;
+        }
+
+        set
+        {
+            if (value == false)
+            {
+                Context.AddEditModal.RequestModel.IndicatorProductId = 0;
+            }
+            if (value == true)
+            {
+                Context.AddEditModal.RequestModel.IndicatorProductId = 1;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+
 
     private bool _disabledInterestSelection = false;
 
@@ -379,20 +451,22 @@
         }
     }
 
-    public void AutocompleteProductChange(Guid id)
+    public async Task<Guid?> AutocompleteProductChange(Guid id)
     {
         var userProduct = AppUserProducts.Where(ap => (ap.Product is not null) && ap.Product.Id.Equals(id)).FirstOrDefault();
 
+        Context.AddEditModal.RequestModel.ProductId = default!;
+        Context.AddEditModal.RequestModel.Product = new();
+        Context.AddEditModal.RequestModel.Product.Image = new();
+        Context.AddEditModal.RequestModel.Product.Brand = new();
+        Context.AddEditModal.RequestModel.Product.Category = new();
+
+
         if (userProduct is not null)
         {
-            Context.AddEditModal.RequestModel.ProductId = default!;
-            Context.AddEditModal.RequestModel.Product = new();
-            Context.AddEditModal.RequestModel.Product.Image = new();
-            Context.AddEditModal.RequestModel.Product.Brand = new();
-            Context.AddEditModal.RequestModel.Product.Category = new();
-
             if (userProduct.Product is not null)
             {
+                Context.AddEditModal.RequestModel.IndicatorProductId = 1;
                 Context.AddEditModal.RequestModel.ProductId = userProduct.Product.Id;
                 Context.AddEditModal.RequestModel.Product.Id = userProduct.Product.Id;
                 Context.AddEditModal.RequestModel.Product.Name = userProduct.Product.Name;
@@ -413,10 +487,17 @@
                     Context.AddEditModal.RequestModel.Product.Image = userProduct.Product.Image;
                 }
 
-                Task.Run(async () => await HandleInterest());
+                await HandleInterest();
+
+                return userProduct.Product.Id;
 
             }
         }
+
+        Context.AddEditModal.RequestModel.IndicatorProductId = 0;
+        Context.AddEditModal.RequestModel.ProductId = Guid.Empty;
+
+        return Guid.Empty;
     }
 
     protected RenderFragment<LoanDto> LoanTemplate => trail => __builder =>
@@ -488,7 +569,7 @@
                             </MudItem>
                         </MudGrid>
                     </MudContainer>
-                 }
+                }
             }
         }
 
