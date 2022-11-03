@@ -11,15 +11,24 @@ using MudBlazor.Services;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using Microsoft.JSInterop;
-using Moq;
 using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure;
+using System.Collections;
+using Microsoft.AspNetCore.Components;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+using Client.Tests;
 
 namespace EHULOG.BlazorWebAssembly.Client.Tests;
 
-public class AccountTest
+public class AccountSampleBUnitTest
 {
+
     [Fact]
-    public void HelloWorldRendersCorrectly()
+    public void AccountDummyRendersCorrectly()
     {
         // Arrange
         IConfiguration config = new ConfigurationBuilder()
@@ -27,91 +36,26 @@ public class AccountTest
 
         using var ctx = new TestContext();
         ctx.Services.AddBlazoredLocalStorage();
-        ctx.Services.AddMudServices();
-        ctx.Services.AddMudBlazorDialog();
         ctx.Services.AddSingleton<IConfiguration>(config);
-        ctx.Services.AddScoped<IClientPreferenceManager, ClientPreferenceManager>();
-
-        var authContext = ctx.AddTestAuthorization();
-        authContext.SetAuthorized("Admin");
-        authContext.SetRoles("Admin");
-
-        // Act
-        var cut = ctx.RenderComponent<Account>();
-
-        // Assert
-        cut.MarkupMatches("<h1>Hello world from Blazor</h1>");
-    }
-
-    [Fact]
-    public void AddressRendersProperly()
-    {
-        // Arrange
-        IConfiguration config = new ConfigurationBuilder()
-            .Build();
-
-        using var ctx = new TestContext();
-        ctx.Services.AddBlazoredLocalStorage();
-        ctx.Services.AddLocalization();
-        ctx.Services.AddMudServices();
-        ctx.Services.AddMudBlazorDialog();
-        ctx.Services.AddSingleton<IConfiguration>(config);
-        ctx.Services.AddScoped<IClientPreferenceManager, ClientPreferenceManager>();
-
-        var authContext = ctx.AddTestAuthorization();
-        authContext.SetAuthorized("Admin");
-        authContext.SetRoles("Admin");
-
-        // Act
-        IRenderedComponent<DynamicMapLoad>? cut = ctx.RenderComponent<DynamicMapLoad>();
-
-        // Assert
-        string? p = cut.Find("p").TextContent;
-
-        p.MarkupMatches("Your address and maplocation. You will get ehulog resouces from this");
-    }
-
-    [Fact]
-    public void AccountAccessComponentTest()
-    {
-        /* https://bunit.dev/docs/test-doubles/faking-auth.html */
-
-        // Arrange
-        using var ctx = new TestContext();
-        ctx.Services.AddBlazoredLocalStorage();
         ctx.Services.AddMudServices();
         ctx.Services.AddLocalization();
         ctx.Services.AddMudBlazorDialog();
         ctx.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
-        ctx.Services.AddSingleton<IAppUsersClient, AppUsersClient>();
         ctx.Services.AddSingleton<IPersonalClient, PersonalClient>();
-
+        ctx.Services.AddSingleton<IInputOutputResourceClient, InputOutputResourceClient>();
+        ctx.Services.AddLocalization();
         ctx.Services.AddScoped<IClientPreferenceManager, ClientPreferenceManager>();
-        ctx.Services.AddSingleton<IConfiguration>(Configuration);
 
         var authContext = ctx.AddTestAuthorization();
-
-        // authContext.SetAuthorized("Admin");
-        // authContext.SetRoles("Admin");
-
+        authContext.SetAuthorized("Admin");
+        authContext.SetRoles("Admin");
         ctx.JSInterop.Mode = JSRuntimeMode.Loose;
 
         // Act
-        var cut = ctx.RenderComponent<Account>();
+        var cut = ctx.RenderComponent<AccountDummy>();
 
         // Assert
-        /* cut.MarkupMatches(@"<h1>Hi TEST USER, you have these claims and rights:</h1>
-                    <ul>
-                      <li>You have the role SUPER USER</li>
-                    </ul>"); */
-
-        /* var parElement = component.Find("p");
-
-   component.Find("button").Click();
-
-   var elementResult = parElement.TextContent;
-
-   parElement.MarkupMatches("<p>Current count: 1</p>"); */
+        cut.MarkupMatches("<h3>AccountDummy</h3>");
     }
 
     private IConfiguration? _config;
@@ -145,7 +89,7 @@ public class AccountTest
 
 public class AuthenticationService : IAuthenticationService
 {
-    public AuthProvider ProviderType => throw new NotImplementedException();
+    public AuthProvider ProviderType => AuthProvider.AzureAd;
 
     public Task<bool> LoginAsync(string tenantId, TokenRequest request)
     {
