@@ -29,7 +29,8 @@ public class JwtAuthenticationHeaderHandler : DelegatingHandler
                 if (request.RequestUri?.AbsolutePath.Contains("/anon") is true)
                 {
 
-                } else
+                }
+                else
                 {
                     _navigation.NavigateTo("/login");
                 }

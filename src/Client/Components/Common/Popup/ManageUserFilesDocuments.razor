@@ -1,0 +1,25 @@
+﻿@if (IOResource != default)
+{
+    <MudCard Square="true" @onmouseover="@(() => IsImageHovered = true)" @onmouseleave="@(() => IsImageHovered = false)" Elevation="0" Class="position-relative text-center">
+        <MudCardContent>
+            @if (!string.IsNullOrEmpty(IOResource.ImagePath))
+            {
+                <MudImage Src="@($"{Config[ConfigNames.ApiBaseUrl]}{IOResource.ImagePath}")" Style="width:100%;height:auto;" />
+            }
+            <MudText Typo="Typo.body1"><strong>Resource:</strong> @Enum.GetName(typeof(InputOutputResourceType), IOResource.ResourceType)</MudText>
+            <MudText Typo="Typo.body1"><strong>Document:</strong> @Enum.GetName(typeof(InputOutputResourceDocumentType), IOResource.ResourceDocumentType)</MudText>
+            <MudText Typo="Typo.body1"><strong>Status:</strong> @Enum.GetName(typeof(InputOutputResourceStatusType), IOResource.ResourceStatusType)</MudText>
+            <MudText Typo="Typo.caption"><strong>Filename:</strong> @System.IO.Path.GetFileName(IOResource.ImagePath)</MudText>
+        </MudCardContent>
+        <MudOverlay Visible="@IsImageHovered" LightBackground="@IsImageHovered" Absolute="true" Class="text-center">
+            <MudButton Class="mx-3" Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Filled.Check" OnClick="Approved" Size="Size.Large">Approve</MudButton>
+            <MudButton Class="mx-3" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.Cancel" OnClick="Denied" Size="Size.Large">Deny</MudButton>
+        </MudOverlay>
+    </MudCard>
+    <MudCard Square="true" Elevation="0" Class="position-relative text-center pa-0 ma-0">
+        <MudCardContent Class="pa-0 ma-0">
+            <MudButton Class="mx-3" Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Filled.Check" OnClick="Approved" Size="Size.Large">Approve</MudButton>
+            <MudButton Class="mx-3" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.Cancel" OnClick="Denied" Size="Size.Large">Deny</MudButton>
+        </MudCardContent>
+    </MudCard>
+}

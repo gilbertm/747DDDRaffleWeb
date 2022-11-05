@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
+namespace EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
 
 public partial class SingleFileUpload
 {

@@ -4,7 +4,7 @@
             @if (!string.IsNullOrEmpty(ImageUrl))
             {
                 <MudItem xs="12">
-                    <MudCard Class="position-relative text-center" @onmouseover="@(() => Hover())" @onmouseleave="@(() => ClearHover())">
+                    <MudCard Elevation="0" Class="position-relative text-center" @onmouseover="@(() => Hover())" @onmouseleave="@(() => ClearHover())">
                         <MudCardContent>
                             <MudAvatar Square="true" Image="@ImageUrl" Style=" width:100%;height:auto;position:relative"></MudAvatar>
                         </MudCardContent>
@@ -26,6 +26,7 @@
                             </MudButton>
                             <br />
                             <MudText Typo="Typo.caption" Class="d-block w-100" Style="@($"color:{Colors.BlueGrey.Lighten2}")">Upload</MudText>
+                            <InputFile id="@ForName" OnChange="@((InputFileChangeEventArgs e) => UploadFile(e))" capture hidden accept=".jpg,.jpeg,.png" />
                         </MudCardContent>
                     </MudCard>
                 </MudItem>

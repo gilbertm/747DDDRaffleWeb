@@ -1,6 +1,6 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
+namespace EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
 
 public class ForUploadFile
 {
@@ -12,6 +12,7 @@ public class ForUploadFile
     public bool isTemporarilyUploaded { get; set; } = false; // if on first load and already in the system
     public bool isHovered { get; set; } = false;
     public bool isRemove { get; set; } = false;
+    public bool isDenied { get; set; } = false;
     public string Opacity { get; set; } = "0.3";
     public bool Disabled { get; set; } = true;
 }

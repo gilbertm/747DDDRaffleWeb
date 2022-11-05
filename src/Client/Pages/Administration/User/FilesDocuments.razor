@@ -1,0 +1,153 @@
+﻿@using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement
+
+@page "/admin/user/identification-files-documents"
+
+@attribute [MustHavePermission(EHULOGAction.Update, EHULOGResource.InputOutputResources)]
+
+@inject IStringLocalizer<FilesDocuments> L
+
+@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Users)]
+
+<EhulogTitle Title="@L["Users"]" Description="@L["Manage Users"]" />
+
+@if (Context != default)
+{
+    <EntityTable TEntity="UserDetailsExtendedDto" TId="Guid" TRequest="CreateUserRequest" Context="@Context"></EntityTable>
+}
+
+@code {
+    protected RenderFragment<UserDetailsExtendedDto> TemplateUserInfo => trail => __builder =>
+    {
+        <MudGrid>
+            <MudItem xs="12">
+                <MudText>
+                    @trail.Email
+                </MudText>
+
+            </MudItem>
+            <MudItem xs="12">
+                <MudText>
+                    @($"{@trail.LastName}, {@trail.FirstName}")
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    };
+
+    protected RenderFragment<UserDetailsExtendedDto> FilesAndDocuments => trail => __builder =>
+    {
+        if (trail.FilesOrDocumentsForVerification != default)
+        {
+            @if (trail.FilesOrDocumentsForVerification.Count > 0)
+            {
+                <MudGrid Class="text-center">
+                    @foreach (var fileAndDocument in trail.FilesOrDocumentsForVerification)
+                    {
+                        if (fileAndDocument.ResourceStatusType < InputOutputResourceStatusType.SoftDeleted)
+                        {
+                            <MudItem xs="3">
+                                <SingleFileSimpleManage InputOutputResource="@fileAndDocument" OnApprove="@(() => Approve(fileAndDocument))" OnDeny="@(() => Deny(fileAndDocument))" />
+
+                                @switch (fileAndDocument.ResourceStatusType)
+                                {
+                                    case InputOutputResourceStatusType.EnabledAndVerified:
+                                        <MudText Typo="Typo.caption" Color="Color.Success">
+                                            Verified
+                                        </MudText>
+                                        break;
+                                    case InputOutputResourceStatusType.Enabled:
+                                    case InputOutputResourceStatusType.Disabled:
+                                        <MudText Typo="Typo.caption" Color="Color.Info">
+                                            For verification
+                                        </MudText>
+                                        break;
+                                }
+                            </MudItem>
+                        }
+                    }
+
+                    @if (trail.FilesOrDocumentsForVerification.Count() != trail.FilesOrDocumentsForVerification.Where(f => f.ResourceStatusType.Equals(InputOutputResourceStatusType.EnabledAndVerified)).Count())
+                    {
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1">@($"Some files are unacceptable. User needs re-upload. Only ({trail.FilesOrDocumentsForVerification.Where(f => f.ResourceStatusType.Equals(InputOutputResourceStatusType.EnabledAndVerified)).Count()}/{trail.FilesOrDocumentsForVerification.Count()}) is accepted")</MudText>
+                            </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1">@($"Verify / finalize documents ({trail.FilesOrDocumentsForVerification.Where(f => f.ResourceStatusType.Equals(InputOutputResourceStatusType.EnabledAndVerified)).Count()}/{trail.FilesOrDocumentsForVerification.Count()})")</MudText>
+                                <MudButton Class="mt-3" OnClick="@(() => Verify(trail))" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success">Verify</MudButton>
+                            </MudItem>
+                    }
+                </MudGrid>
+            }
+        }
+    };
+
+    protected async Task Approve(InputOutputResourceDto iOResource)
+    {
+        iOResource.ResourceStatusType = InputOutputResourceStatusType.EnabledAndVerified;
+
+
+        if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => InputOutputResourceClient.UpdateAsync(iOResource.Id, new UpdateInputOutputResourceByIdRequest
+                            { Id = iOResource.Id, ImagePath = iOResource.ImagePath, ResourceStatusType = InputOutputResourceStatusType.EnabledAndVerified }), Snackbar)
+                    is Guid iOResourceId)
+        {
+            if (iOResourceId != default)
+            {
+                ApplicationUsers = await LoadData();
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    protected async Task Deny(InputOutputResourceDto iOResource)
+    {
+        iOResource.ResourceStatusType = InputOutputResourceStatusType.SoftDeleted;
+
+        if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => InputOutputResourceClient.UpdateAsync(iOResource.Id, new UpdateInputOutputResourceByIdRequest
+                            { Id = iOResource.Id, ImagePath = iOResource.ImagePath, ResourceStatusType = InputOutputResourceStatusType.SoftDeleted }), Snackbar)
+                    is Guid iOResourceId)
+        {
+            if (iOResourceId != default)
+            {
+                ApplicationUsers = await LoadData();
+
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    protected async Task Verify(UserDetailsExtendedDto userDetails)
+    {
+        Context = default!;
+
+        if (await ApiHelper.ExecuteCallGuardedAsync(() => AppUsersClient.GetAsync(userDetails.Id.ToString()), Snackbar) is AppUserDto appUser)
+        {
+            if (appUser != default)
+            {
+
+                if (await ApiHelper.ExecuteCallGuardedAsync(() => AppUsersClient.UpdateAsync(appUser.Id,
+                    new UpdateAppUserRequest
+                        {
+                            Id = appUser.Id,
+                            ApplicationUserId = appUser.ApplicationUserId,
+                            DocumentsStatus = VerificationStatus.Verified
+                        }), Snackbar) is Guid appUserId)
+                {
+                    if (appUserId != default)
+                    {
+                        LoadContext();
+
+                        await AppDataService.RevalidateVerification(appUser);
+                    }
+                }
+            }
+        }
+
+        StateHasChanged();
+    }
+}
