@@ -25,7 +25,6 @@ public partial class CreateUpdateLoan
     private List<AppUserProductDto> AppUserProducts { get; set; } = default!;
     private List<TemporaryLedgerTableElement> TemporaryLedgerTable { get; set; } = default!;
 
-
     protected override async Task OnInitializedAsync()
     {
         await AppDataService.InitializationAsync();
@@ -65,10 +64,10 @@ public partial class CreateUpdateLoan
         public float Balance { get; set; }
     }
 
-    private bool _disabledInterestSelection = false;
+    private bool _disabledInterestSelection { get; set; } = false;
 
-    private string _infoCollateralGeneric = "Anything of value (goods, items, memoirs, collector's items, etc) that would encourage the Lender to consider you recipient of the hard earned money.";
-    private string _infoCollateralGenericHelpText = "Collateral adds more security from the lender. This info can contain required information that MUST be fulfilled by the lessee or applicants.";
+    // private string _infoCollateralGeneric = "Anything of value (goods, items, memoirs, collector's items, etc) that would encourage the Lender to consider you recipient of the hard earned money.";
+    // private string _infoCollateralGenericHelpText = "Collateral adds more security from the lender. This info can contain required information that MUST be fulfilled by the lessee or applicants.";
 
     private bool IsCollateralChange
     {
@@ -240,8 +239,10 @@ public partial class CreateUpdateLoan
 
     public void StartDatePayment(DateTime? dateTime)
     {
-        if (dateTime != default)
-            Model.StartOfPayment = dateTime.Value;
+        if (dateTime != default && dateTime != null)
+        {
+            Model.StartOfPayment = (DateTime)dateTime;
+        }
     }
 
     public void AutocompleteProductChange(Guid id)
