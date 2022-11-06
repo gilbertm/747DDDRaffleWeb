@@ -164,10 +164,12 @@ public partial class DynamicMapLoad
                     RolePackageStatus = AppDataService.AppUser.RolePackageStatus
                 };
 
-                _ = await AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, updateAppUserRequest);
+                await AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, updateAppUserRequest);
+
+                await AppDataService.RevalidateVerification();
             }
         }
 
-        NavigationManager.NavigateTo("/account/rolepackage", true);
+        NavigationManager.NavigateTo("/account/role-subscription", true);
     }
 }

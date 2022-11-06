@@ -11,7 +11,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
 public class EntityContainerContext<TEntity>
 {
-    private Func<PaginationFilter, Task<EntityContainerPaginationResponse<LoanDto>>> searchFunc;
+    private Func<PaginationFilter, Task<EntityContainerPaginationResponse<LoanDto>>>? _searchFunc;
 
     /// <summary>
     /// A function that loads the specified page from the api with the specified search criteria
@@ -23,12 +23,12 @@ public class EntityContainerContext<TEntity>
 
     public EntityContainerContext(Func<PaginationFilter, Task<EntityContainerPaginationResponse<TEntity>>> searchFunc, RenderFragment<TEntity> template)
     {
-        SearchFunc = searchFunc;
+        SearchFunc = searchFunc ?? default!;
         Template = template;
     }
 
     public EntityContainerContext(Func<PaginationFilter, Task<EntityContainerPaginationResponse<LoanDto>>> searchFunc)
     {
-        this.searchFunc = searchFunc;
+        this._searchFunc = searchFunc ?? default!;
     }
 }

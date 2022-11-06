@@ -22,6 +22,8 @@ public partial class GenericLoans
     [Inject]
     protected IAuthorizationService AuthService { get; set; } = default!;
     [Inject]
+    protected ICategoriesClient CategoriesClient { get; set; } = default!;
+    [Inject]
     protected IUsersClient UsersClient { get; set; } = default!;
     [Inject]
     protected ILoanLendersClient LoanLendersClient { get; set; } = default!;
@@ -48,7 +50,9 @@ public partial class GenericLoans
 
     private List<AppUserProductDto> AppUserProducts { get; set; } = default!;
 
-    private readonly CustomValidation? _customValidation;
+    private List<CategoryDto> Categories { get; set; } = default!;
+
+    private CustomValidation _customValidation { get; set; } = default!;
 
     private string Currency { get; set; } = string.Empty;
 
@@ -59,8 +63,76 @@ public partial class GenericLoans
 
     }
 
+    private async Task LoadAppUserProducts(Guid appUserId, Guid filterCategory = default)
+    {
+        AppUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(appUserId)).ToList();
+
+        if (AppUserProducts.Count > 0)
+        {
+            foreach (var item in AppUserProducts)
+            {
+                if (item.Product is not null)
+                {
+                    var image = await InputOutputResourceClient.GetAsync(item.Product.Id);
+
+                    if (image.Count > 0)
+                    {
+                        item.Product.Image = image.First();
+                    }
+                }
+            }
+        }
+
+        // filtered according to the choosen category
+        if (filterCategory != default)
+        {
+            AppUserProducts = AppUserProducts.Where(ap => (ap.Product != default) ? ap.Product.CategoryId.Equals(filterCategory) : default).ToList();
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        var categoriesFilter = new PaginationFilter().Adapt<SearchCategoriesRequest>();
+
+        if (await ApiHelper.ExecuteCallGuardedAsync(
+                         async () => await CategoriesClient.SearchAsync(categoriesFilter),
+                         Snackbar,
+                         _customValidation) is PaginationResponseOfCategoryDto resultCategories)
+        {
+            if (resultCategories != default && resultCategories.Data.Count > 0)
+            {
+                Categories = new();
+
+                foreach (var item in resultCategories.Data)
+                {
+                    var category = new CategoryDto
+                    {
+                        Id = item.Id,
+                        Name = item.Name,
+                        Description = item.Description
+                    };
+
+                    var imageCategory = await InputOutputResourceClient.GetAsync(item.Id);
+
+                    if (imageCategory != default)
+                    {
+                        if (imageCategory.Count > 0)
+                        {
+                            category.Image = imageCategory.First();
+                        }
+                    }
+
+                    Categories.Add(category);
+
+                }
+            }
+        }
+    }
+
     private async Task LoadContext()
     {
+        IsProductsReadOnly = true;
+
         if (AppDataService != default)
         {
             if (AppDataService.AppUser is not null)
@@ -85,23 +157,9 @@ public partial class GenericLoans
                     }
                 }
 
-                AppUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(AppDataService.AppUser.Id)).ToList();
+                await LoadAppUserProducts(AppDataService.AppUser.Id);
 
-                if (AppUserProducts.Count > 0)
-                {
-                    foreach (var item in AppUserProducts)
-                    {
-                        if (item.Product is not null)
-                        {
-                            var image = await InputOutputResourceClient.GetAsync(item.Product.Id);
-
-                            if (image.Count > 0)
-                            {
-                                item.Product.Image = image.First();
-                            }
-                        }
-                    }
-                }
+                await LoadCategories();
 
                 Context = new(
                        entityName: L["Loan"],
@@ -197,14 +255,17 @@ public partial class GenericLoans
                                    {
                                        foreach (var loanLesseeDto in item.LoanLessees)
                                        {
-                                           var userDetailsDto = await UsersClient.GetByIdAsync(loanLesseeDto.Lessee.ApplicationUserId);
-
                                            if (loanLesseeDto.Lessee != default)
                                            {
-                                               loanLesseeDto.Lessee.FirstName = userDetailsDto.FirstName;
-                                               loanLesseeDto.Lessee.LastName = userDetailsDto.LastName;
-                                               loanLesseeDto.Lessee.Email = userDetailsDto.Email;
-                                               loanLesseeDto.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                               var userDetailsDto = await UsersClient.GetByIdAsync(loanLesseeDto.Lessee.ApplicationUserId);
+
+                                               if (loanLesseeDto.Lessee != default)
+                                               {
+                                                   loanLesseeDto.Lessee.FirstName = userDetailsDto.FirstName;
+                                                   loanLesseeDto.Lessee.LastName = userDetailsDto.LastName;
+                                                   loanLesseeDto.Lessee.Email = userDetailsDto.Email;
+                                                   loanLesseeDto.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                               }
                                            }
                                        }
                                    }
@@ -218,7 +279,6 @@ public partial class GenericLoans
                            if (loan.ProductId == Guid.Empty || loan.ProductId.Equals(default))
                            {
                                Snackbar.Add("Product is required.", Severity.Error);
-                               // throw new FormatException("Product is required.");
                            }
                            else
                            {
@@ -369,6 +429,22 @@ public partial class GenericLoans
 
                            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
                        },
+                       deleteFunc: async (id) =>
+                       {
+                           // TODO:// do all necessary checks before deletion
+                           if (await ApiHelper.ExecuteCallGuardedAsync(
+                              async () => await LoansClient.DeleteAsync(id),
+                              Snackbar,
+                              _customValidation) is Guid loanId)
+                           {
+                               if (id.Equals(loanId))
+                               {
+                                   Snackbar.Add(L["Loan successfully deleted."], Severity.Success);
+                               }
+
+                           }
+
+                       },
                        canUpdateEntityFunc: LoanDto =>
                        {
                            if (new[] { LoanStatus.Draft, LoanStatus.Published }.Contains(LoanDto.Status))
@@ -404,6 +480,8 @@ public partial class GenericLoans
                            return false;
 
                        },
+                       createAction: CanCreateAction(),
+
                        exportAction: string.Empty,
                        hasExtraActionsFunc: () =>
                        {
@@ -413,6 +491,38 @@ public partial class GenericLoans
             }
         }
 
+    }
+
+    private string CanCreateAction()
+    {
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                if (AppDataService.AppUser.RoleName != default)
+                {
+                    if (AppDataService.AppUser.RoleName.Equals("Admin"))
+                    {
+                        return string.Empty;
+                    }
+
+                    if (AppDataService.AppUser.IsVerified)
+                    {
+                        if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                        {
+                            // TODO:// business logics
+                            if (AppDataService.IsCanCreateLoan())
+                            {
+                                return string.Empty;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return "Can't create";
     }
 
     private async Task OnClickApproveChildCallBack()
@@ -425,6 +535,10 @@ public partial class GenericLoans
 
 public class LoanViewModel : UpdateLoanRequest
 {
+    public Guid CategoryId { get; set; } = default!;
+
+    public CategoryDto Category { get; set; } = new CategoryDto();
+
     public Guid ProductId { get; set; } = default!;
 
     public ProductDto Product { get; set; } = new();

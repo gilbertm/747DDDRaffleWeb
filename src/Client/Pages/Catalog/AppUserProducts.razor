@@ -75,7 +75,13 @@
                             }
                             else
                             {
-                                <MudAvatar Image="@(string.IsNullOrEmpty(@context.Product.Image.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + @context.Product.Image.ImagePath))" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                                if (context.Product != default)
+                                {
+                                    if (context.Product.Image !=default)
+                                    {
+                                        <MudAvatar Image="@(string.IsNullOrEmpty(@context.Product.Image.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + @context.Product.Image.ImagePath))" Square="true" Style="height: auto; width: auto; max-height: 100%"> </MudAvatar>
+                                    }
+                                }
                             }
                         </MudItem>
                         <MudItem>

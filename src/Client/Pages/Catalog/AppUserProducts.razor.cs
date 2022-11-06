@@ -273,8 +273,6 @@ public partial class AppUserProducts
                   );
             }
         }
-
-
     }
 
     private async Task<bool> CanDoActionAsync(string? action, AuthenticationState state) =>

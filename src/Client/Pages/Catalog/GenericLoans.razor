@@ -31,22 +31,37 @@
 
                         <MudItem xs="12" md="4">
 
-                            @* Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" *@
-                            <ProductAutocomplete RequiredError="Required" Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@(Context.AddEditModal.RequestModel.ProductId == Guid.Empty ? Guid.Empty : Context.AddEditModal.RequestModel.ProductId)" ValueChanged="@( async (Guid val) => await AutocompleteProductChange(val))" />
+                            <MudSelect Required="true" T="Guid" Class="mb-5" Value="@Context.AddEditModal.RequestModel.CategoryId" Text="@(Context.AddEditModal.RequestModel.CategoryId == default ? "" : Context.AddEditModal.RequestModel.CategoryId.ToString())" For="@(() => Context.AddEditModal.RequestModel.CategoryId)" Immediate="true" Label="Select Category" OpenIcon="@Icons.Material.Filled.Category" AdornmentColor="Color.Secondary" ValueChanged="@(async (Guid val) => await UpdateProductOnCategoryChange(val))">
+                                @foreach (var item in Categories)
+                                {
+                                    <MudSelectItem T="Guid" Value="item.Id">
+                                        @{
+                                            var image = Config[ConfigNames.ApiBaseUrl] + item.Image?.ImagePath;
+                                            <img src="@image" height="14" class="mr-1" /> @item.Name
+                                        }
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
 
-                            @if (Context.AddEditModal.RequestModel.Product is not null)
+                            <ProductAutocomplete Products="AppUserProducts.Select(ap => ap.Product).ToList()" RequiredError="Required" Disabled="IsProductsReadOnly" ReadOnly="IsProductsReadOnly" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@(Context.AddEditModal.RequestModel.ProductId == Guid.Empty ? Guid.Empty : Context.AddEditModal.RequestModel.ProductId)" ValueChanged="@( async (Guid val) => await AutocompleteProductChange(val))" />
+
+                            @if (Context.AddEditModal.RequestModel.Product != default && Context.AddEditModal.RequestModel.ProductId != default)
                             {
                                 <MudCard Elevation="0">
                                     <MudCardHeader>
                                         <CardHeaderContent>
-                                            @if (AppDataService.AppUser.RoleName.Equals("Admin"))
+                                            @if (AppDataService.AppUser.RoleName != default)
                                             {
-                                                <MudText Typo="Typo.body1">@Context.AddEditModal.RequestModel.ProductId</MudText>
+                                                if (AppDataService.AppUser.RoleName.Equals("Admin"))
+                                                {
+                                                    <MudText Typo="Typo.body1">@Context.AddEditModal.RequestModel.ProductId</MudText>
+                                                }
                                             }
                                             <MudText Typo="Typo.h5">@Context.AddEditModal.RequestModel.Product.Name</MudText>
                                             @if (Context.AddEditModal.RequestModel.Product.Category is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Category?.Name))
                                             {
                                                 <MudText Typo="Typo.caption">Category: @Context.AddEditModal.RequestModel.Product.Category?.Name</MudText>
+                                                <br />
                                             }
                                             @if (Context.AddEditModal.RequestModel.Product.Brand is not null && !string.IsNullOrEmpty(Context.AddEditModal.RequestModel.Product.Brand?.Name))
                                             {
@@ -55,7 +70,7 @@
 
                                         </CardHeaderContent>
                                         <CardHeaderActions>
-                                            @if (Context.AddEditModal.RequestModel.Product.ProductType.Equals(ProductType.System))
+                                            @if (new[] { ProductType.Inactive, ProductType.Initial, ProductType.System }.Contains(Context.AddEditModal.RequestModel.Product.ProductType))
                                             {
                                                 <MudIconButton Icon="@Icons.Filled.Computer" Color="Color.Default" Disabled="true" />
                                             }
@@ -87,7 +102,7 @@
                             }
 
                             <MudAlert Severity="Severity.Warning" NoIcon="true" ContentAlignment="HorizontalAlignment.Left" Class="text-center">
-                                <MudToggleIconButton @bind-Toggled="@ToggleProductIndicator"
+                                <MudToggleIconButton Disabled="true" @bind-Toggled="@ToggleProductIndicator"
                                          Icon="@Icons.Material.Filled.Close" Color="@Color.Error" Title="Draft"
                                          ToggledIcon="@Icons.Material.Filled.Check" ToggledColor="@Color.Success" ToggledTitle="Published" />
                                 Product is @(ToggleProductIndicator ? "selected" : "Empty. Required.")
@@ -213,6 +228,18 @@
 
 
 @code {
+    private bool _isProductsReadOnly;
+    public bool IsProductsReadOnly
+    {
+        get { return _isProductsReadOnly; }
+        set
+        {
+
+            _isProductsReadOnly = value;
+
+            StateHasChanged();
+        }
+    }
 
     private bool _toggleLoanStatus;
 
@@ -264,6 +291,35 @@
 
     private string _infoCollateralGeneric = "Anything of value (goods, items, memoirs, collector's items, etc) that would encourage the Lender to consider you recipient of the hard earned money.";
     private string _infoCollateralGenericHelpText = "Collateral adds more security from the lender. This info can contain required information that MUST be fulfilled by the lessee or applicants.";
+
+    private async Task UpdateProductOnCategoryChange(Guid categoryId)
+    {
+        Context.AddEditModal.RequestModel.IndicatorProductId = 0;
+        Context.AddEditModal.RequestModel.ProductId = default!;
+        Context.AddEditModal.RequestModel.Product = new();
+        Context.AddEditModal.RequestModel.Product.Image = new();
+        Context.AddEditModal.RequestModel.Product.Brand = new();
+        Context.AddEditModal.RequestModel.Product.Category = new();
+
+        Context.AddEditModal.RequestModel.CategoryId = categoryId;
+
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                await LoadAppUserProducts(AppDataService.AppUser.Id, categoryId);
+            }
+        }
+
+        if (categoryId != default)
+        {
+            IsProductsReadOnly = false;
+        }
+
+
+        Context.AddEditModal.ForceRender();
+
+    }
 
     private bool IsCollateralChange
     {
@@ -628,29 +684,15 @@
 
             if (AppDataService.AppUser != default)
             {
-                bool isOwner = false;
-
-                if (trail.LoanLenders != default)
-                {
-                    var loanLender = trail.LoanLenders?.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault();
-
-                    if (loanLender is { })
-                    {
-                        isOwner = true;
-                    }
-                }
-
+                
                 if (trail.LoanLessees != default)
                 {
                     _loanLesseeDto = trail.LoanLessees.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
                 }
 
-                @* <SpecificLoanLender LoanStatus="@trail.Status" /> *@
-
                 if (trail.LoanApplicants != default && trail.Status < LoanStatus.Assigned)
                 {
                     <BlockInfoLoanApplicants Loan="@trail" OnClickApprove="(() => OnClickApproveChildCallBack())" />
-                    @* <SpecificLoanApplicants IsMinimal="false" LoanId="@trail.Id" IsPossibleToAppy="true" IsOwner="@isOwner" Applicants="@trail.LoanApplicants" LoanStatus="@trail.Status" LoanLessee="@_loanLesseeDto" /> *@
                 }
 
                 if (trail.LoanLessees != default && trail.Status >= LoanStatus.Assigned)
