@@ -10,65 +10,73 @@
     {
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
-                <MudText Typo="Typo.h6" Align="Align.Center">Minimum of two (2) valid identifications.</MudText>
-                <MudText Typo="Typo.body1">Identifications are manually checked by human validators.</MudText>
-                <MudText Typo="Typo.body1">The clarity and relevance of the documents can expedite the checking process.</MudText>
-                <MudText Typo="Typo.body1">The process ensures legitimacy and identity of eHulog users thus upholding high standards, values and pure intentions for the betterment of majority</MudText>
-                <MudText Typo="Typo.body1">Once approved, the eHulog user will be able to fully utilize the system with the resources provided according to the subscribed package.</MudText>
-                <MudText Typo="Typo.body1">Privacy policies, rules and guidelines are freely available for guidance on the correct usage of eHulog system.</MudText>
+                <MudText Typo="Typo.h6" Align="Align.Center">Valid document(s)</MudText>
+                @if (AppDataService.AppUser.DocumentsStatus != VerificationStatus.Verified)
+                {
+
+                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Warning">Minimum of two (2) valid identifications and one (1) selife</MudText>
+                    <MudText Typo="Typo.body1">Identifications are manually checked by human validators.</MudText>
+                    <MudText Typo="Typo.body1">The clarity and relevance of the documents can expedite the checking process.</MudText>
+                    <MudText Typo="Typo.body1">The process ensures legitimacy and identity of eHulog users thus upholding high standards, values and pure intentions for the betterment of majority</MudText>
+                    <MudText Typo="Typo.body1">Once approved, the eHulog user will be able to fully utilize the system with the resources provided according to the subscribed package.</MudText>
+                    <MudText Typo="Typo.body1">Privacy policies, rules and guidelines are freely available for guidance on the correct usage of eHulog system.</MudText>
+                }
             </MudItem>
-            <MudItem xs="6" md="3" Class="mb-3 mx-auto">
-                <MudCard Elevation="0">
-                    <MudCardContent Style="padding:0px!important" Class="text-center">
-                        <MudText Typo="Typo.h5" Class="mb-1">Passport</MudText>
-                        <MudPaper Elevation="0">
-                            <DocumentFileUploader OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("Passport")" FileIdentifier="InputOutputResourceDocumentType.Passport" ForUploadFiles="ForUploadFiles" />
-                        </MudPaper>
-                        <MudPaper Elevation="0">
-                            <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("PassportBack")" FileIdentifier="InputOutputResourceDocumentType.PassportBack" ForUploadFiles="ForUploadFiles" />
-                        </MudPaper>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-            <MudItem xs="6" md="3" Class="mb-3 mx-auto">
-                <MudCard Elevation="0">
-                    <MudCardContent Style="padding:0px!important" Class="text-center">
-                        <MudText Typo="Typo.h5" Class="mb-1">National ID</MudText>
-                        <MudPaper Elevation="0">
-                            <DocumentFileUploader OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("NationalId")" FileIdentifier="InputOutputResourceDocumentType.NationalId" ForUploadFiles="ForUploadFiles" />
-                        </MudPaper>
-                        <MudPaper Elevation="0">
-                            <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("NationalIdBack")" FileIdentifier="InputOutputResourceDocumentType.NationalIdBack" ForUploadFiles="ForUploadFiles" />
-                        </MudPaper>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-            <MudItem xs="6" md="3" Class="mb-3 mx-auto">
-                <MudCard Elevation="0">
-                    <MudCardContent Style="padding:0px!important" Class="text-center">
-                        <MudText Typo="Typo.h5" Class="mb-1">Government ID</MudText>
-                        <MudPaper Elevation="0">
-                            <DocumentFileUploader OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("GovernmentId")" FileIdentifier="InputOutputResourceDocumentType.GovernmentId" ForUploadFiles="ForUploadFiles" />
-                        </MudPaper>
-                        <MudPaper Elevation="0">
-                            <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("GovernmentIdBack")" FileIdentifier="InputOutputResourceDocumentType.GovernmentIdBack" ForUploadFiles="ForUploadFiles" />
-                        </MudPaper>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-            <MudItem xs="6" md="3" Class="mb-3 mx-auto">
-                <MudCard Elevation="0">
-                    <MudCardContent Style="padding:0px!important" Class="text-center">
-                        <MudText Typo="Typo.h5" Class="mb-1">Selfie with card</MudText>
-                        <MudPaper Elevation="0">
-                            <DocumentFileUploader OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("SelfieWithAtLeastOneCard")" FileIdentifier="InputOutputResourceDocumentType.SelfieWithAtLeastOneCard" ForUploadFiles="ForUploadFiles" />
-                        </MudPaper>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="text-center">One (1) required selfie with one of the three (3) IDs from the left side.</MudAlert>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
+            @if (AppDataService.AppUser.DocumentsStatus != VerificationStatus.Verified)
+            {
+                <MudItem xs="6" md="3" Class="mb-3 mx-auto">
+                    <MudCard Elevation="0">
+                        <MudCardContent Style="padding:0px!important" Class="text-center">
+                            <MudText Typo="Typo.h5" Class="mb-1">Passport</MudText>
+                            <MudPaper Elevation="0">
+                                <DocumentFileUploader IsSubmittedForVerification="@(AppDataService.AppUser.DocumentsStatus ?? default)" OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("Passport")" FileIdentifier="InputOutputResourceDocumentType.Passport" ForUploadFiles="ForUploadFiles" />
+                            </MudPaper>
+                            <MudPaper Elevation="0">
+                                <DocumentFileUploader IsSubmittedForVerification="(AppDataService.AppUser.DocumentsStatus ?? default)" OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("PassportBack")" FileIdentifier="InputOutputResourceDocumentType.PassportBack" ForUploadFiles="ForUploadFiles" />
+                            </MudPaper>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" md="3" Class="mb-3 mx-auto">
+                    <MudCard Elevation="0">
+                        <MudCardContent Style="padding:0px!important" Class="text-center">
+                            <MudText Typo="Typo.h5" Class="mb-1">National ID</MudText>
+                            <MudPaper Elevation="0">
+                                <DocumentFileUploader IsSubmittedForVerification="(AppDataService.AppUser.DocumentsStatus ?? default)" OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("NationalId")" FileIdentifier="InputOutputResourceDocumentType.NationalId" ForUploadFiles="ForUploadFiles" />
+                            </MudPaper>
+                            <MudPaper Elevation="0">
+                                <DocumentFileUploader IsSubmittedForVerification="(AppDataService.AppUser.DocumentsStatus ?? default)" OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("NationalIdBack")" FileIdentifier="InputOutputResourceDocumentType.NationalIdBack" ForUploadFiles="ForUploadFiles" />
+                            </MudPaper>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" md="3" Class="mb-3 mx-auto">
+                    <MudCard Elevation="0">
+                        <MudCardContent Style="padding:0px!important" Class="text-center">
+                            <MudText Typo="Typo.h5" Class="mb-1">Government ID</MudText>
+                            <MudPaper Elevation="0">
+                                <DocumentFileUploader IsSubmittedForVerification="(AppDataService.AppUser.DocumentsStatus ?? default)" OnChildChanges="@(() => OnChildChanges(ForUploadFiles))" @key="@("GovernmentId")" FileIdentifier="InputOutputResourceDocumentType.GovernmentId" ForUploadFiles="ForUploadFiles" />
+                            </MudPaper>
+                            <MudPaper Elevation="0">
+                                <DocumentFileUploader IsSubmittedForVerification="(AppDataService.AppUser.DocumentsStatus ?? default)" OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("GovernmentIdBack")" FileIdentifier="InputOutputResourceDocumentType.GovernmentIdBack" ForUploadFiles="ForUploadFiles" />
+                            </MudPaper>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" md="3" Class="mb-3 mx-auto">
+                    <MudCard Elevation="0">
+                        <MudCardContent Style="padding:0px!important" Class="text-center">
+                            <MudText Typo="Typo.h5" Class="mb-1">Selfie with card</MudText>
+                            <MudPaper Elevation="0">
+                                <DocumentFileUploader IsSubmittedForVerification="(AppDataService.AppUser.DocumentsStatus ?? default)" OnChildChanges="@(()=> OnChildChanges(ForUploadFiles))" @key="@("SelfieWithAtLeastOneCard")" FileIdentifier="InputOutputResourceDocumentType.SelfieWithAtLeastOneCard" ForUploadFiles="ForUploadFiles" />
+                            </MudPaper>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="text-center">One (1) required selfie with one of the three (3) IDs from the left side.</MudAlert>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
         </MudGrid>
 
         <MudGrid>
@@ -83,12 +91,15 @@
                             <MudAlert NoIcon="true" Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
                                 <MudIcon Size="Size.Large" Icon="@Icons.Filled.Info" /> <MudText Typo="Typo.h5">Under review</MudText>
                             </MudAlert>
+                            <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center">
+                                Note: replace the image(s) which doesn't pass verification immediately. It will automatically replace the old file.
+                            </MudAlert>
                         </MudPaper>
                         break;
                     case VerificationStatus.Verified:
                         <MudPaper Elevation="0">
                             <MudAlert NoIcon="true" Severity="Severity.Success" ContentAlignment="HorizontalAlignment.Center">
-                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.CheckCircleOutline" /> <MudText Typo="Typo.h5">Verified</MudText>
+                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.CheckCircleOutline" /> <MudText Typo="Typo.h5">Documents verified</MudText>
                             </MudAlert>
                         </MudPaper>
                         break;

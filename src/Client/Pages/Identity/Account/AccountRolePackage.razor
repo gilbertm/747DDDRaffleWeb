@@ -1,9 +1,9 @@
-﻿@page "/account/rolepackage"
+﻿@page "/account/role-subscription"
 
 @inject IDialogService Dialog
 @inject IStringLocalizer<AccountRolePackage> L
 
-<EhulogTitle Title="@L["Role and Package"]" Description="@L["Manage your account role and package subscription. Important: Allow location, if not you will not be able to see the map and proceed."]" />
+<EhulogTitle Title="@L["Role and Subscription"]" Description="@L["Manage your account role and package subscription. Important: Allow location, if not you will not be able to see the map and proceed."]" />
 
 @if (AppDataService != default && AppDataService.AppUser != default)
 {
@@ -16,7 +16,7 @@
 
                 @if (_runningRoles is not null)
                 {
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="3">
                         <MudCard Elevation="0">
                             <MudCardHeader>
                                 <CardHeaderContent>
@@ -107,7 +107,7 @@
 
                 @if (_runningPackages is not null && _runningPackages.Count() > 0)
                 {
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="9">
                         <MudCard Elevation="0">
                             <MudCardHeader>
                                 <CardHeaderContent>
@@ -117,117 +117,181 @@
                                 </CardHeaderContent>
                             </MudCardHeader>
 
-                            @if (_runningPackages.Count() > 0)
-                            {
+                            <MudGrid Justify="Justify.Center">
+                                @foreach (var package in _runningPackages)
+                                {
+                                    <MudItem xs="6" md="3" lg="2" onclick="@(() => { if ((_runningRoles?.Where(rr => rr.IsSelected).Count() > 0) == true) { UpdatePackage(package); }})" onmouseover="@(() => { if ((_runningRoles?.Where(rr => rr.IsSelected).Count() > 0) == true) { HoverPackage(package); }})" Class="@((_runningRoles?.Where(rr => rr.IsSelected).Count() > 0) == true ? "" : "")" Style="@(package.IsVisible ? "display:block" : "display:none")">
+                                        <MudCard Class="position-relative" Style="background-color:#f1f1f1;">
 
+                                            <MudCardContent>
+                                                <MudCardMedia Image="@(Config[ConfigNames.ApiBaseUrl] + package?.PackageDto?.Image?.ImagePath)" Height="150" Style="background-size:contain" />
+                                            </MudCardContent>
+                                            <MudCardActions>
+                                                <MudGrid>
+                                                    <MudItem xs="12" Class="text-center">
+                                                        <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
+                                                        <MudText Typo="Typo.body2" Color="Color.Warning">@package?.PackageDto?.Description</MudText>
 
-                                <MudGrid Justify="Justify.Center">
-
-
-                                    @foreach (var package in _runningPackages)
-                                    {
-
-                                        <MudItem xs="6" onclick="@(() => { if ((_runningRoles?.Where(rr => rr.IsSelected).Count() > 0) == true) { UpdatePackage(package); }})" onmouseover="@(() => { if ((_runningRoles?.Where(rr => rr.IsSelected).Count() > 0) == true) { HoverPackage(package); }})" Class="@((_runningRoles?.Where(rr => rr.IsSelected).Count() > 0) == true ? "" : "")" Style="@(package.IsVisible ? "display:block" : "display:none")">
-                                            <MudCard Class="position-relative" Style="background-color:#f1f1f1;">
-
-                                                <MudCardContent>
-                                                    <MudCardMedia Image="@(Config[ConfigNames.ApiBaseUrl] + package?.PackageDto?.Image?.ImagePath)" Height="150" Style="background-size:contain" />
-                                                </MudCardContent>
-                                                <MudCardActions>
-                                                    <MudGrid>
-                                                        <MudItem xs="12" Class="text-center">
-                                                            <MudText Typo="Typo.h5" Color="Color.Warning">@package?.PackageDto?.Name</MudText>
-                                                            <MudText Typo="Typo.body2" Color="Color.Warning">@package?.PackageDto?.Description</MudText>
-
-                                                            @if (package?.PackageDto?.IsLender == true)
-                                                            {
-                                                                <MudGrid>
+                                                        @if (package?.PackageDto?.IsLender == true)
+                                                        {
+                                                            <MudGrid>
+                                                                <MudItem xs="6">
+                                                                    <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
+                                                                        <MudText Typo="Typo.caption">
+                                                                            Maximum Amounts: @string.Format("{0:#,0.00}", @package?.PackageDto?.MaxAmounts)
+                                                                        </MudText>
+                                                                    </MudPaper>
+                                                                </MudItem>
+                                                                <MudItem xs="6">
+                                                                    <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
+                                                                        <MudText Typo="Typo.caption">
+                                                                            Maximum Lessees: @package?.PackageDto?.MaxLessees
+                                                                        </MudText>
+                                                                    </MudPaper>
+                                                                </MudItem>
+                                                                @if (package?.PackageDto?.SubscriptionPrice > 0)
+                                                                {
                                                                     <MudItem xs="6">
                                                                         <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
                                                                             <MudText Typo="Typo.caption">
-                                                                                Maximum Amounts: @string.Format("{0:#,0.00}", @package?.PackageDto?.MaxAmounts)
+                                                                                Monthly subscription fee:  @string.Format("{0:#,0.00}",package?.PackageDto?.SubscriptionPrice)
                                                                             </MudText>
                                                                         </MudPaper>
                                                                     </MudItem>
+                                                                }
+                                                            </MudGrid>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudGrid>
+                                                                <MudItem xs="6">
+                                                                    <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
+                                                                        <MudText Typo="Typo.caption">
+                                                                            Maximum Amounts: @string.Format("{0:#,0.00}", @package?.PackageDto?.MaxAmounts)
+                                                                        </MudText>
+                                                                    </MudPaper>
+                                                                </MudItem>
+                                                                <MudItem xs="6">
+                                                                    <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
+                                                                        <MudText Typo="Typo.caption">
+                                                                            Maximum Applications: @package?.PackageDto?.MaxApplications
+                                                                        </MudText>
+                                                                    </MudPaper>
+                                                                </MudItem>
+                                                                <MudItem xs="6">
+                                                                    <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
+                                                                        <MudText Typo="Typo.caption">
+                                                                            Maximum Lenders: @package?.PackageDto?.MaxLenders
+                                                                        </MudText>
+                                                                    </MudPaper>
+                                                                </MudItem>
+                                                                @if (package?.PackageDto?.SubscriptionPrice > 0)
+                                                                {
                                                                     <MudItem xs="6">
                                                                         <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
                                                                             <MudText Typo="Typo.caption">
-                                                                                Maximum Lessees: @package?.PackageDto?.MaxLessees
+                                                                                Monthly subscription:  @string.Format("{0:#,0.00}",package?.PackageDto?.SubscriptionPrice)
                                                                             </MudText>
                                                                         </MudPaper>
                                                                     </MudItem>
-                                                                    @if (package?.PackageDto?.SubscriptionPrice > 0)
-                                                                    {
-                                                                        <MudItem xs="6">
-                                                                            <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
-                                                                                <MudText Typo="Typo.caption">
-                                                                                    Monthly subscription fee:  @string.Format("{0:#,0.00}",package?.PackageDto?.SubscriptionPrice)
-                                                                                </MudText>
-                                                                            </MudPaper>
-                                                                        </MudItem>
-                                                                    }
-                                                                </MudGrid>
-                                                            }
-                                                            else
-                                                            {
-                                                                <MudGrid>
-                                                                    <MudItem xs="6">
-                                                                        <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
-                                                                            <MudText Typo="Typo.caption">
-                                                                                Maximum Amounts: @string.Format("{0:#,0.00}", @package?.PackageDto?.MaxAmounts)
-                                                                            </MudText>
-                                                                        </MudPaper>
-                                                                    </MudItem>
-                                                                    <MudItem xs="6">
-                                                                        <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
-                                                                            <MudText Typo="Typo.caption">
-                                                                                Maximum Applications: @package?.PackageDto?.MaxApplications
-                                                                            </MudText>
-                                                                        </MudPaper>
-                                                                    </MudItem>
-                                                                    <MudItem xs="6">
-                                                                        <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
-                                                                            <MudText Typo="Typo.caption">
-                                                                                Maximum Lenders: @package?.PackageDto?.MaxLenders
-                                                                            </MudText>
-                                                                        </MudPaper>
-                                                                    </MudItem>
-                                                                    @if (package?.PackageDto?.SubscriptionPrice > 0)
-                                                                    {
-                                                                        <MudItem xs="6">
-                                                                            <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
-                                                                                <MudText Typo="Typo.caption">
-                                                                                    Monthly subscription:  @string.Format("{0:#,0.00}",package?.PackageDto?.SubscriptionPrice)
-                                                                                </MudText>
-                                                                            </MudPaper>
-                                                                        </MudItem>
-                                                                    }
+                                                                }
 
-                                                                </MudGrid>
-                                                            }
-                                                            <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.WarningAmber" Title="Favorite" /><br /><MudText Typo="Typo.caption" Color="Color.Warning">To be implemented: This will be permanent once you paid the subscription plan.</MudText>
-                                                        </MudItem>
-                                                    </MudGrid>
+                                                            </MudGrid>
+                                                        }
+                                                        <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.WarningAmber" Title="Favorite" /><br /><MudText Typo="Typo.caption" Color="Color.Warning">To be implemented: This will be permanent once you paid the subscription plan.</MudText>
+                                                    </MudItem>
+                                                </MudGrid>
 
-                                                </MudCardActions>
-                                                @{
-                                                    var packageSelected = @package?.IsSelected ?? false;
-                                                    var packageHovered = @package?.IsHovered ?? false;
+                                            </MudCardActions>
+                                            @{
+                                                var packageSelected = false;
+                                                var packageHovered = false;
 
-                                                    var keepOpen = (packageSelected || packageHovered) ? true : false;
+                                                if (package != default)
+                                                {
+                                                    packageSelected = @package.IsSelected;
+                                                    packageHovered = @package.IsHovered;
+                                                }
 
-                                                    if (LockPackage)
+
+                                                var keepOpen = (packageSelected || packageHovered) ? true : false;
+
+                                                // selected package is locked so keep the overlay hidden
+                                                if (LockPackage)
+                                                {
+                                                    keepOpen = false;
+                                                }
+
+                                                @if (keepOpen)
+                                                {
+                                                    // one visible package / maybe the default for the current role keep the overlay hidden
+                                                    var singleDefaultVisible = _runningPackages.Where(p => p.IsVisible).Count() == 1 && _runningPackages.First(p => p.IsVisible).PackageDto.IsDefault;
+
+                                                    @if (singleDefaultVisible)
                                                     {
-                                                        keepOpen = false;
+                                                        // this total packages
+                                                        // tallies all the number of valid
+                                                        // packages for the current role
+                                                        @if (TotalCountPackagesForCurrentRole > 1)
+                                                        {
+                                                            <MudCardActions Class="text-center justify-center">
+                                                                <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
+                                                            </MudCardActions>
+                                                        }
                                                     }
-
-                                                    @if (keepOpen)
+                                                    else
                                                     {
                                                         <MudOverlay Visible="@keepOpen" DarkBackground="true" Absolute="true" Class="text-center">
+                                                            @if (package != default)
+                                                            {
+                                                                <MudCardMedia Image="@(Config[ConfigNames.ApiBaseUrl] + package.PackageDto?.Image?.ImagePath)" Height="100" Class="mb-3" Style="background-size:contain" />
 
-                                                            <MudCardMedia Image="@(Config[ConfigNames.ApiBaseUrl] + package?.PackageDto?.Image?.ImagePath)" Height="100" Class="mb-3" Style="background-size:contain" />
+                                                                <MudText Typo="Typo.h4" Style="@($"color:{Colors.Shades.White}")">@package.PackageDto?.Name</MudText>
 
-                                                            <MudText Typo="Typo.h4" Style="@($"color:{Colors.Shades.White}")">@package?.PackageDto?.Name</MudText>
+                                                                @if (package.PackageDto?.IsLender == true)
+                                                                {
+                                                                    <MudGrid>
+                                                                        <MudItem xs="12">
+                                                                            <MudText Typo="Typo.caption" Style="@($"color:{Colors.Shades.White}")">
+                                                                                Maximum Amounts: @string.Format("{0:#,0.00}", @package.PackageDto?.MaxAmounts)
+                                                                            </MudText><br />
+
+                                                                            <MudText Typo="Typo.caption" Style="@($"color:{Colors.Shades.White}")">
+                                                                                Maximum Lessees: @package.PackageDto?.MaxLessees
+                                                                            </MudText><br />
+                                                                            @if (package.PackageDto?.SubscriptionPrice > 0)
+                                                                            {
+                                                                                <MudText Typo="Typo.caption" Style="@($"color:{Colors.Shades.White}")">
+                                                                                    Monthly subscription fee:  @string.Format("{0:#,0.00}",package.PackageDto?.SubscriptionPrice)
+                                                                                </MudText>
+                                                                            }
+                                                                        </MudItem>
+                                                                    </MudGrid>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <MudGrid>
+                                                                        <MudItem xs="6">
+                                                                            <MudText Typo="Typo.caption" Style="@($"color:{Colors.Shades.White}")">
+                                                                                Maximum Amounts: @string.Format("{0:#,0.00}", @package.PackageDto?.MaxAmounts)
+                                                                            </MudText><br />
+                                                                            <MudText Typo="Typo.caption" Style="@($"color:{Colors.Shades.White}")">
+                                                                                Maximum Applications: @package.PackageDto?.MaxApplications
+                                                                            </MudText><br />
+                                                                            <MudText Typo="Typo.caption" Style="@($"color:{Colors.Shades.White}")">
+                                                                                Maximum Lenders: @package.PackageDto?.MaxLenders
+                                                                            </MudText><br />
+                                                                            @if (package.PackageDto?.SubscriptionPrice > 0)
+                                                                            {
+                                                                                <MudText Typo="Typo.caption" Style="@($"color:{Colors.Shades.White}")">
+                                                                                    Monthly subscription:  @string.Format("{0:#,0.00}",package.PackageDto?.SubscriptionPrice)
+                                                                                </MudText>
+                                                                            }
+                                                                        </MudItem>
+                                                                    </MudGrid>
+                                                                }
+                                                            }
+
                                                             <br />
 
                                                             @if (packageSelected)
@@ -242,51 +306,66 @@
 
                                                         </MudOverlay>
                                                     }
-                                                    else
+                                                }
+                                                else
+                                                {
+                                                    if (LockPackage)
                                                     {
-                                                        if (LockPackage)
-                                                        {
-                                                            <MudCardActions>
-                                                                <MudGrid>
+                                                        <MudCardActions>
+                                                            <MudGrid>
+                                                                <MudItem xs="12" Class="text-center">
+                                                                    <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
+                                                                        <MudText Typo="Typo.h5" Color="Color.Success">
+                                                                            Active Subscription
+                                                                        </MudText>
+
+                                                                        @* //TODO:/ mock payment for admin, for testing purposes *@
+                                                                        <MudButton OnClick="@(async () => await PaymentMock())" DisableRipple="true" Variant="Variant.Filled" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Error">
+                                                                            @L["Mock Payment"]
+                                                                        </MudButton>
+                                                                    </MudPaper>
+                                                                </MudItem>
+
+                                                                @if (AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Initial))
+                                                                {
                                                                     <MudItem xs="12" Class="text-center">
                                                                         <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
-                                                                            <MudText Typo="Typo.h5" Color="Color.Success">
-                                                                                Active Subscription
+                                                                            <MudText Typo="Typo.body2" Color="Color.Error">
+                                                                                <MudIcon Icon="@Icons.Filled.Error"></MudIcon> Payment error. Settle or contact support.
                                                                             </MudText>
-
                                                                         </MudPaper>
                                                                     </MudItem>
+                                                                }
 
-                                                                    @if (AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Initial))
-                                                                    {
-                                                                        <MudItem xs="12" Class="text-center">
-                                                                            <MudPaper Elevation="0" Class="d-flex align-center justify-center mud-width-full">
-                                                                                <MudText Typo="Typo.body2" Color="Color.Error">
-                                                                                    <MudIcon Icon="@Icons.Filled.Error"></MudIcon> Payment error. Settle or contact support.
-                                                                                </MudText>
-                                                                            </MudPaper>
-                                                                        </MudItem>
-                                                                    }
+                                                                <MudItem xs="12" Class="text-center">
+                                                                    <MudButton StartIcon="@Icons.Filled.Cancel" Variant="Variant.Text" Color="Color.Warning" OnClick="@(()=> ClearPackage())">Cancel Current Plan</MudButton>
+                                                                </MudItem>
+                                                                @*
 
-                                                                    <MudItem xs="12" Class="text-center">
-                                                                        <MudButton StartIcon="@Icons.Filled.Cancel" Variant="Variant.Text" Color="Color.Warning" OnClick="@(() => ClearPackage())">Cancel Current Plan</MudButton>
-                                                                    </MudItem>
-                                                                    <MudItem xs="12" Class="text-center">
-                                                                        <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Text" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
-                                                                    </MudItem>
-                                                                </MudGrid>
-                                                            </MudCardActions>
-                                                        }
+                                        //cancel current plan
+                                        OnClick="@(() => ClearPackage())"
+                                        mark the plan as cancelled
+                                        cancel current plan will terminate the plan but the running plan will be kept.
+                                        cancelling plan allows
 
+                                        // TODO:/ allow only to change package, if paid the curent pending or subscription is expired
+                                        // defaults to default if there's no payment
+                                        // cancel the current plan can be used as well
+                                        // find a better implementation
+                                        <MudItem xs="12" Class="text-center">
+                                        <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Text" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
+                                        </MudItem> *@
+                                                            </MudGrid>
+                                                        </MudCardActions>
                                                     }
+
                                                 }
+                                            }
 
-                                            </MudCard>
-                                        </MudItem>
-                                    }
-                                </MudGrid>
-
-                            }
+                                        </MudCard>
+                                    </MudItem>
+                                }
+                            </MudGrid>
                         </MudCard>
                     </MudItem>
                 }
@@ -317,6 +396,7 @@
                                     <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Success">
                                         @L["Payment"]
                                     </MudButton>
+
                                 }
                             </MudGrid>
                         </MudCardActions>

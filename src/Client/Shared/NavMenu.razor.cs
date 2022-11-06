@@ -23,6 +23,7 @@ public partial class NavMenu
     private bool _canViewRoles;
     private bool _canViewUsers;
     private bool _canViewProducts;
+
     private bool _canViewAppUserProducts;
     private bool _canViewBrands;
     private bool _canViewCategories;
@@ -50,6 +51,7 @@ public partial class NavMenu
         _canViewPackages = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Packages);
         _canViewLoans = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Loans);
         _canViewInputOutputResources = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.InputOutputResources);
+        _canViewAppUserProducts = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.AppUserProducts);
 
     }
 }

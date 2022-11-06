@@ -15,48 +15,70 @@
                         @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
                         {
                             case "Passport":
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Passport</MudText>
+                                <MudText Typo="Typo.caption">Front<br>Passport</MudText>
                                 break;
                             case "PassportBack":
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Passport</MudText>
+                                <MudText Typo="Typo.caption">Back<br>Passport</MudText>
                                 break;
                             case "NationalId":
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Nadtional Id</MudText>
+                                <MudText Typo="Typo.caption">Front<br>Nadtional Id</MudText>
                                 break;
                             case "NationalIdBack":
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>National Id</MudText>
+                                <MudText Typo="Typo.caption">Back<br>National Id</MudText>
                                 break;
                             case "GovernmentId":
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Front<br>Government Id</MudText>
+                                <MudText Typo="Typo.caption">Front<br>Government Id</MudText>
                                 break;
                             case "GovernmentIdBack":
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Back<br>Government Id</MudText>
+                                <MudText Typo="Typo.caption">Back<br>Government Id</MudText>
                                 break;
                             case "SelfieWithAtLeastOneCard":
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Selfie<br>With at least one of the cards above</MudText>
+                                <MudText Typo="Typo.caption">Selfie<br>With at least one of the cards above</MudText>
                                 break;
                             default:
-                                <MudText Style="line-height:1rem;display:inline-block;" Typo="Typo.caption">Others</MudText>
+                                <MudText Typo="Typo.caption">Others</MudText>
                                 break;
 
                         }
                         @if (_forUploadFile != default)
                         {
-                            <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-1">@(_forUploadFile.isVerified ? "Verified" : ""
-)</MudText>
+                            <br />
+                            <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-1">
+                                @(_forUploadFile.isVerified ? "Verified" : ""
+
+                                    )
+                            </MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Error" Class="mt-1">
+                                @(_forUploadFile.isDenied ? "Denied. Please provide and replace." : ""
+                                    )
+                            </MudText>
                         }
-                        </MudCardContent>
+                    </MudCardContent>
+
+                    @if (_forUploadFile != default)
+                    {
+                        <MudOverlay Visible="@(((_forUploadFile.isHovered) && (IsSubmittedForVerification != VerificationStatus.Submitted)) || _forUploadFile.isDenied)" DarkBackground="true" Absolute="true" Class="text-center">
+                            @if (_forUploadFile is not null && _forUploadFile.isVerified)
+                            {
+                                <MudText Color="Color.Success" Typo="Typo.h5" Class="mt-1">Verified</MudText>
+                            }
+                            else
+                            {
+                                @if (IsSubmittedForVerification != VerificationStatus.Submitted)
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => Remove(_forUploadFile))">Remove</MudButton>
+                                }
+
+                                @if (_forUploadFile != default && _forUploadFile.isDenied)
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => Remove(_forUploadFile, true))">Remove and Replace</MudButton>
+                                }
+
+                            }
+                        </MudOverlay>
+                    }
 
 
-                        <MudOverlay Visible="_forUploadFile?.isHovered ?? false" DarkBackground="true" Absolute="true" Class="text-center">
-                        @if (_forUploadFile is not null && _forUploadFile.isVerified)
-                        {
-                            <MudText Color="Color.Success" Typo="Typo.h5" Class="mt-1">Verified</MudText>
-                        } else
-                        {
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Remove(_forUploadFile ?? default!))">Remove</MudButton>
-                        }
-                    </MudOverlay>
                 </MudCard>
             }
             else

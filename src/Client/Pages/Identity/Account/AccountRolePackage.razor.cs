@@ -43,6 +43,8 @@ public partial class AccountRolePackage
 
     private bool LockPackage { get; set; }
 
+    private int TotalCountPackagesForCurrentRole { get; set; }
+
     public class SelectedHoveredVisible
     {
         public bool IsSelected { get; set; }
@@ -241,6 +243,7 @@ public partial class AccountRolePackage
     private void PackagesForRole(bool isLender, out ExtendedPackageDto defaultRecord)
     {
         defaultRecord = default!;
+        TotalCountPackagesForCurrentRole = 0;
 
         foreach (var package in _runningPackages)
         {
@@ -252,6 +255,7 @@ public partial class AccountRolePackage
             if (isLender && (package.PackageDto.IsLender == isLender))
             {
                 package.IsVisible = true;
+                TotalCountPackagesForCurrentRole++;
 
                 if (package.PackageDto.IsDefault)
                     defaultRecord = package;
@@ -261,6 +265,7 @@ public partial class AccountRolePackage
             if (!isLender && (package.PackageDto.IsLender == isLender))
             {
                 package.IsVisible = true;
+                TotalCountPackagesForCurrentRole++;
 
                 if (package.PackageDto.IsDefault)
                     defaultRecord = package;
@@ -565,5 +570,44 @@ public partial class AccountRolePackage
         }
 
         Navigation.NavigateTo(Navigation.Uri, true);
+    }
+
+    /*
+     * the payment verifies
+     * make the user capable of transactions in the system
+     * defaults: always verified
+     * subscriptions:
+     * payment IS A MUST
+     */
+    private async Task PaymentMock()
+    {
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                if (AppDataService.AppUser.ApplicationUserId != default)
+                {
+                    UpdateAppUserRequest updateAppUserRequest = new()
+                    {
+                        Id = AppDataService.AppUser.Id,
+                        ApplicationUserId = AppDataService.AppUser.ApplicationUserId,
+                        PackageId = AppDataService.AppUser.PackageId,
+                        RolePackageStatus = VerificationStatus.Verified
+                    };
+
+                    // appuser update uses the extended app user mapping id
+                    if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, updateAppUserRequest), Snackbar, _customValidation, L["Package updated. Subscriptions verified."]) is Guid guid)
+                    {
+                        if (guid != default)
+                        {
+                            await AppDataService.RevalidateVerification();
+                        }
+                    }
+
+                }
+            }
+        }
+
     }
 }

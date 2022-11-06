@@ -19,7 +19,6 @@ public partial class LoanLedger
     [Parameter]
     public bool Dense { get; set; } = false;
 
-
     public List<LedgerModel> LedgerModel { get; set; } = new();
 
     private float _runningTotal { get; set; }

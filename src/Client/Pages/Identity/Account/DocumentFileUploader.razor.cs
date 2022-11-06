@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
 using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
@@ -15,7 +15,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 public partial class DocumentFileUploader
 {
     [Parameter]
-    public EventCallback OnChildChanges { get; set; }
+    public EventCallback OnChildChanges { get; set; } = default!;
 
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -30,7 +30,10 @@ public partial class DocumentFileUploader
     public List<ForUploadFile>? ForUploadFiles { get; set; } = default!;
 
     [Parameter]
-    public InputOutputResourceDocumentType FileIdentifier { get; set; }
+    public InputOutputResourceDocumentType FileIdentifier { get; set; } = default!;
+
+    [Parameter]
+    public VerificationStatus IsSubmittedForVerification { get; set; } = default!;
 
     // private CustomValidation? _customValidation;
 
@@ -143,7 +146,7 @@ public partial class DocumentFileUploader
         StateHasChanged();
     }
 
-    public async Task Remove(ForUploadFile? forUploadFile)
+    public async Task Remove(ForUploadFile? forUploadFile, bool replace = false)
     {
         if (forUploadFile is not null)
         {
@@ -161,6 +164,7 @@ public partial class DocumentFileUploader
                     forUploadFile.isTemporarilyUploaded = false;
                     forUploadFile.Opacity = "0.3";
                     forUploadFile.Disabled = true;
+                    forUploadFile.isDenied = !replace;
                 }
 
                 CSSCardContent = "padding: 0px!important; position: relative; opacity:" + forUploadFile?.Opacity;

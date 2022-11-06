@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using EHULOG.BlazorWebAssembly.Client.Components.Common;
 using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
@@ -10,8 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using System.Linq;
-using static EHULOG.BlazorWebAssembly.Client.Infrastructure.Common.StorageConstants;
-using static MudBlazor.CategoryTypes;
+using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
@@ -75,6 +73,7 @@ public partial class Document
                             InputOutputResourceImgUrl = ior.ImagePath,
                             isVerified = ior.ResourceStatusType.Equals(InputOutputResourceStatusType.EnabledAndVerified) ? true : false,
                             isTemporarilyUploaded = true,
+                            isDenied = ior.ResourceStatusType == InputOutputResourceStatusType.SoftDeleted,
                             Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? "1" : "0.3",
                             Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? false : true
                         });
@@ -99,6 +98,7 @@ public partial class Document
                         InputOutputResourceImgUrl = string.Empty,
                         isVerified = false,
                         isTemporarilyUploaded = false,
+                        isDenied = false,
                         Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains((InputOutputResourceDocumentType)i) ? "1" : "0.3",
                         Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains((InputOutputResourceDocumentType)i) ? false : true
                     });
@@ -222,7 +222,7 @@ public partial class Document
         {
             if ((bool)(result.Data ?? false))
             {
-                UpdateAppUsersDocumentsForAdminVerification();
+                await UpdateAppUsersDocumentsForAdminVerification();
             }
         }
     }
@@ -233,6 +233,29 @@ public partial class Document
         {
             if (AppDataService.AppUser != default)
             {
+                // get all user's identification files
+                if (await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(() => InputOutputResourceClient.GetAsync(AppDataService.AppUser.Id), Snackbar, null, string.Empty) is ICollection<InputOutputResourceDto> iOResources)
+                {
+
+                    foreach (var iOResource in iOResources)
+                    {
+                        // ready file for verification
+                        UpdateInputOutputResourceByIdRequest updateIOResource = new()
+                        {
+                            Id = iOResource.Id,
+                            ResourceStatusType = InputOutputResourceStatusType.Enabled,
+                            ImagePath = iOResource.ImagePath
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(() => InputOutputResourceClient.UpdateAsync(iOResource.Id, updateIOResource), Snackbar, null, string.Empty) is Guid iOGuid)
+                        {
+                            if (iOGuid == default || Guid.Empty.Equals(iOGuid))
+                            {
+                                Snackbar.Add(L[$"Error processing file: {iOResource.Id}"], Severity.Error);
+                            }
+                        }
+                    }
+                }
 
                 UpdateAppUserRequest = new()
                 {
@@ -243,18 +266,24 @@ public partial class Document
                     DocumentsStatus = VerificationStatus.Submitted,
                 };
 
-                if (await ApiHelper.ExecuteCallGuardedAsync(() => AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, UpdateAppUserRequest), Snackbar, null, L["AppUser updated. "]) is Guid guid)
+                if (await ApiHelper.ExecuteCallGuardedAsync(() => AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, UpdateAppUserRequest), Snackbar, null, L["AppUser updated. "]) is Guid appUserGuid)
                 {
-                    Snackbar.Add(L["For verification images submitted."], Severity.Success);
+                    if (appUserGuid != default)
+                    {
 
-                    var timer = new Timer(
-                        new TimerCallback(_ =>
-                        {
-                            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
-                        }),
-                        null,
-                        2000,
-                        2000);
+                        Snackbar.Add(L["For verification images submitted."], Severity.Success);
+
+                        await AppDataService.RevalidateVerification();
+
+                        var timer = new Timer(
+                            new TimerCallback(_ =>
+                            {
+                                Navigation.NavigateTo(Navigation.Uri);
+                            }),
+                            null,
+                            2000,
+                            2000);
+                    }
                 }
             }
         }

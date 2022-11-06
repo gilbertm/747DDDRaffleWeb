@@ -1,9 +1,10 @@
-﻿@inject IStringLocalizer<Profile> L
+﻿@using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement
+@inject IStringLocalizer<Profile> L
 
 <MudGrid>
     <MudItem xs="12" sm="12" md="4">
         <MudCard Elevation="25">
-            <MudCardContent Style="padding:0px!important">
+            <MudCardContent>
                 <CascadingValue Value="@FileUpload" Name="FileUpload">
                     <SingleFileUpload ImageUrl="@_imageUrl" ForName="ProfileImage" OnRemoveImage="RemoveImageAsync" OnUploadImage="UploadFileAsync" UserId="@_userId" />
                 </CascadingValue>
