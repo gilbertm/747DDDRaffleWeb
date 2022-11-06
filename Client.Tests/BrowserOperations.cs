@@ -10,7 +10,6 @@ namespace Client.Tests;
 public class BrowserOperations
 {
     private const int WaitForElementTimeout = 30;
-    private object get;
 
     private IWebDriver WebDriver { get; set; } = default!;
     private WebDriverWait WebDriverWait { get; set; } = default!;

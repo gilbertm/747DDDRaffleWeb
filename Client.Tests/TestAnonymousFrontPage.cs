@@ -71,7 +71,7 @@ public class TestAnonymousFrontPage : IDisposable
     }
 
     [Fact]
-    public void TestAnonymousActivatorLoginRegisterButtonSuccessfullyClicked()
+    public void TestAnonymousActivatorLoginRegisterButtonSuccessfulClickRedirectLogin()
     {
         // Arrange
         _browser.InitBrowser();
@@ -83,6 +83,28 @@ public class TestAnonymousFrontPage : IDisposable
         activatorLoginRegisterIconLink.Click();
 
         IWebElement activatorLoginDropDownButtonLink = _browser.WaitAndFindElement(By.Id("activator-login-register--login"));
+        activatorLoginDropDownButtonLink.Click();
+
+        string actualUrl = _browser.GetUrl;
+
+        // Assert
+        Assert.NotEqual(actualUrl, _testBlazorUrl);
+
+    }
+
+    [Fact]
+    public void TestAnonymousActivatorLoginRegisterButtonSuccessfulClickRedirectRegister()
+    {
+        // Arrange
+        _browser.InitBrowser();
+
+        // Act
+        _browser.Goto(_testBlazorUrl);
+
+        IWebElement activatorLoginRegisterIconLink = _browser.WaitAndFindElement(By.Id("activator-login-register"));
+        activatorLoginRegisterIconLink.Click();
+
+        IWebElement activatorLoginDropDownButtonLink = _browser.WaitAndFindElement(By.Id("activator-login-register--register"));
         activatorLoginDropDownButtonLink.Click();
 
         string actualUrl = _browser.GetUrl;
