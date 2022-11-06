@@ -1,4 +1,6 @@
-﻿@if (AppDataService != default)
+﻿@using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement
+
+@if (AppDataService != default)
 {
     if (AppDataService.AppUser != default)
     {
@@ -156,7 +158,9 @@
                 else if ((new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }).Contains(Loan.Status))
                 {
                     <MudItem xs="12" Class="text-center">
-                        <SingleFileUpload ForUploadFiles="ForUploadFiles" />
+                        <CascadingValue Value="ForUploadFile">
+                            <SingleFileUpload ForName="MeetupReceiptFirstContact" />
+                        </CascadingValue>
                         <MudAlert Class="mb-3 mb-md-5" Severity="Severity.Error" Icon="@Icons.Filled.PhotoCameraBack">
                             Meetup. Receipt. Snap. Required to proceed. <MudTooltip Text="A picture or receipt taken during meetup or first handshake/turnover of product.">
                                 <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />

@@ -1,4 +1,4 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
@@ -37,9 +37,9 @@ public partial class MinimalBlockInfoLoanStatus
     [Parameter]
     public EventCallback<Guid> OnUpdatedLoan { get; set; } = default!;
 
-    private List<ForUploadFile> ForUploadFiles { get; set; } = new();
+    private ForUploadFile ForUploadFile { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         if (AppDataService != default)
         {
@@ -50,9 +50,9 @@ public partial class MinimalBlockInfoLoanStatus
                     IsLesseeCanApply = AppDataService.IsLesseeCanApply(Loan);
                 }
 
-                if (AppDataService.AppUser.ApplicationUserId != default)
+                /*if (AppDataService.AppUser.ApplicationUserId != default)
                 {
-                    /* current uploaded but not verified, this happens when the user uploads files */
+                    *//* current uploaded but not verified, this happens when the user uploads files *//*
                     Guid guidUserId = default!;
                     Guid.TryParse(AppDataService.AppUser.ApplicationUserId, out guidUserId);
                     var referenceIdIOResources = await InputOutputResourceClient.GetAsync(guidUserId);
@@ -64,7 +64,7 @@ public partial class MinimalBlockInfoLoanStatus
                             if (!ior.ResourceType.Equals(InputOutputResourceType.Identification) || ior.ResourceDocumentType.Equals(InputOutputResourceDocumentType.None))
                                 continue;
 
-                            ForUploadFiles.Add(new ForUploadFile()
+                            ForUploadFile = new ForUploadFile()
                             {
                                 FileIdentifier = ior.ResourceDocumentType,
                                 InputOutputResourceId = ior.Id.ToString(),
@@ -74,7 +74,7 @@ public partial class MinimalBlockInfoLoanStatus
                                 isTemporarilyUploaded = true,
                                 Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? "1" : "0.3",
                                 Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? false : true
-                            });
+                            };
                         }
                     }
 
@@ -102,7 +102,7 @@ public partial class MinimalBlockInfoLoanStatus
 
                     }
                 }
-
+*/
             }
         }
     }
