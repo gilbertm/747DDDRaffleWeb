@@ -603,6 +603,8 @@ public partial class AccountRolePackage
                         {
                             await AppDataService.RevalidateVerification();
                         }
+
+                        Navigation.NavigateTo(Navigation.Uri, true);
                     }
 
                 }
