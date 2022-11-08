@@ -158,14 +158,52 @@
                 else if ((new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }).Contains(Loan.Status))
                 {
                     <MudItem xs="12" Class="text-center">
-                        <CascadingValue Value="ForUploadFile">
-                            <SingleFileUpload ForName="MeetupReceiptFirstContact" />
+                        <CascadingValue Value="@FileUpload" Name="FileUpload">
+                            <SingleFileUpload ImageUrl="@_imageUrl" ForName="@_referenceIdOfActiveIOResource.ToString()" OnRemoveImage="RemoveImageAsync" OnEnableImage="EnableImageAsync" OnUploadImage="UploadFileAsync" UserId="@AppDataService.AppUser.Id.ToString()" CanUpdate="@_canUpdateRunningImage" CanEnable="@_canEnableRunningImage" />
                         </CascadingValue>
-                        <MudAlert Class="mb-3 mb-md-5" Severity="Severity.Error" Icon="@Icons.Filled.PhotoCameraBack">
-                            Meetup. Receipt. Snap. Required to proceed. <MudTooltip Text="A picture or receipt taken during meetup or first handshake/turnover of product.">
-                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                            </MudTooltip>
-                        </MudAlert>
+
+
+
+                        @* image receipts *@
+                        @if (new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }.Contains(Loan.Status))
+                        {
+                            if (Loan.Ledgers != default)
+                            {
+                                switch (Loan.Status)
+                                {
+                                    case LoanStatus.Assigned:
+                                    case LoanStatus.Meetup:
+
+                                        <MudAlert Class="mb-3 mb-md-5" Severity="Severity.Error" Icon="@Icons.Filled.PhotoCameraBack">
+                                            Meetup. Receipt. Snap. Required to proceed. <MudTooltip Text="A picture or receipt taken during meetup or first handshake/turnover of product.">
+                                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                            </MudTooltip>
+                                        </MudAlert>
+
+                                        break;
+                                    case LoanStatus.Payment:
+                                        // process or get the last position
+                                        break;
+                                }
+                            }
+                        }
+
+                        @if (AppDataService.AppUser != default)
+                        {
+                            if (AppDataService.AppUser.RoleName != default)
+                            {
+                                if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                                {
+
+                                }
+                                if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                                {
+                                    <MudAlert Severity="Severity.Info">
+                                        Note: Once the lender will accept the image receipt, update will no longer be possible.
+                                    </MudAlert>
+                                }
+                            }
+                        }
                     </MudItem>
                     <MudItem xs="12">
                         <MudCard Elevation="0" Class="text-center pa-0" Style="margin-bottom:0!important;">

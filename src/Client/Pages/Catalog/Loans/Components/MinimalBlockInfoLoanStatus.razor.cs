@@ -1,6 +1,10 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
+using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+using EHULOG.BlazorWebAssembly.Client.Pages.Administration.User;
 using EHULOG.BlazorWebAssembly.Client.Shared;
+using Geo.MapBox.Models.Responses;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components;
@@ -37,9 +41,15 @@ public partial class MinimalBlockInfoLoanStatus
     [Parameter]
     public EventCallback<Guid> OnUpdatedLoan { get; set; } = default!;
 
-    private ForUploadFile ForUploadFile { get; set; } = new();
+    private FileUploadRequest FileUpload { get; set; } = default!;
 
-    protected override void OnInitialized()
+    private string? _imageUrl;
+    private Guid? _referenceIdOfActiveIOResource;
+    private Guid _mainIdOfActiveIOResource;
+    private bool _canUpdateRunningImage;
+    private bool _canEnableRunningImage;
+
+    protected override async Task OnInitializedAsync()
     {
         if (AppDataService != default)
         {
@@ -48,6 +58,64 @@ public partial class MinimalBlockInfoLoanStatus
                 if (Loan != default)
                 {
                     IsLesseeCanApply = AppDataService.IsLesseeCanApply(Loan);
+
+                    // image receipts
+                    if (new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }.Contains(Loan.Status))
+                    {
+                        if (Loan.Ledgers != default)
+                        {
+                            switch (Loan.Status)
+                            {
+                                case LoanStatus.Assigned:
+                                case LoanStatus.Meetup:
+                                    var iORMeetupId = Loan.Ledgers.OrderBy(ledger => ledger.Position).First(ledger => ledger.Position.Equals(0)).Id;
+                                    _referenceIdOfActiveIOResource = iORMeetupId;
+
+                                    if (await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(() => InputOutputResourceClient.GetAsync(iORMeetupId), Snackbar, null, "Meetup receipt found.") is List<InputOutputResourceDto> iORMeetups)
+                                    {
+                                        if (iORMeetups != default && iORMeetups.Count() > 0)
+                                        {
+                                            _imageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{iORMeetups[0].ImagePath}";
+                                            _mainIdOfActiveIOResource = iORMeetups[0].Id;
+
+                                            switch (iORMeetups[0].ResourceStatusType)
+                                            {
+                                                case InputOutputResourceStatusType.Disabled:
+
+                                                    if (AppDataService.AppUser != default)
+                                                    {
+                                                        if (AppDataService.AppUser.RoleName != default)
+                                                        {
+                                                            if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                                                            {
+                                                                _canUpdateRunningImage = true;
+                                                                _canEnableRunningImage = true;
+                                                            }
+
+                                                            if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                                                            {
+                                                                _canUpdateRunningImage = true;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    break;
+
+                                                case InputOutputResourceStatusType.Enabled:
+                                                    _canUpdateRunningImage = false;
+                                                    _canEnableRunningImage = false;
+                                                    break;
+                                            }
+                                        }
+                                    }
+
+                                    break;
+                                case LoanStatus.Payment:
+                                    // process or get the last position
+                                    break;
+                            }
+                        }
+                    }
                 }
 
                 /*if (AppDataService.AppUser.ApplicationUserId != default)
@@ -107,7 +175,7 @@ public partial class MinimalBlockInfoLoanStatus
         }
     }
 
-    private async Task<LoanDto> GetLoan(Guid loanId)
+    private async Task<LoanDto> GetLoanAsync(Guid loanId)
     {
         if (await ApiHelper.ExecuteCallGuardedAsync(() => ILoansClient.GetAsync(loanId), Snackbar, null, "Success") is LoanDto loan)
         {
@@ -128,6 +196,7 @@ public partial class MinimalBlockInfoLoanStatus
                                 loanApplicant.AppUser.LastName = userDetailsDto.LastName;
                                 loanApplicant.AppUser.Email = userDetailsDto.Email;
                                 loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                loanApplicant.AppUser.ImageUrl = userDetailsDto.ImageUrl;
                             }
                         }
                     }
@@ -147,6 +216,7 @@ public partial class MinimalBlockInfoLoanStatus
                                 loanLessee.Lessee.LastName = userDetailsDto.LastName;
                                 loanLessee.Lessee.Email = userDetailsDto.Email;
                                 loanLessee.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                loanLessee.Lessee.ImageUrl = userDetailsDto.ImageUrl;
                             }
                         }
                     }
@@ -183,7 +253,7 @@ public partial class MinimalBlockInfoLoanStatus
                         {
                             Snackbar.Add("Applied", Severity.Success);
 
-                            Loan = await GetLoan(Loan.Id);
+                            Loan = await GetLoanAsync(Loan.Id);
 
                             // StateHasChanged();
 
@@ -213,7 +283,7 @@ public partial class MinimalBlockInfoLoanStatus
                 {
                     Snackbar.Add("Reapplied", Severity.Success);
 
-                    Loan = await GetLoan(Loan.Id);
+                    Loan = await GetLoanAsync(Loan.Id);
 
                     StateHasChanged();
 
@@ -246,7 +316,7 @@ public partial class MinimalBlockInfoLoanStatus
                         {
                             Snackbar.Add("Cancelled. Reapplication is available.", Severity.Success);
 
-                            Loan = await GetLoan(Loan.Id);
+                            Loan = await GetLoanAsync(Loan.Id);
 
                             StateHasChanged();
 
@@ -256,5 +326,85 @@ public partial class MinimalBlockInfoLoanStatus
             }
 
         }
+    }
+
+    public async Task RemoveImageAsync()
+    {
+        string deleteContent = "You're sure you want to delete this meetup receipt image?";
+        var parameters = new DialogParameters
+        {
+            { nameof(DeleteConfirmation.ContentText), deleteContent }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
+        var dialog = DialogService.Show<DeleteConfirmation>("Delete", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            if (_referenceIdOfActiveIOResource != default)
+            {
+                var deletedGuid = await InputOutputResourceClient.DeleteAsync(_referenceIdOfActiveIOResource ?? default);
+
+                if (deletedGuid != default)
+                {
+                    _imageUrl = default;
+                }
+            }
+        }
+    }
+
+    private async Task UploadFileAsync(FileUploadRequest fileUpload)
+    {
+        if (fileUpload != default)
+        {
+            if (_referenceIdOfActiveIOResource != default)
+            {
+                CreateInputOutputResourceRequest createInputOutputResourceRequest = new CreateInputOutputResourceRequest
+                {
+                    ReferenceId = _referenceIdOfActiveIOResource ?? default,
+                    Image = fileUpload,
+                    InputOutputResourceDocumentType = InputOutputResourceDocumentType.None,
+                    InputOutputResourceStatusType = InputOutputResourceStatusType.Disabled,
+                    InputOutputResourceType = InputOutputResourceType.Ledger
+                };
+
+                var valueTupleOfGuidAndString = await InputOutputResourceClient.CreateAsync(createInputOutputResourceRequest);
+
+                if (valueTupleOfGuidAndString != default)
+                {
+                    _imageUrl = string.IsNullOrEmpty(valueTupleOfGuidAndString.Value) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + valueTupleOfGuidAndString.Value);
+                }
+
+                StateHasChanged();
+            }
+        }
+    }
+
+    protected async Task EnableImageAsync()
+    {
+        var loanId = Loan.Id;
+        Loan = default!;
+
+        UpdateInputOutputResourceByIdRequest updateInputOutputResourceByIdRequest = new()
+        {
+            Id = _mainIdOfActiveIOResource,
+            ImagePath = _imageUrl ?? default!,
+            ResourceStatusType = InputOutputResourceStatusType.Enabled
+        };
+
+        var guid = await InputOutputResourceClient.UpdateAsync(_mainIdOfActiveIOResource, updateInputOutputResourceByIdRequest);
+        if (guid != default)
+        {
+
+            _canUpdateRunningImage = false;
+            _canEnableRunningImage = false;
+
+            // this is paid
+
+            // force reload
+            Loan = await GetLoanAsync(loanId);
+
+        }
+
+        StateHasChanged();
     }
 }
