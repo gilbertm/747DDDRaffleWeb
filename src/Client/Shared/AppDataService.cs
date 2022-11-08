@@ -13,6 +13,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Nager.Country;
 using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using Mapster;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -140,6 +141,12 @@ public class AppDataService : IAppDataService
 
                 if (AppUser != default)
                 {
+                    AppUser.Email = userClaimsPrincipal.GetEmail() ?? string.Empty;
+                    AppUser.FirstName = userClaimsPrincipal.GetFirstName() ?? string.Empty;
+                    AppUser.LastName = userClaimsPrincipal.GetSurname() ?? string.Empty;
+                    AppUser.PhoneNumber = userClaimsPrincipal.GetPhoneNumber() ?? string.Empty;
+                    AppUser.ImageUrl = string.IsNullOrEmpty(userClaimsPrincipal?.GetImageUrl()) ? string.Empty : userClaimsPrincipal?.GetImageUrl();
+
                     if (IsNewUser)
                     {
                         if (_position != default)
@@ -526,6 +533,7 @@ public class AppDataService : IAppDataService
                             // appuser get uses the main platform application user identification
                             // update the the service appuser info
                             AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(AppUser.ApplicationUserId), Snackbar, null) ?? default!;
+
                         }
                     }
                 }
