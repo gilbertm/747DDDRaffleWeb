@@ -8,12 +8,22 @@
 
         @if (!Loading && _entityList is not null)
         {
+            IsNeededPager = true;
+
+            @if (_entityList.Count() <= 0)
+            {
+                IsNeededPager = false;
+            }
+
             <EhulogContainer MaxWidth="MaxWidth.False" Class="list-grid-container pa-0">
-                <MudPaper Elevation="1" Class="px-3 mb-4">
-                    <MudText Typo="Typo.caption" Align="Align.Left">Display</MudText>
-                    <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list" OnClick="@(() => SetList())" Color="@(IsList ? Color.Success : Color.Surface)">List</MudIconButton>
-                    <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid" OnClick="@(() => SetGrid())" Color="@(IsGrid ? Color.Success : Color.Surface)">Grid</MudIconButton>
-                </MudPaper>
+                @if (IsNeededPager)
+                {
+                    <MudPaper Elevation="1" Class="px-3 mb-4">
+                        <MudText Typo="Typo.caption" Align="Align.Left">Display</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list" OnClick="@(() => SetList())" Color="@(IsList ? Color.Success : Color.Surface)">List</MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid" OnClick="@(() => SetGrid())" Color="@(IsGrid ? Color.Success : Color.Surface)">Grid</MudIconButton>
+                    </MudPaper>
+                }
 
                 <MudPaper Elevation="0" id="@typeof(TEntity).Name" Class="list-grid-group-wrapper grid-group-wrapper row">
                     @if (_entityList.Count() > 0)
@@ -25,13 +35,14 @@
                             </MudItem>
 
                         }
-                    } else
+                    }
+                    else
                     {
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudPaper Elevation="1" Class="mb-5 px-5 py-5">
-                                    <MudText Typo="Typo.h5" Color="Color.Surface" Align="Align.Center">
-                                        No available loans in this location. Be the first, be a good <MudLink Typo="Typo.h5" Href="/account/login"><strong>lender</strong></MudLink>. See <MudLink Typo="Typo.h5" Href="/loan/lending/benefits"><strong>benefits</strong></MudLink>.
+                                <MudPaper Elevation="0" Class="mb-5 px-5 py-9">
+                                    <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                                        No available loans in this location. <MudLink Typo="Typo.body1" Href="/loan/lending/benefits"><strong>Benefits</strong></MudLink> of being part of this community..
                                     </MudText>
                                 </MudPaper>
                             </MudItem>
@@ -40,7 +51,10 @@
                 </MudPaper>
             </EhulogContainer>
 
-            <EntityContainerPager Total="@_totalItems" PageSize="@_pageSize" CurrentPage="@_currentPage" />
+            @if (IsNeededPager)
+            {
+                <EntityContainerPager Total="@_totalItems" PageSize="@_pageSize" CurrentPage="@_currentPage" />
+            }
         }
 
     </ChildContent>
@@ -50,6 +64,9 @@
 </ErrorBoundary>
 
 @code {
+
+    private bool IsNeededPager { get; set; } = false;
+
     private void SetList()
     {
         IsList = true;

@@ -38,7 +38,7 @@ public partial class BlockInfoLoanApplicants
     {
         var parameters = new DialogParameters { ["LoanApplicantDto"] = loanApplicant, ["IsOwner"] = IsOwner, ["LoanStatus"] = Loan.Status };
 
-        DialogOptions noHeader = new DialogOptions() { CloseButton = true };
+        DialogOptions noHeader = new DialogOptions() { MaxWidth = MaxWidth.Large, CloseButton = true };
 
         if (MyselfLender != default)
         {
