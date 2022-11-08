@@ -1,5 +1,6 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -72,7 +73,27 @@ public partial class TheLoan
                                     loanLender.Product.Image = image.First();
                                 }
                             }
+                        }
 
+                        if (Loan.LoanApplicants != default)
+                        {
+
+                            if (Loan.LoanApplicants.Count > 0)
+                            {
+                                foreach (var loanApplicant in Loan.LoanApplicants)
+                                {
+                                    if (loanApplicant.AppUser != default)
+                                    {
+                                        var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicant.AppUser.ApplicationUserId);
+
+                                        loanApplicant.AppUser.FirstName = userDetailsDto.FirstName;
+                                        loanApplicant.AppUser.LastName = userDetailsDto.LastName;
+                                        loanApplicant.AppUser.Email = userDetailsDto.Email;
+                                        loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                        loanApplicant.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
+                                    }
+                                }
+                            }
                         }
 
                         // show products, if lender

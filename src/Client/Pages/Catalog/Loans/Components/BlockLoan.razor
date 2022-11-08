@@ -28,14 +28,14 @@
         }
 
     </MudCardContent>
-    <MudCardContent Class="py-0">
+    <MudCardContent Class="minimal-loan-main-details py-0 my-3">
         <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components.Block.MinimalLoanMainDetails Loan="Loan" />
     </MudCardContent>
     @if (!DisableStatus)
     {
-        <MudCardActions>
+        <MudCardContent Class="minimal-block-info-loan-status py-0 ma-1">
             <MinimalBlockInfoLoanStatus Loan="@Loan" OnUpdatedLoan="UpdateLoan" />
-        </MudCardActions>
+        </MudCardContent>
     }
 
     <MudCardActions>

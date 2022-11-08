@@ -50,6 +50,7 @@ public partial class BlockLoan
                                 loanApplicant.AppUser.LastName = userDetailsDto.LastName;
                                 loanApplicant.AppUser.Email = userDetailsDto.Email;
                                 loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                loanApplicant.AppUser.ImageUrl = userDetailsDto.ImageUrl;
                             }
                         }
                     }
@@ -69,6 +70,7 @@ public partial class BlockLoan
                                 loanLessee.Lessee.LastName = userDetailsDto.LastName;
                                 loanLessee.Lessee.Email = userDetailsDto.Email;
                                 loanLessee.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                loanLessee.Lessee.ImageUrl = userDetailsDto.ImageUrl;
                             }
                         }
                     }

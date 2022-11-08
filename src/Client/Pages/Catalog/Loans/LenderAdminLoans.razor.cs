@@ -13,9 +13,9 @@ using MudBlazor;
 using Nager.Country;
 using System.ComponentModel.DataAnnotations;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
+namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
 
-public partial class GenericLoans
+public partial class LenderAdminLoans
 {
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -225,6 +225,7 @@ public partial class GenericLoans
                                        loanLender.Lender.FirstName = userLenderDetailsDto.FirstName;
                                        loanLender.Lender.LastName = userLenderDetailsDto.LastName;
                                        loanLender.Lender.PhoneNumber = userLenderDetailsDto.PhoneNumber;
+                                       loanLender.Lender.ImageUrl = userLenderDetailsDto.ImageUrl;
                                    }
 
                                    if (loanLender is not null && loanLender.Product is not null)
@@ -245,6 +246,7 @@ public partial class GenericLoans
                                            loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
                                            loanApplicantDto.AppUser.Email = userDetailsDto.Email;
                                            loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                           loanApplicantDto.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
                                        }
                                    }
                                }
@@ -265,6 +267,7 @@ public partial class GenericLoans
                                                    loanLesseeDto.Lessee.LastName = userDetailsDto.LastName;
                                                    loanLesseeDto.Lessee.Email = userDetailsDto.Email;
                                                    loanLesseeDto.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                                   loanLesseeDto.Lessee.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
                                                }
                                            }
                                        }
@@ -289,6 +292,8 @@ public partial class GenericLoans
                                // amount
                                // etc.
                                var createLoanRequest = loan.Adapt<CreateLoanRequest>();
+
+                               createLoanRequest.StartOfPayment = DateTime.SpecifyKind(createLoanRequest.StartOfPayment, DateTimeKind.Utc);
 
                                if (await ApiHelper.ExecuteCallGuardedAsync(
                                    async () => await LoansClient.CreateAsync(createLoanRequest),
@@ -399,6 +404,8 @@ public partial class GenericLoans
                            // that there's already a lessee assigned.
                            var updateLoanRequest = loan.Adapt<UpdateLoanRequest>();
 
+                           updateLoanRequest.StartOfPayment = DateTime.SpecifyKind(updateLoanRequest.StartOfPayment, DateTimeKind.Utc);
+
                            if (await ApiHelper.ExecuteCallGuardedAsync(
                               async () => await LoansClient.UpdateAsync(id, updateLoanRequest),
                               Snackbar,
@@ -503,7 +510,7 @@ public partial class GenericLoans
                 {
                     if (AppDataService.AppUser.RoleName.Equals("Admin"))
                     {
-                        return string.Empty;
+                        return default!;
                     }
 
                     if (AppDataService.AppUser.IsVerified)
@@ -513,7 +520,11 @@ public partial class GenericLoans
                             // TODO:// business logics
                             if (AppDataService.IsCanCreateLoan())
                             {
-                                return string.Empty;
+                                // needs Policy Permissions.Loans.{ value}
+                                // return "Create";
+                                // default means null
+                                // default, can create
+                                return default!;
                             }
                         }
                     }
@@ -522,7 +533,8 @@ public partial class GenericLoans
             }
         }
 
-        return "Can't create";
+        // use string.Empty to disallow the button
+        return string.Empty;
     }
 
     private async Task OnClickApproveChildCallBack()

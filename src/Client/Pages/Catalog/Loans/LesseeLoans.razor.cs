@@ -1,5 +1,6 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Mapster;
 using Microsoft.AspNetCore.Components;
@@ -77,17 +78,46 @@ public partial class LesseeLoans
 
                                foreach (var item in result.Data)
                                {
-                                   var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
 
-                                   if (loanLender is not null && loanLender.Product is not null)
+                                   if (item.LoanLenders != default)
                                    {
 
-                                       var image = await InputOutputResourceClient.GetAsync(loanLender.ProductId);
-
-                                       if (image.Count() > 0)
+                                       if (item.LoanLenders.Count > 0)
                                        {
+                                           var loanLender = item.LoanLenders.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
 
-                                           loanLender.Product.Image = image.First();
+                                           if (loanLender is not null && loanLender.Product is not null)
+                                           {
+
+                                               var image = await InputOutputResourceClient.GetAsync(loanLender.ProductId);
+
+                                               if (image.Count() > 0)
+                                               {
+
+                                                   loanLender.Product.Image = image.First();
+                                               }
+                                           }
+                                       }
+                                   }
+
+                                   if (item.LoanApplicants != default)
+                                   {
+
+                                       if (item.LoanApplicants.Count > 0)
+                                       {
+                                           foreach (var loanApplicant in item.LoanApplicants)
+                                           {
+                                               if (loanApplicant.AppUser != default)
+                                               {
+                                                   var userDetailsDto = await UsersClient.GetByIdAsync(loanApplicant.AppUser.ApplicationUserId);
+
+                                                   loanApplicant.AppUser.FirstName = userDetailsDto.FirstName;
+                                                   loanApplicant.AppUser.LastName = userDetailsDto.LastName;
+                                                   loanApplicant.AppUser.Email = userDetailsDto.Email;
+                                                   loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                                   loanApplicant.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
+                                               }
+                                           }
                                        }
                                    }
                                }

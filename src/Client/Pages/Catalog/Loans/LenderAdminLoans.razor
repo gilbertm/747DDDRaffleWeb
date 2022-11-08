@@ -8,7 +8,7 @@
 
 @attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)]
 
-@inject IStringLocalizer<GenericLoans> L
+@inject IStringLocalizer<LenderAdminLoans> L
 
 <EhulogTitle Title="@L["Loans"]" Description="@L["Loan is main resource of ehulog, you can create a loans on the available products. You maybe able to provide custom loanable products, if you subscribed. If not, the system got you covered with the basic dependencies to create your loan."]" />
 
@@ -290,7 +290,7 @@
     private bool _disabledInterestSelection = false;
 
     private string _infoCollateralGeneric = "Anything of value (goods, items, memoirs, collector's items, etc) that would encourage the Lender to consider you recipient of the hard earned money.";
-    private string _infoCollateralGenericHelpText = "Collateral adds more security from the lender. This info can contain required information that MUST be fulfilled by the lessee or applicants.";
+    private string _infoCollateralGenericHelpText = "Collateral adds another layer of security for the lender. If enabled, this REQUIRED information needs to be fulfilled by the lessee or applicants.";
 
     private async Task UpdateProductOnCategoryChange(Guid categoryId)
     {
