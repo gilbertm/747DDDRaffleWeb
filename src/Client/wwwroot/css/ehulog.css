@@ -52,10 +52,11 @@
   overflow: auto !important;
   overflow-x: hidden !important; }
 
-.mud-grid-spacing-xs-3 {
-  margin: 0px !important;
-  margin-left: -12px !important; }
+/* .mud-grid-spacing-xs-3 {
+    margin: 0px !important;
+    margin-left: -12px !important;
 
+} */
 .mud-table-toolbar {
   flex-wrap: wrap;
   margin-bottom: 20px !important; }
