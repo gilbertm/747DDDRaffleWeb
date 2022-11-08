@@ -1,5 +1,5 @@
 ﻿<MudGrid Justify="Justify.Center">
-    @{            
+    @{
         <div class="d-flex justify-center mb-4">
             @if (!string.IsNullOrEmpty(ImageUrl))
             {
@@ -8,10 +8,21 @@
                         <MudCardContent>
                             <MudAvatar Square="true" Image="@ImageUrl" Style=" width:100%;height:auto;position:relative"></MudAvatar>
                         </MudCardContent>
+
                         <MudOverlay Visible="@_isHovered" DarkBackground="true" Absolute="true" Class="text-center">
+                            @if (CanEnable)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.Check" Size="Size.Small" OnClick="@(async () => { await OnEnableImage.InvokeAsync();})">Accept</MudButton>
+                            }
+
                             <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Filled.RemoveRedEye" Link="@ImageUrl" Style="margin-left:5px;">
                                 View
-                            </MudButton> <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.RemoveCircleOutline" Size="Size.Small" OnClick="@(async () => { Remove(); await OnRemoveImage.InvokeAsync();})">Remove</MudButton>
+                            </MudButton>
+
+                            @if (CanUpdate)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.RemoveCircleOutline" Size="Size.Small" OnClick="@(async () => { Remove(); await OnRemoveImage.InvokeAsync();})">Remove</MudButton>
+                            }
                         </MudOverlay>
                     </MudCard>
                 </MudItem>

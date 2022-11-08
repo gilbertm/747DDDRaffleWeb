@@ -16,10 +16,10 @@ public partial class SingleFileUpload
 {
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
+
     [Inject]
     protected IAuthenticationService AuthService { get; set; } = default!;
-    [Inject]
-    protected IPersonalClient PersonalClient { get; set; } = default!;
+
     [Parameter]
     public string ImageUrl { get; set; } = default!;
 
@@ -29,8 +29,21 @@ public partial class SingleFileUpload
     [Parameter]
     public string ForName { get; set; } = default!;
 
+    // can update is primarily used for owners of the image
+    [Parameter]
+    public bool CanUpdate { get; set; } = default!;
+
     [Parameter]
     public EventCallback OnRemoveImage { get; set; } = default!;
+
+    // enabled is primarily used for lenders or role that
+    // can elevate the status
+    // verification can only be done by admins
+    [Parameter]
+    public bool CanEnable { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnEnableImage { get; set; } = default!;
 
     [Parameter]
     public EventCallback<FileUploadRequest> OnUploadImage { get; set; } = default!;
