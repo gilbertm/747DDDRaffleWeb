@@ -125,7 +125,7 @@
     {
         Context = default!;
 
-        if (await ApiHelper.ExecuteCallGuardedAsync(() => AppUsersClient.GetAsync(userDetails.Id.ToString()), Snackbar) is AppUserDto appUser)
+        if (await ApiHelper.ExecuteCallGuardedAsync(() => AppUsersClient.GetApplicationUserAsync(userDetails.Id.ToString()), Snackbar) is AppUserDto appUser)
         {
             if (appUser != default)
             {

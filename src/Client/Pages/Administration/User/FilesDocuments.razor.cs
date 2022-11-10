@@ -117,7 +117,7 @@ public partial class FilesDocuments
             }
 
             if (await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(
-            () => AppUsersClient.GetAsync(user.Id.ToString()), Snackbar)
+            () => AppUsersClient.GetApplicationUserAsync(user.Id.ToString()), Snackbar)
         is AppUserDto appUserDto)
             {
                 if (appUserDto != default)
