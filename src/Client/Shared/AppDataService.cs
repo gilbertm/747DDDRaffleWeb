@@ -118,7 +118,7 @@ public class AppDataService : IAppDataService
             {
                 // if not found / not found exception
                 // create a silent custom helper
-                var appUserClient = await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(async () => await AppUsersClient.GetAsync(userId), Snackbar, default);
+                var appUserClient = await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, default);
 
                 // the get async is throwing errors
                 // the user doesn't not exist
@@ -137,7 +137,7 @@ public class AppDataService : IAppDataService
                 }
 
                 // the app user should be present here
-                AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(userId), Snackbar, default!) ?? default!;
+                AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, default!) ?? default!;
 
                 if (AppUser != default)
                 {
@@ -248,7 +248,7 @@ public class AppDataService : IAppDataService
 
                         if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequest), Snackbar, null) is Guid guid)
                         {
-                            AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(userId), Snackbar, null) ?? default!;
+                            AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) ?? default!;
                         }
                     }
 
@@ -345,7 +345,7 @@ public class AppDataService : IAppDataService
         return true;
     }
 
-    public bool IsLesseeOfThisLoan(LoanDto Loan)
+    public bool IsLesseeOfLoan(LoanDto Loan)
     {
         bool isAssignedLesseeOnThisLoan = false;
         bool isLessee = false;
@@ -376,6 +376,33 @@ public class AppDataService : IAppDataService
             if (isLessee && isAssignedLesseeOnThisLoan)
             {
                 return true;
+            }
+        }
+
+        return false;
+    }
+    public bool IsLenderOfLoan(LoanDto Loan)
+    {
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (AppUser.RoleName.Equals("Lender"))
+                {
+                    if (Loan != default)
+                    {
+                        if (Loan.LoanLenders != default)
+                        {
+                            var loanLender = Loan.LoanLenders.FirstOrDefault(la => la.LenderId.Equals(AppUser.Id)) ?? default;
+
+                            if (loanLender != default)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                }
             }
         }
 
@@ -454,17 +481,7 @@ public class AppDataService : IAppDataService
             }
 
             // check if THE lender
-            if (Loan != default)
-            {
-                if (Loan.LoanLenders != default)
-                {
-                    var lender = Loan.LoanLenders.FirstOrDefault(la => la.LenderId.Equals(AppUser.Id)) ?? default;
-                    if (lender != default)
-                    {
-                        isTheLenderOfThisLoan = true;
-                    }
-                }
-            }
+            isTheLenderOfThisLoan = IsLenderOfLoan(Loan);
 
             // check if all the amount loaned is below package limit
             // don't calculate the payment
@@ -506,7 +523,7 @@ public class AppDataService : IAppDataService
         if (AppUser != default)
         {
             // appuser get uses the main platform application user identification
-            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(AppUser.ApplicationUserId), Snackbar, null) is AppUserDto appUser)
+            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(AppUser.Id), Snackbar, null) is AppUserDto appUser)
             {
                 if (appUser != default)
                 {
@@ -532,7 +549,7 @@ public class AppDataService : IAppDataService
                         {
                             // appuser get uses the main platform application user identification
                             // update the the service appuser info
-                            AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(AppUser.ApplicationUserId), Snackbar, null) ?? default!;
+                            AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(AppUser.Id), Snackbar, null) ?? default!;
 
                         }
                     }
