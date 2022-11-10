@@ -111,7 +111,7 @@ public static class EHULOGPermissions
         new("View Ledgers", EHULOGAction.View, EHULOGResource.Ledgers, IsLender: true, IsLessee: true),
         new("Search Ledgers", EHULOGAction.Search, EHULOGResource.Ledgers, IsLender: true, IsLessee: true),
         new("Create Ledgers", EHULOGAction.Create, EHULOGResource.Ledgers, IsLender: true, IsLessee: false),
-        new("Update Ledgers", EHULOGAction.Update, EHULOGResource.Ledgers, IsLender: true, IsLessee: false),
+        new("Update Ledgers", EHULOGAction.Update, EHULOGResource.Ledgers, IsLender: true, IsLessee: true),
         new("Delete Ledgers", EHULOGAction.Delete, EHULOGResource.Ledgers, IsLender: true, IsLessee: false),
         new("Export Ledgers", EHULOGAction.Export, EHULOGResource.Ledgers, IsLender: true, IsLessee: false),
 
