@@ -17,7 +17,6 @@
             }
 
             <MudGrid>
-
                 @if ((new[] { LoanStatus.Draft, LoanStatus.Published }).Contains(Loan.Status))
                 {
                     if (AppDataService.AppUser.RoleName != default)
@@ -33,7 +32,7 @@
                                     @if (Loan.Status.Equals(LoanStatus.Published))
                                     {
                                         <MudItem xs="6">
-                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Small" OnClick="(() => Apply())">Apply</MudButton>
+                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Surface" Size="Size.Small" OnClick="(() => ApplyAsync())">Apply</MudButton>
                                         </MudItem>
                                     }
                                     @if (!DisableDetailButton)
@@ -62,7 +61,7 @@
                                                 case 2:
                                                     @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
                                                     <MudText Typo="Typo.caption">You applied but removed yourself from this Loan.</MudText>
-                                                    <MudButton Variant="Variant.Text" Class="d-inline py-0" OnClick="(() => ReApply())"><MudText Typo="Typo.caption">Reapply?</MudText></MudButton>
+                                                    <MudButton Variant="Variant.Text" Class="d-inline py-0" OnClick="(() => ReApplyAsync())"><MudText Typo="Typo.caption">Reapply?</MudText></MudButton>
                                                     break;
                                                 case 3:
                                                     @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
@@ -104,7 +103,7 @@
                                                                             </MudText>
                                                                         </MudItem>
                                                                         <MudItem xs="12">
-                                                                            <MudButton OnClick="(() => CancelApply())" EndIcon="@Icons.TwoTone.Cancel" Size="Size.Small" Color="Color.Warning">Cancel</MudButton><br />
+                                                                            <MudButton OnClick="(() => CancelApplyAsync())" EndIcon="@Icons.TwoTone.Cancel" Size="Size.Small" Color="Color.Warning">Cancel</MudButton><br />
                                                                             <MudTooltip Text="If you wish to cancel your application, click action. Awaiting lender's acceptance and approval.">
                                                                                 <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
                                                                             </MudTooltip>
@@ -158,52 +157,50 @@
                 else if ((new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }).Contains(Loan.Status))
                 {
                     <MudItem xs="12" Class="text-center">
-                        <CascadingValue Value="@FileUpload" Name="FileUpload">
-                            <SingleFileUpload ImageUrl="@_imageUrl" ForName="@_referenceIdOfActiveIOResource.ToString()" OnRemoveImage="RemoveImageAsync" OnEnableImage="EnableImageAsync" OnUploadImage="UploadFileAsync" UserId="@AppDataService.AppUser.Id.ToString()" CanUpdate="@_canUpdateRunningImage" CanEnable="@_canEnableRunningImage" />
-                        </CascadingValue>
-
-
-
                         @* image receipts *@
-                        @if (new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }.Contains(Loan.Status))
+                        @if (currentLedgerActivePayment != default)
                         {
-                            if (Loan.Ledgers != default)
+                            <CascadingValue Value="@FileUpload" Name="FileUpload">
+                                <SingleFileUpload ImageUrl="@_imageUrl" ForName="@_referenceIdOfActiveIOResource.ToString()" OnRemoveImage="RemoveImageAsync" OnEnableImage="EnableImageAsync" OnUploadImage="UploadFileAsync" UserId="@AppDataService.AppUser.Id.ToString()" CanUpdate="@_canUpdateRunningImage" CanEnable="@_canEnableRunningImage" />
+                            </CascadingValue>
+
+                            <MudText Typo="Typo.caption">Payment for Ledger No. @($"{currentLedgerActivePayment.Position}")</MudText>
+
+                            @if (currentLedgerActivePayment.DatePaid.Equals(default))
                             {
-                                switch (Loan.Status)
+                                @if (currentLedgerActivePayment.Position.Equals(0))
                                 {
-                                    case LoanStatus.Assigned:
-                                    case LoanStatus.Meetup:
-
-                                        <MudAlert Class="mb-3 mb-md-5" Severity="Severity.Error" Icon="@Icons.Filled.PhotoCameraBack">
-                                            Meetup. Receipt. Snap. Required to proceed. <MudTooltip Text="A picture or receipt taken during meetup or first handshake/turnover of product.">
-                                                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
-                                            </MudTooltip>
-                                        </MudAlert>
-
-                                        break;
-                                    case LoanStatus.Payment:
-                                        // process or get the last position
-                                        break;
-                                }
-                            }
-                        }
-
-                        @if (AppDataService.AppUser != default)
-                        {
-                            if (AppDataService.AppUser.RoleName != default)
-                            {
-                                if (AppDataService.AppUser.RoleName.Equals("Lender"))
-                                {
-
-                                }
-                                if (AppDataService.AppUser.RoleName.Equals("Lessee"))
-                                {
-                                    <MudAlert Severity="Severity.Info">
-                                        Note: Once the lender will accept the image receipt, update will no longer be possible.
+                                    <MudAlert Class="mb-3 mb-md-5" Severity="Severity.Error" Icon="@Icons.Filled.PhotoCameraBack">
+                                        Meetup. Receipt. Snap. Required to proceed. <MudTooltip Text="A picture or receipt taken during meetup or first handshake/turnover of product.">
+                                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
+                                        </MudTooltip>
                                     </MudAlert>
                                 }
                             }
+
+                            @if (AppDataService.AppUser != default)
+                            {
+                                if (AppDataService.AppUser.RoleName != default)
+                                {
+                                    if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                                    {
+
+                                    }
+                                    if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                                    {
+                                        <MudAlert Severity="Severity.Info">
+                                            Note: Once the lender will accept the image receipt, update will no longer be possible.
+                                        </MudAlert>
+                                    }
+                                }
+                            }
                         }
+                        else
+                        {
+                            <MudAlert Severity="Severity.Error">This loan might be done.</MudAlert>
+                        }
+
+
                     </MudItem>
                     <MudItem xs="12">
                         <MudCard Elevation="0" Class="text-center pa-0" Style="margin-bottom:0!important;">
@@ -219,12 +216,6 @@
                                 }
                             </MudCardContent>
                         </MudCard>
-                    </MudItem>
-                }
-                else
-                {
-                    <MudItem xs="12">
-                        <MudButton Variant="Variant.Outlined" Class="mt-2 mx-auto" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Success" Size="Size.Medium" Href="@($"/loan/{Loan.Id}")">Apply</MudButton>
                     </MudItem>
                 }
 

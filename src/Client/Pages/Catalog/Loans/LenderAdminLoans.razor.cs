@@ -63,6 +63,9 @@ public partial class LenderAdminLoans
 
     }
 
+    // for child statechanges
+    protected List<LoanLedgerDto> ChildLoanLedgers { get; set; } = default!;
+
     private async Task LoadAppUserProducts(Guid appUserId, Guid filterCategory = default)
     {
         AppUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(appUserId)).ToList();
@@ -246,7 +249,9 @@ public partial class LenderAdminLoans
                                            loanApplicantDto.AppUser.LastName = userDetailsDto.LastName;
                                            loanApplicantDto.AppUser.Email = userDetailsDto.Email;
                                            loanApplicantDto.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
-                                           loanApplicantDto.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
+
+                                           if (!string.IsNullOrEmpty(userDetailsDto.ImageUrl))
+                                               loanApplicantDto.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
                                        }
                                    }
                                }
@@ -267,7 +272,10 @@ public partial class LenderAdminLoans
                                                    loanLesseeDto.Lessee.LastName = userDetailsDto.LastName;
                                                    loanLesseeDto.Lessee.Email = userDetailsDto.Email;
                                                    loanLesseeDto.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
-                                                   loanLesseeDto.Lessee.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
+
+                                                   if (!string.IsNullOrEmpty(userDetailsDto.ImageUrl))
+                                                       loanLesseeDto.Lessee.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
+
                                                }
                                            }
                                        }

@@ -1,12 +1,16 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
 using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Pages.Administration.User;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using Geo.MapBox.Models.Responses;
+using Mapster;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.Linq;
+
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components;
 
 public partial class MinimalBlockInfoLoanStatus
@@ -18,7 +22,10 @@ public partial class MinimalBlockInfoLoanStatus
     protected ILoanApplicantsClient LoanApplicantsClient { get; set; } = default!;
 
     [Inject]
-    protected ILoansClient ILoansClient { get; set; } = default!;
+    protected ILoansClient LoansClient { get; set; } = default!;
+
+    [Inject]
+    protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
 
     [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
@@ -49,6 +56,8 @@ public partial class MinimalBlockInfoLoanStatus
     private bool _canUpdateRunningImage;
     private bool _canEnableRunningImage;
 
+    private LoanLedgerDto? currentLedgerActivePayment;
+
     protected override async Task OnInitializedAsync()
     {
         if (AppDataService != default)
@@ -64,120 +73,17 @@ public partial class MinimalBlockInfoLoanStatus
                     {
                         if (Loan.Ledgers != default)
                         {
-                            switch (Loan.Status)
-                            {
-                                case LoanStatus.Assigned:
-                                case LoanStatus.Meetup:
-                                    var iORMeetupId = Loan.Ledgers.OrderBy(ledger => ledger.Position).First(ledger => ledger.Position.Equals(0)).Id;
-                                    _referenceIdOfActiveIOResource = iORMeetupId;
-
-                                    if (await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(() => InputOutputResourceClient.GetAsync(iORMeetupId), Snackbar, null, "Meetup receipt found.") is List<InputOutputResourceDto> iORMeetups)
-                                    {
-                                        if (iORMeetups != default && iORMeetups.Count() > 0)
-                                        {
-                                            _imageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{iORMeetups[0].ImagePath}";
-                                            _mainIdOfActiveIOResource = iORMeetups[0].Id;
-
-                                            switch (iORMeetups[0].ResourceStatusType)
-                                            {
-                                                case InputOutputResourceStatusType.Disabled:
-
-                                                    if (AppDataService.AppUser != default)
-                                                    {
-                                                        if (AppDataService.AppUser.RoleName != default)
-                                                        {
-                                                            if (AppDataService.AppUser.RoleName.Equals("Lender"))
-                                                            {
-                                                                _canUpdateRunningImage = true;
-                                                                _canEnableRunningImage = true;
-                                                            }
-
-                                                            if (AppDataService.AppUser.RoleName.Equals("Lessee"))
-                                                            {
-                                                                _canUpdateRunningImage = true;
-                                                            }
-                                                        }
-                                                    }
-
-                                                    break;
-
-                                                case InputOutputResourceStatusType.Enabled:
-                                                    _canUpdateRunningImage = false;
-                                                    _canEnableRunningImage = false;
-                                                    break;
-                                            }
-                                        }
-                                    }
-
-                                    break;
-                                case LoanStatus.Payment:
-                                    // process or get the last position
-                                    break;
-                            }
+                            await PrepareProcessReceiptAsync();
                         }
                     }
                 }
-
-                /*if (AppDataService.AppUser.ApplicationUserId != default)
-                {
-                    *//* current uploaded but not verified, this happens when the user uploads files *//*
-                    Guid guidUserId = default!;
-                    Guid.TryParse(AppDataService.AppUser.ApplicationUserId, out guidUserId);
-                    var referenceIdIOResources = await InputOutputResourceClient.GetAsync(guidUserId);
-
-                    if (referenceIdIOResources is not null)
-                    {
-                        foreach (var ior in referenceIdIOResources)
-                        {
-                            if (!ior.ResourceType.Equals(InputOutputResourceType.Identification) || ior.ResourceDocumentType.Equals(InputOutputResourceDocumentType.None))
-                                continue;
-
-                            ForUploadFile = new ForUploadFile()
-                            {
-                                FileIdentifier = ior.ResourceDocumentType,
-                                InputOutputResourceId = ior.Id.ToString(),
-                                UserIdReferenceId = ior.ReferenceId.ToString(),
-                                InputOutputResourceImgUrl = ior.ImagePath,
-                                isVerified = ior.ResourceStatusType.Equals(InputOutputResourceStatusType.EnabledAndVerified) ? true : false,
-                                isTemporarilyUploaded = true,
-                                Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? "1" : "0.3",
-                                Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains(ior.ResourceDocumentType) ? false : true
-                            };
-                        }
-                    }
-
-                    ForUploadFiles = ForUploadFiles.GroupBy(f => f.FileIdentifier).Select(f => f.First()).ToList();
-
-                    foreach (int i in Enum.GetValues(typeof(InputOutputResourceDocumentType)))
-                    {
-                        if (((InputOutputResourceDocumentType)i).Equals(InputOutputResourceDocumentType.None))
-                            continue;
-
-                        if (ForUploadFiles.Where(forUpload => forUpload.FileIdentifier.Equals((InputOutputResourceDocumentType)i)).Count() > 0)
-                            continue;
-
-                        ForUploadFiles.Add(new ForUploadFile()
-                        {
-                            FileIdentifier = (InputOutputResourceDocumentType)i,
-                            InputOutputResourceId = string.Empty,
-                            UserIdReferenceId = AppDataService.AppUser.ApplicationUserId,
-                            InputOutputResourceImgUrl = string.Empty,
-                            isVerified = false,
-                            isTemporarilyUploaded = false,
-                            Opacity = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains((InputOutputResourceDocumentType)i) ? "1" : "0.3",
-                            Disabled = new[] { InputOutputResourceDocumentType.Passport, InputOutputResourceDocumentType.NationalId, InputOutputResourceDocumentType.GovernmentId }.Contains((InputOutputResourceDocumentType)i) ? false : true
-                        });
-
-                    }
-                }
-*/
             }
         }
     }
 
     private async Task<LoanDto> GetLoanAsync(Guid loanId)
     {
-        if (await ApiHelper.ExecuteCallGuardedAsync(() => ILoansClient.GetAsync(loanId), Snackbar, null, "Success") is LoanDto loan)
+        if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.GetAsync(loanId), Snackbar, null, "Success") is LoanDto loan)
         {
             if (loan != default)
             {
@@ -231,7 +137,7 @@ public partial class MinimalBlockInfoLoanStatus
 
     }
 
-    protected async Task Apply()
+    protected async Task ApplyAsync()
     {
         if (AppDataService != default)
         {
@@ -265,7 +171,7 @@ public partial class MinimalBlockInfoLoanStatus
         }
     }
 
-    protected async Task ReApply()
+    protected async Task ReApplyAsync()
     {
         if (Loan != default)
         {
@@ -292,7 +198,7 @@ public partial class MinimalBlockInfoLoanStatus
         }
     }
 
-    protected async Task CancelApply()
+    protected async Task CancelApplyAsync()
     {
         if (Loan != default)
         {
@@ -310,7 +216,7 @@ public partial class MinimalBlockInfoLoanStatus
                 {
                     Snackbar.Add("Cancelled. Remove application from this loan.", Severity.Success);
 
-                    if (await ApiHelper.ExecuteCallGuardedAsync(() => ILoansClient.GetAsync(Loan.Id), Snackbar, null, "Success") is LoanDto loan)
+                    if (await ApiHelper.ExecuteCallGuardedAsync(() => LoansClient.GetAsync(Loan.Id), Snackbar, null, "Success") is LoanDto loan)
                     {
                         if (!string.IsNullOrEmpty(loanApplicantId.ToString()) && !loanApplicantId.Equals(Guid.Empty))
                         {
@@ -350,6 +256,8 @@ public partial class MinimalBlockInfoLoanStatus
                 }
             }
         }
+
+        StateHasChanged();
     }
 
     private async Task UploadFileAsync(FileUploadRequest fileUpload)
@@ -372,39 +280,248 @@ public partial class MinimalBlockInfoLoanStatus
                 if (valueTupleOfGuidAndString != default)
                 {
                     _imageUrl = string.IsNullOrEmpty(valueTupleOfGuidAndString.Value) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + valueTupleOfGuidAndString.Value);
+
+                    if (AppDataService.AppUser != default)
+                    {
+                        if (currentLedgerActivePayment != default)
+                        {
+                            if (AppDataService.AppUser.RoleName != default)
+                            {
+                                if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                                {
+                                    UpdateLoanLedgerRequest updateLoanLedgerRequest = new()
+                                    {
+                                        Id = currentLedgerActivePayment.Id,
+                                        Position = currentLedgerActivePayment.Position,
+                                        DatePaid = DateTime.UtcNow,
+                                        LoanId = Loan.Id,
+                                        LenderApprove = true,
+                                        LesseeApprove = true,
+                                        Remark = string.Empty,
+                                        Status = LedgerStatus.LenderUpload
+                                    };
+
+                                    var loanLedgersClient = await LoanLedgersClient.UpdateAsync(currentLedgerActivePayment.Id, updateLoanLedgerRequest);
+                                    if (loanLedgersClient != default)
+                                    {
+                                        // so that we can move on to the next
+                                        Loan = await GetLoanAsync(Loan.Id);
+                                        _canUpdateRunningImage = true;
+                                        _canEnableRunningImage = true;
+                                    }
+                                }
+
+                                if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                                {
+                                    UpdateLoanLedgerRequest updateLoanLedgerRequest = new()
+                                    {
+                                        Id = currentLedgerActivePayment.Id,
+                                        Position = currentLedgerActivePayment.Position,
+                                        DatePaid = DateTime.UtcNow,
+                                        LoanId = Loan.Id,
+                                        LenderApprove = false,
+                                        LesseeApprove = true,
+                                        Remark = string.Empty,
+                                        Status = LedgerStatus.LesseeUpload
+                                    };
+
+                                    var loanLedgersClient = await LoanLedgersClient.UpdateAsync(currentLedgerActivePayment.Id, updateLoanLedgerRequest);
+                                    if (loanLedgersClient != default)
+                                    {
+                                        _canUpdateRunningImage = true;
+
+                                        // so that we can move on to the next
+                                        Loan = await GetLoanAsync(Loan.Id);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
                 }
-
-                StateHasChanged();
             }
-        }
-    }
-
-    protected async Task EnableImageAsync()
-    {
-        var loanId = Loan.Id;
-        Loan = default!;
-
-        UpdateInputOutputResourceByIdRequest updateInputOutputResourceByIdRequest = new()
-        {
-            Id = _mainIdOfActiveIOResource,
-            ImagePath = _imageUrl ?? default!,
-            ResourceStatusType = InputOutputResourceStatusType.Enabled
-        };
-
-        var guid = await InputOutputResourceClient.UpdateAsync(_mainIdOfActiveIOResource, updateInputOutputResourceByIdRequest);
-        if (guid != default)
-        {
-
-            _canUpdateRunningImage = false;
-            _canEnableRunningImage = false;
-
-            // this is paid
-
-            // force reload
-            Loan = await GetLoanAsync(loanId);
-
         }
 
         StateHasChanged();
+    }
+
+    // lender can enable the image
+    protected async Task EnableImageAsync()
+    {
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                if (AppDataService.AppUser.RoleName != default)
+                {
+                    if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                    {
+                        UpdateInputOutputResourceByIdRequest updateInputOutputResourceByIdRequest = new()
+                        {
+                            Id = _mainIdOfActiveIOResource,
+                            ImagePath = _imageUrl ?? string.Empty,
+                            ResourceStatusType = InputOutputResourceStatusType.Enabled
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await InputOutputResourceClient.UpdateAsync(_mainIdOfActiveIOResource, updateInputOutputResourceByIdRequest), Snackbar) is Guid guid)
+                        {
+                            if (guid != default)
+                            {
+                                // if io resource exists
+                                _imageUrl = string.Empty;
+
+                            }
+
+                        }
+
+                        // this is paid
+                        if (currentLedgerActivePayment != default)
+                        {
+                            int totalLedgerRows = 0;
+
+                            if (Loan.Ledgers != null)
+                            {
+                                totalLedgerRows = Loan.Ledgers.Count;
+                            }
+
+                            // first position
+                            // change loan status
+                            if (currentLedgerActivePayment.Position.Equals(0))
+                            {
+                                if (await ApiHelper.ExecuteCallGuardedAsync(
+                                   async () => await LoansClient.UpdateStatusAsync(Loan.Id, new()
+                                   {
+                                       Id = Loan.Id,
+                                       Status = LoanStatus.Payment
+                                   }),
+                                   Snackbar) is Guid loanId)
+                                {
+                                    if (loanId != default)
+                                    {
+                                        // loan updated
+                                    }
+                                }
+                            }
+
+                            // last position
+                            else if (currentLedgerActivePayment.Position.Equals(totalLedgerRows - 1))
+                            {
+                                if (await ApiHelper.ExecuteCallGuardedAsync(
+                                   async () => await LoansClient.UpdateStatusAsync(Loan.Id, new()
+                                   {
+                                       Id = Loan.Id,
+                                       Status = LoanStatus.PaymentFinal
+                                   }),
+                                   Snackbar) is Guid loanId)
+                                {
+                                    if (loanId != default)
+                                    {
+                                        // loan updated
+                                    }
+                                }
+                            }
+
+                            UpdateLoanLedgerRequest updateLoanLedgerRequest = new()
+                            {
+                                Id = currentLedgerActivePayment.Id,
+                                Position = currentLedgerActivePayment.Position,
+                                DatePaid = DateTime.UtcNow,
+                                LoanId = Loan.Id,
+                                LenderApprove = true,
+                                LesseeApprove = true,
+                                Remark = string.Empty,
+                                Status = LedgerStatus.Final
+                            };
+
+                            if (await ApiHelper.ExecuteCallGuardedAsync(
+                                   async () => await LoanLedgersClient.UpdateAsync(currentLedgerActivePayment.Id, updateLoanLedgerRequest),
+                                   Snackbar) is Guid loanLedger)
+                            {
+                                if (loanLedger != default)
+                                {
+                                    // loan updated
+                                }
+                            }
+
+                            // move next
+                            // activate next position
+                            await PrepareProcessReceiptAsync();
+
+                            Loan = await GetLoanAsync(Loan.Id);
+
+                            await OnUpdatedLoan.InvokeAsync(Loan.Id);
+                        }
+
+
+
+                    }
+                }
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    // prepare the access to actions for single file upload
+    // check the images and role permissions
+    protected async Task PrepareProcessReceiptAsync()
+    {
+        if (Loan != default)
+        {
+            if (Loan.Ledgers != default)
+            {
+                // default the reference to the current ledger
+                // entry
+                currentLedgerActivePayment = Loan.Ledgers.OrderBy(ledger => ledger.Position).FirstOrDefault(ledger => ledger.Status < LedgerStatus.Final);
+                _referenceIdOfActiveIOResource = currentLedgerActivePayment != default ? currentLedgerActivePayment.Id : Guid.Empty;
+
+                if (currentLedgerActivePayment != default)
+                {
+                    // check if file exists
+                    if (await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(() => InputOutputResourceClient.GetAsync(_referenceIdOfActiveIOResource ?? default), Snackbar, null) is List<InputOutputResourceDto> iOResources)
+                    {
+                        // might have multiple
+                        if (iOResources != default && iOResources.Count() > 0)
+                        {
+                            _imageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{iOResources.First().ImagePath}";
+                            _mainIdOfActiveIOResource = iOResources.First().Id;
+
+                            if (AppDataService.AppUser != default)
+                            {
+                                if (AppDataService.AppUser.RoleName != default)
+                                {
+                                    if (AppDataService.AppUser.RoleName.Equals("Lender") && currentLedgerActivePayment.Status <= LedgerStatus.LenderUpload)
+                                    {
+                                        _canUpdateRunningImage = true;
+                                        _canEnableRunningImage = true;
+                                    }
+
+                                    if (AppDataService.AppUser.RoleName.Equals("Lessee") && currentLedgerActivePayment.Status <= LedgerStatus.LesseeUpload)
+                                    {
+                                        _canUpdateRunningImage = true;
+                                    }
+                                }
+                            }
+
+                            if (new LedgerStatus[] { LedgerStatus.Final, LedgerStatus.Finish }.ToList().Contains(currentLedgerActivePayment.Status ?? default))
+                            {
+                                _canUpdateRunningImage = false;
+                                _canEnableRunningImage = false;
+                            }
+
+
+
+                        }
+
+                        StateHasChanged();
+                    }
+
+                }
+
+
+            }
+
+        }
     }
 }

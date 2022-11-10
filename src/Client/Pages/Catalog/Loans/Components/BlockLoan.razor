@@ -62,11 +62,22 @@
 
 
 
-        if (Loan.LoanLenders is { })
+        if (Loan.LoanLenders != default)
         {
             loanLenderDto = Loan.LoanLenders.FirstOrDefault() ?? default!;
-            imageUrl = string.IsNullOrEmpty(Loan.LoanLenders.FirstOrDefault()?.Product?.Image?.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + Loan.LoanLenders.First().Product?.Image?.ImagePath);
-            productName = Loan.LoanLenders.FirstOrDefault()?.Product?.Name ?? string.Empty;
+
+            if (loanLenderDto != default)
+            {
+                if (loanLenderDto.Product != default)
+                {
+                    if (loanLenderDto.Product.Image != default)
+                    {
+                        imageUrl = Config[ConfigNames.ApiBaseUrl] + loanLenderDto.Product.Image.ImagePath;
+                    }
+
+                    productName = loanLenderDto.Product.Name ?? string.Empty;
+                }   
+            }
         }
 
         if (Loan.LoanLessees != default)
@@ -74,11 +85,11 @@
             loanLesseeDto = Loan.LoanLessees.Where(l => l.LoanId.Equals(Loan.Id)).FirstOrDefault() ?? default!;
         }
 
-        if (Loan.Ledgers is { })
+        if (Loan.Ledgers != default)
         {
-            loanLedgers = Loan.Ledgers.ToList() ?? default!;
+            loanLedgers = Loan.Ledgers.ToList();
 
-            if (!(loanLedgers.Equals(default)))
+            if (loanLedgers.Count > 0)
             {
                 sumLoan = loanLedgers.Sum(l => l.AmountDue);
             }

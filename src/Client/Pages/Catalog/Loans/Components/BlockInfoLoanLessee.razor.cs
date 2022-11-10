@@ -29,4 +29,30 @@ public partial class BlockInfoLoanLessee
 
     private bool IsOwner { get; set; } = false;
 
+    [Parameter]
+    public EventCallback OnClickApprove { get; set; } = default!;
+
+    private async Task OpenLendersUserInspectionView(Guid appUserId)
+    {
+        var parameters = new DialogParameters { ["AppUserId"] = appUserId, ["IsLessee"] = true, ["IsOwner"] = IsOwner, ["Loan"] = Loan };
+
+        DialogOptions noHeader = new DialogOptions() { MaxWidth = MaxWidth.Large, CloseButton = true };
+
+        if (MyselfLender != default)
+        {
+            var dialog = Dialog.Show<LendersUserInspectionView>("User's Details", parameters, noHeader);
+
+            var resultDialog = await dialog.Result;
+
+            if (!resultDialog.Cancelled)
+            {
+                if (resultDialog.Data is string resultLoanLesseeId)
+                {
+                    await OnClickApprove.InvokeAsync();
+                }
+            }
+
+        }
+    }
+
 }

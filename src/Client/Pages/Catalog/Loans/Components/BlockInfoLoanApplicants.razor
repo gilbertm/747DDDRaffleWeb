@@ -57,7 +57,7 @@
 
                                             @if ((new string[] { "Admin", "Lender" }).Contains(AppDataService.AppUser.RoleName))
                                             {
-                                                <MudPaper Elevation="0" onclick="@(() => OpenLendersUserInspectionView(item))" Style="@(clickableApplicantCSS)">
+                                                <MudPaper Elevation="0" onclick="@(() => OpenLendersUserInspectionView(item.AppUserId))" Style="@(clickableApplicantCSS)">
                                                     <MudAvatar Image="@item.AppUser.ImageUrl" Alt="@item.AppUser.Id.ToString()" Size="Size.Large" />
                                                     <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
                                                         @if (MyselfLender != default)

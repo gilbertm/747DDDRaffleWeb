@@ -34,9 +34,9 @@ public partial class BlockInfoLoanApplicants
     [Parameter]
     public EventCallback OnClickApprove { get; set; } = default!;
 
-    private async Task OpenLendersUserInspectionView(LoanApplicantDto loanApplicant)
+    private async Task OpenLendersUserInspectionView(Guid appUserId)
     {
-        var parameters = new DialogParameters { ["LoanApplicantDto"] = loanApplicant, ["IsOwner"] = IsOwner, ["LoanStatus"] = Loan.Status };
+        var parameters = new DialogParameters { ["AppUserId"] = appUserId, ["IsApplicant"] = true, ["IsOwner"] = IsOwner, ["Loan"] = Loan };
 
         DialogOptions noHeader = new DialogOptions() { MaxWidth = MaxWidth.Large, CloseButton = true };
 

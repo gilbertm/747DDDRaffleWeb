@@ -12,6 +12,7 @@
                 if (MyselfLender != default)
                 {
                     IsOwner = true;
+
                     clickableApplicantCSS = "cursor:pointer";
                 }
             }
@@ -50,7 +51,7 @@
                                     @if ((new string[] { "Admin", "Lender" }).Contains(AppDataService.AppUser.RoleName))
                                     {
                                         <MudText Typo="Typo.h5" Class="mt-4 mb-2" Color="Color.Surface">Lessee</MudText>
-                                        <MudPaper Elevation="0" Style="@(clickableApplicantCSS)">
+                                        <MudPaper Elevation="0" Style="@(clickableApplicantCSS)" onclick="@(() => OpenLendersUserInspectionView(MyselfLessee.LesseeId))">
                                             <MudAvatar Image="@MyselfLessee.Lessee.ImageUrl" Alt="@MyselfLessee.Lessee.Id.ToString()" Size="Size.Large" />
                                             <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
                                                 <MudText Typo="Typo.body2" Color="Color.Primary">@MyselfLessee.Lessee.FirstName @MyselfLessee.Lessee.LastName</MudText>

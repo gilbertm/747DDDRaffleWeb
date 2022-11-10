@@ -8,7 +8,7 @@
 
 @inject IStringLocalizer<TheLoan> L
 
-<EhulogTitle Title="@(CanUpdate ? @L["Loan (MINE)"] : @L["Loan"])" Description="@(CanUpdate ? @L["Manage this loan"] : @L["View"])" />
+<EhulogTitle Title="@(IOwnThis ? @L["Loan (I owned this)"] : @L["Loan"])" Description="@(IOwnThis ? @L["Manage loan. I can manage this loan, as I owned it."] : @L["View"])" />
 
 @if (AppDataService != default)
 {
@@ -37,15 +37,16 @@
 
                     </MudGrid>
                 }
-                else if ((new[] { LoanStatus.Assigned }).Contains(Loan.Status))
+                else if ((new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment, LoanStatus.PaymentFinal }).Contains(Loan.Status))
                 {
                     if (CanUpdate)
                     {
-                        <MudGrid>
+                        <MudGrid Class="my-0">
                             <MudItem xs="12" md="6">
+                                <MinimalBlockInfoLoanStatus Loan="Loan" OnUpdatedLoan="@( async () => await OnChildUpdatedLoan(Loan.Id))" />
                                 @if (Loan.Ledgers != default)
                                 {
-                                    <LoanLedger Ledger="Loan.Ledgers.ToList()" />
+                                    <LoanLedger Ledger="Loan.Ledgers.OrderBy(ledger => ledger.Position).ToList()" DisableHeader="true" />
                                 }
                             </MudItem>
                             <MudItem xs="6" md="3">
@@ -54,6 +55,9 @@
                             <MudItem xs="6" md="3" Class="text-center border-bottom">
                                 <MudGrid>
                                     <MudItem xs="12">
+                                        <BlockInfoLoanLessee Loan="Loan" />
+                                    </MudItem>
+                                    <MudItem xs="12" Style="opacity:0.5">
                                         <MudText Typo="Typo.h5" Style="@($"color:{Colors.BlueGrey.Lighten2}")">Archives</MudText>
                                         <BlockInfoLoanApplicants Loan="Loan" />
                                     </MudItem>

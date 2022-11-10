@@ -1,4 +1,6 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+using EHULOG.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using Nager.Country;
 
@@ -19,7 +21,10 @@ public partial class LoanLedger
     [Parameter]
     public bool Dense { get; set; } = false;
 
-    public List<LedgerModel> LedgerModel { get; set; } = new();
+    [Inject]
+    public IInputOutputResourceClient InputOutputResourceClient { get; set; } = default;
+
+    public List<LedgerViewModel> LedgerModel { get; set; } = new();
 
     private float _runningTotal { get; set; }
 
@@ -30,7 +35,7 @@ public partial class LoanLedger
 
     private bool _showNextLedgerAvailablePosition { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         CanUpdate = true;
         if (Ledger is not null && Ledger.Count > 0)
@@ -43,7 +48,7 @@ public partial class LoanLedger
             {
                 _runningBalance -= item.AmountDue;
 
-                LedgerModel.Add(new()
+                LedgerViewModel ledgerViewModel = new()
                 {
                     Id = item.Id,
                     Position = item.Position,
@@ -52,13 +57,33 @@ public partial class LoanLedger
                     DateDue = item.DateDue,
                     DatePaid = item.DatePaid,
                     Status = item.Status
-                });
+                };
+
+                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await InputOutputResourceClient.GetAsync(item.Id), Snackbar) is ICollection<InputOutputResourceDto> iOResources)
+                {
+                    if (iOResources != default)
+                    {
+                        if (iOResources.Count > 0)
+                        {
+                            var firstIOResource = iOResources.FirstOrDefault();
+
+                            if (firstIOResource != default)
+                            {
+                                ledgerViewModel.ImageUrl = Config[ConfigNames.ApiBaseUrl] + firstIOResource.ImagePath;
+                            }
+                        }
+                    }
+                }
+
+                LedgerModel.Add(ledgerViewModel);
             }
         }
     }
 }
 
-public class LedgerModel : LoanLedgerDto
+public class LedgerViewModel : LoanLedgerDto
 {
     public float Balance { get; set; }
+
+    public string? ImageUrl { get; set; }
 }

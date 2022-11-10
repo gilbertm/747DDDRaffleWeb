@@ -50,7 +50,9 @@ public partial class BlockLoan
                                 loanApplicant.AppUser.LastName = userDetailsDto.LastName;
                                 loanApplicant.AppUser.Email = userDetailsDto.Email;
                                 loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
-                                loanApplicant.AppUser.ImageUrl = userDetailsDto.ImageUrl;
+
+                                if (!string.IsNullOrEmpty(userDetailsDto.ImageUrl))
+                                    loanApplicant.AppUser.ImageUrl = userDetailsDto.ImageUrl;
                             }
                         }
                     }
@@ -71,6 +73,9 @@ public partial class BlockLoan
                                 loanLessee.Lessee.Email = userDetailsDto.Email;
                                 loanLessee.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
                                 loanLessee.Lessee.ImageUrl = userDetailsDto.ImageUrl;
+
+                                if (!string.IsNullOrEmpty(userDetailsDto.ImageUrl))
+                                    loanLessee.Lessee.ImageUrl = userDetailsDto.ImageUrl;
                             }
                         }
                     }

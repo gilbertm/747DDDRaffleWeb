@@ -33,11 +33,15 @@ public partial class TheLoan
 
     private bool CanUpdate { get; set; } = default!;
 
+    private bool IOwnThis { get; set; } = default!;
+
     [Parameter]
     public Guid? loanId { get; set; }
 
-    public async Task OnClickChildComponent(Guid? loanId)
+    public async Task OnChildUpdatedLoan(Guid? loanId)
     {
+        Loan = default!;
+
         if (loanId.HasValue && loanId != default)
         {
             Loan = await LoadLoan(loanId.Value);
@@ -62,6 +66,8 @@ public partial class TheLoan
                     {
                         if (Loan.LoanLenders != default)
                         {
+                            IOwnThis = AppDataService.IsLenderOfLoan(Loan);
+
                             LoanLenderDto? loanLender = Loan.LoanLenders.FirstOrDefault(l => l.LoanId.Equals(Loan.Id)) ?? default;
 
                             if (loanLender != default && loanLender.Product != default)
@@ -90,7 +96,9 @@ public partial class TheLoan
                                         loanApplicant.AppUser.LastName = userDetailsDto.LastName;
                                         loanApplicant.AppUser.Email = userDetailsDto.Email;
                                         loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
-                                        loanApplicant.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
+
+                                        if (!string.IsNullOrEmpty(loanApplicant.AppUser.ImageUrl))
+                                            loanApplicant.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
                                     }
                                 }
                             }
@@ -99,7 +107,9 @@ public partial class TheLoan
                         // show products, if lender
                         if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
                         {
+                            IOwnThis = AppDataService.IsLenderOfLoan(Loan);
                             CanUpdate = AppDataService.IsLenderCanUpdateLoan(Loan);
+
                         }
                         else if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lessee"))
                         {
@@ -108,7 +118,7 @@ public partial class TheLoan
                             // more on
                             // ledger updates
                             // rating
-                            CanUpdate = AppDataService.IsLesseeOfThisLoan(Loan);
+                            CanUpdate = AppDataService.IsLesseeOfLoan(Loan);
                         }
                     }
                 }
@@ -139,6 +149,8 @@ public partial class TheLoan
                                 loanApplicant.AppUser.LastName = userDetailsDto.LastName;
                                 loanApplicant.AppUser.Email = userDetailsDto.Email;
                                 loanApplicant.AppUser.PhoneNumber = userDetailsDto.PhoneNumber;
+                                if (!string.IsNullOrEmpty(loanApplicant.AppUser.ImageUrl))
+                                    loanApplicant.AppUser.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
                             }
                         }
                     }
@@ -158,6 +170,8 @@ public partial class TheLoan
                                 loanLessee.Lessee.LastName = userDetailsDto.LastName;
                                 loanLessee.Lessee.Email = userDetailsDto.Email;
                                 loanLessee.Lessee.PhoneNumber = userDetailsDto.PhoneNumber;
+                                if (!string.IsNullOrEmpty(loanLessee.Lessee.ImageUrl))
+                                    loanLessee.Lessee.ImageUrl = $"{Config[ConfigNames.ApiBaseUrl]}{userDetailsDto.ImageUrl}";
                             }
                         }
                     }

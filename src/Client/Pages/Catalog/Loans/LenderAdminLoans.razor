@@ -103,8 +103,8 @@
 
                             <MudAlert Severity="Severity.Warning" NoIcon="true" ContentAlignment="HorizontalAlignment.Left" Class="text-center">
                                 <MudToggleIconButton Disabled="true" @bind-Toggled="@ToggleProductIndicator"
-                                         Icon="@Icons.Material.Filled.Close" Color="@Color.Error" Title="Draft"
-                                         ToggledIcon="@Icons.Material.Filled.Check" ToggledColor="@Color.Success" ToggledTitle="Published" />
+                                                     Icon="@Icons.Material.Filled.Close" Color="@Color.Error" Title="Draft"
+                                                     ToggledIcon="@Icons.Material.Filled.Check" ToggledColor="@Color.Success" ToggledTitle="Published" />
                                 Product is @(ToggleProductIndicator ? "selected" : "Empty. Required.")
                             </MudAlert>
 
@@ -167,8 +167,8 @@
                                     }
 
                                     <MudToggleIconButton @bind-Toggled="@ToggleLoanStatus"
-                                             Icon="@Icons.Material.Filled.Unpublished" Color="@Color.Error" Title="Draft"
-                                             ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="Published" />
+                                                         Icon="@Icons.Material.Filled.Unpublished" Color="@Color.Error" Title="Draft"
+                                                         ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="Published" />
 
                                     <span>Loan is @(ToggleLoanStatus ? "Published" : "Draft")</span>
 
@@ -643,7 +643,7 @@
                     {
                         <MudGrid>
                             <MudItem xs="12" Class="pa-0">
-                                <MinimalBlockInfoLoanStatus Loan="@trail" />
+                                <MinimalBlockInfoLoanStatus Loan="@trail" OnUpdatedLoan="@OnClickApproveChildCallBack" />
                             </MudItem>
                         </MudGrid>
                     }
@@ -655,21 +655,19 @@
 
     protected RenderFragment<LoanDto> LoanLedgersTemplate => trail => __builder =>
     {
+
         <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+
             @if (trail.Ledgers != default)
             {
                 var ledgers = trail.Ledgers.Where(l => l.LoanId.Equals(trail.Id)).OrderBy(o => o.Position);
 
                 if (ledgers != default)
                 {
-                    <LoanLedger Ledger="@ledgers.ToList()" DisableStatusPaymentColumns="true" DisableHeader="true" Dense="true" />
-                }
-
-                @if (trail.Status >= LoanStatus.Assigned)
-                {
-                    <MinimalLoanMainDetails Loan="@trail" />
+                    <LoanLedger Ledger="@ledgers.ToList()" DisableStatusPaymentColumns="false" DisableHeader="true" Dense="true" CanUpdate="true" />
                 }
             }
+
         </MudHidden>
         <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert="true">
             <MudButton Style="text-transform:capitalize" DisableElevation="true" Class="mx-auto px-3" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Text" Color="Color.Success">View</MudButton>
@@ -684,7 +682,7 @@
 
             if (AppDataService.AppUser != default)
             {
-                
+
                 if (trail.LoanLessees != default)
                 {
                     _loanLesseeDto = trail.LoanLessees.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
@@ -706,22 +704,22 @@
     };
 
     protected RenderFragment<LoanDto> ExtraAction => trail => __builder =>
-    {
-        if (AppDataService != default)
         {
-            if (AppDataService.AppUser != default)
+            if (AppDataService != default)
             {
-                if (trail.LoanLenders != default)
+                if (AppDataService.AppUser != default)
                 {
-                    var loanLender = trail.LoanLenders.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault() ?? default;
-
-                    if (loanLender is { })
+                    if (trail.LoanLenders != default)
                     {
-                        <MudButton Href="@($"/loan/{trail.Id}")">View</MudButton>
-                    }
-                }
+                        var loanLender = trail.LoanLenders.Where(l => l.LoanId.Equals(trail.Id) && l.LenderId.Equals(AppDataService.AppUser.Id)).FirstOrDefault() ?? default;
 
+                        if (loanLender is { })
+                        {
+                            <MudButton Href="@($"/loan/{trail.Id}")" Style="text-transform:capitalize;font-weight:bold;">View</MudButton>
+                        }
+                    }
+
+                }
             }
-        }
-    };
+        };
 }
