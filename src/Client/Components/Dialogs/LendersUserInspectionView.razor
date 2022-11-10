@@ -2,24 +2,24 @@
 
 <MudDialog>
     <DialogContent>
-        @if (LoanApplicantDto is not null)
+        @if (UserDetails is not null)
         {
             <MudGrid>
                 <MudItem xs="12" sm="12" md="4">
                     <MudCard Elevation="0">
                         <MudCardContent Style="padding:0px!important">
                             <div class="d-flex justify-center mb-4">
-                                @if (!string.IsNullOrEmpty(LoanApplicantDto.AppUser.ImageUrl))
+                                @if (!string.IsNullOrEmpty(UserDetails.ImageUrl))
                                 {
-                                    <MudAvatar Square="true" Image="@LoanApplicantDto.AppUser.ImageUrl" Style=" width:100%;height:auto;"> </MudAvatar>
+                                    <MudAvatar Square="true" Image="@($"{Config[ConfigNames.ApiBaseUrl]}{UserDetails.ImageUrl}")" Style=" width:100%;height:auto;"> </MudAvatar>
                                 }
                                 else
                                 {
-                                    <MudAvatar Square="true" Color="Color.Primary" Style="width:100%;height:300px;">@LoanApplicantDto.AppUser.FirstName</MudAvatar>
+                                    <MudAvatar Square="true" Color="Color.Primary" Style="width:100%;height:300px;">@UserDetails.FirstName</MudAvatar>
                                 }
                             </div>
-                            <MudText Typo="Typo.h5" Class="text-center" Align="Align.Center" Color="Color.Primary">@LoanApplicantDto.AppUser.FirstName @LoanApplicantDto.AppUser.LastName</MudText>
-                            <MudText Align="Align.Center">@LoanApplicantDto.AppUser.Email</MudText>
+                            <MudText Typo="Typo.h5" Class="text-center" Align="Align.Center" Color="Color.Primary">@UserDetails.FirstName @UserDetails.LastName</MudText>
+                            <MudText Align="Align.Center">@UserDetails.Email</MudText>
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -33,9 +33,9 @@
                         <MudCardContent>
                             <MudGrid>
                                 <MudItem xs="12" md="8">
-                                    <MudText Typo="Typo.body2">City: @LoanApplicantDto.AppUser.HomeCity</MudText>
-                                    <MudText Typo="Typo.body2">Region: @LoanApplicantDto.AppUser.HomeRegion</MudText>
-                                    <MudText Typo="Typo.body2">Country: @LoanApplicantDto.AppUser.HomeCountry</MudText>
+                                    <MudText Typo="Typo.body2">City: @AppUser.HomeCity</MudText>
+                                    <MudText Typo="Typo.body2">Region: @AppUser.HomeRegion</MudText>
+                                    <MudText Typo="Typo.body2">Country: @AppUser.HomeCountry</MudText>
                                 </MudItem>
                                 <MudItem xs="12" md="4">
                                     <MudText>TODO:// Ratings and recent comments</MudText>
@@ -47,7 +47,7 @@
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
-                @if (IsOwner && LoanStatus.Equals(LoanStatus.Published))
+                @if (IsOwner && Loan.Status.Equals(LoanStatus.Published) && IsApplicant)
                 {
                     <MudItem xs="12">
                         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Large" OnClick="Submit">Approve</MudButton>
