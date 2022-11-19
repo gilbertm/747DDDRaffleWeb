@@ -29,6 +29,10 @@ public class JwtAuthenticationHeaderHandler : DelegatingHandler
                 if (request.RequestUri?.AbsolutePath.Contains("/anon") is true)
                 {
 
+                }// ++g++, bypass all SendAsync requests that were marked /anon
+                else if (request.RequestUri?.AbsolutePath.Contains("/users/self-register") is true)
+                {
+
                 }
                 else
                 {
