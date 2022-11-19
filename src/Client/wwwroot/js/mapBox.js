@@ -47,6 +47,9 @@
                     .addTo(window.MainMap);
 
                 var lngLat = marker.getLngLat();
+
+                window.dotNetJSMapBox.processLatLng(lngLat, objectFromDotNet.key);
+
             });
 
             geolocate.on('trackuserlocationstart', () => {
@@ -170,8 +173,6 @@
                             }
                         }
 
-                        console.log();
-
                         if (location.query) {
                             // lat
                             if (document.getElementById("Latitude")) {
@@ -221,5 +222,29 @@
             longitude = document.getElementById("Longitude").value;
 
         dotNetHelper.invokeMethodAsync("ChangeAddressFromJS", homeAddress, homeCity, homeCountry, homeRegion, latitude, longitude);
+    },
+    processLatLng: function (latLng, key) {
+        var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + latLng.lng + "," + latLng.lat + ".json?access_token=" + key;
+
+        // Making our request
+        fetch(url, { method: 'GET' })
+            .then(Result => Result.json())
+            .then(location => {
+                for (let i = 0; i < location.features.length; i++) {
+                    if (location.features[i].id.includes('country')) {
+                        if (document.getElementById("HomeCountryAnon"))
+                            document.getElementById("HomeCountryAnon").innerText = location.features[i].text;
+                    }
+                    if (location.features[i].id.includes('place')) {
+                        // city or town
+                        if (document.getElementById("HomeCityAnon"))
+                            document.getElementById("HomeCityAnon").innerText = location.features[i].text + ", ";
+                    }
+
+                }
+            })
+            .catch(errorMsg => {
+                console.log(errorMsg);
+            });
     }
 };

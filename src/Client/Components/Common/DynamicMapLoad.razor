@@ -6,70 +6,68 @@
     {
         <EditForm Model="@AppDataService.AppUser" OnValidSubmit="UpdateAppUserAddress">
             <MudCard Elevation="0">
-                <MudCardContent>
+                <MudCardContent Class="px-0">
                     <DataAnnotationsValidator />
                     <CustomValidation @ref="_customValidation" />
-                    <MudCard Elevation="0">
-                        <MudGrid>
-                            <MudItem xs="12" md="@(!IsMapOnly ? 6 : 12)">
-                                <div class="map-container embed-responsive embed-responsive-16by9">
-                                    <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:500px;width:100%;position:relative">
-                                        @if (AppDataService.AppUser is null)
-                                        {
-                                            <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
-                                                <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-                                            </MudOverlay>
+                    <MudGrid>
+                        <MudItem xs="12" md="@(!IsMapOnly ? 6 : 12)">
+                            <div class="map-container embed-responsive embed-responsive-16by9">
+                                <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:500px;width:100%;position:relative">
+                                    @if (AppDataService.AppUser is null)
+                                    {
+                                        <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
+                                            <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                                        </MudOverlay>
 
-                                        }
-                                    </div>
-                                    <pre id="coordinates" class="coordinates"></pre>
+                                    }
                                 </div>
+                                <pre id="coordinates" class="coordinates"></pre>
+                            </div>
+                        </MudItem>
+                        @if (!IsMapOnly)
+                        {
+                            <MudItem xs="12" md="6">
+
+                                @if (AppDataService.AppUser.HomeAddress is not null)
+                                {
+                                    <MudTextField @bind-Value="@AppDataService.AppUser.HomeAddress" id="HomeAddress" Adornment="Adornment.Start"
+                                                  For="@(() => AppDataService.AppUser.HomeAddress)" Label="@L["Home Street Address"]" Variant="Variant.Outlined" />
+                                    <br />
+                                }
+                                @if (AppDataService.AppUser.HomeCity is not null)
+                                {
+                                    <MudTextField @bind-Value="@AppDataService.AppUser.HomeCity" id="HomeCity" Adornment="Adornment.Start"
+                                                  For="@(() => AppDataService.AppUser.HomeCity)" Label="@L["City"]" Variant="Variant.Outlined" />
+                                    <br />
+                                }
+                                @if (AppDataService.AppUser.HomeRegion is not null)
+                                {
+                                    <MudTextField @bind-Value="@AppDataService.AppUser.HomeRegion" id="HomeRegion" Adornment="Adornment.Start"
+                                                  For="@(() => AppDataService.AppUser.HomeRegion)" Label="@L["Region"]" Variant="Variant.Outlined" />
+                                    <br />
+                                }
+                                @if (AppDataService.AppUser.HomeCountry is not null)
+                                {
+                                    <MudTextField @bind-Value="@AppDataService.AppUser.HomeCountry" id="HomeCountry" Adornment="Adornment.Start"
+                                                  For="@(() => AppDataService.AppUser.HomeCountry)" Label="@L["Country"]" Variant="Variant.Outlined" />
+                                    <br />
+                                }
+                                @if (AppDataService.AppUser.Latitude is not null)
+                                {
+                                    <MudTextField @bind-Value="@AppDataService.AppUser.Latitude" id="Latitude" Adornment="Adornment.Start"
+                                                  For="@(() => AppDataService.AppUser.Latitude)" ReadOnly Label="@L["Latitude"]" Variant="Variant.Outlined" />
+                                    <br />
+                                }
+
+                                @if (AppDataService.AppUser.Longitude is not null)
+                                {
+                                    <MudTextField @bind-Value="@AppDataService.AppUser.Longitude" id="Longitude" Adornment="Adornment.Start"
+                                                  For="@(() => AppDataService.AppUser.Longitude)" ReadOnly Label="@L["Longitude"]" Variant="Variant.Outlined" />
+                                    <br />
+                                }
                             </MudItem>
-                            @if (!IsMapOnly)
-                            {
-                                <MudItem xs="12" md="6">
-
-                                    @if (AppDataService.AppUser.HomeAddress is not null)
-                                    {
-                                        <MudTextField @bind-Value="@AppDataService.AppUser.HomeAddress" id="HomeAddress" Adornment="Adornment.Start"
-                                      For="@(() => AppDataService.AppUser.HomeAddress)" Label="@L["Home Street Address"]" Variant="Variant.Outlined" />
-                                        <br />
-                                    }
-                                    @if (AppDataService.AppUser.HomeCity is not null)
-                                    {
-                                        <MudTextField @bind-Value="@AppDataService.AppUser.HomeCity" id="HomeCity" Adornment="Adornment.Start"
-                                      For="@(() => AppDataService.AppUser.HomeCity)" Label="@L["City"]" Variant="Variant.Outlined" />
-                                        <br />
-                                    }
-                                    @if (AppDataService.AppUser.HomeRegion is not null)
-                                    {
-                                        <MudTextField @bind-Value="@AppDataService.AppUser.HomeRegion" id="HomeRegion" Adornment="Adornment.Start"
-                                      For="@(() => AppDataService.AppUser.HomeRegion)" Label="@L["Region"]" Variant="Variant.Outlined" />
-                                        <br />
-                                    }
-                                    @if (AppDataService.AppUser.HomeCountry is not null)
-                                    {
-                                        <MudTextField @bind-Value="@AppDataService.AppUser.HomeCountry" id="HomeCountry" Adornment="Adornment.Start"
-                                      For="@(() => AppDataService.AppUser.HomeCountry)" Label="@L["Country"]" Variant="Variant.Outlined" />
-                                        <br />
-                                    }
-                                    @if (AppDataService.AppUser.Latitude is not null)
-                                    {
-                                        <MudTextField @bind-Value="@AppDataService.AppUser.Latitude" id="Latitude" Adornment="Adornment.Start"
-                                      For="@(() => AppDataService.AppUser.Latitude)" ReadOnly Label="@L["Latitude"]" Variant="Variant.Outlined" />
-                                        <br />
-                                    }
-
-                                    @if (AppDataService.AppUser.Longitude is not null)
-                                    {
-                                        <MudTextField @bind-Value="@AppDataService.AppUser.Longitude" id="Longitude" Adornment="Adornment.Start"
-                                      For="@(() => AppDataService.AppUser.Longitude)" ReadOnly Label="@L["Longitude"]" Variant="Variant.Outlined" />
-                                        <br />
-                                    }
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    </MudCard>
+                        }
+                    </MudGrid>
                 </MudCardContent>
                 <MudCardActions Class="pb-4 pl-4">
                     <MudGrid Justify="Justify.Center">
@@ -85,12 +83,12 @@
                                 <MudText Color="Color.Surface">For approval, pending verification.</MudText>
                             }
 
-                            
+
                         </MudItem>
                         <MudItem xs="12" Class="text-center">
                             <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="text-center">You can't modify your location once registered.</MudAlert>
                         </MudItem>
-                        
+
                     </MudGrid>
                 </MudCardActions>
             </MudCard>
@@ -136,7 +134,7 @@
             }
         </MudGrid>
     }
- }
+}
 else
 {
     <MudGrid>
