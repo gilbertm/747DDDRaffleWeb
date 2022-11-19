@@ -10,26 +10,26 @@
                 if (loanLender.Product != default)
                 {
                     <MudItem xs="6" Class="py-1">
-                        <MudField InnerPadding="false" Label="Original amount" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Money" IconSize="Size.Small"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", loanLender.Product.Amount)</MudText></MudField>
+                        <MudField DisableUnderLine="true" InnerPadding="false" Label="Original amount" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Money" IconSize="Size.Small"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", loanLender.Product.Amount)</MudText></MudField>
                     </MudItem>
                 }
             }
 
             <MudItem xs="3" Class="py-1">
-                <MudField InnerPadding="false" Label="Month(s)" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.CalendarMonth" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Month</MudText></MudField>
+                <MudField DisableUnderLine="true" InnerPadding="false" Label="Month(s)" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.CalendarMonth" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Month</MudText></MudField>
             </MudItem>
             <MudItem xs="3" Class="py-1">
-                <MudField InnerPadding="false" Label="Interest" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Percent" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Interest</MudText></MudField>
+                <MudField DisableUnderLine="true" InnerPadding="false" Label="Interest" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Percent" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.Interest</MudText></MudField>
             </MudItem>
             <MudItem xs="12" Class="py-1">
-                <MudField InnerPadding="false" Label="Loan available" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Today" IconSize="Size.Small"> <MudText Typo="Typo.caption">@string.Format("{0:dddd, MMMM d, yyyy}", Loan.StartOfPayment)</MudText></MudField>
+                <MudField DisableUnderLine="true" InnerPadding="false" Label="Loan available" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.Today" IconSize="Size.Small"> <MudText Typo="Typo.caption">@string.Format("{0:dddd, MMMM d, yyyy}", Loan.StartOfPayment)</MudText></MudField>
             </MudItem>
             @if (Loan.IsCollateral)
             {
                 if (!string.IsNullOrEmpty(Loan.InfoCollateral))
                 {
                     <MudItem xs="12" Class="py-1">
-                        <MudField InnerPadding="false" Label="Collateral" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.DevicesOther" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.InfoCollateral</MudText></MudField>
+                        <MudField DisableUnderLine="true" InnerPadding="false" Label="Collateral" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.DevicesOther" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.InfoCollateral</MudText></MudField>
                     </MudItem>
                 }
             }

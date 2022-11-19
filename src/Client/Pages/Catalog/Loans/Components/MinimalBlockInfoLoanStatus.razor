@@ -60,7 +60,7 @@
                                                     break;
                                                 case 2:
                                                     @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
-                                                    <MudText Typo="Typo.caption">You applied but removed yourself from this Loan.</MudText>
+                                                    <MudText DisableUnderLine="true" Typo="Typo.caption">You applied but removed yourself from this Loan.</MudText>
                                                     <MudButton Variant="Variant.Text" Class="d-inline py-0" OnClick="(() => ReApplyAsync())"><MudText Typo="Typo.caption">Reapply?</MudText></MudButton>
                                                     break;
                                                 case 3:
@@ -161,7 +161,7 @@
                         @if (currentLedgerActivePayment != default)
                         {
                             <CascadingValue Value="@FileUpload" Name="FileUpload">
-                                <SingleFileUpload ImageUrl="@_imageUrl" ForName="@_referenceIdOfActiveIOResource.ToString()" OnRemoveImage="RemoveImageAsync" OnEnableImage="EnableImageAsync" OnUploadImage="UploadFileAsync" UserId="@AppDataService.AppUser.Id.ToString()" CanUpdate="@_canUpdateRunningImage" CanEnable="@_canEnableRunningImage" />
+                                <EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement.SingleFileUpload ImageUrl="@_imageUrl" ForName="@_referenceIdOfActiveIOResource.ToString()" OnRemoveImage="RemoveImageAsync" OnEnableImage="EnableImageAsync" OnUploadImage="UploadFileAsync" UserId="@AppDataService.AppUser.Id.ToString()" CanUpdate="@_canUpdateRunningImage" CanEnable="@_canEnableRunningImage" />
                             </CascadingValue>
 
                             <MudText Typo="Typo.caption">Payment for Ledger No. @($"{currentLedgerActivePayment.Position}")</MudText>
@@ -218,7 +218,115 @@
                         </MudCard>
                     </MudItem>
                 }
+                else if ((new[] { LoanStatus.PaymentFinal }).Contains(Loan.Status))
+                {
+                    @if (AppDataService.AppUser != default)
+                    {
+                        if (AppDataService.AppUser.RoleName != default)
+                        {
+                            if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                            {
+                                <MudItem xs="12" Class="text-center">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" DisableRipple="true" ButtonType="ButtonType.Button" OnClick="@(() => FinalizeAsync())">Finish and Rate</MudButton>
+                                    <MudAlert Severity="Severity.Success" Class="mt-2" NoIcon="true">Mark this loan finished. Close loan and rate your experience.</MudAlert>
+                                </MudItem>
 
+                            }
+                            if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                            {
+                                <MudAlert Severity="Severity.Info" Class="mb-5 mx-auto">
+                                    Awaiting lender to finalize the loan.<br />
+                                    Rating will follow after finalization.
+                                </MudAlert>
+                            }
+                        }
+                    }
+
+                    <MudText Typo="Typo.caption"><MudIcon Size="Size.Large" Icon="@Icons.Filled.TableView" Title="Final Payment" /><br />@Loan.Status</MudText>
+                }
+                else if ((new[] { LoanStatus.Finish, LoanStatus.Rate, LoanStatus.RateFinal }).Contains(Loan.Status))
+                {
+                    if (AppDataService.AppUser != default)
+                    {
+                        if (AppDataService.AppUser.RoleName != default)
+                        {
+                            bool hasBothRated = AppDataService.HasRatedBothLenderLesseeHelper(Loan);
+                                                        
+                            if (rating != default && !hasBothRated)
+                            {
+                                @if (rating.LoanId.Equals(Loan.Id) || rating.LoanId.Equals(Guid.Empty))
+                                {
+                                    <EditForm Model="@rating" OnValidSubmit="@HandleValidRatingSubmit">
+                                        <DataAnnotationsValidator />
+                                        <ValidationSummary />
+                                        <MudGrid Class="text-center justify-content-center align-center">
+                                            @if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                                            {
+                                                <MudItem xs="12">                                                   
+                                                    <MudRating @bind-SelectedValue="@rating.LenderRate" ReadOnly="AppDataService.HasRatedHelper(Loan)" />
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudTextField DisableUnderLine="true" T="string" ReadOnly="AppDataService.HasRatedHelper(Loan)" Label="Multiline" @bind-Value="@rating.LenderRemark" Variant="Variant.Outlined" HelperText="Both lender and lessee needs to vote to be able to view final ratings" Text="@rating.LenderRemark" Lines="3" Placeholder="Describe your experience, leave blank, if none" />
+                                                </MudItem>
+
+                                            }
+                                            else if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                                            {
+                                                <MudItem xs="12">                                                    
+                                                    <MudRating @bind-SelectedValue="@rating.LesseeRate" ReadOnly="AppDataService.HasRatedHelper(Loan)" />
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudTextField DisableUnderLine="true" T="string" ReadOnly="AppDataService.HasRatedHelper(Loan)" Label="Multiline" @bind-Value="@rating.LesseeRemark" Variant="Variant.Outlined" HelperText="Both lender and lessee needs to vote to be able to view final ratings" Text="@rating.LesseeRemark" Lines="3" Placeholder="Describe your experience, leave blank, if none" />
+                                                </MudItem>
+                                            }
+
+                                            @if (!AppDataService.HasRatedHelper(Loan))
+                                            {
+                                                <MudItem xs="   12">
+                                                    <MudButton Variant="Variant.Filled" Color=" Color.Success" DisableRipple="    true" Class="d-block mx-auto" ButtonType=" ButtonType.Submit">Submit</MudButton>
+                                                </MudItem>
+                                            }
+                                        </MudGrid>
+
+                                    </EditForm>
+                                }
+                                
+                            } else
+                            {
+                                // both rated
+                                @if (rating != default && rating.LoanId.Equals(Loan.Id))
+                                {
+                                    <MudGrid Class="text-center justify-content-center align-center">
+                                        @if (rating.LenderId != default)
+                                        {
+                                            <MudItem xs="12" Class="pb-0">
+                                                <MudText>Lender</MudText>
+                                                <MudRating @bind-SelectedValue="@rating.LenderRate" ReadOnly="true" />
+                                            </MudItem>
+                                            <MudItem xs="12" Class="pt-0">
+                                                <MudText>@rating.LenderRemark</MudText>
+                                            </MudItem>
+
+                                        }
+
+                                        @if (rating.LesseeId != default)
+                                        {
+                                            <MudItem xs="12" Class="pb-0">
+                                                <MudText>Lessee</MudText>
+                                                <MudRating @bind-SelectedValue="@rating.LesseeRate" ReadOnly="true" />
+                                            </MudItem>
+                                            <MudItem xs="12" Class="pt-0">
+                                                <MudText>@rating.LesseeRemark</MudText>
+                                            </MudItem>
+                                        }
+                                    </MudGrid>
+                                }
+                            }
+                        }
+                    }
+
+                    <MudText Typo="Typo.caption"><MudIcon Size="Size.Large" Icon="@Icons.Filled.TableView" Title="Finish / Rate" /><br />@Loan.Status</MudText>
+                }
             </MudGrid>
 
         }

@@ -16779,6 +16779,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("loanApplicants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<LoanApplicantDto>? LoanApplicants { get; set; } = default!;
 
+        [Newtonsoft.Json.JsonProperty("ratings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<RatingDto>? Ratings { get; set; } = default!;
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -16818,6 +16821,32 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("lessee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public AppUserDto? Lessee { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class RatingDto
+    {
+        [Newtonsoft.Json.JsonProperty("loanId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid LoanId { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("lenderId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? LenderId { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("lesseeId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? LesseeId { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("lenderRate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LenderRate { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("lesseeRate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LesseeRate { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("lenderRemark", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? LenderRemark { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("lesseeRemark", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? LesseeRemark { get; set; } = default!;
 
     }
 
@@ -17092,8 +17121,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("startOfPayment", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? StartOfPayment { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public LoanStatus? Status { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("statuses", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanStatus>? Statuses { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("lenderId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? LenderId { get; set; } = default!;
@@ -17520,11 +17549,11 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("lesseeId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? LesseeId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("lenderRate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public float? LenderRate { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("lenderRate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LenderRate { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("lesseeRate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public float? LesseeRate { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("lesseeRate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LesseeRate { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("lenderRemark", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? LenderRemark { get; set; } = default!;
@@ -17546,37 +17575,11 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("lesseeId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? LesseeId { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("lenderRate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public float? LenderRate { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("lenderRate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LenderRate { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("lesseeRate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public float? LesseeRate { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("lenderRemark", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? LenderRemark { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("lesseeRemark", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? LesseeRemark { get; set; } = default!;
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class RatingDto
-    {
-        [Newtonsoft.Json.JsonProperty("loanId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid LoanId { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("lenderId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? LenderId { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("lesseeId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? LesseeId { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("lenderRate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public float? LenderRate { get; set; } = default!;
-
-        [Newtonsoft.Json.JsonProperty("lesseeRate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public float? LesseeRate { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("lesseeRate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LesseeRate { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("lenderRemark", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? LenderRemark { get; set; } = default!;

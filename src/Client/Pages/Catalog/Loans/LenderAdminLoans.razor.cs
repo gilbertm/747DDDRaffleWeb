@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.WebUtilities;
 using MudBlazor;
 using Nager.Country;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
@@ -52,15 +54,35 @@ public partial class LenderAdminLoans
 
     private List<CategoryDto> Categories { get; set; } = default!;
 
-    private CustomValidation _customValidation { get; set; } = default!;
+    private CustomValidation CustomValidation { get; set; } = default!;
 
-    private string Currency { get; set; } = string.Empty;
+    private bool IsHistory { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await AppDataService.InitializationAsync();
         await LoadContext();
 
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsHistory = false;
+        Context = default!;
+
+        if (QueryHelpers.ParseQuery(Navigation.ToAbsoluteUri(Navigation.Uri).Query).TryGetValue("history", out var param))
+        {
+            string history = param.First();
+
+            // https://localhost:5002/loans/lender?history=true
+            if (history != default && history.Equals("true"))
+            {
+                IsHistory = true;
+            }
+
+        }
+
+        await OnInitializedAsync();
     }
 
     // for child statechanges
@@ -100,7 +122,7 @@ public partial class LenderAdminLoans
         if (await ApiHelper.ExecuteCallGuardedAsync(
                          async () => await CategoriesClient.SearchAsync(categoriesFilter),
                          Snackbar,
-                         _customValidation) is PaginationResponseOfCategoryDto resultCategories)
+                         CustomValidation) is PaginationResponseOfCategoryDto resultCategories)
         {
             if (resultCategories != default && resultCategories.Data.Count > 0)
             {
@@ -146,20 +168,6 @@ public partial class LenderAdminLoans
                     Navigation.NavigateTo("/");
                 }
 
-                if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
-                {
-                    var countryProvider = new CountryProvider();
-                    var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
-
-                    if (countryInfo is { })
-                    {
-                        if (countryInfo.Currencies.Length > 0)
-                        {
-                            Currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
-                        }
-                    }
-                }
-
                 await LoadAppUserProducts(AppDataService.AppUser.Id);
 
                 await LoadCategories();
@@ -173,12 +181,8 @@ public partial class LenderAdminLoans
                        fields: new()
                        {
                         new(loan => loan.Id, L["Loan"], Template: LoanTemplate),
-                        new(loan => loan.StartOfPayment, L["Status"], "StartOfPayment", Template: LoanDetailsTemplate),
-
-                        // new(loan => loan.Id, L["Status"], Template: LoanStatusTemplate),
+                        new(loan => loan.Status, L["Status"], "Status", Template: LoanDetailsTemplate),
                         new(loan => loan.Id, L["Audience"], Template: LoanApplicantsTemplate),
-
-                        // new(loan => loan.LoanLenders?.Where(l => l.LoanId.Equals(loan.Id) && l.LenderId.Equals(_appUserDto.Id)).FirstOrDefault()?.ProductId, L["ProductId"], "LoanLenders.ProductId"),
                         new(loan => loan.Id, L["Ledger"], Template: LoanLedgersTemplate),
                        },
                        idFunc: loanLender => loanLender.Id,
@@ -205,6 +209,25 @@ public partial class LenderAdminLoans
                                loanFilter.IsLender = true;
                                loanFilter.IsLessee = true;
                                loanFilter.IsLedger = true;
+                           }
+
+                           if (IsHistory)
+                           {
+                               loanFilter.Statuses = new List<LoanStatus>();
+                               loanFilter.Statuses.Add(LoanStatus.RateFinal);
+                               loanFilter.Statuses.Add(LoanStatus.Dispute);
+                           }
+                           else
+                           {
+                               loanFilter.Statuses = new List<LoanStatus>();
+                               loanFilter.Statuses.Add(LoanStatus.Draft);
+                               loanFilter.Statuses.Add(LoanStatus.Published);
+                               loanFilter.Statuses.Add(LoanStatus.Assigned);
+                               loanFilter.Statuses.Add(LoanStatus.Meetup);
+                               loanFilter.Statuses.Add(LoanStatus.Payment);
+                               loanFilter.Statuses.Add(LoanStatus.PaymentFinal);
+                               loanFilter.Statuses.Add(LoanStatus.Finish);
+                               loanFilter.Statuses.Add(LoanStatus.Rate);
                            }
 
                            var result = await LoansClient.SearchAsync(loanFilter);
@@ -306,7 +329,7 @@ public partial class LenderAdminLoans
                                if (await ApiHelper.ExecuteCallGuardedAsync(
                                    async () => await LoansClient.CreateAsync(createLoanRequest),
                                    Snackbar,
-                                   _customValidation) is Guid loanId)
+                                   CustomValidation) is Guid loanId)
                                {
                                    if (loanId != Guid.Empty && loanId != default!)
                                    {
@@ -320,7 +343,7 @@ public partial class LenderAdminLoans
                                        if (await ApiHelper.ExecuteCallGuardedAsync(
                                            async () => await LoanLendersClient.CreateAsync(createLoanLenderRequest),
                                            Snackbar,
-                                           _customValidation) is Guid loanLenderId)
+                                           CustomValidation) is Guid loanLenderId)
                                        {
                                            if (loanLenderId != Guid.Empty && loanLenderId != default!)
                                            {
@@ -332,7 +355,7 @@ public partial class LenderAdminLoans
                                                if (await ApiHelper.ExecuteCallGuardedAsync(
                                                    async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
                                                    Snackbar,
-                                                   _customValidation) is Guid loanLedgerId)
+                                                   CustomValidation) is Guid loanLedgerId)
                                                {
                                                    if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
                                                    {
@@ -417,7 +440,7 @@ public partial class LenderAdminLoans
                            if (await ApiHelper.ExecuteCallGuardedAsync(
                               async () => await LoansClient.UpdateAsync(id, updateLoanRequest),
                               Snackbar,
-                              _customValidation) is Guid loanId)
+                              CustomValidation) is Guid loanId)
                            {
                                if (id.Equals(loanId))
                                {
@@ -429,7 +452,7 @@ public partial class LenderAdminLoans
                                    if (await ApiHelper.ExecuteCallGuardedAsync(
                                        async () => await LoanLedgersClient.CreateAsync(createLoanLedgerRequest),
                                        Snackbar,
-                                       _customValidation) is Guid loanLedgerId)
+                                       CustomValidation) is Guid loanLedgerId)
                                    {
                                        if (loanLedgerId != Guid.Empty && loanLedgerId != default!)
                                        {
@@ -450,7 +473,7 @@ public partial class LenderAdminLoans
                            if (await ApiHelper.ExecuteCallGuardedAsync(
                               async () => await LoansClient.DeleteAsync(id),
                               Snackbar,
-                              _customValidation) is Guid loanId)
+                              CustomValidation) is Guid loanId)
                            {
                                if (id.Equals(loanId))
                                {
@@ -510,7 +533,7 @@ public partial class LenderAdminLoans
 
     private string CanCreateAction()
     {
-        if (AppDataService != default)
+        if (AppDataService != default && !IsHistory)
         {
             if (AppDataService.AppUser != default)
             {

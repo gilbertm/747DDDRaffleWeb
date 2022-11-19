@@ -22,7 +22,7 @@ public partial class LoanLedger
     public bool Dense { get; set; } = false;
 
     [Inject]
-    public IInputOutputResourceClient InputOutputResourceClient { get; set; } = default;
+    public IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
 
     public List<LedgerViewModel> LedgerModel { get; set; } = new();
 

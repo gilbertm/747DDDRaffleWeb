@@ -1,5 +1,6 @@
-﻿@page "/catalog/all/loans"
-@page "/loans/lender"
+﻿@page "/loans/lender"
+@page "/catalog/all/loans"
+
 @using System.Linq
 @using System.Globalization
 @using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
@@ -10,7 +11,15 @@
 
 @inject IStringLocalizer<LenderAdminLoans> L
 
-<EhulogTitle Title="@L["Loans"]" Description="@L["Loan is main resource of ehulog, you can create a loans on the available products. You maybe able to provide custom loanable products, if you subscribed. If not, the system got you covered with the basic dependencies to create your loan."]" />
+ @if (IsHistory)
+{
+    <EhulogTitle Title="@L["Loan History"]" Description="@L["Check histories, ratings, etcs."]" />
+
+}
+else
+{
+    <EhulogTitle Title="@L["Loans"]" Description="@L["Loan is main resource of ehulog, you can create a loans on the available products. You maybe able to provide custom loanable products, if you subscribed. If not, the system got you covered with the basic dependencies to create your loan."]" />
+}
 
 @if (AppDataService != default)
 {
@@ -116,7 +125,7 @@
                             <MudGrid Spacing="2" Justify="Justify.FlexStart">
 
                                 <MudItem xs="12" md="6">
-                                    <MudSelect Required="true" @bind-Value="@ChangeInterestType" Label="Select Interest Type" HelperText="Interest modes, computed for diminishing and fixed for zero." OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="Color.Secondary">
+                                    <MudSelect Required="true" @bind-Value="@ChangeInterestType" Label="Interest Type" HelperText="Interest modes, computed for diminishing and fixed for zero." OpenIcon="@Icons.Material.Outlined.Insights" AdornmentColor="Color.Secondary" Variant="Variant.Outlined" Dense="true" HelperTextOnFocus="true">
                                         @foreach (InterestType item in Enum.GetValues(typeof(InterestType)))
                                     {
                                         <MudSelectItem Value="@item">@item</MudSelectItem>
@@ -144,8 +153,8 @@
                         <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
                         </MudTooltip> *@
                                 </MudItem>
-                                <MudItem xs="12" md="6">
-                                    <MudSelect Required="true" T="int" @bind-Value="@MonthsToPay" For="@(() => Context.AddEditModal.RequestModel.Month)" Immediate="true" Label="Select month(s)" OpenIcon="@Icons.Material.Filled.DateRange" AdornmentColor="Color.Secondary">
+                                <MudItem xs="12" md="3">
+                                    <MudSelect Required="true" T="int" @bind-Value="@MonthsToPay" For="@(() => Context.AddEditModal.RequestModel.Month)" Immediate="true" Label="Month" OpenIcon="@Icons.Material.Filled.DateRange" AdornmentColor="Color.Secondary" Dense="true" Variant="Variant.Outlined" HelperTextOnFocus="true" HelperText="Select month(s)">
                                         @foreach (int i in Enumerable.Range(0, 13))
                                         {
                                             <MudSelectItem T="int" Value="@i">@i</MudSelectItem>
@@ -155,22 +164,22 @@
                         <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Style="@($"color:{Colors.Grey.Darken3};")" />
                         </MudTooltip> *@
                                 </MudItem>
-                                <MudItem xs="12" md="6">
+                                <MudItem xs="12" md="3">
 
-                                    @if (Context.AddEditModal.RequestModel.Status.Equals(LoanStatus.Draft))
-                                    {
-                                        ToggleLoanStatus = false;
-                                    }
-                                    else
-                                    {
-                                        ToggleLoanStatus = true;
-                                    }
+                                    @*if (Context.AddEditModal.RequestModel.Status.Equals(LoanStatus.Draft))
+                        {
+                        ToggleLoanStatus = false;
+                        }
+                        else
+                        {
+                        ToggleLoanStatus = true;
+                        } *@
 
                                     <MudToggleIconButton @bind-Toggled="@ToggleLoanStatus"
                                                          Icon="@Icons.Material.Filled.Unpublished" Color="@Color.Error" Title="Draft"
-                                                         ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="Published" />
+                                                         ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="Published" Size="Size.Large" Class="pl-0" />
 
-                                    <span>Loan is @(ToggleLoanStatus ? "Published" : "Draft")</span>
+                                    <span>@(ToggleLoanStatus ? "Published" : "Draft")</span>
 
                                     @* <MudSelect Required="true" @bind-Value="Context.AddEditModal.RequestModel.Status" Label="Select Status" HelperText="Draft to save. Publish for public view." OpenIcon="@Icons.Material.Filled.Archive" AdornmentColor="Color.Secondary">
                         <MudSelectItem Value="@LoanStatus.Draft">Draft</MudSelectItem>
@@ -181,7 +190,7 @@
                         </MudTooltip> *@
                                 </MudItem>
 
-                                <MudItem xs="12" md="6">
+                                <MudItem xs="12" md="12">
                                     <MudCheckBox @bind-Checked="@IsCollateralChange" Color="Color.Secondary" Label="Require Collateral" CheckedIcon="@Icons.Material.Outlined.RadioButtonChecked" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
                                     <MudPaper Elevation="0" Class="pa-1" Style="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? "d-none" : "")">
                                         <MudTextField HelperText="@_infoCollateralGenericHelpText" Disabled="@(!(Context.AddEditModal.RequestModel.IsCollateral ?? false) ? true : false)" T="string" Label="Collateral" Variant="Variant.Outlined" @bind-Value="Context.AddEditModal.RequestModel.InfoCollateral" Text="@(string.IsNullOrEmpty(Context.AddEditModal.RequestModel.InfoCollateral) ? (Context.AddEditModal.RequestModel.IsCollateral == true ? "" :_infoCollateralGeneric) : Context.AddEditModal.RequestModel.InfoCollateral)" Lines="3" />
@@ -196,11 +205,11 @@
 
                                 @if (TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
                                 {
-                                    <MudItem xs="12" md="12">
-                                        <MudText Typo="Typo.h6" Color="Color.Primary">Amount + Interest: </MudText>
-                                        <MudText Typo="Typo.h5" Color="Color.Success">@string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
+                                    <MudItem xs="12" md="12" Class="text-center">
+                                        <MudText Typo="Typo.h6" Color="Color.Secondary">@AppDataService.GetCurrency() @string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
+                                        <MudText Typo="Typo.caption" Style="@($"color:{Colors.BlueGrey.Lighten4}")">Amount + Interest </MudText>
 
-                                        <MudTable Class="ehulog-mud-table-compact" Items="@TemporaryLedgerTable" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                                        <MudTable Class="ehulog-mud-table-compact" Items="@TemporaryLedgerTable" Context="ledger" Hover="false" Bordered="false" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" Elevation="0">
                                             <HeaderContent>
                                                 <MudTh><MudText Typo="Typo.caption">Position</MudText></MudTh>
                                                 <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
@@ -211,7 +220,7 @@
                                                 <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
                                                 <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.Due)</MudText></MudTd>
                                                 <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Amount)</MudText></MudTd>
-                                                <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
+                                                <MudTd DataLabel="Amount" Class="text-right"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
                                             </RowTemplate>
                                         </MudTable>
                                     </MudItem>
@@ -257,9 +266,12 @@
             {
                 Context.AddEditModal.RequestModel.Status = LoanStatus.Published;
             }
+
             _toggleLoanStatus = value;
 
-            StateHasChanged();
+            Context.AddEditModal.ForceRender();
+
+
         }
     }
 
@@ -281,7 +293,8 @@
                 Context.AddEditModal.RequestModel.IndicatorProductId = 1;
             }
 
-            StateHasChanged();
+            Context.AddEditModal.ForceRender();
+
         }
     }
 
@@ -599,7 +612,7 @@
                                     <MudAvatar Square="true" Image="@imageUrl" Style="height:50px;position:relative"></MudAvatar>
                                     <br />
                                 }
-                                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{EhulogColor.GreenMoney}")">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText> <MudText Typo="Typo.body1" Class="px-1 d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@Currency</MudText>
+                                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{EhulogColor.GreenMoney}")">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText> <MudText Typo="Typo.body1" Class="px-1 d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrency()</MudText>
                             </MudItem>
                             <MudItem xs="12">
                                 <MinimalLoanMainDetails Loan="@trail" />

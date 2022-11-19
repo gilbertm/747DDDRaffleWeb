@@ -104,14 +104,14 @@ public class AppDataService : IAppDataService
 
     public async Task InitializationAsync()
     {
-        if ((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User is { } userClaimsPrincipal)
-        {
-            GeolocationService.GetCurrentPosition(
+        GeolocationService.GetCurrentPosition(
                    component: this,
                    onSuccessCallbackMethodName: nameof(OnPositionRecieved),
                    onErrorCallbackMethodName: nameof(OnPositionError),
                    options: _options);
 
+        if ((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User is { } userClaimsPrincipal)
+        {
             string userId = userClaimsPrincipal.GetUserId() ?? string.Empty;
 
             if (!string.IsNullOrEmpty(userId))
@@ -345,6 +345,79 @@ public class AppDataService : IAppDataService
         return true;
     }
 
+    // helper
+    public bool HasRatedHelper(LoanDto Loan)
+    {
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (Loan != default)
+                {
+                    if (Loan.Ratings != default)
+                    {
+                        if (Loan.Ratings.Count > 0)
+                        {
+                            if (Loan.Ratings.First().LenderId != default || Loan.Ratings.First().LesseeId != default)
+                            {
+                                if (Loan.Ratings.First().LenderId != default && AppUser.Id.Equals(Loan.Ratings.First().LenderId))
+                                {
+                                    return true;
+                                }
+
+                                if (Loan.Ratings.First().LesseeId != default && AppUser.Id.Equals(Loan.Ratings.First().LesseeId))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public bool HasRatedBothLenderLesseeHelper(LoanDto Loan)
+    {
+        bool lenderVoted = false;
+        bool lesseeVoted = false;
+
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (Loan != default)
+                {
+                    if (Loan.Ratings != default)
+                    {
+                        if (Loan.Ratings.Count > 0)
+                        {
+                            if (Loan.Ratings.First().LenderId != default || Loan.Ratings.First().LesseeId != default)
+                            {
+                                if (Loan.Ratings.First().LenderId != default)
+                                {
+                                    lenderVoted = true;
+                                }
+
+                                if (Loan.Ratings.First().LesseeId != default)
+                                {
+                                    lesseeVoted = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (lenderVoted && lesseeVoted)
+            return true;
+
+        return false;
+    }
+
     public bool IsLesseeOfLoan(LoanDto Loan)
     {
         bool isAssignedLesseeOnThisLoan = false;
@@ -504,6 +577,38 @@ public class AppDataService : IAppDataService
             if (isLender && isTheLenderOfThisLoan)
             {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    public async Task<bool> IsVerified(AppUserDto overrideAppUser = default!)
+    {
+        // if appuser is provided
+        // this process can be used by admins
+        // revalidating user
+        if (overrideAppUser != default)
+        {
+            AppUser = overrideAppUser;
+        }
+
+        // just paranoia check to ensure that it is revalidated and accurate until this point
+        await RevalidateVerification(AppUser);
+
+        if (AppUser != default)
+        {
+            // appuser get uses the main platform application user identification
+            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetAsync(AppUser.Id), Snackbar, null) is AppUserDto appUser)
+            {
+                if (appUser != default)
+                {
+                    if (appUser.DocumentsStatus.Equals(VerificationStatus.Verified) && appUser.AddressStatus.Equals(VerificationStatus.Verified) && appUser.RolePackageStatus.Equals(VerificationStatus.Verified))
+                    {
+                        return true;
+                    }
+
+                }
             }
         }
 

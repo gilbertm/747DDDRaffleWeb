@@ -8,7 +8,9 @@ using EHULOG.BlazorWebAssembly.Client.Shared;
 using Geo.MapBox.Models.Responses;
 using Mapster;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components;
@@ -32,6 +34,9 @@ public partial class MinimalBlockInfoLoanStatus
 
     [Inject]
     protected IUsersClient UsersClient { get; set; } = default!;
+
+    [Inject]
+    protected IRatingsClient RatingsClient { get; set; } = default!;
 
     [Parameter]
     public LoanDto Loan { get; set; } = default!;
@@ -58,6 +63,8 @@ public partial class MinimalBlockInfoLoanStatus
 
     private LoanLedgerDto? currentLedgerActivePayment;
 
+    private RatingDto rating = new();
+
     protected override async Task OnInitializedAsync()
     {
         if (AppDataService != default)
@@ -76,6 +83,17 @@ public partial class MinimalBlockInfoLoanStatus
                             await PrepareProcessReceiptAsync();
                         }
                     }
+
+                    if (new[] { LoanStatus.Finish, LoanStatus.Rate, LoanStatus.RateFinal }.Contains(Loan.Status))
+                    {
+                        if (Loan.Ratings != default)
+                        {
+                            if (Loan.Ratings.Count > 0)
+                            {
+                                rating = Loan.Ratings.First();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -89,7 +107,6 @@ public partial class MinimalBlockInfoLoanStatus
             {
                 if (loan.LoanApplicants != default)
                 {
-
                     if (loan.LoanApplicants.Count > 0)
                     {
                         foreach (var loanApplicant in loan.LoanApplicants)
@@ -452,9 +469,6 @@ public partial class MinimalBlockInfoLoanStatus
 
                             await OnUpdatedLoan.InvokeAsync(Loan.Id);
                         }
-
-
-
                     }
                 }
             }
@@ -509,19 +523,172 @@ public partial class MinimalBlockInfoLoanStatus
                                 _canUpdateRunningImage = false;
                                 _canEnableRunningImage = false;
                             }
-
-
-
                         }
 
                         StateHasChanged();
                     }
 
                 }
-
-
             }
 
         }
     }
+
+    private async Task FinalizeAsync()
+    {
+        if (AppDataService != default)
+        {
+            if (AppDataService.IsLenderOfLoan(Loan))
+            {
+                if (await ApiHelper.ExecuteCallGuardedAsync(
+                              async () => await LoansClient.UpdateStatusAsync(Loan.Id, new()
+                              {
+                                  Id = Loan.Id,
+                                  Status = LoanStatus.Finish
+                              }),
+                              Snackbar) is Guid loanId)
+                {
+                    if (loanId != default)
+                    {
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoanLedgersClient.GetAsync(Loan.Id), Snackbar) is ICollection<LoanLedgerDto> loanLedger)
+                        {
+                            if (loanLedger != default)
+                            {
+                                foreach (var ledger in loanLedger)
+                                {
+
+                                    UpdateLoanLedgerRequest updateLoanLedgerRequest = ledger.Adapt<UpdateLoanLedgerRequest>();
+                                    updateLoanLedgerRequest.Status = LedgerStatus.Finish;
+
+                                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoanLedgersClient.UpdateAsync(ledger.Id, updateLoanLedgerRequest), Snackbar) is Guid ledgerId)
+                                    {
+                                        if (ledgerId != default)
+                                        {
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        await OnUpdatedLoan.InvokeAsync(Loan.Id);
+                    }
+                }
+            }
+        }
+    }
+
+    private async void HandleValidRatingSubmit(EditContext context)
+    {
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                if (Loan != default)
+                {
+                    if (context != default)
+                    {
+                        if (rating != default)
+                        {
+                            bool isNew = false;
+
+                            if (rating.LesseeId.Equals(default) && rating.LenderId.Equals(default))
+                            {
+                                isNew = true;
+                            }
+
+                            rating.LoanId = Loan.Id;
+
+                            if (AppDataService.IsLenderOfLoan(Loan))
+                            {
+                                rating.LenderId = AppDataService.AppUser.Id;
+                            }
+
+                            if (AppDataService.IsLesseeOfLoan(Loan))
+                            {
+                                rating.LesseeId = AppDataService.AppUser.Id;
+                            }
+
+                            if (isNew)
+                            {
+                                CreateRatingRequest createRatingRequest = rating.Adapt<CreateRatingRequest>();
+
+                                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await RatingsClient.CreateAsync(createRatingRequest), Snackbar) is Guid ratingGuid)
+                                {
+                                    if (ratingGuid != default)
+                                    {
+                                        // updated rating
+                                        UpdateLoanStatusRequest updateLoanStatusRequest = new()
+                                        {
+                                            Id = Loan.Id,
+                                            Status = LoanStatus.Rate
+                                        };
+
+                                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoansClient.UpdateStatusAsync(Loan.Id, updateLoanStatusRequest), Snackbar) is Guid loanId)
+                                        {
+                                            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await RatingsClient.GetAsync(Loan.Id), Snackbar) is RatingDto rating)
+                                            {
+                                                this.rating = rating;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                UpdateRatingRequest updateRatingRequest = rating.Adapt<UpdateRatingRequest>();
+
+                                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await RatingsClient.UpdateAsync(Loan.Id, updateRatingRequest), Snackbar) is Guid ratingGuid)
+                                {
+                                    if (ratingGuid != default)
+                                    {
+                                        // updated rating
+                                        UpdateLoanStatusRequest updateLoanStatusRequest = new()
+                                        {
+                                            Id = Loan.Id,
+                                            Status = LoanStatus.Rate
+                                        };
+
+                                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoansClient.UpdateStatusAsync(Loan.Id, updateLoanStatusRequest), Snackbar) is Guid loanId)
+                                        {
+                                            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await RatingsClient.GetAsync(Loan.Id), Snackbar) is RatingDto rating)
+                                            {
+                                                this.rating = rating;
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+
+                    // check if both has lender and lessee rated
+                    // if so, update status
+                    if (AppDataService.HasRatedBothLenderLesseeHelper(Loan))
+                    {
+                        // updated rating
+                        UpdateLoanStatusRequest updateLoanStatusRequest = new()
+                        {
+                            Id = Loan.Id,
+                            Status = LoanStatus.RateFinal
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoansClient.UpdateStatusAsync(Loan.Id, updateLoanStatusRequest), Snackbar) is Guid loanId)
+                        {
+                            // loan updated
+                        }
+                    }
+
+                    await OnUpdatedLoan.InvokeAsync(Loan.Id);
+
+                }
+
+            }
+        }
+
+
+    }
+
 }

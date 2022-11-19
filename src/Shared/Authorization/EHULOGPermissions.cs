@@ -118,7 +118,7 @@ public static class EHULOGPermissions
         new("View Loans", EHULOGAction.View, EHULOGResource.Loans, IsLender: true, IsLessee: true, IsBasic: true),
         new("Search Loans", EHULOGAction.Search, EHULOGResource.Loans, IsLender: true, IsLessee: true, IsBasic: true),
         new("Create Loans", EHULOGAction.Create, EHULOGResource.Loans, IsLender: true, IsLessee: false),
-        new("Update Loans", EHULOGAction.Update, EHULOGResource.Loans, IsLender: true, IsLessee: false),
+        new("Update Loans", EHULOGAction.Update, EHULOGResource.Loans, IsLender: true, IsLessee: true),
         new("Delete Loans", EHULOGAction.Delete, EHULOGResource.Loans, IsLender: true),
         new("Export Loans", EHULOGAction.Export, EHULOGResource.Loans, IsLender: true),
 
@@ -159,9 +159,8 @@ public static class EHULOGPermissions
 
         new("View Ratings", EHULOGAction.View, EHULOGResource.Ratings, IsLender: true, IsLessee: true),
         new("Search Ratings", EHULOGAction.Search, EHULOGResource.Ratings, IsLender: true, IsLessee: true),
-        new("Create Ratings", EHULOGAction.Create, EHULOGResource.Ratings),
-        new("Update Ratings", EHULOGAction.Update, EHULOGResource.Ratings),
-        new("Delete Ratings", EHULOGAction.Delete, EHULOGResource.Ratings),
+        new("Create Ratings", EHULOGAction.Create, EHULOGResource.Ratings, IsLender: true, IsLessee: true),
+        new("Update Ratings", EHULOGAction.Update, EHULOGResource.Ratings, IsLender: true, IsLessee: true),
         new("Export Ratings", EHULOGAction.Export, EHULOGResource.Ratings),
 
         new("View InputOutputResources", EHULOGAction.View, EHULOGResource.InputOutputResources, IsBasic: true, IsLender: true, IsLessee: true),
