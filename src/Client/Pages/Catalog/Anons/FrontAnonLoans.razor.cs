@@ -28,6 +28,9 @@ public partial class FrontAnonLoans
 
     protected override async Task OnInitializedAsync()
     {
+        // note: front anon requests has bypass on the jwt handler
+        // Client.Infrastructure\Auth\Jwt\JwtAuthenticationHeaderHandler.cs
+        // this allows custom passthrough
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         IsAuthenticated = user.Identity?.IsAuthenticated ?? false;

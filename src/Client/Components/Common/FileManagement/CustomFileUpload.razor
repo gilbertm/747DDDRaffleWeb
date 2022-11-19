@@ -8,7 +8,7 @@
             {
                 <MudCard Class="position-relative text-center" @onmouseover="@(() => Hover(_forUploadFile ?? default!))" @onmouseleave="@(() => ClearHover(_forUploadFile ?? default!))">
                     <MudCardContent>
-                        <MudAvatar Square="true" Image="@_imageUrl" Style=" width:100%;height:150px;position:relative"></MudAvatar>
+                        <MudAvatar Square="true" Image="@_imageUrl" Style="width:100%;height:150px;position:relative;-webkit-filter:blur(10px);filter:blur(10px);"></MudAvatar>
 
                         @switch (Enum.GetName(typeof(InputOutputResourceDocumentType), FileIdentifier))
                             {
@@ -52,7 +52,7 @@
             {
                 <MudCard Class="position-relative" Elevation="0">
                     <MudCardContent Class="align-center text-center">
-                        <MudAvatar Color="Color.Error" Variant="Variant.Outlined" Style=" width:100px;height:100px;position:relative"><MudText Typo="Typo.caption">Upload</MudText></MudAvatar>
+                        <MudAvatar Color="Color.Error" Variant="Variant.Outlined" Style="width:100px;height:100px;position:relative;"><MudText Typo="Typo.caption">Upload</MudText></MudAvatar>
                     </MudCardContent>
                     <MudCardActions Class="d-block align-center text-center">
                         @{

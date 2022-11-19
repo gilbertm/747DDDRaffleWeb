@@ -240,7 +240,7 @@
                                                                 // packages for the current role
                                                                 @if (TotalCountPackagesForCurrentRole > 1)
                                                                 {
-                                                                    <MudCardActions Class="text-center justify-center">
+                                                                    <MudCardActions Class="text-center justify-center mb-3">
                                                                         <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
                                                                     </MudCardActions>
                                                                 }
@@ -302,11 +302,20 @@
 
                                                                     @if (packageSelected)
                                                                     {
-                                                                        <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
+                                                                        if (package != default && package.PackageDto.IsDefault && package.IsSelected)
+                                                                        {
+                                                                            <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Filled" Color="Color.Warning">Default</MudButton>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="     Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
+                                                                            @* <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant=" Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Subscribe</MudButton> *@
+                                                                        }
                                                                     }
                                                                     else
                                                                     {
                                                                         <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => UpdatePackage(package ?? default!))">Select</MudButton>
+                                                                        <MudButton StartIcon="@Icons.Filled.Cancel" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => Navigation.NavigateTo($"account/role-subscription", true))">Cancel</MudButton>
                                                                     }
                                                                     <br />
 
@@ -324,12 +333,19 @@
                                                                                 Active Subscription
                                                                             </MudText>
                                                                         </MudItem>
-                                                                        <MudItem xs="12" Class="text-center">
-                                                                            @* //TODO:/ mock payment for admin, for testing purposes *@
-                                                                            <MudButton OnClick="@(async () => await PaymentMock())" DisableRipple="true" Variant="Variant.Filled" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Error">
-                                                                                @L["Mock Payment"]
-                                                                            </MudButton>
-                                                                        </MudItem>
+                                                                        @if (package != default && !package.PackageDto.IsDefault)
+                                                                        {
+                                                                            @if (!AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Verified))
+                                                                            {
+                                                                                <MudItem xs="   12" Class="text-center">
+                                                                                    @* //TODO:/ mock payment for admin, for testing purposes *@
+                                                                                    <MudButton OnClick="@(async () => await PaymentMock())" DisableRipple="       true" Variant="        Variant.Filled" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="   Color.Error">
+                                                                                        @L["Mock Payment"]
+                                                                                    </MudButton>
+                                                                                </MudItem>
+                                                                            }
+
+                                            }
 
                                                                         @if (AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Initial))
                                                                         {

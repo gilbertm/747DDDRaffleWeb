@@ -2,7 +2,7 @@
 
 @if (!hideThePage)
 {
-    <MudCarousel Class="mud-width-full" Style="height:60vh;" AutoCycleTime="TimeSpan.FromSeconds(15)" ShowArrows="@_arrows" ShowBullets="@_bullets" EnableSwipeGesture="@_enableSwipeGesture" AutoCycle="@_autocycle" TData="object">
+    <MudCarousel Class="mud-width-full" Style="height:32em;" AutoCycleTime="TimeSpan.FromSeconds(15)" ShowArrows="@_arrows" ShowBullets="@_bullets" EnableSwipeGesture="@_enableSwipeGesture" AutoCycle="@_autocycle" TData="object">
         <MudCarouselItem Transition="_transition" Color="@Color.Primary">
             <div class="d-flex hero object-fit" style="height:100%;background-image:url(@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/adventure-height-level-arm-assistance.jpg"));">
                 <MudContainer Class="my-auto mx-auto pa-0 text-center" Style="z-index:2" MaxWidth="MaxWidth.Medium">

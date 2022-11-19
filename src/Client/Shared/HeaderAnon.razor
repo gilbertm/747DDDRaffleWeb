@@ -1,60 +1,173 @@
 ﻿@inject IStringLocalizer<HeaderAnon> L
 
-
-<MudAppBar Elevation="0" Class="py-1 main-menu-app-bar anon">
-    <MudButton Variant="Variant.Text" Class="pt-2 pb-2" DisableElevation="true" Link="/">
-        <img src="./logo.svg" Style="height:75px" />
-    </MudButton>
-
-    <MudSpacer />
-
-    <MudPaper Elevation="0" Style="background:none;border-radius:0;">
-        <MudToolBar>
-            <MudButton OnClick="@(() => { Navigation.NavigateTo("/", true); })" Href="/" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Home</MudText></MudButton>
-            <MudButton Href="/catalog/front/loans/anon" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Loan</MudText></MudButton>
-            <MudButton Href="/about-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">About</MudText></MudButton>
-            <MudButton Href="/contact-us" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2">Contact</MudText></MudButton>
-        </MudToolBar>
+<MudAppBar Elevation="0" DisableGutters=true ToolBarClass="d-inline-block" Class="pa-0 main-menu-app-bar anon">
+    <MudPaper Width="100%" MaxWidth="100%" Class="rounded-0 top-bar d-flex" Elevation="0">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="pa-0 align-self-center">
+            <MudToolBar DisableGutters=true Class="pa-0">
+                <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.LocationOn" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
+                    <MudInputLabel id="HomeCityAnon">Uknown,</MudInputLabel><MudInputLabel id="HomeCountryAnon">Unknown</MudInputLabel>
+                </MudButton>
+                <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                    <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.Email" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:lowercase; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
+                        info@ehulog.com
+                    </MudButton>
+                    <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.Phone" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
+                        +971559972675
+                    </MudButton>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Class="py-0" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
+                    <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Class="py-0" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
+                    <MudIconButton Icon="@Icons.Custom.Brands.Instagram" Class="py-0" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
+                    <MudIconButton Class="py-0 pr-0" Icon="@Icons.Custom.Brands.LinkedIn" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
+                </MudHidden>
+            </MudToolBar>
+        </MudContainer>
     </MudPaper>
-
-    <MudSpacer />
-
-    @* <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true"  Style="@($"color:{Colors.Shades.White};")">
-    <LanguageSelector />
-    </MudHidden> *@
-    @* <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-        <NotificationConnectionStatus></NotificationConnectionStatus>
-    </MudHidden> *@
-
-    <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
-
-
-        <ActivatorContent>
-            <MudIconButton Icon="@Icons.Filled.Person" id="activator-login-register" Style="@($"color:{Colors.Shades.White};")" />
-        </ActivatorContent>
-        <ChildContent>
-            <div class="py-2" style="min-width: 220px">
-                <MudMenuItem OnClick="Profile" id="activator-login-register--login">
-                    <div class="d-flex">
-                        <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.Login" />
-                        <MudText>@L["Login"]</MudText>
-                    </div>
-                </MudMenuItem>
-                <MudMenuItem Link="/users/self-register" id="activator-login-register--register">
-                    <div class="d-flex">
-                        <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.PersonAdd" />
-                        <MudText>@L["Register"]</MudText>
-                    </div>
-                </MudMenuItem>
-            </div>
-        </ChildContent>
-    </MudMenu>
-
+    <MudPaper Width="100%" MaxWidth="100%" Class="rounded-0" Elevation="0">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="pa-0">
+            <MudContainer MaxWidth="MaxWidth.Large" Class="pa-0">
+                <MudToolBar DisableGutters=true Class="py-2 main-menu">
+                    <MudButton Variant="Variant.Text" Class="pt-2 pb-2" DisableElevation="true" OnClick="@(() => Navigation.NavigateTo("/", true))">
+                        <img src="./logo-black-slogan.svg" Style="height:75px" />
+                    </MudButton>
+                    <MudSpacer />
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        <MudCard Class="@classIsMobileMenuHidden" Elevation="0" Style="margin-bottom:0 !important" @onclick="@(() => ToggleMobileBurgerMenu())">
+                            @* <MudText>SM</MudText> *@
+                            <span class="icon-bar top_bar"></span>
+                            <span class="icon-bar middle-bar"></span>
+                            <span class="icon-bar bottom-bar"></span>
+                        </MudCard>
+                        <style>
+                            header.main-menu-app-bar.anon {
+                                position: fixed !important;
+                                background: transparent !important;
+                                z-index:100;
+                            }
+                            .mud-carousel {
+                                margin-top: 150px !important;
+                            }
+                        </style>
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                        <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
+                            <MudToolBar>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/", true); })" Href="/" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
+                                    <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Home</MudText>
+                                </MudButton>
+                                <MudButton Href="/catalog/front/loans/anon" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
+                                    <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Loan</MudText>
+                                </MudButton>
+                                <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomCenter">
+                                    <ActivatorContent>
+                                        <MudButton EndIcon="@Icons.Filled.KeyboardArrowDown" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
+                                            <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">About</MudText>
+                                        </MudButton>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <MudMenuItem>What is eHulog?</MudMenuItem>
+                                        <MudMenuItem>FAQs</MudMenuItem>
+                                        <MudMenuItem>Get started</MudMenuItem>
+                                    </ChildContent>
+                                </MudMenu>
+                                <MudButton Href="/contact-us" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
+                                    <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Contact</MudText>
+                                </MudButton>
+                            </MudToolBar>
+                        </MudPaper>
+                        <MudSpacer />
+                        <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
+                            <MudToolBar DisableGutters=true>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/catalog/front/loans/anon", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                            </MudToolBar>
+                        </MudPaper>
+                    </MudHidden>
+                </MudToolBar>
+            </MudContainer>
+        </MudContainer>
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true" Class="burder-menu-dropdown">
+            <MudContainer MaxWidth="MaxWidth.False" Class="@(isMobileMenuHidden ? "d-none px-0" : "px-0")">
+                <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
+                    <MudNavMenu>
+                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Home</MudText></MudNavLink>
+                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/catalog/front/loans/anon", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Loan</MudText></MudNavLink>
+                        <MudNavGroup Title="About" Expanded="true" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">What is eHulog?</MudText></MudNavLink>
+                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">FAQs</MudText></MudNavLink>
+                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Get started</MudText></MudNavLink>
+                        </MudNavGroup>
+                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/contact", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Contact</MudText></MudNavLink>
+                    </MudNavMenu>
+                    <MudDivider Class="my-3" />
+                    <MudToolBar Class="pb-5">
+                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
+                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/catalog/front/loans/anon", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                    </MudToolBar>
+                </MudPaper>
+            </MudContainer>
+            <MudOverlay Visible=!isMobileMenuHidden DarkBackground="true" AutoClose="false" Absolute=true Style="z-index:-1;height:100vh" />
+        </MudHidden>
+    </MudPaper>
 </MudAppBar>
 
+
 @code {
+    [Inject]
+    public AppDataService AppDataService { get; set; } = default!;
     [Parameter]
     public string CssClasses { get; set; } = default!;
+    public string classIsMobileMenuHidden { get; set; } = "pa-5 navbar-toggler collapsed";
+
+    private bool isLoginHovered { get; set; } = default!;
+    private bool isRegisteredHovered { get; set; } = default!;
+
+    public bool IsLoginHovered
+    {
+        get
+        {
+            return isLoginHovered;
+        }
+        set
+        {
+            isLoginHovered = value;
+        }
+    }
+
+    public bool IsRegisteredHovered
+    {
+        get
+        {
+            return isRegisteredHovered;
+        }
+        set
+        {
+            isRegisteredHovered = value;
+        }
+    }
+
+    private bool isMobileMenuHidden = true;
+
+    public bool ToggleMobileBurgerMenu()
+    {
+        if (isMobileMenuHidden == true)
+        {
+            isMobileMenuHidden = false;
+            classIsMobileMenuHidden = "pa-5 navbar-toggler";
+        }
+        else
+        {
+            isMobileMenuHidden = true;
+            classIsMobileMenuHidden = "pa-5 navbar-toggler collapsed";
+        }
+
+        return isMobileMenuHidden;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AppDataService.InitializationAsync();
+    }
 
     private void Profile()
     {

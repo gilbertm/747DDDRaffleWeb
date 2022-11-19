@@ -31,12 +31,15 @@ public partial class NavMenu
     private bool _canViewTenants;
     private bool _canViewLoans;
     private bool _canViewInputOutputResources;
+    private bool _isVerified;
 
     private bool CanViewAdministrationGroup => _canViewTenants;
 
     protected override async Task OnParametersSetAsync()
     {
         await AppDataService.InitializationAsync();
+
+        _isVerified = await AppDataService.IsVerified();
 
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
         var user = (await AuthState).User;

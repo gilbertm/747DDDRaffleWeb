@@ -1,12 +1,13 @@
 ﻿@page "/home"
 @page "/"
 @using Nager.Country;
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 
 @attribute [AllowAnonymous]
 
 @if (!_isAuthenticated)
 {
-    <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons.FrontAnonLoans />
+    <FrontAnonLoans />
 }
 
 <LossGeolocationPopup />
@@ -37,7 +38,7 @@
             {
                 if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
                 {
-                    Navigation.NavigateTo("/catalog/all/loans");
+                    Navigation.NavigateTo("/loans/lender");
                 }
                 else
                 {
@@ -55,7 +56,17 @@
                         }
                     }
 
-                    Navigation.NavigateTo("/loans/lessee");   
+                    if (AppDataService.AppUser.RolePackageStatus != default)
+                    {
+                        if (AppDataService.AppUser.RolePackageStatus < VerificationStatus.Submitted)
+                        {
+                            Navigation.NavigateTo("/account/role-subscription");
+                        }
+                        else
+                        {
+                            Navigation.NavigateTo("/loans/lessee");
+                        }
+                    }
                 }
             }
         }

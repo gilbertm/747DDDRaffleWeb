@@ -1,4 +1,113 @@
-﻿header {
+﻿aside {
+    &.mud-drawer.mud-drawer-pos-left.mud-drawer--open {
+        z-index: calc(var(--mud-zindex-appbar) + 2);
+    }
+}
+
+header {
+    &.main-menu-app-bar {
+
+        .navbar-toggler {
+            border: none;
+        }
+
+        .navbar-toggler span {
+            display: block;
+            background-color: rgba(0, 0, 0, 0.95);
+            height: 3px;
+            width: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            position: relative;
+            left: 0;
+            opacity: 1;
+            transition: all 0.35s ease-out;
+            transform-origin: center left;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+
+
+        .navbar-toggler span:nth-child(1) {
+            transform: translate(0%, 0%) rotate(0deg);
+        }
+
+        .navbar-toggler span:nth-child(2) {
+            opacity: 1;
+        }
+
+        .navbar-toggler span:nth-child(3) {
+            transform: translate(0%, 0%) rotate(0deg);
+        }
+
+        .navbar-toggler span:nth-child(1) {
+            margin-top: 0.3em;
+        }
+
+        .navbar-toggler:not(.collapsed) span:nth-child(1) {
+            transform: translate(15%, -33%) rotate(45deg);
+        }
+
+        .navbar-toggler:not(.collapsed) span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .navbar-toggler:not(.collapsed) span:nth-child(3) {
+            transform: translate(15%, 33%) rotate(-45deg);
+        }
+
+        .main-menu {
+            .mud-button {
+                &:hover {
+                    .mud-button-label * {
+                        font-weight: 700;
+                    }
+                }
+            }
+        }
+
+        .mud-button {
+            &:hover, &:focus-visible {
+                background-color: transparent;
+            }
+
+            &.custom {
+                text-transform: capitalize;
+                font-weight: 700;
+
+                &.sign-up {
+                    background-color: #04af82;
+                    border-color: #04af82;
+                    color: #fff;
+                }
+
+                &:hover, &:focus-visible {
+                    background-color: #ff952d;
+                    border-color: #ff952d;
+                    border: 1px solid #ff952d;
+                    color: #fff;
+                }
+            }
+        }
+
+        &.anon {
+            position: initial;
+            background: transparent !important;
+
+            .mud-toolbar {
+                height: auto !important;
+            }
+
+            .top-bar {
+                background-color: #1B8366;
+                min-height: 40px;
+            }
+        }
+    }
+
     transition: all 0.5s;
     z-index: 997;
     padding: 30px 0;
@@ -9,12 +118,6 @@
     }
 
     &.main-menu-app-bar {
-
-
-        &.anon {
-            // background-color: transparent !important;
-            background-color: rgba(0, 0, 0, 0.5) !important;
-        }
 
         &.logged {
             background: none !important;
@@ -58,6 +161,6 @@
         top: 0;
         left: 0;
         right: 0;
-        z-index:1;
+        z-index: 1;
     }
 }

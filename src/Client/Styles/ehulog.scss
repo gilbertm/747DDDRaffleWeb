@@ -2,6 +2,7 @@
     --mud-appbar-height: 100px !important;
     --mud-palette-secondary: #dfa958 !important;
     --mud-palette-success: #008336 !important;
+    --mud-appbar-height: 150px !important;
 }
 
 .mud-table-root .mud-table-body:last-child .mud-table-row:last-child .mud-table-root .mud-table-cell {
@@ -96,7 +97,8 @@
     padding: 12px 16px 12px 38px;
 
     &.mud-expanded {
-        background-color: rgba(var(--mud-palette-primary-rgb), 0.5) !important;
+        background-color: #efefef;
+        //rgba(var(--mud-palette-primary-rgb), 0.5) !important;
     }
 
     &.active:not(.mud-nav-link-disabled) {
