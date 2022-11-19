@@ -3,6 +3,10 @@
     --mud-palette-secondary: #dfa958 !important;
     --mud-palette-success: #008336 !important;
     --mud-appbar-height: 150px !important;
+
+    --custom-appbar-secondary-menu: #1B8366;
+    --custom-pallete-button: #04af82;
+    --custom-pallete-button-hover: #ff952d;
 }
 
 .mud-table-root .mud-table-body:last-child .mud-table-row:last-child .mud-table-root .mud-table-cell {
@@ -251,4 +255,4 @@
     }
 }
 
-@import "loading","header","footer","content-header";
+@import "loading","header","footer","content-header", "front";

@@ -25,30 +25,30 @@
                     </MudPaper>
                 }
 
-                <MudPaper Elevation="0" id="@typeof(TEntity).Name" Class="list-grid-group-wrapper grid-group-wrapper row">
-                    @if (_entityList.Count() > 0)
-                    {
-                        foreach (var item in _entityList)
+                @if (_entityList.Count() > 0)
+                {
+                    <MudPaper Elevation="0" id="@typeof(TEntity).Name" Class="list-grid-group-wrapper grid-group-wrapper row">
+                        @foreach (var item in _entityList)
                         {
                             <MudItem xs="6" sm="4" md="3" lg="2" Class="item mb-5">
                                 @Context.Template(item)
                             </MudItem>
 
                         }
-                    }
-                    else
-                    {
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudPaper Elevation="0" Class="mb-5 px-5 py-9">
-                                    <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
-                                        No available loans in this location. <MudLink Typo="Typo.body1" Href="/loan/lending/benefits"><strong>Benefits</strong></MudLink> of being part of this community..
-                                    </MudText>
-                                </MudPaper>
-                            </MudItem>
-                        </MudGrid>
-                    }
-                </MudPaper>
+                    </MudPaper>
+                }
+                else
+                {
+                    <MudGrid>
+                        <MudItem xs="12" Class="px-0 my-9">
+                            <MudPaper Elevation="5" Class="mb-5 px-5 py-9">
+                                <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                                    No available loans in this location. <MudLink Typo="Typo.body1" Href="/loan/lending/benefits"><strong>Benefits</strong></MudLink> of being part of this community..
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                }
             </EhulogContainer>
 
             @if (IsNeededPager)

@@ -79,7 +79,7 @@
                         <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
                             <MudToolBar DisableGutters=true>
                                 <MudButton OnClick="@(() => { Navigation.NavigateTo("/", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
-                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/catalog/front/loans/anon", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
                             </MudToolBar>
                         </MudPaper>
                     </MudHidden>
@@ -102,7 +102,7 @@
                     <MudDivider Class="my-3" />
                     <MudToolBar Class="pb-5">
                         <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
-                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/catalog/front/loans/anon", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
                     </MudToolBar>
                 </MudPaper>
             </MudContainer>
@@ -117,7 +117,7 @@
     public AppDataService AppDataService { get; set; } = default!;
     [Parameter]
     public string CssClasses { get; set; } = default!;
-    public string classIsMobileMenuHidden { get; set; } = "pa-5 navbar-toggler collapsed";
+    public string classIsMobileMenuHidden { get; set; } = "pa-5 navbar-toggler collapsed cursor-pointer";
 
     private bool isLoginHovered { get; set; } = default!;
     private bool isRegisteredHovered { get; set; } = default!;
@@ -153,12 +153,12 @@
         if (isMobileMenuHidden == true)
         {
             isMobileMenuHidden = false;
-            classIsMobileMenuHidden = "pa-5 navbar-toggler";
+            classIsMobileMenuHidden = "pa-5 navbar-toggler cursor-pointer";
         }
         else
         {
             isMobileMenuHidden = true;
-            classIsMobileMenuHidden = "pa-5 navbar-toggler collapsed";
+            classIsMobileMenuHidden = "pa-5 navbar-toggler collapsed cursor-pointer";
         }
 
         return isMobileMenuHidden;

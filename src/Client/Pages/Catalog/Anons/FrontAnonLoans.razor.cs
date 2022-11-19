@@ -21,6 +21,8 @@ public partial class FrontAnonLoans
     private NavigationManager NavigationManager { get; set; } = default!;
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
+    [Inject]
+    private AppDataService AppDataService { get; set; } = default!;
 
     private EntityContainerContext<LoanDto> Context { get; set; } = default!;
 
@@ -28,6 +30,8 @@ public partial class FrontAnonLoans
 
     protected override async Task OnInitializedAsync()
     {
+        await AppDataService.InitializationAsync();
+
         // note: front anon requests has bypass on the jwt handler
         // Client.Infrastructure\Auth\Jwt\JwtAuthenticationHeaderHandler.cs
         // this allows custom passthrough

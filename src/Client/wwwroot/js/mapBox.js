@@ -1,11 +1,11 @@
 ﻿window.dotNetJSMapBox = {
     initMap: function (objectFromDotNet) {
 
-        console.log(objectFromDotNet.key);
+        /* console.log(objectFromDotNet.key);
         console.log(objectFromDotNet.zoom);
         console.log(objectFromDotNet.style);
         console.log(objectFromDotNet.longitude);
-        console.log(objectFromDotNet.latitude);
+        console.log(objectFromDotNet.latitude); */
 
         if (document.getElementById(objectFromDotNet.mapContainer) != undefined) {
 
@@ -53,7 +53,7 @@
             });
 
             geolocate.on('trackuserlocationstart', () => {
-                console.log('A trackuserlocationstart event has occurred.');
+                // console.log('A trackuserlocationstart event has occurred.');
             });
 
             window.MainMap.on('styleimagemissing', (e) => {
@@ -106,7 +106,7 @@
                     .then(location => {
 
                         // Printing our response
-                        console.log(location.features);
+                        // console.log(location.features);
 
                         for (let i = 0; i < location.features.length; i++) {
                             if (location.features[i].id.includes('country')) {
@@ -189,7 +189,7 @@
                         }
                     })
                     .catch(errorMsg => {
-                        console.log(errorMsg);
+                        // console.log(errorMsg);
                     });
             });
 
@@ -244,7 +244,7 @@
                 }
             })
             .catch(errorMsg => {
-                console.log(errorMsg);
+                // console.log(errorMsg);
             });
     }
 };

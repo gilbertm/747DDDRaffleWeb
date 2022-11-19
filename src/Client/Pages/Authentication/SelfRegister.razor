@@ -4,27 +4,30 @@
 @inject IStringLocalizer<SharedResource> LS
 
 <MudCard Elevation="0">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <div class="text-center mb-3">
+    @if (!IsFieldsOnly)
+    {
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="text-center mb-3">
 
-                <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
-                    @L["Register"]
-                </MudText>
+                    <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
+                        @L["Register"]
+                    </MudText>
 
-                @if (successMessage != default)
-                {
-                    <MudText>@L["User registered. Please follow instructions to activate."]</MudText>
-                }
-                else
-                {
-                    <MudText>@L["New user registration"]</MudText>
-                }
+                    @if (successMessage != default)
+                    {
+                        <MudText>@L["User registered. Please follow instructions to activate."]</MudText>
+                    }
+                    else
+                    {
+                        <MudText>@L["New user registration"]</MudText>
+                    }
 
-            </div>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
+                </div>
+            </CardHeaderContent>
+        </MudCardHeader>
+    }
+    <MudCardContent Class="@(IsFieldsOnly ? "px-0" : "")">
         @if (BusySubmitting != default)
         {
             <MudAlert NoIcon AlertTextPosition="AlertTextPosition.Center" Severity="Severity.Normal" Class="mb-3">
@@ -51,45 +54,44 @@
                 For="@(() => Tenant)" Required />
                 </MudItem> *@
 
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField T="string" Label="User Name" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.UserName" For="@(() => _createUserRequest.UserName)"
-                                      InputType="InputType.Text" Adornment="Adornment.End" Required />
+                                      InputType="InputType.Text" Adornment="Adornment.End" Required  />
                     </MudItem>
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField T="string" Label="E-mail" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.Email" For="@(() => _createUserRequest.Email)"
                                       InputType="InputType.Email" Adornment="Adornment.End" Required />
                     </MudItem>
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField T="string" Label="Phone" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.PhoneNumber" For="@(() => _createUserRequest.PhoneNumber)"
                                       InputType="InputType.Telephone" Adornment="Adornment.End" Required />
                     </MudItem>
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField T="string" Label="First Name" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.FirstName" For="@(() => _createUserRequest.FirstName)"
                                       InputType="InputType.Text" Adornment="Adornment.End" Required />
                     </MudItem>
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField T="string" Label="Last Name" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.LastName" For="@(() => _createUserRequest.LastName)"
                                       InputType="InputType.Text" Adornment="Adornment.End" Required />
                     </MudItem>
 
-
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField Label="@L["Password"]" Variant="Variant.Outlined" @bind-Value="_createUserRequest.Password"
                                       For="@(() => _createUserRequest.Password)" InputType="@_passwordInput" Adornment="Adornment.End"
                                       AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required />
                     </MudItem>
-                    <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField Label="@L["Confirm Password"]" Variant="Variant.Outlined" @bind-Value="_createUserRequest.ConfirmPassword"
                                       For="@(() => _createUserRequest.ConfirmPassword)" InputType="@_passwordInput" Adornment="Adornment.End"
                                       AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required />
                     </MudItem>
-                    <MudItem xs="12">
-                        <MudButton StartIcon="@Icons.Filled.AppRegistration" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Class="mx-auto">
+                    <MudItem xs="12" Class="text-center pt-3">
+                        <MudButton StartIcon="@Icons.Filled.AppRegistration" Variant="Variant.Filled" Style="background:var(--custom-pallete-button);color:var(--mud-palette-white);text-transform:capitalize;font-weight:700" ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Class="mx-auto py-3 px-6">
                             @L["Register"]
                         </MudButton>
                     </MudItem>

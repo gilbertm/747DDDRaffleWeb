@@ -1,0 +1,32 @@
+﻿.map-loan-slider {
+    .mud-tabs {
+        .mud-tab-slider.mud-tab-slider-horizontal {
+            display: none;
+        }
+
+        .mud-tab {
+            background: var(--mud-palette-grey-light);
+
+            &.mud-tab-active {
+                background: var(--mud-palette-white);
+                border-top: 5px solid var(--custom-appbar-secondary-menu);
+            }
+        }
+    }
+
+    .mud-tabs-toolbar-content {
+        .mud-tabs-toolbar-wrapper {
+            width: auto;
+
+            .d-inline-block,
+            .mud-tooltip-root.mud-tooltip-inline {
+                display: inline-block;
+                width: 50% !important;
+
+                .mud-typography {
+                    font-weight:700;
+                }
+            }
+        }
+    }
+}

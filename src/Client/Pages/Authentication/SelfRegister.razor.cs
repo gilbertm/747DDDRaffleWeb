@@ -13,6 +13,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Pages.Authentication;
 
 public partial class SelfRegister
 {
+    [Parameter]
+    public bool IsFieldsOnly { get; set; } = false;
+
     private readonly CreateUserRequest _createUserRequest = new();
     private CustomValidation? _customValidation;
     private bool BusySubmitting { get; set; }
