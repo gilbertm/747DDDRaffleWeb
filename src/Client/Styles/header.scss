@@ -67,29 +67,6 @@ header {
             }
         }
 
-        .mud-button {
-            &:hover, &:focus-visible {
-                background-color: transparent;
-            }
-
-            &.custom {
-                text-transform: capitalize;
-                font-weight: 700;
-
-                &.sign-up {
-                    background-color: var(--custom-pallete-button);
-                    border-color: var(--custom-pallete-button);
-                    color: var(--mud-palette-white);
-                }
-
-                &:hover, &:focus-visible {
-                    background-color: var(--custom-pallete-button-hover);
-                    border: 2px solid var(--custom-pallete-button-hover);
-                    color: var(--mud-palette-white);
-                }
-            }
-        }
-
         &.anon {
             position: initial;
             background: transparent !important;

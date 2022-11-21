@@ -206,7 +206,7 @@ else
                                 @if (TemporaryLedgerTable is not null && TemporaryLedgerTable.Count() > 0)
                                 {
                                     <MudItem xs="12" md="12" Class="text-center">
-                                        <MudText Typo="Typo.h6" Color="Color.Secondary">@AppDataService.GetCurrency() @string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
+                                        <MudText Typo="Typo.h6" Color="Color.Secondary">@AppDataService.GetCurrencyAppUser() @string.Format("{0:#,0.00}", TemporaryLedgerTable.Sum(s => s.Amount))</MudText>
                                         <MudText Typo="Typo.caption" Style="@($"color:{Colors.BlueGrey.Lighten4}")">Amount + Interest </MudText>
 
                                         <MudTable Class="ehulog-mud-table-compact" Items="@TemporaryLedgerTable" Context="ledger" Hover="false" Bordered="false" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" Elevation="0">
@@ -612,7 +612,7 @@ else
                                     <MudAvatar Square="true" Image="@imageUrl" Style="height:50px;position:relative"></MudAvatar>
                                     <br />
                                 }
-                                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{EhulogColor.GreenMoney}")">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText> <MudText Typo="Typo.body1" Class="px-1 d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrency()</MudText>
+                                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{EhulogColor.GreenMoney}")">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText> <MudText Typo="Typo.body1" Class="px-1 d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrencyAppUser()</MudText>
                             </MudItem>
                             <MudItem xs="12">
                                 <MinimalLoanMainDetails Loan="@trail" />

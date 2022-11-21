@@ -18,23 +18,32 @@
             <EhulogContainer MaxWidth="MaxWidth.False" Class="list-grid-container pa-0">
                 @if (IsNeededPager)
                 {
-                    <MudPaper Elevation="1" Class="px-3 mb-4">
-                        <MudText Typo="Typo.caption" Align="Align.Left">Display</MudText>
-                        <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list" OnClick="@(() => SetList())" Color="@(IsList ? Color.Success : Color.Surface)">List</MudIconButton>
-                        <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid" OnClick="@(() => SetGrid())" Color="@(IsGrid ? Color.Success : Color.Surface)">Grid</MudIconButton>
+                    <MudPaper Elevation="1" Class="mb-4">
+                        <MudToolBar>
+                            <MudText Typo="Typo.caption" Align="Align.Left">Display</MudText>
+                            <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list" OnClick="@(() => SetList())" Color="@(IsList ? Color.Success : Color.Surface)">List</MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid" OnClick="@(() => SetGrid())" Color="@(IsGrid ? Color.Success : Color.Surface)">Grid</MudIconButton>
+                            <MudSpacer />
+                            <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                                No available loans in this location. <MudLink Typo="Typo.body1" Href="/loan/lending/benefits"><strong>Benefits</strong></MudLink> of being part of this community.
+                            </MudText>
+                            <MudSpacer />
+                        </MudToolBar>
                     </MudPaper>
                 }
 
                 @if (_entityList.Count() > 0)
                 {
-                    <MudPaper Elevation="0" id="@typeof(TEntity).Name" Class="list-grid-group-wrapper grid-group-wrapper row">
-                        @foreach (var item in _entityList)
-                        {
-                            <MudItem xs="6" sm="4" md="3" lg="2" Class="item mb-5">
-                                @Context.Template(item)
-                            </MudItem>
+                    <MudPaper Elevation="0" id="@typeof(TEntity).Name" Class="list-grid-group-wrapper grid-group-wrapper">
+                        <MudGrid>
+                            @foreach (var item in _entityList)
+                            {
+                                <MudItem xs="6" sm="4" md="3" lg="2" Class="item five-columns">
+                                    @Context.Template(item)
+                                </MudItem>
 
-                        }
+                            }
+                        </MudGrid>
                     </MudPaper>
                 }
                 else

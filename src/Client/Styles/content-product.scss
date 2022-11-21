@@ -1,0 +1,16 @@
+﻿.product {
+    .title {
+        font-size: 16px;
+        font-weight: 600;
+        font-family: 'Montserrat', sans-serif;
+        min-height: 58px;
+    }
+
+    .product-price {
+        font-size: 18px;
+        font-weight: 600;
+        font-family: 'Montserrat', sans-serif;
+        text-align: left;
+        color: var(--custom-pallete-button-hover);
+    }
+}

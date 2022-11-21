@@ -13,9 +13,8 @@
 <LossGeolocationPopup />
 
 @code {
-
     [Inject]
-    protected AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    protected ILocalStorageService LocalStorage { get; set; } = default!;
 
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
@@ -26,50 +25,55 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        _isAuthenticated = user.Identity?.IsAuthenticated ?? false;
-
-        await AppDataService.InitializationAsync();
-
-        if (AppDataService != default)
+        if ((await AppDataService.IsAuthenticated()) == default)
         {
-            if (AppDataService.AppUser != default)
-            {
-                if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
-                {
-                    Navigation.NavigateTo("/loans/lender");
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
-                    {
-                        var countryProvider = new CountryProvider();
-                        var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
+            _isAuthenticated = false;
+        }
+        else
+        {
+            await AppDataService.InitializationAsync();
 
-                        if (countryInfo is { })
+            if (AppDataService != default)
+            {
+                if (AppDataService.AppUser != default)
+                {
+                    if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
+                    {
+                        Navigation.NavigateTo("/loans/lender");
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
                         {
-                            if (countryInfo.Currencies.Count() > 0)
+                            var countryProvider = new CountryProvider();
+                            var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
+
+                            if (countryInfo is { })
                             {
-                                _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                                if (countryInfo.Currencies.Count() > 0)
+                                {
+                                    _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                                }
                             }
                         }
-                    }
 
-                    if (AppDataService.AppUser.RolePackageStatus != default)
-                    {
-                        if (AppDataService.AppUser.RolePackageStatus < VerificationStatus.Submitted)
+                        if (AppDataService.AppUser.RolePackageStatus != default)
                         {
-                            Navigation.NavigateTo("/account/role-subscription");
-                        }
-                        else
-                        {
-                            Navigation.NavigateTo("/loans/lessee");
+                            if (AppDataService.AppUser.RolePackageStatus < VerificationStatus.Submitted)
+                            {
+                                Navigation.NavigateTo("/account/role-subscription");
+                            }
+                            else
+                            {
+                                Navigation.NavigateTo("/loans/lessee");
+                            }
                         }
                     }
                 }
             }
+
         }
-    }
+
+      }
 
 }

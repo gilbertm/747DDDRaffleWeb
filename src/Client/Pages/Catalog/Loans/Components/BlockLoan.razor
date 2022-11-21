@@ -9,8 +9,8 @@
         } *@
 
         @if (Loan != default)
-        {           
-            <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{Colors.Amber.Darken2}")">@string.Format("{0:#,0.00}", sumLoan)</MudText> <MudText Typo="Typo.body1" Class="d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrency()</MudText>
+        {
+            <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{Colors.Amber.Darken2}")">@string.Format("{0:#,0.00}", sumLoan)</MudText> <MudText Typo="Typo.body1" Class="d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrencyAppUser()</MudText>
             @if (@Loan.LoanLenders != default)
             {
                 <br />

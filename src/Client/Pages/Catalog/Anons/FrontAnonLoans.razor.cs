@@ -6,7 +6,6 @@ using EHULOG.BlazorWebAssembly.Client.Shared;
 using EHULOG.WebApi.Shared.Multitenancy;
 using Mapster;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -15,37 +14,43 @@ namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 public partial class FrontAnonLoans
 {
     [Inject]
-    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    private NavigationManager NavigationManager { get; set; } = default!;
 
     [Inject]
-    private NavigationManager NavigationManager { get; set; } = default!;
-    [Inject]
     private HttpClient HttpClient { get; set; } = default!;
+
     [Inject]
     private AppDataService AppDataService { get; set; } = default!;
 
+    // [Inject]
+    //private ILocalStorageService LocalStorage { get; set; } = default!;
+
     private EntityContainerContext<LoanDto> Context { get; set; } = default!;
 
-    private bool IsAuthenticated { get; set; }
+    private string Country { get; set; } = default!;
+    private string CountryCurrency { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        await AppDataService.InitializationAsync();
+        // check and get cookie for country location
+        /* string? countryLocationStorage = LocalStorage.GetItem<string>("CountryLocation");
 
-        // note: front anon requests has bypass on the jwt handler
-        // Client.Infrastructure\Auth\Jwt\JwtAuthenticationHeaderHandler.cs
-        // this allows custom passthrough
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
-
-        if (IsAuthenticated)
+        if (countryLocationStorage != default)
         {
-            // navigate to the home (/)
-            // checking will be done by the component
+            Console.WriteLine(countryLocationStorage);
+
+            LocalStorage.SetItem("CountryLocation", $"This is a sample data {DateTime.Now}");
+        } */
+
+        if ((await AppDataService.IsAuthenticated()) != default)
+        {
+            // navigate to home (/)
+            // the front component will do the routing checks
+            // 
             // if logged in, the role will be used to navigate
             // to the user's account type listing
             NavigationManager.NavigateTo("/");
+
             return;
         }
 
@@ -64,6 +69,8 @@ public partial class FrontAnonLoans
                            {
                                foreach (var item in anonLoans.Data)
                                {
+                                   dictOverlayVisibility.Add(item.Id, false);
+
                                    var loanLender = item.LoanLenders?.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
 
                                    if (loanLender is { })
@@ -85,6 +92,21 @@ public partial class FrontAnonLoans
                        return default!;
                    },
                    template: BodyTemplate);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            Country = await AppDataService.GetCountryOnAnonymousStateAsync();
+
+            if (!string.IsNullOrEmpty(Country))
+            {
+                CountryCurrency = AppDataService.GetCurrencyAnonymous(Country);
+            }
+
+            StateHasChanged();
+        }
     }
 
     private async Task<InputOutputResourceDto> GetImage(Guid productId)

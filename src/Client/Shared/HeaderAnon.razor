@@ -78,7 +78,7 @@
                         <MudSpacer />
                         <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
                             <MudToolBar DisableGutters=true>
-                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
                                 <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
                             </MudToolBar>
                         </MudPaper>

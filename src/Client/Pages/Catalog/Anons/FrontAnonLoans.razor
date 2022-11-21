@@ -5,52 +5,40 @@
 @using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
 @using Nager.Country
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="map-loan-slider">
+<MudContainer MaxWidth="MaxWidth.Large" Class="map-loan-slider pa-0">
     <MudGrid Justify="Justify.Center">
-        <MudItem xs="12" md="6" Class="pa-0">
+        <MudItem xs="12" md="6" Class="pt-0 pr-0">
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel>
                     <ChildContent>
                         <MudText Typo="Typo.h5" Class="pb-2 text-center" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4};font-weight:700")">How much do you need?</MudText>
-                        <MudContainer Class="px-0">
-                            <MudGrid Class="px-0 borrower-borrowing-amount">
+                        <MudContainer>
+                            <MudGrid Class="borrower-borrowing-amount">
                                 <MudItem xs="6" Class="mb-0 pb-0">
                                     <MudText Typo="Typo.h6" Style="font-weight:700">I am borrowing</MudText>
                                 </MudItem>
                                 <MudItem xs="6" Class="mb-0 pb-0" Style="text-align:right">
                                     <MudText Typo="Typo.h6" Style="font-weight:700">
-                                        @Borrowing.ToString()
-                                        @if (AppDataService != default)
-                                        {
-                                            if (AppDataService.AppUser != default)
-                                            {
-                                                AppDataService.GetCurrency();
-                                            }
-                                        }
+                                        @($"{string.Format("{0:#,0.00}", float.Parse(Borrowing.ToString()))} {CountryCurrency}")
                                     </MudText>
                                 </MudItem>
                                 <MudItem xs="12" Class="py-0">
                                     <MudSlider @bind-Value="Borrowing" Size="Size.Large" Step="500" Min="500" Max="5000" Color="Color.Info" />
                                 </MudItem>
                                 <MudItem xs="6" Class="mt-0 pt-0">
-                                    <MudText Typo="Typo.caption">500</MudText>
+                                    <MudText Typo="Typo.caption">
+                                        @($"{string.Format("{0:#,0.00}", 500)} {CountryCurrency}")
+                                    </MudText>
                                 </MudItem>
                                 <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
                                     <MudText Typo="Typo.caption">
-                                        5,000
-                                        @if (AppDataService != default)
-                                        {
-                                            if (AppDataService.AppUser != default)
-                                            {
-                                                AppDataService.GetCurrency();
-                                            }
-                                        }
+                                        @($"{string.Format("{0:#,0.00}", 5000)} {CountryCurrency}")
                                     </MudText>
                                 </MudItem>
                             </MudGrid>
                         </MudContainer>
-                        <MudContainer Class="px-0">
-                            <MudGrid Class="px-0 borrower-borrowing-months">
+                        <MudContainer>
+                            <MudGrid Class="borrower-borrowing-months">
                                 <MudItem xs="6" Class="mb-0 pb-0">
                                     <MudText Typo="Typo.h6" Style="font-weight:700">Borrow duration</MudText>
                                 </MudItem>
@@ -72,7 +60,7 @@
                                 </MudItem>
                             </MudGrid>
                         </MudContainer>
-                        <MudContainer Class="pt-4 px-0">
+                        <MudContainer Class="pt-4">
                             <SelfRegister IsFieldsOnly=true />
                         </MudContainer>
                     </ChildContent>
@@ -91,33 +79,19 @@
                                             <MudText Typo="Typo.subtitle1" Style="font-weight:700">Loan this amount</MudText>
                                         </MudItem>
                                         <MudItem xs="4" Class="mb-0 pb-0" Style="text-align:right">
-                                            <MudText Typo="Typo.subtitle1" Style="font-weight:700">
-                                                @Loaning.ToString()
-                                                @if (AppDataService != default)
-                                                {
-                                                    if (AppDataService.AppUser != default)
-                                                    {
-                                                        AppDataService.GetCurrency();
-                                                    }
-                                                }
+                                            <MudText Typo="Typo.subtitle1" Style="font-weight:700;white-space:nowrap;">
+                                                @($"{string.Format("{0:#,0.00}", float.Parse(Loaning.ToString()))} {CountryCurrency}")
                                             </MudText>
                                         </MudItem>
                                         <MudItem xs="12" Class="py-0">
                                             <MudSlider @bind-Value="Loaning" Size="Size.Medium" Step="500" Min="500" Max="5000" Color="Color.Info" />
                                         </MudItem>
                                         <MudItem xs="6" Class="mt-0 pt-0">
-                                            <MudText Typo="Typo.caption">500</MudText>
+                                            <MudText Typo="Typo.caption">@($"{string.Format("{0:#,0.00}", 500)} {CountryCurrency}")</MudText>
                                         </MudItem>
                                         <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
                                             <MudText Typo="Typo.caption">
-                                                5,000
-                                                @if (AppDataService != default)
-                                                {
-                                                    if (AppDataService.AppUser != default)
-                                                    {
-                                                        AppDataService.GetCurrency();
-                                                    }
-                                                }
+                                                @($"{string.Format("{0:#,0.00}", 5000)} {CountryCurrency}")
                                             </MudText>
                                         </MudItem>
                                     </MudGrid>
@@ -170,7 +144,7 @@
     </MudGrid>
 </MudContainer>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="map-loan-slider">
+<MudContainer MaxWidth="MaxWidth.Large" Class="loan-listing my-5 pa-0">
     <MudGrid>
         @if (Context != default)
         {
@@ -194,6 +168,15 @@
     private int BorrowDuration { get; set; } = 1;
     private int Loaning { get; set; } = 500;
     private int LoaningDuration { get; set; } = 1;
+    private bool IsVisibleOverlay = false;
+
+    private IDictionary<Guid, bool> dictOverlayVisibility = new Dictionary<Guid, bool>();
+
+    public void IsVisibleProductOverlay(Guid guid)
+    {
+        dictOverlayVisibility[guid] = !dictOverlayVisibility[guid];
+        StateHasChanged();
+    }
 
     protected RenderFragment<LoanDto> BodyTemplate => trail => __builder =>
     {
@@ -249,62 +232,72 @@
         }
 
 
-        <MudCard>
-
-            <MudCardContent>
-
-                <MudCardContent>
+        <MudCard Class="product" Style="@($"background:{Colors.Grey.Lighten2};position:relative")">
+            <MudCardContent Class="pa-0">
+                <MudCardHeader Class="py-2">
                     <MudImage Fluid="true" Src="@_imageUrl" Alt="@_productName" Class="rounded-lg" />
-                </MudCardContent>
-                <MudCardContent Class="text-center py-0">
-                    @if (trail.LoanApplicants is { })
+                </MudCardHeader>
+                <MudCardContent Class="text-center rounded-t-lg rounded-b" Style="@($"background:{Colors.Shades.White}")">
+                    @if (_loanLenderDto != default)
                     {
-                        <MudText Typo="Typo.caption" Class="d-block" Style="font-size:12px !important"><MudIcon Size="Size.Small" Style="font-size:12px !important" Icon="@Icons.Material.Filled.Person" Title="Status" /> @trail.LoanApplicants.Count()</MudText>
-                    }
-                </MudCardContent>
-                <MudCardContent Class="text-center py-0">
-                    <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{Colors.Amber.Darken2}")">@string.Format("{0:#,0.00}", _sumLoan)</MudText> <MudText Typo="Typo.body1" Class="d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@_currency</MudText><br />
-
-                    @if (trail.LoanLenders != default)
-                    {
-                        if (trail.LoanLenders.Count > 0)
+                        @if (_loanLenderDto.Product != default)
                         {
-                            var loanLender = trail.LoanLenders.FirstOrDefault();
-
-                            if (loanLender != default)
-                            {
-                                if (loanLender.Product != default)
-                                {
-                                    @if (loanLender.Product.Category != null)
-                                    {
-                                        @if (!loanLender.Product.Category.Name.Equals("Cash"))
-                                        {
-                                            <MudText Typo="Typo.caption" Color="Color.Primary">@loanLender.Product.Name</MudText>
-                                        }
-                                    }
-                                }
-                            }
-
+                            <MudText Typo="Typo.h1" Class="title">@_loanLenderDto.Product.Name</MudText>
                         }
                     }
-                    <MudButton Variant="Variant.Outlined" Class="mt-2" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Success" Size="Size.Medium" Href="@href">Apply</MudButton>
+
+                    <MudToolBar Class="px-0" Style="height:auto">
+                        <MudText Typo="Typo.h2" Class="text-left product-price">@string.Format("{0:#,0.00}", _sumLoan) @_currency</MudText>
+                        <MudSpacer />
+                        @if (trail.LoanApplicants != default)
+                        {
+                            <MudAlert Severity="Severity.Normal" Icon="@Icons.Material.Filled.Person" Dense="true" Class="ma-0 pa-0 border-0" Variant="Variant.Outlined">@trail.LoanApplicants.Count()</MudAlert>
+                        }
+                    </MudToolBar>
+                    <MudToolBar Class="px-0" Style="height:auto">
+                        <MudChip Size="Size.Small" Icon="@Icons.Filled.CalendarMonth" IconColor="Color.Surface" Class="border-0 rounded-0 px-0" Style="background:transparent">@trail.Month Months</MudChip>
+                        <MudChip Size="Size.Small" Icon="@Icons.Material.Filled.Percent" IconColor="Color.Surface" Class="border-0 rounded-0 px-1" Style="background:transparent">@trail.Interest Interest</MudChip>
+                    </MudToolBar>
+
+                    <MudGrid Class="px-0 d-flex">
+                        <MudItem xs="6">
+                            <MudButton Variant="Variant.Outlined" Class="mt-2 custom orange" IconColor="Color.Success" Size="Size.Medium" Href="@href" Style="width:100%">Apply</MudButton>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudButton Variant="Variant.Outlined" DisableRipple=true Class="mt-2 custom basic" IconColor="Color.Surface" Size="Size.Medium" Style="width:100%;" EndIcon="@Icons.Filled.KeyboardArrowDown" OnClick="(() => { IsVisibleProductOverlay(trail.Id); })">Details</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                    <MudOverlay Absolute="true" DarkBackground="true" @bind-Visible="@dictOverlayVisibility[trail.Id]" AutoClose=false>
+                        <MudToolBar Class="px-0" Style="height:auto">
+                            <MudChip Size="Size.Small" Icon="@Icons.Filled.CalendarMonth" Class="border-0 rounded-0 px-0" Style="background:transparent">@trail.Month Months</MudChip>
+                            <MudChip Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Class="border-0 rounded-0 px-1" Style="background:transparent">@trail.Interest Interest</MudChip>
+                        </MudToolBar>
+                        <MudButton Variant="Variant.Outlined" DisableRipple=true Class="mt-2 custom orange" IconColor="Color.Surface" Size="Size.Medium" Style="width:100%;" OnClick="(() => { IsVisibleProductOverlay(trail.Id); })">
+                            Close
+                        </MudButton>
+                    </MudOverlay>
                 </MudCardContent>
-                <MudCardContent Class="text-center pb-1">
-                    <MudPaper Class="text-left d-block" Elevation="0">
-                        <MudText Typo="Typo.caption" Class="d-inline-block" Style="font-size:10px !important; line-height:1.1em;"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText>
-                        <MudText Typo="Typo.caption" Class="d-inline-block" Style="font-size:10px !important; line-height:1.1em;"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText>
-                        <MudText Typo="Typo.caption" Class="d-inline-block" Style="font-size:10px !important; line-height:1.1em;"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText>
-                    </MudPaper>
-                </MudCardContent>
-                <MudExpansionPanels Elevation="0">
-                    <MudExpansionPanel Text="More" Class="py-0" MaxHeight="250">
-                        <MudPaper Class="text-left d-block py-0" Elevation="0">
-                            <MudText Typo="Typo.caption" Class="d-block" Style="font-size:10px !important"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@(trail.Status.Equals(LoanStatus.Published) ? Icons.Material.Filled.Check : Icons.Material.Filled.DoNotDisturb)" Title="Status" /> @trail.Status</MudText>
-                            <MudText Typo="Typo.caption" Class="d-block" Style="font-size:10px !important"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Money" Title="Base Amount" /> Base: @string.Format("{0:#,0.00}", _loanLenderDto?.Product?.Amount) @_currency</MudText>
-                            <MudText Typo="Typo.caption" Class="d-block" Style="font-size:10px !important"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.InterestType</MudText>
-                        </MudPaper>
-                    </MudExpansionPanel>
-                </MudExpansionPanels>
+
+                @* <MudCardContent Class="text-center py-0">
+        <MudButton Variant="Variant.Outlined" Class="mt-2" StartIcon="@Icons.Material.Filled.PlayArrow" IconColor="Color.Success" Size="Size.Medium" Href="@href">Apply</MudButton>
+        </MudCardContent>
+        <MudCardContent Class="text-center pb-1">
+        <MudPaper Class="text-left d-block" Elevation="0">
+        <MudText Typo="Typo.caption" Class="d-inline-block" Style="font-size:10px !important; line-height:1.1em;"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Numbers" Title="Month" /> @trail.Month Month(s)</MudText>
+        <MudText Typo="Typo.caption" Class="d-inline-block" Style="font-size:10px !important; line-height:1.1em;"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Percent" Title="Interest" /> @trail.Interest</MudText>
+        <MudText Typo="Typo.caption" Class="d-inline-block" Style="font-size:10px !important; line-height:1.1em;"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Event" Title="Start of payment" /> @string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudText>
+        </MudPaper>
+        </MudCardContent>
+        <MudExpansionPanels Elevation="0">
+        <MudExpansionPanel Text="More" Class="py-0" MaxHeight="250">
+        <MudPaper Class="text-left d-block py-0" Elevation="0">
+        <MudText Typo="Typo.caption" Class="d-block" Style="font-size:10px !important"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@(trail.Status.Equals(LoanStatus.Published) ? Icons.Material.Filled.Check : Icons.Material.Filled.DoNotDisturb)" Title="Status" /> @trail.Status</MudText>
+        <MudText Typo="Typo.caption" Class="d-block" Style="font-size:10px !important"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.Money" Title="Base Amount" /> Base: @string.Format("{0:#,0.00}", _loanLenderDto?.Product?.Amount) @_currency</MudText>
+        <MudText Typo="Typo.caption" Class="d-block" Style="font-size:10px !important"><MudIcon Size="Size.Small" Style="font-size:10px !important" Icon="@Icons.Material.Filled.ShowChart" Title="Interest type" /> @trail.InterestType</MudText>
+        </MudPaper>
+        </MudExpansionPanel>
+        </MudExpansionPanels>*@
+
             </MudCardContent>
         </MudCard>
     };

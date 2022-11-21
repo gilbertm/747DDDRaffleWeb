@@ -3,10 +3,10 @@
     --mud-palette-secondary: #dfa958 !important;
     --mud-palette-success: #008336 !important;
     --mud-appbar-height: 150px !important;
-
     --custom-appbar-secondary-menu: #1B8366;
     --custom-pallete-button: #04af82;
     --custom-pallete-button-hover: #ff952d;
+    --custom-pallete-button-hover-darker: #f48920;
 }
 
 .mud-table-root .mud-table-body:last-child .mud-table-row:last-child .mud-table-root .mud-table-cell {
@@ -19,7 +19,7 @@
 }
 
 .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol {
-    color:#aeaeae;
+    color: #aeaeae;
 }
 
 .mud-table-smalldevices-sortselect {
@@ -119,23 +119,7 @@
 }
 
 .text-uppercase {
-    text-transform:uppercase;
-}
-
-.bg-white {
-    background: #ffffff;
-}
-
-.bg-black {
-    background: #000000;
-}
-
-.color-white {
-    color: #ffffff;
-}
-
-.color-black {
-    color: #000000;
+    text-transform: uppercase;
 }
 
 /* customs */
@@ -152,6 +136,49 @@
     position: relative;
 }
 
+/* buttons */
+.mud-button {
+    &:hover, &:focus-visible {
+        background-color: transparent;
+    }
+
+    &.custom {
+        text-transform: capitalize;
+        font-weight: 700;
+
+        &.orange {
+            background-color: var(--custom-pallete-button-hover);
+            border: 1px solid var(--custom-pallete-button-hover);
+            color: var(--mud-palette-white);
+
+            &:hover, &:focus-visible {
+                background-color: var(--custom-pallete-button-hover-darker);
+            }
+        }
+
+        &.basic {
+            background-color: transparent;
+
+            &:hover, &:focus-visible {
+                background-color: var(--mud-palette-grey-lighter);
+                color: var(--mud-palette-text-primary);
+            }
+        }
+
+        &.sign-up {
+            background-color: var(--custom-pallete-button);
+            border-color: var(--custom-pallete-button);
+            color: var(--mud-palette-white);
+        }
+
+        &:hover, &:focus-visible {
+            background-color: var(--custom-pallete-button-hover);
+            border: 1px solid var(--custom-pallete-button-hover);
+            color: var(--mud-palette-white);
+        }
+    }
+}
+
 
 /* customs - account - packages */
 .custom-mud-checkbox.pl-0 span {
@@ -161,6 +188,16 @@
 
 
 /* list / grid dislays */
+@media (min-width: 1280px) {
+    .five-columns {
+        &.item {
+            flex-grow: 0;
+            max-width: 20%;
+            flex-basis: 20%;
+        }
+    }
+}
+
 .grid-group-wrapper {
     &.row {
         display: flex;
@@ -251,8 +288,8 @@
 
 @media screen and (max-width: 768px) {
     .mud-table-cell {
-        justify-content:initial !important;
+        justify-content: initial !important;
     }
 }
 
-@import "loading","header","footer","content-header", "front";
+@import "loading","header","footer","content-header","content-product","front";
