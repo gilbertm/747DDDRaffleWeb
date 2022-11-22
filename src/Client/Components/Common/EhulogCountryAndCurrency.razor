@@ -1,0 +1,138 @@
+﻿@using Geo.MapBox.Abstractions;
+@using Nager.Country;
+@attribute [AllowAnonymous]
+
+@* <h3>Ehulog Country And Currency</h3>
+
+@if (country != default)
+{
+    <h1>Country: @country</h1>
+} *@
+
+@code {
+
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<string> OnUpdatedCountry { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<string> OnUpdatedCountryCurrency { get; set; } = default!;
+
+    [Inject]
+    private IMapBoxGeocoding MapBoxGeocoding { get; set; } = default!;
+
+    [Inject]
+    private IGeolocationService GeolocationService { get; set; } = default!;
+
+    public string? country { get; set; }
+
+    public string? countryCurrency { get; set; }
+
+    private GeolocationPosition? _position;
+
+    private GeolocationPositionError? _positionError;
+
+    private readonly PositionOptions _options = new()
+        {
+            EnableHighAccuracy = true,
+            MaximumAge = null,
+            Timeout = 15_000
+        };
+
+    protected override void OnInitialized()
+    {
+        GeolocationService.GetCurrentPosition(
+                   component: this,
+                   onSuccessCallbackMethodName: nameof(OnPositionRecieved),
+                   onErrorCallbackMethodName: nameof(OnPositionError),
+                   options: _options);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // not first render
+        // and until country is known
+        if (!firstRender && (country == default))
+        {
+            if (_position != default)
+            {
+                var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
+                    {
+                        Coordinate = new Geo.MapBox.Models.Coordinate()
+                        {
+                            Latitude = Convert.ToDouble(_position.Coords.Latitude.ToString()),
+                            Longitude = Convert.ToDouble(_position.Coords.Longitude.ToString())
+                        },
+                        EndpointType = Geo.MapBox.Enums.EndpointType.Places
+                    });
+
+                if (responseReverseGeocoding != default)
+                {
+                    if (responseReverseGeocoding.Features != default)
+                    {
+                        if (responseReverseGeocoding.Features.Count > 0)
+                        {
+                            foreach (var f in responseReverseGeocoding.Features)
+                            {
+                                if (f.Contexts.Count > 0)
+                                {
+                                    foreach (var c in f.Contexts)
+                                    {
+                                        if (!string.IsNullOrEmpty(c.Id))
+                                        {
+                                            switch (c.Id)
+                                            {
+                                                case string s when s.Contains("country"):
+                                                    country = c.ContextText[0].Text;
+
+                                                    await OnUpdatedCountry.InvokeAsync(country);
+
+                                                    var countryProvider = new CountryProvider();
+
+                                                    var countryInfo = countryProvider.GetCountryByName(country);
+
+                                                    if (countryInfo is { })
+                                                    {
+                                                        if (countryInfo.Currencies.Count() > 0)
+                                                        {
+                                                            countryCurrency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                                                        }
+
+                                                    }
+
+                                                    await OnUpdatedCountryCurrency.InvokeAsync(countryCurrency);
+
+                                                    StateHasChanged();
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    [JSInvokable]
+    public void OnPositionRecieved(GeolocationPosition position)
+    {
+        _position = position;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnPositionError(GeolocationPositionError positionError)
+    {
+        _positionError = positionError;
+        StateHasChanged();
+
+    }
+}
