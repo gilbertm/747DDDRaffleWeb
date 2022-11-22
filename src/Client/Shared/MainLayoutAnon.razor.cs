@@ -12,17 +12,18 @@ public partial class MainLayoutAnon
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
 
     private bool _rightToLeft = default!;
+    public async Task ToggleDarkMode()
+    {
+        await OnDarkModeToggle.InvokeAsync();
+    }
 
     private async Task RightToLeftToggle()
     {
         bool isRtl = true;
+
         _rightToLeft = isRtl;
 
         await OnRightToLeftToggle.InvokeAsync(isRtl);
     }
 
-    public async Task ToggleDarkMode()
-    {
-        await OnDarkModeToggle.InvokeAsync();
-    }
 }

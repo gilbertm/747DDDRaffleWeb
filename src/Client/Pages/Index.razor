@@ -5,36 +5,46 @@
 
 @attribute [AllowAnonymous]
 
-@if (!_isAuthenticated)
+@if (AppDataService != default)
 {
-    <FrontAnonLoans />
+    @* <h1>Country of AppDataService: </h1>
+        <h1>@AppDataService.Country</h1>
+
+        <h1>Country Currency of AppDataService: </h1>
+        <h1>@AppDataService.CountryCurrency</h1> *@
+
+    <EhulogCountryAndCurrency OnUpdatedCountry="UpdateCountry" OnUpdatedCountryCurrency="UpdateCountryCurrency" />
+
+    @if (!_isAuthenticated)
+    {
+        <FrontAnonLoans />
+
+    }
 }
 
 <LossGeolocationPopup />
 
 @code {
-    [Inject]
-    protected ILocalStorageService LocalStorage { get; set; } = default!;
+    // [Inject]
+    // protected ILocalStorageService LocalStorage { get; set; } = default!;
 
-    [Inject]
+    [CascadingParameter(Name = "AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
 
-    private bool _isAuthenticated { get; set; } = false;
-
-    private string _currency { get; set; } = string.Empty;
+    private bool _isAuthenticated = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        if ((await AppDataService.IsAuthenticated()) == default)
+        if (AppDataService != default)
         {
-            _isAuthenticated = false;
-        }
-        else
-        {
-            await AppDataService.InitializationAsync();
-
-            if (AppDataService != default)
+            if ((await AppDataService.IsAuthenticated()) == default)
             {
+                _isAuthenticated = false;
+            }
+            else
+            {
+                await AppDataService.InitializationAsync();
+
                 if (AppDataService.AppUser != default)
                 {
                     if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
@@ -43,20 +53,6 @@
                     }
                     else
                     {
-                        if (!string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry))
-                        {
-                            var countryProvider = new CountryProvider();
-                            var countryInfo = countryProvider.GetCountryByName(AppDataService.AppUser.HomeCountry);
-
-                            if (countryInfo is { })
-                            {
-                                if (countryInfo.Currencies.Count() > 0)
-                                {
-                                    _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
-                                }
-                            }
-                        }
-
                         if (AppDataService.AppUser.RolePackageStatus != default)
                         {
                             if (AppDataService.AppUser.RolePackageStatus < VerificationStatus.Submitted)
@@ -70,10 +66,84 @@
                         }
                     }
                 }
+
             }
 
+        }   
+    }
+
+    public void UpdateCountry(string country)
+    {
+        AppDataService.Country = country;
+        StateHasChanged();
+    }
+
+    public void UpdateCountryCurrency(string countryCurrency)
+    {
+        AppDataService.CountryCurrency = countryCurrency;
+        StateHasChanged();
+    }
+
+    /*protected async Task TestOnAfterRenderAsync(bool firstRender)
+        {
+        await EatCookies();
+
+        if (!firstRender)
+            {
+            Country = await AppDataService.GetCountryOnAnonymousStateAsync();
+
+            if (!string.IsNullOrEmpty(Country))
+                {
+                var CountryCurrency = AppDataService.GetCurrencyAnonymous(Country);
+            }
+
+
+            if (AppDataService.Country == default)
+                {
+                AppDataService.Country = await AppDataService.GetCountryOnAnonymousStateAsync();
+
+                if (string.IsNullOrEmpty(AppDataService.CountryCurrency))
+                    {
+                    AppDataService.CountryCurrency = AppDataService.GetCurrencyAnonymous(AppDataService.Country);
+                }
+
+                await StoreCookies();
+
+
+             }
+             StateHasChanged();
+    }
+    }
+
+    public async Task EatCookies()
+         {
+         check and get cookie for country location
+        string? countryLocation = await LocalStorage.GetItemAsStringAsync("CountryLocation");
+
+        if (countryLocation != default)
+            {
+            AppDataService.Country = countryLocation;
         }
 
-      }
+        string? countryLocationCurrency = await LocalStorage.GetItemAsStringAsync("CountryLocationCurrency");
 
+        if (countryLocationCurrency != default)
+            {
+            AppDataService.CountryCurrency = countryLocationCurrency;
+    }
+    }
+
+    public async Task StoreCookies()
+        {
+        if (!string.IsNullOrEmpty(AppDataService.Country))
+            {
+            await LocalStorage.SetItemAsStringAsync("CountryLocation", AppDataService.Country);
+        }
+
+        if (!string.IsNullOrEmpty(AppDataService.CountryCurrency))
+            {
+            await LocalStorage.SetItemAsStringAsync("CountryLocationCurrency", AppDataService.Country);
+    }
+    }
+    */
 }

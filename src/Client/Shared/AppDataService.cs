@@ -32,6 +32,7 @@ public class AppDataService : IAppDataService
     private IPackagesClient PackagesClient { get; set; } = default!;
 
     private IRolesClient RolesClient { get; set; } = default!;
+
     private ILoansClient LoansClient { get; set; } = default!;
 
     private IUsersClient UsersClient { get; set; } = default!;
@@ -64,6 +65,9 @@ public class AppDataService : IAppDataService
 
         LoansClient = loansClient;
 
+        Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        Console.WriteLine("------------------------------------ AppDataService loaded... ------------------------------------");
+        Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     public Task Initialization { get; private set; } = default!;
@@ -96,12 +100,15 @@ public class AppDataService : IAppDataService
         }
     }
 
+    public string? Country { get; set; }
+    public string? CountryCurrency { get; set; }
+
     private bool IsNewUser { get; set; } = false;
 
     private GeolocationPosition? _position;
 
     private GeolocationPositionError? _positionError;
-
+        
     public async Task InitializationAsync()
     {
         GeolocationService.GetCurrentPosition(
@@ -332,92 +339,10 @@ public class AppDataService : IAppDataService
         return default!;
     }
 
-    // Note://
-    // For investigation
-    // If ANONYMOUS: The value can be detected ONLY OnAfterRender state
-    //               Initialized state just doesn't seem to work, maybe
-    //               the fact that the dom needs to be loaded for the
-    //               map listeners to activate?
-    public async Task<string> GetCountryOnAnonymousStateAsync()
-    {
-        string country = string.Empty;
-
-        GeolocationService.GetCurrentPosition(
-                   component: this,
-                   onSuccessCallbackMethodName: nameof(OnPositionRecieved),
-                   onErrorCallbackMethodName: nameof(OnPositionError),
-                   options: _options);
-
-        if (_position != null)
-        {
-            var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
-            {
-                Coordinate = new Geo.MapBox.Models.Coordinate()
-                {
-                    Latitude = Convert.ToDouble(_position.Coords.Latitude.ToString()),
-                    Longitude = Convert.ToDouble(_position.Coords.Longitude.ToString())
-                },
-                EndpointType = Geo.MapBox.Enums.EndpointType.Places
-            });
-
-            if (responseReverseGeocoding != default)
-            {
-                if (responseReverseGeocoding.Features != default)
-                {
-                    if (responseReverseGeocoding.Features.Count > 0)
-                    {
-                        foreach (var f in responseReverseGeocoding.Features)
-                        {
-                            if (f.Contexts.Count > 0)
-                            {
-                                foreach (var c in f.Contexts)
-                                {
-                                    if (!string.IsNullOrEmpty(c.Id))
-                                    {
-                                        switch (c.Id)
-                                        {
-                                            case string s when s.Contains("country"):
-                                                country = c.ContextText[0].Text;
-                                                break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-
-        return country;
-    }
-
-    // Note://
-    // should work closer with GetCountryOnAnonymousStateAsync
-    public string GetCurrencyAnonymous(string homeCountry)
-    {
-        if (!string.IsNullOrEmpty(homeCountry))
-        {
-            var countryProvider = new CountryProvider();
-            var countryInfo = countryProvider.GetCountryByName(homeCountry);
-
-            if (countryInfo is { })
-            {
-                if (countryInfo.Currencies.Count() > 0)
-                {
-                    return countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
-                }
-
-            }
-        }
-
-        return string.Empty;
-    }
-
     public string GetCurrencyAppUser()
     {
         var countryProvider = new CountryProvider();
+
         var countryInfo = countryProvider.GetCountryByName(AppUser.HomeCountry);
 
         if (AppUser != default)

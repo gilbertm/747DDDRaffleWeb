@@ -1,24 +1,28 @@
 ﻿@using System.Text.RegularExpressions;
+
 @inject IStringLocalizer<MainLayoutAnon> L
 
-@inject NavigationManager NavigationManager
+<CascadingValue Value="@AppDataService" Name="AppDataService">
+    <HeaderAnon CssClasses="@($"{_cssClasses}")" />
 
-<HeaderAnon CssClasses="@($"{_cssClasses}")" />
+    <SliderAnon HideIfThesePages="about-us,get-started,contact-us,users,users/,login,loans,loans/,catalog,catalog/" OnHideChange=@( () => {} ) />
 
-<SliderAnon HideIfThesePages="about-us,get-started,contact-us,users,users/,login,loans,loans/,catalog,catalog/" OnHideChange=@( () => {} ) />
+    <MudMainContent Class="@($"d-flex {_cssClasses}")">
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+            @ChildContent
+            <MudScrollToTop TopOffset="400" Style="z-index:2000;">
+                <MudFab Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" />
+            </MudScrollToTop>
+        </MudContainer>
+    </MudMainContent>
 
-<MudMainContent Class="@($"d-flex {_cssClasses}")">
-    <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-        @ChildContent
-        <MudScrollToTop TopOffset="400" Style="z-index:2000;">
-            <MudFab Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" />
-        </MudScrollToTop>
-    </MudContainer>
-</MudMainContent>
-
-<Footer />
+    <Footer />
+</CascadingValue>
 
 @code {
+
+    [Inject]
+    protected AppDataService AppDataService { get; set; } = default!;
 
     private string _currentUrl = default!;
     private Uri _uri = default!;
@@ -26,7 +30,7 @@
 
     protected override void OnParametersSet()
     {
-        _currentUrl = NavigationManager.Uri;
+        _currentUrl = Navigation.Uri;
 
         _uri = new Uri(_currentUrl);
 
@@ -35,9 +39,10 @@
 
             _cssClasses = _uri.Segments.ToList().ElementAt(1).ToString().ToLower();
 
-            _cssClasses = _cssClasses.Replace("/","");
+            _cssClasses = _cssClasses.Replace("/", "");
 
-        } else
+        }
+        else
         {
             _cssClasses = "home";
         }
