@@ -19,7 +19,7 @@
                                 </MudItem>
                                 <MudItem xs="6" Class="mb-0 pb-0" Style="text-align:right">
                                     <MudText Typo="Typo.h6" Style="font-weight:700">
-                                        @($"{string.Format("{0:#,0.00}", float.Parse(Borrowing.ToString()))} {CountryCurrency}")
+                                        @($"{string.Format("{0:#,0.00}", float.Parse(Borrowing.ToString()))} {AppDataService.CountryCurrency}")
                                     </MudText>
                                 </MudItem>
                                 <MudItem xs="12" Class="py-0">
@@ -27,12 +27,12 @@
                                 </MudItem>
                                 <MudItem xs="6" Class="mt-0 pt-0">
                                     <MudText Typo="Typo.caption">
-                                        @($"{string.Format("{0:#,0.00}", 500)} {CountryCurrency}")
+                                        @($"{string.Format("{0:#,0.00}", 500)} {AppDataService.CountryCurrency}")
                                     </MudText>
                                 </MudItem>
                                 <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
                                     <MudText Typo="Typo.caption">
-                                        @($"{string.Format("{0:#,0.00}", 5000)} {CountryCurrency}")
+                                        @($"{string.Format("{0:#,0.00}", 5000)} {AppDataService.CountryCurrency}")
                                     </MudText>
                                 </MudItem>
                             </MudGrid>
@@ -80,18 +80,18 @@
                                         </MudItem>
                                         <MudItem xs="4" Class="mb-0 pb-0" Style="text-align:right">
                                             <MudText Typo="Typo.subtitle1" Style="font-weight:700;white-space:nowrap;">
-                                                @($"{string.Format("{0:#,0.00}", float.Parse(Loaning.ToString()))} {CountryCurrency}")
+                                                @($"{string.Format("{0:#,0.00}", float.Parse(Loaning.ToString()))} {AppDataService.CountryCurrency}")
                                             </MudText>
                                         </MudItem>
                                         <MudItem xs="12" Class="py-0">
                                             <MudSlider @bind-Value="Loaning" Size="Size.Medium" Step="500" Min="500" Max="5000" Color="Color.Info" />
                                         </MudItem>
                                         <MudItem xs="6" Class="mt-0 pt-0">
-                                            <MudText Typo="Typo.caption">@($"{string.Format("{0:#,0.00}", 500)} {CountryCurrency}")</MudText>
+                                            <MudText Typo="Typo.caption">@($"{string.Format("{0:#,0.00}", 500)} {AppDataService.CountryCurrency}")</MudText>
                                         </MudItem>
                                         <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
                                             <MudText Typo="Typo.caption">
-                                                @($"{string.Format("{0:#,0.00}", 5000)} {CountryCurrency}")
+                                                    @($"{string.Format("{0:#,0.00}", 5000)} {AppDataService.CountryCurrency}")
                                             </MudText>
                                         </MudItem>
                                     </MudGrid>

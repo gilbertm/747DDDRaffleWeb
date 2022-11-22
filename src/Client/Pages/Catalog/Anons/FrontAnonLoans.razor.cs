@@ -14,21 +14,12 @@ namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 public partial class FrontAnonLoans
 {
     [Inject]
-    private NavigationManager NavigationManager { get; set; } = default!;
-
-    [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
-    [Inject]
-    private AppDataService AppDataService { get; set; } = default!;
-
-    // [Inject]
-    //private ILocalStorageService LocalStorage { get; set; } = default!;
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
 
     private EntityContainerContext<LoanDto> Context { get; set; } = default!;
-
-    private string Country { get; set; } = default!;
-    private string CountryCurrency { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,7 +40,7 @@ public partial class FrontAnonLoans
             // 
             // if logged in, the role will be used to navigate
             // to the user's account type listing
-            NavigationManager.NavigateTo("/");
+            Navigation.NavigateTo("/");
 
             return;
         }
@@ -92,21 +83,6 @@ public partial class FrontAnonLoans
                        return default!;
                    },
                    template: BodyTemplate);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-        {
-            Country = await AppDataService.GetCountryOnAnonymousStateAsync();
-
-            if (!string.IsNullOrEmpty(Country))
-            {
-                CountryCurrency = AppDataService.GetCurrencyAnonymous(Country);
-            }
-
-            StateHasChanged();
-        }
     }
 
     private async Task<InputOutputResourceDto> GetImage(Guid productId)
