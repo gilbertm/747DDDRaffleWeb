@@ -39,7 +39,6 @@
 
     <ItemGroup>
         <PackageReference Include="Blazor.Geolocation.WebAssembly" Version="2.0.11" />
-        <PackageReference Include="Blazor.LocalStorage.WebAssembly" Version="2.0.11" />
         <PackageReference Include="Geo.MapBox" Version="1.1.0" />
         <PackageReference Include="Mapster" Version="7.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.5" />

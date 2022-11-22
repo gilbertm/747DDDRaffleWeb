@@ -15,7 +15,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddClientServices(builder.Configuration);
 builder.Services.AddGeolocationServices();
-builder.Services.AddLocalStorageServices();
 builder.Services.AddMapBoxServices(options => options.UseKey(builder.Configuration["MapBox:Key"]));
 builder.Services.AddTransient<IAppDataService, AppDataService>();
 builder.Services.AddScoped<AppDataService>();
