@@ -48,7 +48,8 @@
 
                 var lngLat = marker.getLngLat();
 
-                window.dotNetJSMapBox.processLatLng(lngLat, objectFromDotNet.key);
+                // deprecated, using internal checks is more reliable
+                // window.dotNetJSMapBox.processLatLng(lngLat, objectFromDotNet.key);
 
             });
 
@@ -222,7 +223,7 @@
             longitude = document.getElementById("Longitude").value;
 
         dotNetHelper.invokeMethodAsync("ChangeAddressFromJS", homeAddress, homeCity, homeCountry, homeRegion, latitude, longitude);
-    },
+    }/*,
     processLatLng: function (latLng, key) {
         var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + latLng.lng + "," + latLng.lat + ".json?access_token=" + key;
 
@@ -246,5 +247,5 @@
             .catch(errorMsg => {
                 // console.log(errorMsg);
             });
-    }
+    } */
 };

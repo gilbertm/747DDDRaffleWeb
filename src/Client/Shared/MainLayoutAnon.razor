@@ -3,6 +3,15 @@
 @inject IStringLocalizer<MainLayoutAnon> L
 
 <CascadingValue Value="@AppDataService" Name="AppDataService">
+
+    @*<h1>Country of AppDataService: </h1>
+    <h1>@AppDataService.Country</h1>
+
+    <h1>Country Currency of AppDataService: </h1>
+    <h1>@AppDataService.CountryCurrency</h1> *@
+
+    <EhulogCountryAndCurrency OnUpdatedCountry="UpdateCountry" OnUpdatedCity="UpdateCity" OnUpdatedCountryCurrency="UpdateCountryCurrency" />
+
     <HeaderAnon CssClasses="@($"{_cssClasses}")" />
 
     <SliderAnon HideIfThesePages="about-us,get-started,contact-us,users,users/,login,loans,loans/,catalog,catalog/" OnHideChange=@( () => {} ) />
@@ -47,4 +56,85 @@
             _cssClasses = "home";
         }
     }
+
+    public void UpdateCity(string city)
+    {
+        AppDataService.City = city;
+        StateHasChanged();
+    }
+
+    public void UpdateCountry(string country)
+    {
+        AppDataService.Country = country;
+        StateHasChanged();
+    }
+
+    public void UpdateCountryCurrency(string countryCurrency)
+    {
+        AppDataService.CountryCurrency = countryCurrency;
+        StateHasChanged();
+    }
+
+    /*protected async Task TestOnAfterRenderAsync(bool firstRender)
+        {
+        await EatCookies();
+
+        if (!firstRender)
+            {
+            Country = await AppDataService.GetCountryOnAnonymousStateAsync();
+
+            if (!string.IsNullOrEmpty(Country))
+                {
+                var CountryCurrency = AppDataService.GetCurrencyAnonymous(Country);
+            }
+
+
+            if (AppDataService.Country == default)
+                {
+                AppDataService.Country = await AppDataService.GetCountryOnAnonymousStateAsync();
+
+                if (string.IsNullOrEmpty(AppDataService.CountryCurrency))
+                    {
+                    AppDataService.CountryCurrency = AppDataService.GetCurrencyAnonymous(AppDataService.Country);
+                }
+
+                await StoreCookies();
+
+
+             }
+             StateHasChanged();
+    }
+    }
+
+    public async Task EatCookies()
+         {
+         check and get cookie for country location
+        string? countryLocation = await LocalStorage.GetItemAsStringAsync("CountryLocation");
+
+        if (countryLocation != default)
+            {
+            AppDataService.Country = countryLocation;
+        }
+
+        string? countryLocationCurrency = await LocalStorage.GetItemAsStringAsync("CountryLocationCurrency");
+
+        if (countryLocationCurrency != default)
+            {
+            AppDataService.CountryCurrency = countryLocationCurrency;
+    }
+    }
+
+    public async Task StoreCookies()
+        {
+        if (!string.IsNullOrEmpty(AppDataService.Country))
+            {
+            await LocalStorage.SetItemAsStringAsync("CountryLocation", AppDataService.Country);
+        }
+
+        if (!string.IsNullOrEmpty(AppDataService.CountryCurrency))
+            {
+            await LocalStorage.SetItemAsStringAsync("CountryLocationCurrency", AppDataService.Country);
+    }
+    }
+    */
 }

@@ -15,6 +15,9 @@
     protected AppDataService AppDataService { get; set; } = default!;
 
     [Parameter]
+    public EventCallback<string> OnUpdatedCity { get; set; } = default!;
+
+    [Parameter]
     public EventCallback<string> OnUpdatedCountry { get; set; } = default!;
 
     [Parameter]
@@ -26,9 +29,11 @@
     [Inject]
     private IGeolocationService GeolocationService { get; set; } = default!;
 
-    public string? country { get; set; }
+    public string _city = default!;
 
-    public string? countryCurrency { get; set; }
+    public string _country = default!;
+
+    public string _countryCurrency = default!;
 
     private GeolocationPosition? _position;
 
@@ -54,7 +59,7 @@
     {
         // not first render
         // and until country is known
-        if (!firstRender && (country == default))
+        if (!firstRender && (_country == default) && (_city == default))
         {
             if (_position != default)
             {
@@ -84,25 +89,30 @@
                                         {
                                             switch (c.Id)
                                             {
-                                                case string s when s.Contains("country"):
-                                                    country = c.ContextText[0].Text;
+                                                case string s when s.Contains("place"):
+                                                    _city = c.ContextText[0].Text;
+                                                    await OnUpdatedCity.InvokeAsync(_city);
+                                                    break;
 
-                                                    await OnUpdatedCountry.InvokeAsync(country);
+                                                case string s when s.Contains("country"):
+                                                    _country = c.ContextText[0].Text;
+
+                                                    await OnUpdatedCountry.InvokeAsync(_country);
 
                                                     var countryProvider = new CountryProvider();
 
-                                                    var countryInfo = countryProvider.GetCountryByName(country);
+                                                    var countryInfo = countryProvider.GetCountryByName(_country);
 
                                                     if (countryInfo is { })
                                                     {
                                                         if (countryInfo.Currencies.Count() > 0)
                                                         {
-                                                            countryCurrency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                                                            _countryCurrency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
                                                         }
 
                                                     }
 
-                                                    await OnUpdatedCountryCurrency.InvokeAsync(countryCurrency);
+                                                    await OnUpdatedCountryCurrency.InvokeAsync(_countryCurrency);
 
                                                     StateHasChanged();
                                                     break;

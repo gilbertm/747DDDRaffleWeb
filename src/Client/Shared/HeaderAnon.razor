@@ -5,7 +5,32 @@
         <MudContainer MaxWidth="MaxWidth.Large" Class="pa-0 align-self-center">
             <MudToolBar DisableGutters=true Class="pa-0">
                 <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.LocationOn" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
-                    <MudInputLabel id="HomeCityAnon">Uknown,</MudInputLabel><MudInputLabel id="HomeCountryAnon">Unknown</MudInputLabel>
+                    <MudInputLabel id="HomeCityAnon">
+                        @if (AppDataService != default)
+                        {
+                            @if (AppDataService.City != default)
+                            {
+                                @($"{AppDataService.City},")<span>&nbsp;</span>
+                            }
+                            else
+                            {
+                                @($"Unknown,")<span>&nbsp;</span>
+                            }
+                        }
+                    </MudInputLabel><MudInputLabel id="HomeCountryAnon">
+                        @if (AppDataService != default)
+                        {
+                            @if (AppDataService.Country != default)
+                            {
+                                @AppDataService.Country
+                            }
+                            else
+                            {
+                                @($"Unknown")
+                            }
+                        }
+
+                    </MudInputLabel>
                 </MudButton>
                 <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
                     <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.Email" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:lowercase; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
@@ -32,7 +57,7 @@
                     </MudButton>
                     <MudSpacer />
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-                        <MudCard Class="@classIsMobileMenuHidden" Elevation="0" Style="margin-bottom:0 !important" @onclick="@(() => ToggleMobileBurgerMenu())">
+                        <MudCard Class="@_classIsMobileMenuHidden" Elevation="0" Style="margin-bottom:0 !important" @onclick="@(() => ToggleMobileBurgerMenu())">
                             @* <MudText>SM</MudText> *@
                             <span class="icon-bar top_bar"></span>
                             <span class="icon-bar middle-bar"></span>
@@ -42,8 +67,9 @@
                             header.main-menu-app-bar.anon {
                                 position: fixed !important;
                                 background: transparent !important;
-                                z-index:100;
+                                z-index: 100;
                             }
+
                             .mud-carousel {
                                 margin-top: 150px !important;
                             }
@@ -78,8 +104,8 @@
                         <MudSpacer />
                         <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
                             <MudToolBar DisableGutters=true>
-                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
-                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!_isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
                             </MudToolBar>
                         </MudPaper>
                     </MudHidden>
@@ -87,7 +113,7 @@
             </MudContainer>
         </MudContainer>
         <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true" Class="burder-menu-dropdown">
-            <MudContainer MaxWidth="MaxWidth.False" Class="@(isMobileMenuHidden ? "d-none px-0" : "px-0")">
+            <MudContainer MaxWidth="MaxWidth.False" Class="@(_isMobileMenuHidden ? "d-none px-0" : "px-0")">
                 <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
                     <MudNavMenu>
                         <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Home</MudText></MudNavLink>
@@ -101,36 +127,39 @@
                     </MudNavMenu>
                     <MudDivider Class="my-3" />
                     <MudToolBar Class="pb-5">
-                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
-                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
+                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!_isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
                     </MudToolBar>
                 </MudPaper>
             </MudContainer>
-            <MudOverlay Visible=!isMobileMenuHidden DarkBackground="true" AutoClose="false" Absolute=true Style="z-index:-1;height:100vh" />
+            <MudOverlay Visible=!_isMobileMenuHidden DarkBackground="true" AutoClose="false" Absolute=true Style="z-index:-1;height:100vh" />
         </MudHidden>
     </MudPaper>
 </MudAppBar>
 
 
 @code {
-    [Inject]
-    public AppDataService AppDataService { get; set; } = default!;
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
+
     [Parameter]
     public string CssClasses { get; set; } = default!;
-    public string classIsMobileMenuHidden { get; set; } = "pa-5 navbar-toggler collapsed cursor-pointer";
 
-    private bool isLoginHovered { get; set; } = default!;
-    private bool isRegisteredHovered { get; set; } = default!;
+    public string _classIsMobileMenuHidden = "pa-5 navbar-toggler collapsed cursor-pointer";
+
+    private bool _isLoginHovered = default!;
+
+    private bool _isRegisteredHovered = default!;
 
     public bool IsLoginHovered
     {
         get
         {
-            return isLoginHovered;
+            return _isLoginHovered;
         }
         set
         {
-            isLoginHovered = value;
+            _isLoginHovered = value;
         }
     }
 
@@ -138,35 +167,41 @@
     {
         get
         {
-            return isRegisteredHovered;
+            return _isRegisteredHovered;
         }
         set
         {
-            isRegisteredHovered = value;
+            _isRegisteredHovered = value;
         }
     }
 
-    private bool isMobileMenuHidden = true;
+    private bool _isMobileMenuHidden = true;
 
     public bool ToggleMobileBurgerMenu()
     {
-        if (isMobileMenuHidden == true)
+        if (_isMobileMenuHidden == true)
         {
-            isMobileMenuHidden = false;
-            classIsMobileMenuHidden = "pa-5 navbar-toggler cursor-pointer";
+            _isMobileMenuHidden = false;
+            _classIsMobileMenuHidden = "pa-5 navbar-toggler cursor-pointer";
         }
         else
         {
-            isMobileMenuHidden = true;
-            classIsMobileMenuHidden = "pa-5 navbar-toggler collapsed cursor-pointer";
+            _isMobileMenuHidden = true;
+            _classIsMobileMenuHidden = "pa-5 navbar-toggler collapsed cursor-pointer";
         }
 
-        return isMobileMenuHidden;
+        return _isMobileMenuHidden;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await AppDataService.InitializationAsync();
+        if (AppDataService != default)
+        {
+            // monitor, cascading is taking care of this?
+            // TODO:// checks
+            // await AppDataService.InitializationAsync();
+        }
+
     }
 
     private void Profile()

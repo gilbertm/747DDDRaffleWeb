@@ -24,9 +24,20 @@
                             <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list" OnClick="@(() => SetList())" Color="@(IsList ? Color.Success : Color.Surface)">List</MudIconButton>
                             <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid" OnClick="@(() => SetGrid())" Color="@(IsGrid ? Color.Success : Color.Surface)">Grid</MudIconButton>
                             <MudSpacer />
-                            <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
-                                No available loans in this location. <MudLink Typo="Typo.body1" Href="/loan/lending/benefits"><strong>Benefits</strong></MudLink> of being part of this community.
-                            </MudText>
+                            @if (_entityList.Count() > 1)
+                            {
+                                <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                                    Available loans nearest to your registered location: <strong>@_entityList.Count()</strong> entries
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                                    Available loan nearest to your registered location: <strong>@_entityList.Count()</strong> entry
+                                </MudText>
+
+                            }
+
                             <MudSpacer />
                         </MudToolBar>
                     </MudPaper>

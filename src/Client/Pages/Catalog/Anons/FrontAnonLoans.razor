@@ -267,11 +267,29 @@
                             <MudButton Variant="Variant.Outlined" DisableRipple=true Class="mt-2 custom basic" IconColor="Color.Surface" Size="Size.Medium" Style="width:100%;" EndIcon="@Icons.Filled.KeyboardArrowDown" OnClick="(() => { IsVisibleProductOverlay(trail.Id); })">Details</MudButton>
                         </MudItem>
                     </MudGrid>
-                    <MudOverlay Absolute="true" DarkBackground="true" @bind-Visible="@dictOverlayVisibility[trail.Id]" AutoClose=false>
-                        <MudToolBar Class="px-0" Style="height:auto">
-                            <MudChip Size="Size.Small" Icon="@Icons.Filled.CalendarMonth" Class="border-0 rounded-0 px-0" Style="background:transparent">@trail.Month Months</MudChip>
-                            <MudChip Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Class="border-0 rounded-0 px-1" Style="background:transparent">@trail.Interest Interest</MudChip>
+                    <MudOverlay Class="pa-3" Absolute="true" DarkBackground="true" @bind-Visible="@dictOverlayVisibility[trail.Id]" AutoClose=false>
+                        @if (_loanLenderDto != default)
+                        {
+                            @if (_loanLenderDto.Product != default)
+                            {
+                                <MudText Typo="Typo.h1" Class="title" Style="@($"color:{Colors.Shades.White};height:auto !important;")">@_loanLenderDto.Product.Name</MudText>
+                            }
+                        }
+                        <MudToolBar Style="height:auto">
+                            <MudText Typo="Typo.h2" Class="text-left product-price" Style="@($"color:var(--mud-palette-secondary)")">@string.Format("{0:#,0.00}", _sumLoan) @_currency</MudText>
+                            <MudSpacer />
+                            @if (trail.LoanApplicants != default)
+                            {
+                                <MudAlert Severity="Severity.Normal" Icon="@Icons.Material.Filled.Person" Dense="true" Class="ma-0 pa-0 border-0" Variant="Variant.Outlined" Style="@($"color:{Colors.Shades.White}")">@trail.LoanApplicants.Count()</MudAlert>
+                            }
                         </MudToolBar>
+                        <MudGrid Class="pa-2" Style="height:auto">
+                            <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="Variant.Text" Size="Size.Small" Icon="@Icons.Filled.CalendarMonth" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>@trail.Month Months</MudItem>
+                            <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="Variant.Text" Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>@trail.Interest Interest</MudItem>
+                            <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="Variant.Text" Size="Size.Small" Icon="@Icons.Material.Filled.Event" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>@string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudItem>
+                            <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="Variant.Text" Size="Size.Small" Icon="@Icons.Material.Filled.Money" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>Base amount: @string.Format("{0:#,0.00}", _loanLenderDto?.Product?.Amount) @_currency</MudItem>
+                            <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="Variant.Text" Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>@trail.InterestType</MudItem>
+                        </MudGrid>
                         <MudButton Variant="Variant.Outlined" DisableRipple=true Class="mt-2 custom orange" IconColor="Color.Surface" Size="Size.Medium" Style="width:100%;" OnClick="(() => { IsVisibleProductOverlay(trail.Id); })">
                             Close
                         </MudButton>
