@@ -89,7 +89,8 @@ public partial class FrontAnonymousLoans
             {
                 loanFilter.Amount = amount.Value;
                 _borrowing = amount.Value;
-            } else
+            }
+            else
             {
                 loanFilter.Amount = _borrowing;
             }
@@ -98,7 +99,8 @@ public partial class FrontAnonymousLoans
             {
                 loanFilter.Month = month.Value;
                 _borrowDuration = month.Value;
-            } else
+            }
+            else
             {
                 loanFilter.Month = _borrowDuration;
             }
@@ -107,7 +109,6 @@ public partial class FrontAnonymousLoans
         if (await ApiHelper.ExecuteCallGuardedAsync(
                async () => await GetAnonLoans(loanFilter), Snackbar) is { } result)
         {
-            
             if (result.Data is { } && result.Data.Count > 0)
             {
                 foreach (var item in result.Data)
