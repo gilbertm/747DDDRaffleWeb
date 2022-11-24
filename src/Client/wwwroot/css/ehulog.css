@@ -11,6 +11,9 @@
   --custom-pallete-button-hover: #ff952d;
   --custom-pallete-button-hover-darker: #f48920; }
 
+.mud-overlay .mud-overlay-scrim.mud-overlay-dark {
+  background-color: rgba(0, 0, 0, 0.8); }
+
 .mud-table-root .mud-table-body:last-child .mud-table-row:last-child .mud-table-root .mud-table-cell {
   border-bottom: 1px solid #e0e0e0; }
 
