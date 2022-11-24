@@ -1,4 +1,4 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
+﻿using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Pages.Multitenancy;
@@ -8,18 +8,37 @@ using Mapster;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 
-public partial class FrontAnonLoans
+public partial class FrontAnonymousLoans
 {
+    [CascadingParameter(Name = "AppDataService")]
+    public AppDataService AppDataService { get; set; } = default!;
+
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
-    [CascadingParameter(Name = "AppDataService")]
-    protected AppDataService AppDataService { get; set; } = default!;
+    [Inject]
+    private ILoansClient LoansClient { get; set; } = default!;
 
-    private EntityContainerContext<LoanDto> Context { get; set; } = default!;
+    public bool Loading { get; set; }
+
+    public bool IsLoaded { get; set; } = false;
+
+    private IEnumerable<LoanDto>? _entityList;
+    private int _totalItems;
+    private int _pageSize;
+    private int _currentPage;
+    private IDictionary<Guid, bool> _dictOverlayVisibility = new Dictionary<Guid, bool>();
+
+    private float _borrowing = 10000f;
+    private int _borrowDuration = 6;
+    private int _loaning = 500;
+    private int _loaningDuration = 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,54 +64,112 @@ public partial class FrontAnonLoans
             return;
         }
 
-        Context = new EntityContainerContext<LoanDto>(
-                   searchFunc: async filter =>
-                   {
-                       var loanFilter = filter.Adapt<SearchLoansAnonRequest>();
+        await LoadDataAsync();
+    }
 
-                       if (AppDataService != default)
-                       {
-                           if (AppDataService.Country != default)
-                               loanFilter.HomeCountry = AppDataService.Country;
+    private async Task LoadDataAsync(float? amount = default, int? month = default)
+    {
 
-                           if (AppDataService.City != default)
-                               loanFilter.HomeCity = AppDataService.City;
-                       }
+        var filter = GetPaginationFilter();
 
-                       var anonLoans = await GetAnonLoans(loanFilter);
+        var loanFilter = filter.Adapt<SearchLoansAnonRequest>();
 
-                       if (anonLoans is { })
-                       {
-                           if (anonLoans.Data is { } && anonLoans.Data.Count > 0)
-                           {
-                               foreach (var item in anonLoans.Data)
-                               {
-                                   dictOverlayVisibility.Add(item.Id, false);
+        _dictOverlayVisibility.Clear();
 
-                                   if (item.LoanLenders != default)
-                                   {
-                                       var loanLender = item.LoanLenders.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
 
-                                       if (loanLender is { })
-                                       {
-                                           var image = await GetImage(loanLender.ProductId);
+        if (AppDataService != default)
+        {
+            if (AppDataService.Country != default)
+                loanFilter.HomeCountry = AppDataService.Country;
 
-                                           if (loanLender.Product is { } && image is { })
-                                           {
-                                               loanLender.Product.Image = image;
-                                           }
-                                       }
-                                   }
-                               }
-                           }
-                       }
+            if (AppDataService.City != default)
+                loanFilter.HomeCity = AppDataService.City;
 
-                       if (anonLoans is { })
-                           return anonLoans.Adapt<EntityContainerPaginationResponse<LoanDto>>();
+            if (amount.HasValue)
+            {
+                loanFilter.Amount = amount.Value;
+                _borrowing = amount.Value;
+            } else
+            {
+                loanFilter.Amount = _borrowing;
+            }
 
-                       return default!;
-                   },
-                   template: BodyTemplate);
+            if (month.HasValue)
+            {
+                loanFilter.Month = month.Value;
+                _borrowDuration = month.Value;
+            } else
+            {
+                loanFilter.Month = _borrowDuration;
+            }
+        }
+
+        if (await ApiHelper.ExecuteCallGuardedAsync(
+               async () => await GetAnonLoans(loanFilter), Snackbar) is { } result)
+        {
+            
+            if (result.Data is { } && result.Data.Count > 0)
+            {
+                foreach (var item in result.Data)
+                {
+                    if (item.LoanLenders != default)
+                    {
+                        _dictOverlayVisibility.Add(item.Id, false);
+
+                        var loanLender = item.LoanLenders.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
+
+                        if (loanLender is { })
+                        {
+                            var image = await GetImage(loanLender.ProductId);
+
+                            if (loanLender.Product is { } && image is { })
+                            {
+                                loanLender.Product.Image = image;
+                            }
+                        }
+                    }
+                }
+            }
+
+            _totalItems = result.TotalCount;
+            _entityList = result.Data;
+            _pageSize = result.PageSize;
+        }
+    }
+
+    private async Task OnValueChangedUpdateAnonymousListingAmount(float amount)
+    {
+        await LoadDataAsync(amount, null);
+
+        StateHasChanged();
+    }
+
+    private async Task OnValueChangedUpdateAnonymousListingMonth(int month)
+    {
+        await LoadDataAsync(null, month);
+
+        StateHasChanged();
+    }
+
+    private PaginationFilter GetPaginationFilter()
+    {
+        StringValues pageCount;
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out pageCount))
+        {
+            _currentPage = Convert.ToInt32(pageCount);
+        }
+
+        _currentPage = (_currentPage <= 1) ? 1 : _currentPage;
+
+        var filter = new PaginationFilter
+        {
+            PageNumber = _currentPage,
+            PageSize = 5
+        };
+
+        return filter;
     }
 
     private async Task<InputOutputResourceDto> GetImage(Guid productId)
@@ -146,7 +223,7 @@ public partial class FrontAnonLoans
         return default!;
     }
 
-    private async Task<EntityContainerPaginationResponse<LoanDto>> GetAnonLoans(SearchLoansAnonRequest search)
+    private async Task<GridContainerPaginationResponse<LoanDto>> GetAnonLoans(SearchLoansAnonRequest search)
     {
         HttpRequestMessage request;
         HttpResponseMessage response;
@@ -189,7 +266,7 @@ public partial class FrontAnonLoans
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var dataLoans = JsonSerializer.Deserialize<EntityContainerPaginationResponse<LoanDto>>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var dataLoans = JsonSerializer.Deserialize<GridContainerPaginationResponse<LoanDto>>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                     if (dataLoans is not null)
                         return dataLoans;
@@ -199,4 +276,5 @@ public partial class FrontAnonLoans
 
         return default!;
     }
+
 }

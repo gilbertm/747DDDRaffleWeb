@@ -1,0 +1,242 @@
+﻿@using System.Globalization;
+@using Nager.Country;
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResource> L
+
+
+@if (EntityList != default)
+{
+    IsNeededPager = true;
+
+    @if (EntityList.Count() <= 0)
+    {
+        IsNeededPager = false;
+    }
+
+    <EhulogContainer MaxWidth="MaxWidth.False" Class="list-grid-container pa-0">
+        @if (IsNeededPager)
+        {
+            <MudPaper Elevation="1" Class="mb-4">
+                <MudToolBar>
+                    <MudText Typo="Typo.caption" Align="Align.Left">Display</MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.ViewList" aria-label="List" Class="btn-list-list" OnClick="@(() => SetList())" Color="@(IsList ? Color.Success : Color.Surface)">List</MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.GridView" aria-label="Grid" Class="btn-list-grid" OnClick="@(() => SetGrid())" Color="@(IsGrid ? Color.Success : Color.Surface)">Grid</MudIconButton>
+                    <MudSpacer />
+                    @if (TotalItems != default)
+                    {
+                        <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                            Available loans nearest to your registered location: <strong>@TotalItems</strong> entries
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                            Available loan nearest to your registered location: <strong>@TotalItems</strong> entry
+                        </MudText>
+
+                    }
+
+                    <MudSpacer />
+                </MudToolBar>
+            </MudPaper>
+        }
+
+        @if (EntityList.Count() > 0)
+        {
+            <MudPaper Elevation="0" id="@typeof(LoanDto).Name" Class="list-grid-group-wrapper grid-group-wrapper">
+                <MudGrid>
+                    @foreach (var item in EntityList)
+                    {
+                        <MudItem xs="6" sm="4" md="3" lg="2" Class="item five-columns">
+                            @BodyTemplate(item)
+                        </MudItem>
+
+                    }
+                </MudGrid>
+            </MudPaper>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12" Class="px-0 my-9">
+                    <MudPaper Elevation="5" Class="mb-5 px-5 py-9">
+                        <MudText Typo="Typo.body1" Color="Color.Surface" Align="Align.Center">
+                            No available loans in this location. <MudLink Typo="Typo.body1" Href="/loan/lending/benefits"><strong>Benefits</strong></MudLink> of being part of this community..
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        }
+    </EhulogContainer>
+
+    @if (IsNeededPager)
+    {
+        <EntityContainerPager Total="@TotalItems" PageSize="@PageSize" CurrentPage="@CurrentPage" />
+    }
+}
+
+
+@code {
+
+    private bool IsNeededPager { get; set; } = false;
+
+    private void SetList()
+    {
+        IsList = true;
+        IsGrid = false;
+
+    }
+    private void SetGrid()
+    {
+        IsList = false;
+        IsGrid = true;
+
+    }
+    private bool IsList { get; set; }
+    private bool IsGrid { get; set; } = true;
+
+    protected RenderFragment BodyTemplate(LoanDto trail)
+    {
+        return __builder =>
+        {
+            LoanLesseeDto _loanLesseeDto = default!;
+            LoanLenderDto _loanLenderDto = default!;
+            List<LoanLedgerDto> _loanLedgers = default!;
+            float _sumLoan = 0f;
+            string _currency = string.Empty;
+
+            string _imageUrl = string.Empty;
+            string _productName = string.Empty;
+            string href = "/loan/" + @trail.Id + "?redirect_url=/login";
+
+            if (trail.LoanLenders != default)
+            {
+                _loanLenderDto = trail.LoanLenders.FirstOrDefault() ?? default!;
+
+                if (_loanLenderDto != default)
+                {
+                    if (_loanLenderDto.Product != default)
+                    {
+                        if (_loanLenderDto.Product.Name != default)
+                            _productName = _loanLenderDto.Product.Name;
+
+                        if (_loanLenderDto.Product.Image != default)
+                            _imageUrl = string.IsNullOrEmpty(_loanLenderDto.Product.Image.ImagePath) ? string.Empty : (Config[ConfigNames.ApiBaseUrl] + _loanLenderDto.Product.Image.ImagePath);
+                    }
+                }
+
+                var regions = CultureInfo.GetCultures(CultureTypes.SpecificCultures).Select(x => new RegionInfo(x.LCID));
+
+                if (_loanLenderDto is { } && !(_loanLenderDto.LenderId == default))
+                {
+                    if (_loanLenderDto.Lender is { } && !string.IsNullOrEmpty(_loanLenderDto.Lender.HomeCountry))
+                    {
+                        var countryProvider = new CountryProvider();
+
+                        var countryInfo = countryProvider.GetCountryByName(_loanLenderDto.Lender.HomeCountry);
+
+                        if (countryInfo is { })
+                            if (countryInfo.Currencies.Count() > 0)
+                                _currency = countryInfo.Currencies.FirstOrDefault()?.IsoCode ?? string.Empty;
+                    }
+                }
+            }
+
+            if (trail.LoanLessees != default)
+                _loanLesseeDto = trail.LoanLessees.Where(l => l.LoanId.Equals(trail.Id)).FirstOrDefault() ?? default!;
+
+            if (trail.Ledgers != default)
+            {
+                _loanLedgers = trail.Ledgers.ToList() ?? default!;
+
+                if (!(_loanLedgers.Equals(default)))
+                    _sumLoan = _loanLedgers.Sum(l => l.AmountDue);
+            }
+
+
+            <MudCard Class="product" Style="@($"background:{Colors.Grey.Lighten2};position:relative")">
+                <MudCardContent Class="pa-0">
+                    <MudCardHeader Class="py-2">
+                        <MudImage Fluid="true" Src="@_imageUrl" Alt="@_productName" Class="rounded-lg" />
+                    </MudCardHeader>
+                    <MudCardContent Class="text-center rounded-t-lg rounded-b" Style="@($"background:{Colors.Shades.White}")">
+                        @if (_loanLenderDto != default)
+                        {
+                            @if (_loanLenderDto.Product != default)
+                            {
+                                <MudText Typo="Typo.h1" Class="title">@_loanLenderDto.Product.Name</MudText>
+                            }
+                        }
+
+                        <MudToolBar Class="px-0" Style="height:auto">
+                            <MudText Typo="Typo.h2" Class="text-left product-price">@string.Format("{0:#,0.00}", _sumLoan) @_currency</MudText>
+                            <MudSpacer />
+                            @if (trail.LoanApplicants != default)
+                            {
+                                <MudAlert Severity="Severity.Normal" Icon="@Icons.Material.Filled.Person" Dense="true" Class="ma-0 pa-0 border-0" Variant="Variant.Outlined">@trail.LoanApplicants.Count()</MudAlert>
+                            }
+                        </MudToolBar>
+                        <MudToolBar Class="px-0" Style="height:auto">
+                            <MudChip Size="Size.Small" Icon="@Icons.Filled.CalendarMonth" IconColor="Color.Surface" Class="border-0 rounded-0 px-0" Style="background:transparent">@trail.Month Months</MudChip>
+                            <MudChip Size="Size.Small" Icon="@Icons.Material.Filled.Percent" IconColor="Color.Surface" Class="border-0 rounded-0 px-1" Style="background:transparent">@trail.Interest Interest</MudChip>
+                        </MudToolBar>
+
+                        <MudGrid Class="px-0 d-flex">
+                            <MudItem xs="6">
+                                <MudButton Variant="Variant.Outlined" Class="mt-2 custom orange" IconColor="Color.Success" Size="Size.Medium" Href="@href" Style="width:100%">Apply</MudButton>
+                            </MudItem>
+                            <MudItem xs="6">
+                                @if (DictOverlayVisibility != default)
+                                {
+                                    <MudButton Variant="   Variant.Outlined" DisableRipple=true Class="mt-2 custom basic" IconColor=" Color.Surface" Size="  Size.Medium" Style="width:100%;" EndIcon="@Icons.Filled.KeyboardArrowDown" OnClick=" (() => { IsVisibleProductOverlay(trail.Id); })">Details</MudButton>
+                                }
+                            </MudItem>
+                        </MudGrid>
+
+                        @if (DictOverlayVisibility != default)
+                        {
+                            <MudOverlay Class="pa-3" Absolute="  true" DarkBackground=" true" @bind-Visible="@DictOverlayVisibility[trail.Id]" AutoClose=false>
+                                @if (_loanLenderDto != default)
+                                {
+                                    @if (_loanLenderDto.Product != default)
+                                    {
+                                        <MudText Typo="         Typo.h1" Class="title" Style="@($"color:{Colors.Shades.White};height:auto !important;")">@_loanLenderDto.Product.Name</MudText>
+                                    }
+                                }
+                                <MudToolBar Style="height:auto">
+                                    <MudText Typo="    Typo.h2" Class="text-left product-price" Style="@($"color:var(--mud-palette-secondary)")">@string.Format("{0:#,0.00}", _sumLoan) @_currency</MudText>
+                                    <MudSpacer />
+                                    @if (trail.LoanApplicants != default)
+                                    {
+                                        <MudAlert Severity="Severity.Normal" Icon="@Icons.Material.Filled.Person" Dense="      true" Class="ma-0 pa-0 border-0" Variant="      Variant.Outlined" Style="@($"color:{Colors.Shades.White}")">@trail.LoanApplicants.Count()</MudAlert>
+                                    }
+                                </MudToolBar>
+                                <MudGrid Class="pa-2" Style="height:auto">
+                                    <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="   Variant.Text" Size="    Size.Small" Icon="@Icons.Filled.CalendarMonth" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>@trail.Month Months</MudItem>
+                                    <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="    Variant.Text" Size="Size.Small" Icon="@Icons.Material.Filled.Percent" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>@trail.Interest Interest</MudItem>
+                                    <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="   Variant.Text" Size="Size.Small" Icon="@Icons.Material.Filled.Event" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>@string.Format("{0:dddd, MMMM d, yyyy}", trail.StartOfPayment)</MudItem>
+                                    <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="Variant.Text" Size="  Size.Small" Icon="@Icons.Material.Filled.Money" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>Base amount: @string.Format("{0:#,0.00}", _loanLenderDto?.Product?.Amount) @_currency</MudItem>
+                                    <MudItem Class="pa-1" Style="@($"color:{Colors.Shades.White}")"><MudIconButton Variant="    Variant.Text" Size="Size.Small" Icon="@Icons.Material.Filled.ShowChart" Class="border-0 rounded-0" Style="@($"background:transparent;color:{Colors.Shades.White}")"></MudIconButton>Type: @trail.InterestType</MudItem>
+                                </MudGrid>
+                                <MudGrid>
+                                    <MudItem xs="6" Style="@($"color:{Colors.Shades.White}")">
+                                        <MudButton Variant="    Variant.Outlined" DisableRipple=true Class="mt-2 custom orange" IconColor="Color.Surface" Size="  Size.Small" Style="width:100%;" OnClick="   (() => { Navigation.NavigateTo(href, true); })">
+                                            Full
+                                        </MudButton>
+                                    </MudItem>
+                                    <MudItem xs="   6" Style="@($"color:{Colors.Shades.White}")">
+                                        <MudButton Variant=" Variant.Filled" DisableRipple=true Class="mt-2" IconColor="   Color.Error" Color="  Color.Error" Size=" Size.Small" Style="width:100%;" OnClick="  (() => { CloseVisibleProductOverlay(trail.Id); })">
+                                            Close
+                                        </MudButton>
+                                    </MudItem>
+                                </MudGrid>
+
+                            </MudOverlay>
+                        }
+                    </MudCardContent>
+                </MudCardContent>
+            </MudCard>
+        };
+    }
+
+}
