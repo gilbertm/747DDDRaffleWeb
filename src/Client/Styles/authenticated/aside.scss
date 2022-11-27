@@ -1,0 +1,39 @@
+﻿.mud-drawer {
+    background-color: var(--custom-appbar-secondary-menu);
+    color: var(--mud-palette-white);
+
+    .mud-nav-link:not(.mud-nav-link-disabled)
+    .mud-nav-link-icon.mud-nav-link-icon-default {
+        color: var(--mud-palette-white);
+    }
+
+    .mud-nav-link.active:not(.mud-nav-link-disabled) {
+        background-color: rgba(#ff952d, 0.75) !important;
+        color: #fff !important;
+        font-weight: 600;
+    }
+
+    .custom-nav-child {
+        > a {
+            padding-left: 2rem !important;
+        }
+    }
+
+    .mud-nav-link {
+        white-space: normal !important;
+        padding: 12px 16px 12px 38px;
+
+        &.mud-expanded {
+            background-color: rgba(#000, 0.5) !important;
+        }
+    }
+
+    .mud-nav-link:not(.mud-expanded) .mud-icon-root {
+        color: rgba(#fff, 0.5) !important;
+    }
+
+    .mud-alert-text-info .mud-alert-icon,
+    .mud-alert-text-info {
+        color: rgb(234, 234, 234) !important;
+    }
+}
