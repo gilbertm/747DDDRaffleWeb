@@ -1,0 +1,49 @@
+﻿@using static EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons.FrontAnonymousLoans;
+@inject IStringLocalizer<LoanLedger> L
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Large" Color="Color.Warning" Class="mr-3 mb-n1" />
+            @L["Ledger"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (Ledger != default)
+        {
+            @if (Ledger.Count() > 0)
+            {
+                <MudTable Items="@Ledger.OrderBy(o => o.Position)" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                    <HeaderContent>
+                        <MudTh Style="font-weight:600">#</MudTh>
+                        <MudTh Style="font-weight:600">Payment date</MudTh>
+                        <MudTh Style="font-weight:600">Amount due</MudTh>
+                                <MudTh Style="font-weight:600">Balance</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Nr">@context.Position</MudTd>
+                        <MudTd DataLabel="Name">@context.Due</MudTd>
+                                <MudTd DataLabel="Sign">@context.Amount</MudTd>
+                                <MudTd DataLabel="Name">@context.Balance</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Check" Color="Color.Warning" Variant="Variant.Filled" OnClick="Submit">@L["Ok"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public IEnumerable<TemporaryLedgerTableElement> Ledger { get; set; } = default!;
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

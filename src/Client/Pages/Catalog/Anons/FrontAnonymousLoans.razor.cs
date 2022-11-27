@@ -11,6 +11,14 @@ using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System.Runtime.CompilerServices;
+using Geo.MapBox.Models.Responses;
+using static EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.LenderAdminLoans;
+using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
+using EHULOG.BlazorWebAssembly.Client.Shared.Dialogs;
+using MudBlazor;
+using static MudBlazor.CategoryTypes;
+using System.Globalization;
+using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 
@@ -25,9 +33,11 @@ public partial class FrontAnonymousLoans
     [Inject]
     private ILoansClient LoansClient { get; set; } = default!;
 
-    public bool Loading { get; set; }
+    [Inject]
+    private ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
 
-    public bool IsLoaded { get; set; } = false;
+    [Inject]
+    protected IDialogService Dialog { get; set; } = default!;
 
     private IEnumerable<LoanDto>? _entityList;
     private int _totalItems;
@@ -37,8 +47,10 @@ public partial class FrontAnonymousLoans
 
     private float _borrowing = 10000f;
     private int _borrowDuration = 6;
-    private int _loaning = 500;
+    private float _loaning = 500f;
     private int _loaningDuration = 1;
+    private float _loaningInterest = 1f;
+    private float _loaningTotal = 0f;
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,17 +77,19 @@ public partial class FrontAnonymousLoans
         }
 
         await LoadDataAsync();
+
+        await Calculator();
+
+        _loaningTotal = temporaryLedgerTable.Sum(x => x.Amount);
     }
 
     private async Task LoadDataAsync(float? amount = default, int? month = default)
     {
-
         var filter = GetPaginationFilter();
 
         var loanFilter = filter.Adapt<SearchLoansAnonRequest>();
 
         _dictOverlayVisibility.Clear();
-
 
         if (AppDataService != default)
         {
@@ -152,6 +166,45 @@ public partial class FrontAnonymousLoans
         StateHasChanged();
     }
 
+    private async Task OnValueChangedUpdateAnonymousListingLoanAmount(float amount)
+    {
+        _loaning = amount;
+
+        if (await Calculator())
+        {
+            _loaningTotal = temporaryLedgerTable.Sum(x => x.Amount);
+
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task OnValueChangedUpdateAnonymousListingLoanDuration(int duration)
+    {
+        _loaningDuration = duration;
+
+        if (await Calculator())
+        {
+            _loaningTotal = temporaryLedgerTable.Sum(x => x.Amount);
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnValueChangedUpdateAnonymousListingLoanInterest(float interest)
+    {
+        _loaningInterest = interest;
+
+        if (await Calculator())
+        {
+            _loaningTotal = temporaryLedgerTable.Sum(x => x.Amount);
+
+            StateHasChanged();
+
+        }
+
+    }
+
     private PaginationFilter GetPaginationFilter()
     {
         StringValues pageCount;
@@ -175,6 +228,9 @@ public partial class FrontAnonymousLoans
 
     private async Task<InputOutputResourceDto> GetImage(Guid productId)
     {
+        // Note: bypass
+        // D:\Docker\DotNet\eHulogLocal\eHulogDDDWasm\src\Client.Infrastructure\Auth\Jwt\JwtAuthenticationHeaderHandler.cs
+
         HttpRequestMessage request;
         HttpResponseMessage response;
 
@@ -226,6 +282,9 @@ public partial class FrontAnonymousLoans
 
     private async Task<GridContainerPaginationResponse<LoanDto>> GetAnonLoans(SearchLoansAnonRequest search)
     {
+        // Note: bypass
+        // D:\Docker\DotNet\eHulogLocal\eHulogDDDWasm\src\Client.Infrastructure\Auth\Jwt\JwtAuthenticationHeaderHandler.cs
+
         HttpRequestMessage request;
         HttpResponseMessage response;
 
@@ -276,6 +335,131 @@ public partial class FrontAnonymousLoans
         }
 
         return default!;
+    }
+
+    public class TemporaryLedgerTableElement
+    {
+        public int Position { get; set; }
+        public DateTime Due { get; set; }
+        public float Amount { get; set; }
+        public float Balance { get; set; }
+    }
+
+    private List<TemporaryLedgerTableElement> temporaryLedgerTable = new List<TemporaryLedgerTableElement>();
+
+    private async Task<bool> Calculator()
+    {
+        temporaryLedgerTable.Clear();
+
+        // Note: bypass
+        // D:\Docker\DotNet\eHulogLocal\eHulogDDDWasm\src\Client.Infrastructure\Auth\Jwt\JwtAuthenticationHeaderHandler.cs
+
+        GetLoanLedgerMemRequest getLoanLedgerMemRequest = new()
+        {
+            Amount = _loaning,
+            Interest = _loaningInterest,
+            InterestType = InterestType.Compound,
+            Month = _loaningDuration,
+            StartOfPayment = DateTime.Now
+        };
+
+        HttpRequestMessage request;
+        HttpResponseMessage response;
+
+        request = new HttpRequestMessage()
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri($"{Config[ConfigNames.ApiBaseUrl]}api/tokens/"),
+            Content = new StringContent(JsonSerializer.Serialize(new TokenRequest()
+            {
+                Email = MultitenancyConstants.Root.EmailAddress,
+                Password = MultitenancyConstants.DefaultPassword
+            })),
+        };
+
+        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        request.Content.Headers.Add("tenant", "ehulog");
+
+        response = await HttpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (tokenResponse is not null)
+            {
+                request = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"{Config[ConfigNames.ApiBaseUrl]}api/v1/loanledgers/calculator"),
+                    Content = new StringContent(JsonSerializer.Serialize(getLoanLedgerMemRequest)),
+                };
+
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
+
+                request.Content.Headers.Add("tenant", "ehulog");
+
+                response = await HttpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var dictionary = JsonSerializer.Deserialize<Dictionary<int, Dictionary<string, object>>>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    if (dictionary is not null && dictionary.Count > 0)
+                    {
+                        foreach (var item in dictionary)
+                        {
+                            float amountDue = 0.00f;
+                            float balance = 0.00f;
+                            DateTime dateDue = DateTime.UtcNow;
+
+                            foreach (var kv in item.Value)
+                            {
+                                switch (kv.Key)
+                                {
+                                    case "AmountDue":
+                                        amountDue = Convert.ToSingle(kv.Value.ToString());
+                                        break;
+                                    case "Balance":
+                                        balance = Convert.ToSingle(kv.Value.ToString());
+                                        break;
+                                    case "DateDue":
+                                        dateDue = Convert.ToDateTime(kv.Value.ToString());
+                                        break;
+                                }
+                            }
+
+                            temporaryLedgerTable.Add(new TemporaryLedgerTableElement()
+                            {
+                                Position = item.Key,
+                                Due = dateDue,
+                                Amount = amountDue,
+                                Balance = balance
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private async Task OpenLedger()
+    {
+        // List<LoanLedgerDto>
+        var parameters = new DialogParameters { ["Ledger"] = temporaryLedgerTable };
+
+        DialogOptions noHeader = new DialogOptions() { MaxWidth = MaxWidth.Large, CloseButton = true };
+
+        var dialog = Dialog.Show<LoanLedger>("Ledger", parameters, noHeader);
+
+        var resultDialog = await dialog.Result;
+
+        if (!resultDialog.Cancelled)
+        {
+        }
     }
 
 }

@@ -5,148 +5,190 @@
 @using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons
 @using Nager.Country
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="map-loan-slider pa-0">
-    <MudGrid Justify="Justify.Center">
-        <MudItem xs="12" md="6" Class="pt-0 pr-0">
-            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                <MudTabPanel>
-                    <ChildContent>
-                        <MudText Typo="Typo.h5" Class="pb-2 text-center" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4};font-weight:700")">How much do you need?</MudText>
-                        <MudContainer>
-                            <MudGrid Class="borrower-borrowing-amount">
-                                <MudItem xs="6" Class="mb-0 pb-0">
-                                    <MudText Typo="Typo.h6" Style="font-weight:700">I am borrowing</MudText>
-                                </MudItem>
-                                <MudItem xs="6" Class="mb-0 pb-0" Style="text-align:right">
-                                    <MudText Typo="Typo.h6" Style="font-weight:700">
-                                        @($"{string.Format("{0:#,0.00}", float.Parse(_borrowing.ToString()))} {AppDataService.CountryCurrency}")
-                                    </MudText>
-                                </MudItem>
-                                <MudItem xs="12" Class="py-0">
-                                    <MudSlider Value=@_borrowing Immediate="true" T="float" ValueChanged="OnValueChangedUpdateAnonymousListingAmount" Size="Size.Large" Step="500" Min="500" Max="15000" Color="Color.Info" />
-                                </MudItem>
-                                <MudItem xs="6" Class="mt-0 pt-0">
-                                    <MudText Typo="Typo.caption">
-                                        @($"{string.Format("{0:#,0.00}", 500)} {AppDataService.CountryCurrency}")
-                                    </MudText>
-                                </MudItem>
-                                <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
-                                    <MudText Typo="Typo.caption">
-                                        @($"{string.Format("{0:#,0.00}", 5000)} {AppDataService.CountryCurrency}")
-                                    </MudText>
-                                </MudItem>
-                            </MudGrid>
-                        </MudContainer>
-                        <MudContainer>
-                            <MudGrid Class="borrower-borrowing-months">
-                                <MudItem xs="6" Class="mb-0 pb-0">
-                                    <MudText Typo="Typo.h6" Style="font-weight:700">Borrow duration</MudText>
-                                </MudItem>
-                                <MudItem xs="6" Class="mb-0 pb-0" Style="text-align:right">
-                                    <MudText Typo="Typo.h6" Style="font-weight:700">
-                                        @_borrowDuration.ToString() Month@(_borrowDuration <= 1 ? "" : "s")
-                                    </MudText>
-                                </MudItem>
-                                <MudItem xs="12" Class="py-0">
-                                    <MudSlider Value="@_borrowDuration" Immediate="true" T="int" ValueChanged="OnValueChangedUpdateAnonymousListingMonth" Size="Size.Large" Step="1" Min="1" Max="12" Color="Color.Info" />
-                                </MudItem>
-                                <MudItem xs="6" Class="mt-0 pt-0">
-                                    <MudText Typo="Typo.caption">1 Month</MudText>
-                                </MudItem>
-                                <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
-                                    <MudText Typo="Typo.caption">
-                                        6 Months
-                                    </MudText>
-                                </MudItem>
-                            </MudGrid>
-                        </MudContainer>
-                        <MudContainer Class="pt-4">
-                            <SelfRegister IsFieldsOnly=true />
-                        </MudContainer>
-                    </ChildContent>
-                    <TabContent>
-                        <MudText Typo="Typo.h5" Class="py-3" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4}")">Borrower</MudText>
-                    </TabContent>
-                </MudTabPanel>
-                <MudTabPanel>
-                    <ChildContent>
-                        <MudText Typo="Typo.h5" Class="py-3 text-center" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4};font-weight:700")">How much will be your return for being a do-gooder?</MudText>
-                        <MudGrid Class="py-7">
-                            <MudItem xs="12" md="6">
-                                <MudPaper Elevation="0">
-                                    <MudGrid Class="lender-loaning-amount">
-                                        <MudItem xs="8" Class="mb-0 pb-0">
-                                            <MudText Typo="Typo.subtitle1" Style="font-weight:700">Loan this amount</MudText>
-                                        </MudItem>
-                                        <MudItem xs="4" Class="mb-0 pb-0" Style="text-align:right">
-                                            <MudText Typo="Typo.subtitle1" Style="font-weight:700;white-space:nowrap;">
-                                                @($"{string.Format("{0:#,0.00}", float.Parse(_loaning.ToString()))} {AppDataService.CountryCurrency}")
-                                            </MudText>
-                                        </MudItem>
-                                        <MudItem xs="12" Class="py-0">
-                                            <MudSlider @bind-Value="_loaning" Size="Size.Medium" Step="500" Min="500" Max="5000" Color="Color.Info" />
-                                        </MudItem>
-                                        <MudItem xs="6" Class="mt-0 pt-0">
-                                            <MudText Typo="Typo.caption">@($"{string.Format("{0:#,0.00}", 500)} {AppDataService.CountryCurrency}")</MudText>
-                                            </MudItem>
-                                            <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
-                                                <MudText Typo="Typo.caption">
-                                                    @($"{string.Format("{0:#,0.00}", 5000)} {AppDataService.CountryCurrency}")
-                                            </MudText>
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudPaper>
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudPaper Elevation="0">
-                                    <MudGrid Class="lender-loaning-months">
-                                        <MudItem xs="8" Class="mb-0 pb-0">
-                                            <MudText Typo="Typo.subtitle1" Style="font-weight:700">Borrow duration</MudText>
-                                        </MudItem>
-                                        <MudItem xs="4" Class="mb-0 pb-0" Style="text-align:right">
-                                            <MudText Typo="Typo.subtitle1" Style="font-weight:700">
-                                                @_loaningDuration.ToString() Month@(_loaningDuration <= 1 ? "" : "s")
-                                            </MudText>
-                                        </MudItem>
-                                        <MudItem xs="12" Class="py-0">
-                                            <MudSlider @bind-Value="_loaningDuration" Size="Size.Large" Step="1" Min="1" Max="6" Color="Color.Info" />
-                                        </MudItem>
-                                        <MudItem xs="6" Class="mt-0 pt-0">
-                                            <MudText Typo="Typo.caption">1 Month</MudText>
-                                        </MudItem>
-                                        <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
-                                            <MudText Typo="Typo.caption">
-                                                6 Months
-                                            </MudText>
-                                        </MudItem>
-                                    </MudGrid>
 
-                                </MudPaper>
-
-                            </MudItem>
-                            <MudItem xs="12">
+<MudContainer MaxWidth="MaxWidth.Large" Class="map-loan-slider mb-9 pa-0">
+    <MudPaper Elevation="25">
+        <MudGrid Justify="Justify.Center">
+            <MudItem xs="12" md="6" Class="py-0 pr-0">
+                <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="py-3 px-4" Style="@($"background-color:{Colors.Shades.White}")">
+                    <MudTabPanel>
+                        <ChildContent>
+                            <MudText Typo="Typo.h6" Class="pb-2 text-center" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4};font-weight:700")">How much do you need?</MudText>
+                            <MudContainer>
+                                <MudGrid Class="borrower-borrowing-amount">
+                                    <MudItem xs="6" Class="mb-0 pb-0">
+                                        <MudText Typo="Typo.body2" Style="font-weight:600">I am borrowing</MudText>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="mb-0 pb-0" Style="text-align:right">
+                                        <MudText Typo="Typo.body2" Style="font-weight:600">
+                                            @($"{string.Format("{0:#,0.00}", float.Parse(_borrowing.ToString()))} {AppDataService.CountryCurrency}")
+                                        </MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="py-0">
+                                        <MudSlider Value=@_borrowing Immediate="true" T="float" ValueChanged="OnValueChangedUpdateAnonymousListingAmount" Size="Size.Large" Step="500" Min="500" Max="15000" Color="Color.Info" />
+                                    </MudItem>
+                                    <MudItem xs="6" Class="pt-0" Style="margin-top:-0.75rem">
+                                        <MudText Typo="Typo.caption">
+                                            @($"{string.Format("{0:#,0.00}", 500)} {AppDataService.CountryCurrency}")
+                                        </MudText>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="pt-0" Style="margin-top:-0.75rem;text-align:right">
+                                        <MudText Typo="Typo.caption">
+                                            @($"{string.Format("{0:#,0.00}", 15000)} {AppDataService.CountryCurrency}")
+                                        </MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudContainer>
+                            <MudContainer>
+                                <MudGrid Class="borrower-borrowing-months">
+                                    <MudItem xs="6" Class="mb-0 pb-0">
+                                        <MudText Typo="Typo.body2" Style="font-weight:600">Borrow duration</MudText>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="mb-0 pb-0" Style="text-align:right">
+                                        <MudText Typo="Typo.body2" Style="font-weight:600">
+                                            @_borrowDuration.ToString() Month@(_borrowDuration <= 1 ? "" : "s")
+                                        </MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" Class="py-0">
+                                        <MudSlider Value="@_borrowDuration" Immediate="true" T="int" ValueChanged="OnValueChangedUpdateAnonymousListingMonth" Size="Size.Large" Step="1" Min="1" Max="12" Color="Color.Info" />
+                                    </MudItem>
+                                    <MudItem xs="6" Class="pt-0" Style="margin-top:-0.75rem">
+                                        <MudText Typo="Typo.caption">1 Month</MudText>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="pt-0" Style="margin-top:-0.75rem;text-align:right">
+                                        <MudText Typo="Typo.caption">
+                                            6 Months
+                                        </MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudContainer>
+                            <MudContainer Class="pt-4">
                                 <SelfRegister IsFieldsOnly=true />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                    <TabContent>
-                        <MudText Typo="Typo.h5" Class="py-3" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4}")">Lender</MudText>
-                    </TabContent>
-                </MudTabPanel>
-            </MudTabs>
-        </MudItem>
-        <MudItem xs="12" md="6">
-            <DynamicMapLoad IsMapOnly=true />
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                            </MudContainer>
+                        </ChildContent>
+                        <TabContent>
+                            <MudText Typo="Typo.h6" Class="py-1" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4}")">Borrower</MudText>
+                        </TabContent>
+                    </MudTabPanel>
+                    <MudTabPanel>
+                        <ChildContent>
+                            <MudText Typo="Typo.h6" Class="pb-2 text-center mb-3" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4};font-weight:700")">Earnings of a do-gooder</MudText>
+                            <MudGrid Class="py-0">
+                                <MudItem xs="12" md="6">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudPaper Elevation="0">
+                                                <MudGrid Class="lender-loaning-amount">
+                                                    <MudItem xs="8" Class="mb-0 pb-0">
+                                                        <MudText Typo="Typo.body2" Style="font-weight:600">Loan this amount</MudText>
+                                                    </MudItem>
+                                                    <MudItem xs="4" Class="mb-0 pb-0" Style="text-align:right">
+                                                        <MudText Typo="Typo.body2" Style="font-weight:600;white-space:nowrap;">
+                                                            @($"{string.Format("{0:#,0.00}", float.Parse(_loaning.ToString()))} {AppDataService.CountryCurrency}")
+                                                        </MudText>
+                                                    </MudItem>
+                                                    <MudItem xs="12" Class="py-0">
+                                                        <MudSlider Immediate="false" T="float" Value="_loaning" ValueChanged="OnValueChangedUpdateAnonymousListingLoanAmount" Size="Size.Medium" Step="500" Min="500" Max="5000" Color="Color.Info" />
+                                                    </MudItem>
+                                                    <MudItem xs="6" Class="pt-0" Style="margin-top:-0.75rem">
+                                                        <MudText Typo="Typo.caption">@($"{string.Format("{0:#,0.00}", 500)} {AppDataService.CountryCurrency}")</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="6" Class="pt-0" Style="margin-top:-0.75rem;text-align:right;">
+                                                                <MudText Typo="Typo.caption">
+                                                                @($"{string.Format("{0:#,0.00}", 5000)} {AppDataService.CountryCurrency}")
+                                                        </MudText>
+                                                    </MudItem>
+                                                </MudGrid>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="12">
+                                                <MudPaper Elevation="0">
+                                                    <MudGrid Class="lender-loaning-months">
+                                                        <MudItem xs="8" Class="mb-0 pb-0">
+                                                            <MudText Typo="Typo.body2" Style="font-weight:600">Borrow duration</MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="4" Class="mb-0 pb-0" Style="text-align:right">
+                                                            <MudText Typo="Typo.body2" Style="font-weight:600">
+                                                            @_loaningDuration.ToString() Month@(_loaningDuration <= 1 ? "" : "s")
+                                                            </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="12" Class="py-0">
+                                                        <MudSlider Immediate="false" T="int" Value="_loaningDuration" ValueChanged="OnValueChangedUpdateAnonymousListingLoanDuration" Size="Size.Medium" Step="1" Min="1" Max="6" Color="Color.Info" />
+                                                        </MudItem>
+                                                        <MudItem xs="6" Class="mt-0 pt-0">
+                                                            <MudText Typo="Typo.caption">1 Month</MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
+                                                            <MudText Typo="Typo.caption">
+                                                                6 Months
+                                                            </MudText>
+                                                        </MudItem>
+                                                    </MudGrid>
+                                                </MudPaper>
+                                        </MudItem>
+                                    </MudGrid>                                    
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudPaper Elevation="0">
+                                                <MudGrid Class="lender-loaning-months">
+                                                    <MudItem xs="8" Class="mb-0 pb-0">
+                                                        <MudText Typo="Typo.body2" Style="font-weight:600">Interest</MudText>
+                                                    </MudItem>
+                                                    <MudItem xs="4" Class="mb-0 pb-0" Style="text-align:right">
+                                                        <MudText Typo="Typo.body2" Style="font-weight:600">
+                                                            @_loaningInterest.ToString() %
+                                                        </MudText>
+                                                    </MudItem>
+                                                    <MudItem xs="12" Class="py-0">
+                                                        <MudSlider Immediate="false" T="float" Value="_loaningInterest" ValueChanged="OnValueChangedUpdateAnonymousListingLoanInterest" Size="Size.Medium" Step="0.5f" Min="1" Max="10" Color="Color.Info" />
+                                                    </MudItem>
+                                                    <MudItem xs="6" Class="mt-0 pt-0">
+                                                        <MudText Typo="Typo.caption">1%</MudText>
+                                                    </MudItem>
+                                                    <MudItem xs="6" Class="mt-0 pt-0" Style="text-align:right">
+                                                        <MudText Typo="Typo.caption">
+                                                            10%
+                                                        </MudText>
+                                                    </MudItem>
+                                                </MudGrid>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem xs="12">
+                                            <MudPaper Elevation="0" Class="align-right" Style="text-align:right">
+                                                <MudText Typo="Typo.h6" Color="Color.Success" Style="font-weight:600">Gain</MudText>
+                                                <MudText Typo="Typo.h5" Color="Color.Success" Style="font-weight:600">@($"{string.Format("{0:#,0.00}", _loaningTotal)} {AppDataService.CountryCurrency}")</MudText>
+                                                   <MudButton Size="Size.Small" Class="mt-3 border-0" OnClick="@(() => OpenLedger())" Variant="Variant.Outlined" StartIcon="@Icons.Filled.TableView" IconColor="Color.Secondary" Style="text-transform:capitalize">Ledger</MudButton>
+                                                </MudPaper>
+                                            </MudItem>
+                                        </MudGrid>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="loan-listing my-5 pa-0">
-    <MudGrid>
-        <MudItem xs="12">
-            @if (_entityList != default)
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <SelfRegister IsFieldsOnly=true />
+                                    </MudItem>
+                                </MudGrid>
+                            </ChildContent>
+                            <TabContent>
+                                <MudText Typo="Typo.h6" Class="py-1" Color="Color.Surface" Style="@($"color:{Colors.BlueGrey.Darken4}")">Lender</MudText>
+                            </TabContent>
+                        </MudTabPanel>
+                    </MudTabs>
+                </MudItem>
+                <MudItem xs="12" md="6" Class="py-0 pl-0">
+                    <DynamicMapLoad IsMapOnly=true />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudContainer>
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="loan-listing my-5 pa-0">
+        <MudGrid>
+            <MudItem xs="12">
+                @if (_entityList != default)
             {
-                <AnonymousLoanGridContainer EntityList="_entityList" TotalItems="_totalItems" PageSize="_pageSize" CurrentPage="_currentPage" DictOverlayVisibility="_dictOverlayVisibility"  />
+                    <AnonymousLoanGridContainer EntityList="_entityList" TotalItems="_totalItems" PageSize="_pageSize" CurrentPage="_currentPage" DictOverlayVisibility="_dictOverlayVisibility" />
             }
         </MudItem>
     </MudGrid>
