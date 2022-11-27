@@ -42,6 +42,9 @@ public partial class SelfRegister
         // to complete the textual ui journey of what's happening after registration
         BusySubmitting = true;
 
+        // ++g++ make username similar to email
+        _createUserRequest.UserName = _createUserRequest.Email;
+
         successMessage = await ApiHelper.ExecuteCallGuardedAsync(
             () => UsersClient.SelfRegisterAsync(Tenant, _createUserRequest),
             Snackbar,

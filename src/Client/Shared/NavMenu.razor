@@ -4,7 +4,7 @@
 {
     @if (AppDataService.AppUser != default)
     {
-        <PersonCard Style="background-color: var(--mud-palette-drawer-background);color: var(--mud-palette-drawer-text); margin-bottom:0px!important" />
+        <PersonCard Style="background-color: var(--custom-appbar-secondary-menu);color: var(--mud-palette-white); margin-bottom:0px!important" />
         <MudNavMenu>
 
             @* Personal *@
@@ -20,114 +20,122 @@
             {
                 @if (_canViewUsers)
                 {
-                    <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.TwoTone.VerifiedUser">
+                    <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.TwoTone.VerifiedUser" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
                         <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="custom-nav-child">@L["Users"]</MudNavLink>
 
                         @if (_canViewInputOutputResources)
                         {
-                            <MudNavLink Match="NavLinkMatch.All" Href="/admin/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="custom-nav-child">@L["Verify Files and Documents"]</MudNavLink>
+                            <MudNavLink Match="NavLinkMatch.All" Href="/admin/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="custom-nav-child">@L["Files"]</MudNavLink>
                         }
                     </MudNavGroup>
                 }
-                @if (_canViewRoles)
-                {
-                    <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.EmojiPeople">@L["Roles"]</MudNavLink>
-                }
-                @if (_canViewTenants)
-                {
-                    <MudNavLink Href="/tenants" Icon="@Icons.TwoTone.GroupWork" Disabled="!_canViewTenants">@L["Tenants"]</MudNavLink>
-                }
+                <MudNavGroup Title="@L["Manage"]" Expanded Icon="@Icons.TwoTone.Settings" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                    @if (_canViewRoles)
+                    {
+                        <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.EmojiPeople">@L["Roles"]</MudNavLink>
+                    }
+                    @if (_canViewTenants)
+                    {
+                        <MudNavLink Href="/tenants" Icon="@Icons.TwoTone.GroupWork" Disabled="!_canViewTenants">@L["Tenants"]</MudNavLink>
+                    }
 
-                <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
+                    <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
+                </MudNavGroup>
             }
 
-            <MudNavGroup Title="@L["Account"]" Expanded Icon="@(_isVerified ? EhulogIcon.VerifiedUser : Icons.TwoTone.PersonOutline)" IconColor="@(_isVerified ? Color.Success : default)">
-                <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.TwoTone.AssignmentInd" Class="custom-nav-child">@L["Profile"]</MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/account/address" ForceLoad="true" Icon="@Icons.TwoTone.Map" Class="custom-nav-child">
-                    @L["Address"]
-                    @if (AppDataService.AppUser != default)
-                    {
+            @* normal users *@
+            @if (!CanViewAdministrationGroup)
+            {
+                <MudNavGroup Title="@L["Account"]" Expanded Icon="@(_isVerified ? EhulogIcon.VerifiedUser : Icons.TwoTone.PersonOutline)" IconColor="@(_isVerified ? Color.Success : default)" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                    <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.TwoTone.AssignmentInd" Class="custom-nav-child">@L["Profile"]</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="/account/address" ForceLoad="true" Icon="@Icons.TwoTone.Map" Class="custom-nav-child">
+                        @L["Address"]
+                        @if (AppDataService.AppUser != default)
+                        {
 
-                        switch (AppDataService.AppUser.AddressStatus)
-                        {
-                            case VerificationStatus.Initial:
-                                <MudIcon Icon="@Icons.TwoTone.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
-                                break;
-                            case VerificationStatus.Submitted:
-                                <MudIcon Icon="@Icons.TwoTone.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
-                                break;
-                            case VerificationStatus.Verified:
-                                @if (!_isVerified)
-                                {
-                                    <MudIcon Icon="@Icons.TwoTone.CheckCircle" Color=" Color.Success" Size="      Size.Small" Class="mx-2" Title="Verified" />
-                                }
-                                break;
+                            switch (AppDataService.AppUser.AddressStatus)
+                            {
+                                case VerificationStatus.Initial:
+                                    <MudIcon Icon="@Icons.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
+                                    break;
+                                case VerificationStatus.Submitted:
+                                    <MudIcon Icon="@Icons.Outlined.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
+                                    break;
+                                case VerificationStatus.Verified:
+                                    @if (!_isVerified)
+                                    {
+                                        <MudIcon Icon="@Icons.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
+                                    }
+                                    break;
+                            }
                         }
-                    }
-                </MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/account/role-subscription" ForceLoad="true" Icon="@EhulogIcon.PaymentMethod" Class="custom-nav-child">
-                    @L["Subscription"]
-                    @if (AppDataService.AppUser != default)
-                    {
-                        switch (AppDataService.AppUser.RolePackageStatus)
+                    </MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="/account/role-subscription" ForceLoad="true" Icon="@EhulogIcon.PaymentMethod" Class="custom-nav-child">
+                        @L["Subscription"]
+                        @if (AppDataService.AppUser != default)
                         {
-                            case VerificationStatus.Initial:
-                                <MudIcon Icon="@Icons.TwoTone.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
-                                break;
-                            case VerificationStatus.Submitted:
-                                <MudIcon Icon="@Icons.Outlined.WatchLater" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Payment or necessary further needed" />
-                                break;
-                            case VerificationStatus.Verified:
-                                @if (!_isVerified)
-                                {
-                                    <MudIcon Icon="@Icons.TwoTone.CheckCircle" Color=" Color.Success" Size="      Size.Small" Class="mx-2" Title="Verified" />
-                                }
-                                break;
+                            switch (AppDataService.AppUser.RolePackageStatus)
+                            {
+                                case VerificationStatus.Initial:
+                                    <MudIcon Icon="@Icons.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
+                                    break;
+                                case VerificationStatus.Submitted:
+                                    <MudIcon Icon="@Icons.Outlined.WatchLater" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Payment or necessary further needed" />
+                                    break;
+                                case VerificationStatus.Verified:
+                                    @if (!_isVerified)
+                                    {
+                                        <MudIcon Icon="@Icons.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
+                                    }
+                                    break;
+                            }
                         }
-                    }
-                </MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/account/document" ForceLoad="true" Icon="@EhulogIcon.Document" Class="custom-nav-child">
-                    @L["Documents"]
-                    @if (AppDataService.AppUser != default)
-                    {
-                        switch (AppDataService.AppUser.DocumentsStatus)
+                    </MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="/account/document" ForceLoad="true" Icon="@EhulogIcon.Document" Class="custom-nav-child">
+                        @L["Documents"]
+                        @if (AppDataService.AppUser != default)
                         {
-                            case VerificationStatus.Initial:
-                                <MudIcon Icon="@Icons.TwoTone.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
-                                break;
-                            case VerificationStatus.Submitted:
-                                <MudIcon Icon="@Icons.TwoTone.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
-                                break;
-                            case VerificationStatus.Verified:
-                                @if (!_isVerified)
-                                {
-                                    <MudIcon Icon="@Icons.TwoTone.CheckCircle" Color="Color.Success" Size="Size.Small" Class="mx-2" Title="Verified" />
-                                }
-                                break;
+                            switch (AppDataService.AppUser.DocumentsStatus)
+                            {
+                                case VerificationStatus.Initial:
+                                    <MudIcon Icon="@Icons.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
+                                    break;
+                                case VerificationStatus.Submitted:
+                                    <MudIcon Icon="@Icons.Outlined.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
+                                    break;
+                                case VerificationStatus.Verified:
+                                    @if (!_isVerified)
+                                    {
+                                        <MudIcon Icon="@Icons.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
+                                    }
+                                    break;
+                            }
                         }
-                    }
-                </MudNavLink>
-            </MudNavGroup>
+                    </MudNavLink>
+                </MudNavGroup>
+            }
 
-            @* Loans *@
-            @if (_canViewLoans)
+            @* normal users - Loans *@
+            @if (_canViewLoans && !CanViewAdministrationGroup)
             {
                 @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText> *@
-                <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.TwoTone.ConnectWithoutContact">
+                <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.TwoTone.ConnectWithoutContact" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
                     @if (_canViewLoans)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => Navigation.NavigateTo("/loans/lender", false))" Icon="@Icons.TwoTone.Handshake" Class="custom-nav-child">
+                        @* OnClick="@(() => Navigation.NavigateTo("/loans/lender", false))" *@
+                        <MudNavLink Match="NavLinkMatch.All" ForceLoad=true Href="/loans/lender" Icon="@Icons.TwoTone.Handshake" Class="custom-nav-child">
                             @L["Loans"]
                         </MudNavLink>
-                        <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => Navigation.NavigateTo("/loans/lender?history=true", false))" Icon="@Icons.TwoTone.History" Class="custom-nav-child">
+                        @* OnClick="@(() => Navigation.NavigateTo("/loans/lender?history=true", false))"  *@
+                        <MudNavLink Match="NavLinkMatch.All" ForceLoad=true Href="/loans/lender?history=true" Icon="@Icons.TwoTone.History" Class="custom-nav-child">
                             @L["History"]
                         </MudNavLink>
                     }
                 </MudNavGroup>
             }
 
-            @* TODO:// can only do things if verified *@
-            @if (AppDataService.AppUser.IsVerified != default)
+            @* normal users - TODO:// can only do things if verified *@
+            @if (AppDataService.AppUser.IsVerified != default && !CanViewAdministrationGroup)
             {
                 @if (AppDataService.AppUser != default)
                 {
@@ -136,7 +144,7 @@
                         if (_canViewAppUserProducts || _canViewBrands || _canViewCategories)
                         {
                             @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
-                            <MudNavGroup Title="@L["Dependencies"]" Expanded Icon="@Icons.TwoTone.Storefront">
+                            <MudNavGroup Title="@L["Dependencies"]" Expanded Icon="@Icons.TwoTone.Storefront" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
                                 @if (_canViewAppUserProducts)
                                 {
                                     <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.TwoTone.Engineering" Class="custom-nav-child">
@@ -163,7 +171,7 @@
                     if (_canViewPackages)
                     {
                         @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
-                        <MudNavGroup Title="@L["Extras"]" Expanded Icon="@Icons.Filled.Settings">
+                        <MudNavGroup Title="@L["Extras"]" Expanded Icon="@Icons.Filled.Settings" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
                             @if (_canViewPackages)
                             {
                                 <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Outlined.Inventory2" Class="custom-nav-child">
@@ -180,41 +188,6 @@
                     Features will be unlocked once verification process is satisfied.
                 </MudAlert>
             }
-
-            @* Management *@
-            @if (CanViewAdministrationGroup)
-            {
-                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Administration"]</MudText>
-
-
-                @if (_canViewHangfire)
-                {
-                    <MudNavLink Href="@_hangfireUrl" Match="NavLinkMatch.All" Target="_blank" Icon="@Icons.Material.Filled.Work">@L["Hangfire"]</MudNavLink>
-                }
-
-                @if (_canViewUsers)
-                {
-                    <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.TwoTone.VerifiedUser">
-                        <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="custom-nav-child">@L["Users"]</MudNavLink>
-
-                        @if (_canViewInputOutputResources)
-                        {
-                            <MudNavLink Match="NavLinkMatch.All" Href="/catalog/administer/user/identification-files-documents" Icon="@Icons.Material.Filled.FilePresent" Class="custom-nav-child">@L["Verify Files and Documents"]</MudNavLink>
-                        }
-                    </MudNavGroup>
-                }
-                @if (_canViewRoles)
-                {
-                    <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.EmojiPeople">@L["Roles"]</MudNavLink>
-                }
-                @if (_canViewTenants)
-                {
-                    <MudNavLink Href="/tenants" Icon="@Icons.TwoTone.GroupWork" Disabled="!_canViewTenants">@L["Tenants"]</MudNavLink>
-                }
-
-                <MudNavLink Href="/audit-logs" Icon="@Icons.Material.Filled.SecurityUpdateGood">@L["Logs"]</MudNavLink>
-            }
-
 
 
         </MudNavMenu>

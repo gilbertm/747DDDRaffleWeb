@@ -54,39 +54,45 @@
                 For="@(() => Tenant)" Required />
                 </MudItem> *@
 
-                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
+                    @* <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
                         <MudTextField T="string" Label="User Name" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.UserName" For="@(() => _createUserRequest.UserName)"
-                                      InputType="InputType.Text" Adornment="Adornment.End" Required  />
+                                      InputType="InputType.Text" Adornment="Adornment.End" Required  /> 
+                    </MudItem>*@
+
+                    <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1 d-none" : "d-none")">
+                        <MudTextField Margin="Margin.Dense" T="string" Label="User Name" Variant="Variant.Outlined"
+                        @bind-Value="_createUserRequest.UserName" For="@(() => _createUserRequest.UserName)"
+                                      InputType="InputType.Hidden" Adornment="Adornment.End" />
                     </MudItem>
                     <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
-                        <MudTextField T="string" Label="E-mail" Variant="Variant.Outlined"
+                        <MudTextField Margin="Margin.Dense" T="string" Label="E-mail" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.Email" For="@(() => _createUserRequest.Email)"
                                       InputType="InputType.Email" Adornment="Adornment.End" Required />
                     </MudItem>
                     <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
-                        <MudTextField T="string" Label="Phone" Variant="Variant.Outlined"
+                        <MudTextField Margin="Margin.Dense" T="string" Label="Phone" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.PhoneNumber" For="@(() => _createUserRequest.PhoneNumber)"
                                       InputType="InputType.Telephone" Adornment="Adornment.End" Required />
                     </MudItem>
                     <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
-                        <MudTextField T="string" Label="First Name" Variant="Variant.Outlined"
+                        <MudTextField Margin="Margin.Dense" T="string" Label="First Name" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.FirstName" For="@(() => _createUserRequest.FirstName)"
                                       InputType="InputType.Text" Adornment="Adornment.End" Required />
                     </MudItem>
                     <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
-                        <MudTextField T="string" Label="Last Name" Variant="Variant.Outlined"
+                        <MudTextField Margin="Margin.Dense" T="string" Label="Last Name" Variant="Variant.Outlined"
                         @bind-Value="_createUserRequest.LastName" For="@(() => _createUserRequest.LastName)"
                                       InputType="InputType.Text" Adornment="Adornment.End" Required />
                     </MudItem>
 
                     <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
-                        <MudTextField Label="@L["Password"]" Variant="Variant.Outlined" @bind-Value="_createUserRequest.Password"
+                        <MudTextField Margin="Margin.Dense"  Label="@L["Password"]" Variant="Variant.Outlined" @bind-Value="_createUserRequest.Password"
                                       For="@(() => _createUserRequest.Password)" InputType="@_passwordInput" Adornment="Adornment.End"
                                       AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required />
                     </MudItem>
                     <MudItem xs="12" md="6" Class="@(IsFieldsOnly ? "py-1" : "")">
-                        <MudTextField Label="@L["Confirm Password"]" Variant="Variant.Outlined" @bind-Value="_createUserRequest.ConfirmPassword"
+                        <MudTextField Margin="Margin.Dense" Label="@L["Confirm Password"]" Variant="Variant.Outlined" @bind-Value="_createUserRequest.ConfirmPassword"
                                       For="@(() => _createUserRequest.ConfirmPassword)" InputType="@_passwordInput" Adornment="Adornment.End"
                                       AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required />
                     </MudItem>
