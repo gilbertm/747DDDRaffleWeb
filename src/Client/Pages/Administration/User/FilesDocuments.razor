@@ -8,7 +8,7 @@
 
 @attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Users)]
 
-<EhulogTitle Title="@L["Users"]" Description="@L["Manage Users"]" />
+<EhulogTitle Title="@L["Resources and files"]" Description="@L["Verification of user resources and files"]" />
 
 @if (Context != default)
 {
@@ -75,7 +75,7 @@
                     {
                         <MudItem xs="12">
                             <MudText Typo="Typo.body1">@($"Verify / finalize documents ({trail.FilesOrDocumentsForVerification.Where(f => f.ResourceStatusType.Equals(InputOutputResourceStatusType.EnabledAndVerified)).Count()}/{trail.FilesOrDocumentsForVerification.Count()})")</MudText>
-                                <MudButton Class="mt-3" OnClick="@(() => Verify(trail))" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success">Verify</MudButton>
+                                <MudButton Class="mt-3" OnClick="@(() => Verify(trail))" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success">Approve</MudButton>
                             </MudItem>
                     }
                 </MudGrid>
