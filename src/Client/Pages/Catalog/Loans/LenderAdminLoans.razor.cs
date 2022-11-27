@@ -197,18 +197,19 @@ public partial class LenderAdminLoans
                                loanFilter.IsLedger = true;
                                loanFilter.IsLessee = false;
                            }
-                           else if (AppDataService.AppUser is not null && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lessee"))
-                           {
-                               loanFilter.LesseeId = AppDataService.AppUser.Id;
-                               loanFilter.IsLender = false;
-                               loanFilter.IsLessee = true;
-                               loanFilter.IsLedger = true;
-                           }
                            else if (AppDataService.AppUser is not null && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
                            {
                                loanFilter.IsLender = true;
                                loanFilter.IsLessee = true;
                                loanFilter.IsLedger = true;
+                           }
+                           else
+                           {
+                               // this is a lender and or admin page
+                               // might not reach here but for some unknown reason
+                               // it has, just redirect to front
+                               // handler will redirect accordingl
+                               Navigation.NavigateTo("/", true);
                            }
 
                            if (IsHistory)
@@ -518,7 +519,7 @@ public partial class LenderAdminLoans
                            return false;
 
                        },
-                       createAction: CanCreateAction(),
+                       createAction: await CanCreateActionAsync(),
 
                        exportAction: string.Empty,
                        hasExtraActionsFunc: () =>
@@ -531,7 +532,7 @@ public partial class LenderAdminLoans
 
     }
 
-    private string CanCreateAction()
+    private async Task<string> CanCreateActionAsync()
     {
         if (AppDataService != default && !IsHistory)
         {
@@ -548,8 +549,9 @@ public partial class LenderAdminLoans
                     {
                         if (AppDataService.AppUser.RoleName.Equals("Lender"))
                         {
-                            // TODO:// business logics
-                            if (AppDataService.IsCanCreateLoan())
+                            bool canCreateLoan = await AppDataService.CanCreateActionAsync();
+
+                            if (canCreateLoan)
                             {
                                 // needs Policy Permissions.Loans.{ value}
                                 // return "Create";

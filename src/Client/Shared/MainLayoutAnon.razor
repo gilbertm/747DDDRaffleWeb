@@ -16,7 +16,7 @@
 
     <SliderAnon HideIfThesePages="about-us,get-started,contact-us,users,users/,login,loans,loans/,catalog,catalog/" OnHideChange=@( () => {} ) />
 
-    <MudMainContent Class="@($"d-flex {_cssClasses}")">
+    <MudMainContent Class="@($"d-flex anonymous {_cssClasses}")">
         <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
             @ChildContent
             <MudScrollToTop TopOffset="400" Style="z-index:2000;">

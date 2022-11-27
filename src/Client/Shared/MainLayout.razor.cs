@@ -1,7 +1,9 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.Collections.Generic;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -13,16 +15,40 @@ public partial class MainLayout
     public EventCallback OnDarkModeToggle { get; set; }
     [Parameter]
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
+    [Inject]
+    protected AppDataService AppDataService { get; set; } = default!;
 
     private bool _drawerOpen;
     private bool _rightToLeft;
+    private PackageDto package = new();
+    private List<LoanDto> loans = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await AppDataService.InitializationAsync();
+
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                loans = await AppDataService.GetCurrentUserLoansAsync();
+                package = await AppDataService.GetCurrentUserPackageAsync();
+            }
+        }
+
         if (await ClientPreferences.GetPreference() is ClientPreference preference)
         {
             _rightToLeft = preference.IsRTL;
             _drawerOpen = preference.IsDrawerOpen;
+        }
+
+        if (AppDataService != default)
+        {
+            if (AppDataService.AppUser != default)
+            {
+                AppDataService.City = AppDataService.AppUser.HomeCity;
+                AppDataService.Country = AppDataService.AppUser.HomeCountry;
+            }
         }
     }
 

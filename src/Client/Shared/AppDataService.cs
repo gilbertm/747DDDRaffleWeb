@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Nager.Country;
 using EHULOG.BlazorWebAssembly.Client.Components.Common;
 using Mapster;
+using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -109,7 +110,7 @@ public class AppDataService : IAppDataService
     private GeolocationPosition? _position;
 
     private GeolocationPositionError? _positionError;
-        
+
     public async Task InitializationAsync()
     {
         GeolocationService.GetCurrentPosition(
@@ -361,7 +362,6 @@ public class AppDataService : IAppDataService
         return string.Empty;
     }
 
-
     public event Action? OnChange;
 
     public GeolocationPosition GetGeolocationPosition()
@@ -375,16 +375,111 @@ public class AppDataService : IAppDataService
     }
 
     #region business logics
-    /*                                                      ------ Business Logics ------                                                       */
-    // TODO:// business logics
 
-    public bool IsCanCreateLoan()
+    /// <summary>
+    /// Check the current user's package
+    ///     if lessee package limits
+    ///     if lender's check the package limits
+    /// </summary>
+    /// <returns>bool</returns>
+    public async Task<bool> CanCreateActionAsync()
     {
-        // TODO: to be implemented
-        return true;
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (AppUser.RoleName.Equals("Lender"))
+                {
+                    // get package
+                    var package = await GetCurrentUserPackageAsync();
+
+                    // get package
+                    var loans = await GetCurrentUserLoansAsync();
+
+                    if (package != default && loans != default)
+                    {
+
+                        float currentLentTotal = 0;
+
+                        if (loans.Count > 0)
+                            currentLentTotal = loans.Sum(l => ((l.LoanLenders != default) && (l.LoanLenders.FirstOrDefault() != default) && (l.LoanLenders.FirstOrDefault().Product != default)) ? l.LoanLenders.FirstOrDefault().Product.Amount : 0);
+
+                        if (!(currentLentTotal < package.MaxAmounts))
+                            return false;
+
+                        if (!(loans.Count < package.MaxLessees))
+                            return false;
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
-    // helper
+    #endregion
+
+    #region helpers
+
+    /// <summary>
+    /// Get current user's package
+    /// </summary>
+    /// <returns>PackageDto package</returns>
+    public async Task<PackageDto> GetCurrentUserPackageAsync()
+    {
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (AppUser.RoleName.Equals("Lender"))
+                {
+                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await PackagesClient.GetAsync(AppUser.PackageId), Snackbar) is List<PackageDto> packages)
+                    {
+                        if (packages != default)
+                            return packages.First();
+                    }
+                }
+            }
+        }
+
+        return default!;
+    }
+
+    public async Task<List<LoanDto>> GetCurrentUserLoansAsync()
+    {
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (new string[] { "Lender", "Lessee" }.Contains(AppUser.RoleName))
+                {
+                    var searchLoanRequest = new SearchLoansRequest
+                    {
+                        LenderId = AppUser.Id,
+                        IsLender = true,
+                        IsLedger = true,
+                        IsLessee = false
+
+                    };
+
+                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoansClient.SearchAsync(searchLoanRequest), Snackbar) is PaginationResponseOfLoanDto loans)
+                    {
+                        var lenderLoans = loans.Adapt<PaginationResponse<LoanDto>>();
+
+                        if (lenderLoans != default)
+                        {
+                            return lenderLoans.Data;
+                        }
+                    }
+                }
+            }
+        }
+
+        return default!;
+    }
+
     public bool HasRatedHelper(LoanDto Loan)
     {
         if (AppUser != default)
@@ -702,7 +797,6 @@ public class AppDataService : IAppDataService
         }
     }
 
-    /*                                                      ------ /Business Logics ------                                                       */
     #endregion
 
     [JSInvokable]
