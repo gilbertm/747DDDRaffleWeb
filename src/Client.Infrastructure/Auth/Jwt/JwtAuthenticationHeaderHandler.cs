@@ -34,6 +34,11 @@ public class JwtAuthenticationHeaderHandler : DelegatingHandler
                 {
 
                 }
+                // ++g++, bypass all SendAsync requests that were marked /anon
+                else if (request.RequestUri?.AbsolutePath.Contains("api/v1/loanledgers/calculator") is true)
+                {
+
+                }
                 else
                 {
                     _navigation.NavigateTo("/login");

@@ -12,7 +12,7 @@
                     <MudGrid>
                         <MudItem xs="12" md="@(!IsMapOnly ? 6 : 12)">
                             <div class="map-container embed-responsive embed-responsive-16by9">
-                                <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:750px;width:100%;position:relative">
+                                <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:550px;width:100%;position:relative">
                                     @if (AppDataService.AppUser is null)
                                     {
                                         <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
@@ -97,10 +97,10 @@
     }
     else
     {
-        <MudGrid Class="@(!IsMapOnly ? "" : "pa-0")">
-            <MudItem xs="12" md="@(!IsMapOnly ? 6 : 12)" Class="@(!IsMapOnly ? "" : "pa-0")">
+        <MudGrid>
+            <MudItem xs="12" md="@(!IsMapOnly ? 6 : 12)">
                 <div class="map-container embed-responsive embed-responsive-16by9">
-                    <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:750px;width:100%;position:relative">
+                    <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:550px;width:100%;position:relative">
                         <MudOverlay Visible="false" DarkBackground="true" Absolute="true">
                             <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
                         </MudOverlay>
@@ -134,45 +134,6 @@
             }
         </MudGrid>
     }
-}
-else
-{
-    <MudGrid Class="@(!IsMapOnly ? "" : "pa-0")">
-        <MudItem xs="12" md="@(!IsMapOnly ? 6 : 12)" Class="@(!IsMapOnly ? "" : "pa-0")">
-            <div class="map-container embed-responsive embed-responsive-16by9">
-                <div id="InitialRegisterMap" class="embed-responsive-item border" style="height:750px;width:100%;position:relative">
-                    <MudOverlay Visible="false" DarkBackground="true" Absolute="true">
-                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
-                    </MudOverlay>
-                </div>
-                <pre id="coordinates" class="coordinates"></pre>
-            </div>
-        </MudItem>
-        @if (!IsMapOnly)
-        {
-            <MudItem xs="12" md="6">
-
-                <MudTextField T="string" id="HomeAddress" Adornment="Adornment.Start" Label="@L["Home Street Address"]" Variant="Variant.Outlined" />
-                <br />
-
-                <MudTextField T="string" id="HomeCity" Adornment="Adornment.Start" Label="@L["City"]" Variant="Variant.Outlined" />
-                <br />
-
-                <MudTextField T="string" id="HomeRegion" Adornment="Adornment.Start" Label="@L["Region"]" Variant="Variant.Outlined" />
-                <br />
-
-                <MudTextField T="string" id="HomeCountry" Adornment="Adornment.Start" Label="@L["Country"]" Variant="Variant.Outlined" />
-                <br />
-
-                <MudTextField T="string" id="Latitude" Adornment="Adornment.Start" Label="@L["Latitude"]" ReadOnly Variant="Variant.Outlined" />
-                <br />
-
-                <MudTextField T="string" id="Longitude" Adornment="Adornment.Start" Label="@L["Longitude"]" ReadOnly Variant="Variant.Outlined" />
-                <br />
-
-            </MudItem>
-        }
-    </MudGrid>
 }
 
 @code {

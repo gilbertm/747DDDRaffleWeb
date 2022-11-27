@@ -15467,8 +15467,7 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [System.ComponentModel.DataAnnotations.RegularExpression(@"^[^@]+@[^@]+$")]
         public string Email { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("userName", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [Newtonsoft.Json.JsonProperty("userName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string UserName { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("password", Required = Newtonsoft.Json.Required.Always)]
