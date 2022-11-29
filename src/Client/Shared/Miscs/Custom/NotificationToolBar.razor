@@ -1,0 +1,35 @@
+﻿@if (AppDataService != default)
+{
+    <MudToolBar>
+        @if (AppDataService.AppUser != default)
+        {
+            @if (Loans != default && Package != default && Package.Id != Guid.Empty)
+            {
+                <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Give" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
+                <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@Loans.Sum(l => ((l.LoanLenders != default) && (l.LoanLenders.FirstOrDefault() != default) && (l.LoanLenders?.FirstOrDefault()?.Product != default)) ? l.LoanLenders?.FirstOrDefault()?.Product?.Amount : 0) / @Package.MaxAmounts</MudText>
+
+                <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="     true" Icon="@EhulogIcon.Handshake" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
+                <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@Loans.Count() / @Package.MaxLessees</MudText>
+            }
+
+            <MudText Typo="Typo.caption" Style="@($"color:{@EhulogColor.GreenMoney}")">
+                @(
+                    $"{AppDataService.AppUser.HomeCity}, {AppDataService.AppUser.HomeCountry}"
+                    )
+            </MudText>
+
+        }
+    </MudToolBar>
+}
+
+
+@code {
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
+
+    [Parameter]
+    public List<LoanDto> Loans { get; set; } = default!;
+
+    [Parameter]
+    public PackageDto Package { get; set; } = default!;
+}

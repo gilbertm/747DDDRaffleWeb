@@ -5,26 +5,23 @@
 
 @attribute [AllowAnonymous]
 
-@if (AppDataService != default)
+@if (!_isAuthenticated)
 {
-    @if (!_isAuthenticated)
-    {
-        @* <FrontAnonLoans /> *@
-        <FrontAnonymousLoans />
-    }
+    <FrontAnonymousLoans />
 }
 
 <LossGeolocationPopup />
 
 @code {
-
     [CascadingParameter(Name = "AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
 
-    private bool _isAuthenticated = default!;
+    private bool _isAuthenticated = false;
 
     protected override async Task OnInitializedAsync()
     {
+        await AppDataService.InitializationAsync();
+
         if (AppDataService != default)
         {
             if ((await AppDataService.IsAuthenticated()) == default)
@@ -33,8 +30,6 @@
             }
             else
             {
-                await AppDataService.InitializationAsync();
-
                 if (AppDataService.AppUser != default)
                 {
                     if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
@@ -60,9 +55,7 @@
                         }
                     }
                 }
-
             }
-
-        }   
+        }
     }
 }

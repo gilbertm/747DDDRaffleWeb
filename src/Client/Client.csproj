@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Pages\Catalog\Anons\FrontAnonLoans.razor.cs" />
       <Compile Remove="Pages\Catalog\FrontLoans.razor.cs" />
       <Compile Remove="Pages\Catalog\Loans\SpecificLoan.razor.cs" />
       <Compile Remove="Pages\Catalog\Loans\SpecificLoanApplicants.razor.cs" />
@@ -19,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="Pages\Catalog\Anons\FrontAnonLoans.razor" />
       <Content Remove="Pages\Catalog\FrontLoans.razor" />
       <Content Remove="Pages\Catalog\Loans\SpecificLoan.razor" />
       <Content Remove="Pages\Catalog\Loans\SpecificLoanApplicants.razor" />
