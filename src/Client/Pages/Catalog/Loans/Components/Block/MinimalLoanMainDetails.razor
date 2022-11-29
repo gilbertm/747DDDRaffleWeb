@@ -26,12 +26,18 @@
             </MudItem>
             @if (Loan.IsCollateral)
             {
-                if (!string.IsNullOrEmpty(Loan.InfoCollateral))
-                {
-                    <MudItem xs="12" Class="py-1">
-                        <MudField DisableUnderLine="true" InnerPadding="false" Label="Collateral" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.DevicesOther" IconSize="Size.Small"><MudText Typo="Typo.caption">@Loan.InfoCollateral</MudText></MudField>
-                    </MudItem>
-                }
+                <MudItem xs="12" Class="py-1">
+                    <MudField DisableUnderLine="true" InnerPadding="false" Label="Collateral" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.TwoTone.DevicesOther" IconSize="Size.Small">
+                        @if (!string.IsNullOrEmpty(Loan.InfoCollateral))
+                        {
+                              <MudText Typo="Typo.caption">
+
+                                @Loan.InfoCollateral
+
+                            </MudText>
+                        }
+                    </MudField>
+                </MudItem>
             }
         </MudGrid>
 

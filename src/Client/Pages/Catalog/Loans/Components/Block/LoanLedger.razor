@@ -9,30 +9,30 @@
 
     <MudTable Dense="@Dense" Items="@LedgerModel" Context="ledger" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
         <HeaderContent>
-            <MudTh><MudText Typo="Typo.caption">No.</MudText></MudTh>
-            <MudTh><MudText Typo="Typo.caption">Due</MudText></MudTh>
-            <MudTh><MudText Typo="Typo.caption">Date</MudText></MudTh>
-            <MudTh><MudText Typo="Typo.caption">Balance</MudText></MudTh>
+            <MudTh Class="text-align-center"><MudText Typo="Typo.caption">No.</MudText></MudTh>
+            <MudTh Class="text-align-center"><MudText Typo="Typo.caption">Due</MudText></MudTh>
+            <MudTh Class="text-align-center"><MudText Typo="Typo.caption">Date</MudText></MudTh>
+            <MudTh Class="text-align-center"><MudText Typo="Typo.caption">Balance</MudText></MudTh>
             @if (!DisableStatusPaymentColumns)
             {
                 @if (CanUpdate)
                 {
-                    <MudTh><MudText Typo="Typo.caption">Status</MudText></MudTh>
-                    <MudTh><MudText Typo="Typo.caption">Actions</MudText></MudTh>
+                    <MudTh Class="text-align-center"><MudText Typo="Typo.caption">Status</MudText></MudTh>
+                    <MudTh Class="text-align-center"><MudText Typo="Typo.caption">Actions</MudText></MudTh>
                 }
             }
 
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Position"><MudText Typo="Typo.caption">@ledger.Position</MudText></MudTd>
-            <MudTd DataLabel="Due"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.AmountDue)</MudText></MudTd>
-            <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.DateDue)</MudText></MudTd>
-            <MudTd DataLabel="Amount"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
+            <MudTd DataLabel="Due" Class="text-align-right"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.AmountDue)</MudText></MudTd>
+            <MudTd DataLabel="Date" Class="text-align-center"><MudText Typo="Typo.caption">@string.Format("{0:MM/dd/yy}", ledger.DateDue)</MudText></MudTd>
+            <MudTd DataLabel="Amount" Class="text-align-right"><MudText Typo="Typo.caption">@string.Format("{0:#,0.00}", ledger.Balance)</MudText></MudTd>
             @if (!DisableStatusPaymentColumns)
             {
                 @if (CanUpdate)
                 {
-                    <MudTd DataLabel="Amount">
+                    <MudTd DataLabel="Status" Class="text-align-center">
                         <MudText Typo="Typo.caption">
                             @if (ledger.Status.Equals(LedgerStatus.Initial))
                             {
@@ -51,10 +51,7 @@
                             }
                         </MudText>
                     </MudTd>
-                    <MudTd DataLabel="Amount">
-
-
-
+                    <MudTd DataLabel="Actions" Class="text-align-center">
                         <MudText Typo="Typo.caption">
 
                             @if (!string.IsNullOrEmpty(ledger.ImageUrl))
@@ -72,9 +69,5 @@
             }
         </RowTemplate>
     </MudTable>
-
-}
-
-@code {
 
 }

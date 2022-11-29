@@ -52,6 +52,8 @@ public partial class LenderAdminLoans
 
     private List<AppUserProductDto> AppUserProducts { get; set; } = default!;
 
+    private List<ProductDto> Products { get; set; } = default!;
+
     private List<CategoryDto> Categories { get; set; } = default!;
 
     private CustomValidation CustomValidation { get; set; } = default!;
@@ -92,26 +94,75 @@ public partial class LenderAdminLoans
     {
         AppUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(appUserId)).ToList();
 
-        if (AppUserProducts.Count > 0)
+        if (AppUserProducts != default)
         {
-            foreach (var item in AppUserProducts)
+            if (AppUserProducts.Count > 0)
             {
-                if (item.Product is not null)
+                foreach (var item in AppUserProducts)
                 {
-                    var image = await InputOutputResourceClient.GetAsync(item.Product.Id);
-
-                    if (image.Count > 0)
+                    if (item != default && item.Product != default)
                     {
-                        item.Product.Image = image.First();
+                        var image = await InputOutputResourceClient.GetAsync(item.ProductId);
+
+                        if (image.Count > 0)
+                        {
+                            item.Product.Image = image.First();
+                        }
+                    }
+                }
+
+                // for select product
+                Products = AppUserProducts.Select(ap => ap.Product).Adapt<List<ProductDto>>();
+
+            }
+
+            if (AppDataService != default)
+            {
+                if (AppDataService.AppUser != default)
+                {
+                    var loans = await AppDataService.GetCurrentUserLoansAsync();
+                    var package = await AppDataService.GetCurrentUserPackageAsync();
+
+                    // remove all products base value greater than
+                    // allowed loan limits
+                    if (package != default && loans != default && loans?.Count >= 0)
+                    {
+                        // clean record
+                        // no existing loans
+                        float totalLentAmount = 0;
+
+                        // loans exists, calculate the amount
+                        if (loans.Count > 0)
+                        {
+                            foreach (var item in loans)
+                            {
+                                var loanLenders = item.LoanLenders;
+
+                                if (loanLenders != default && loanLenders.FirstOrDefault() != default)
+                                {
+                                    var loanLenderProduct = loanLenders.First().Product;
+
+                                    if (loanLenderProduct != default)
+                                    {
+                                        totalLentAmount += loanLenderProduct.Amount;
+                                    }
+                                }
+                            }
+                        }
+
+                        float allowableAmount = package.MaxAmounts - totalLentAmount;
+
+                        Products = Products.Where(ap => ap.Amount <= allowableAmount).ToList();
+
                     }
                 }
             }
-        }
 
-        // filtered according to the choosen category
-        if (filterCategory != default)
-        {
-            AppUserProducts = AppUserProducts.Where(ap => (ap.Product != default) ? ap.Product.CategoryId.Equals(filterCategory) : default).ToList();
+            // filtered according to the choosen category
+            if (filterCategory != default && AppUserProducts.Count > 0)
+            {
+                Products = Products.Where(ap => (ap != default) ? ap.CategoryId.Equals(filterCategory) : default).ToList();
+            }
         }
     }
 
@@ -317,12 +368,11 @@ public partial class LenderAdminLoans
                            }
                            else
                            {
-                               // TODO://
-                               // can only create if, packages is still allows
-                               // Business logic of the number allowed
-                               // loans that can be created
-                               // amount
-                               // etc.
+                               // can create must be triggered
+                               // before reaching here
+
+                               // map form values
+                               // create request
                                var createLoanRequest = loan.Adapt<CreateLoanRequest>();
 
                                createLoanRequest.StartOfPayment = DateTime.SpecifyKind(createLoanRequest.StartOfPayment, DateTimeKind.Utc);
@@ -405,6 +455,8 @@ public partial class LenderAdminLoans
 
                                        if (loanLender.Product.Category is not null)
                                        {
+                                           Context.AddEditModal.RequestModel.CategoryId = loanLender.Product.CategoryId;
+                                           Context.AddEditModal.RequestModel.Category = loanLender.Product.Category;
                                            Context.AddEditModal.RequestModel.Product.Category = loanLender.Product.Category;
                                        }
 
@@ -424,16 +476,8 @@ public partial class LenderAdminLoans
                            // Prevent unnecessary loan changes
                            // updating a product is not permitted
 
-                           // TODO://
-                           // can only create if, packages is still allows
-                           // Business logic of the number allowed
-                           // loans that can be created
-                           // amount
-                           // etc.
-
-                           // CAN ONLY BE CHANGED, if the criteria of allowed limits is still okay
-                           // this loan is not yet a running loan
-                           // that there's already a lessee assigned.
+                           // update doesn't alter sensitive values
+                           // just do a straightforward update
                            var updateLoanRequest = loan.Adapt<UpdateLoanRequest>();
 
                            updateLoanRequest.StartOfPayment = DateTime.SpecifyKind(updateLoanRequest.StartOfPayment, DateTimeKind.Utc);
@@ -470,7 +514,10 @@ public partial class LenderAdminLoans
                        },
                        deleteFunc: async (id) =>
                        {
-                           // TODO:// do all necessary checks before deletion
+                           // deleting is straightforward
+                           // once done
+                           // allocated slot will be
+                           // released back to the package pool
                            if (await ApiHelper.ExecuteCallGuardedAsync(
                               async () => await LoansClient.DeleteAsync(id),
                               Snackbar,
@@ -479,6 +526,8 @@ public partial class LenderAdminLoans
                                if (id.Equals(loanId))
                                {
                                    Snackbar.Add(L["Loan successfully deleted."], Severity.Success);
+
+                                   Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
                                }
 
                            }
@@ -486,6 +535,10 @@ public partial class LenderAdminLoans
                        },
                        canUpdateEntityFunc: LoanDto =>
                        {
+                           // updates only deals with the status
+                           // there's no concerning
+                           // values and number of loans
+                           // that triggers package limits
                            if (new[] { LoanStatus.Draft, LoanStatus.Published }.Contains(LoanDto.Status))
                            {
                                if (LoanDto.LoanLessees is { })
@@ -503,6 +556,10 @@ public partial class LenderAdminLoans
                        },
                        canDeleteEntityFunc: LoanDto =>
                        {
+                           // delete can be done if the following
+                           // a. it is draft state
+                           // b. published but none was assigned/granted the loan
+                           //    applicants will just be part of the historical data
                            if (new[] { LoanStatus.Draft, LoanStatus.Published }.Contains(LoanDto.Status))
                            {
                                if (LoanDto.LoanLessees is { })
@@ -519,9 +576,17 @@ public partial class LenderAdminLoans
                            return false;
 
                        },
+
+                       // can create ensures business policy
+                       // account packages and subscriptions
                        createAction: await CanCreateActionAsync(),
 
+                       // disable export
                        exportAction: string.Empty,
+
+                       // add button
+                       // that redirects to the
+                       // loan page
                        hasExtraActionsFunc: () =>
                        {
                            return true;

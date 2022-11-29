@@ -40,7 +40,7 @@ else
 
                         <MudItem xs="12" md="4">
 
-                            <MudSelect Required="true" T="Guid" Class="mb-5" Value="@Context.AddEditModal.RequestModel.CategoryId" Text="@(Context.AddEditModal.RequestModel.CategoryId == default ? "" : Context.AddEditModal.RequestModel.CategoryId.ToString())" For="@(() => Context.AddEditModal.RequestModel.CategoryId)" Immediate="true" Label="Select Category" OpenIcon="@Icons.Material.Filled.Category" AdornmentColor="Color.Secondary" ValueChanged="@(async (Guid val) => await UpdateProductOnCategoryChange(val))">
+                            <MudSelect Required="true" Disabled="@(!Context.AddEditModal.IsCreate ? true : false)" ReadOnly="@(!Context.AddEditModal.IsCreate ? true : false)" T="Guid" Class="mb-5" Value="@Context.AddEditModal.RequestModel.CategoryId" Text="@(Context.AddEditModal.RequestModel.CategoryId == default ? "" : Context.AddEditModal.RequestModel.CategoryId.ToString())" For="@(() => Context.AddEditModal.RequestModel.CategoryId)" Immediate="true" Label="Select Category" OpenIcon="@Icons.Material.Filled.Category" AdornmentColor="Color.Secondary" ValueChanged="@(async (Guid val) => await UpdateProductOnCategoryChange(val))">
                                 @foreach (var item in Categories)
                                 {
                                     <MudSelectItem T="Guid" Value="item.Id">
@@ -52,7 +52,7 @@ else
                                 }
                             </MudSelect>
 
-                            <ProductAutocomplete Products="AppUserProducts.Select(ap => ap.Product).ToList()" RequiredError="Required" Disabled="IsProductsReadOnly" ReadOnly="IsProductsReadOnly" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@(Context.AddEditModal.RequestModel.ProductId == Guid.Empty ? Guid.Empty : Context.AddEditModal.RequestModel.ProductId)" ValueChanged="@( async (Guid val) => await AutocompleteProductChange(val))" />
+                            <ProductAutocomplete Products="Products" RequiredError="Required" Disabled="IsProductsReadOnly" ReadOnly="IsProductsReadOnly" Required="true" For="@(() => Context.AddEditModal.RequestModel.ProductId)" OffsetY="true" Immediate="true" Text="@Context.AddEditModal.RequestModel.Product.Name" Value="@(Context.AddEditModal.RequestModel.ProductId == Guid.Empty ? Guid.Empty : Context.AddEditModal.RequestModel.ProductId)" ValueChanged="@( async (Guid val) => await AutocompleteProductChange(val))" />
 
                             @if (Context.AddEditModal.RequestModel.Product != default && Context.AddEditModal.RequestModel.ProductId != default)
                             {
@@ -237,6 +237,13 @@ else
 
 
 @code {
+
+    /*
+     * codes below is for form edit
+     * functionality keeping it here
+     * provides clarity
+     * 
+     */
     private bool _isProductsReadOnly;
     public bool IsProductsReadOnly
     {
@@ -245,6 +252,19 @@ else
         {
 
             _isProductsReadOnly = value;
+
+            StateHasChanged();
+        }
+    }
+
+    private bool _isCategoryReadOnly;
+    public bool IsCategoryReadOnly
+    {
+        get { return _isCategoryReadOnly; }
+        set
+        {
+
+            _isCategoryReadOnly = value;
 
             StateHasChanged();
         }
@@ -297,8 +317,6 @@ else
 
         }
     }
-
-
 
     private bool _disabledInterestSelection = false;
 
@@ -398,7 +416,6 @@ else
 
 
     }
-
 
     public class TemporaryLedgerTableElement
     {
@@ -606,13 +623,14 @@ else
 
                     <MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="pa-0 ma-0">
                         <MudGrid Class="align-left">
-                            <MudItem xs="12" Class="text-center align-center">
+                            <MudItem xs="12" Class="mb-0 text-center align-center">
                                 @if (!string.IsNullOrEmpty(imageUrl))
                                 {
                                     <MudAvatar Square="true" Image="@imageUrl" Style="height:50px;position:relative"></MudAvatar>
                                     <br />
                                 }
                                 <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{EhulogColor.GreenMoney}")">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText> <MudText Typo="Typo.body1" Class="px-1 d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrencyAppUser()</MudText>
+                                <MudText Typo="Typo.caption" Class="d-inline-block" Style="@($"color:{EhulogColor.GreenMoney};width:100%")">@trail.LoanLenders?.FirstOrDefault()?.Product?.Category?.Name</MudText>
                             </MudItem>
                             <MudItem xs="12">
                                 <MinimalLoanMainDetails Loan="@trail" />

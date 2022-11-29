@@ -38,6 +38,7 @@ public partial class LoanLedger
     protected override async Task OnInitializedAsync()
     {
         CanUpdate = true;
+
         if (Ledger is not null && Ledger.Count > 0)
         {
             _runningTotal = Ledger.Sum(l => l.AmountDue);

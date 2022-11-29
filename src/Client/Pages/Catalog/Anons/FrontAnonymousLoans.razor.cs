@@ -1,31 +1,22 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Pages.Multitenancy;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using EHULOG.WebApi.Shared.Multitenancy;
 using Mapster;
 using Microsoft.AspNetCore.Components;
-using System.Net.Http.Headers;
-using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
-using System.Runtime.CompilerServices;
-using Geo.MapBox.Models.Responses;
-using static EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.LenderAdminLoans;
-using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
-using EHULOG.BlazorWebAssembly.Client.Shared.Dialogs;
 using MudBlazor;
-using static MudBlazor.CategoryTypes;
-using System.Globalization;
-using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 
 public partial class FrontAnonymousLoans
 {
     [CascadingParameter(Name = "AppDataService")]
-    public AppDataService AppDataService { get; set; } = default!;
+    protected AppDataService AppDataService { get; set; } = default!;
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
@@ -51,9 +42,15 @@ public partial class FrontAnonymousLoans
     private int _loaningDuration = 1;
     private float _loaningInterest = 1f;
     private float _loaningTotal = 0f;
+    private bool _isAuthenticated = false;
 
     protected override async Task OnInitializedAsync()
     {
+        if (AppDataService.IsAuthenticated() != default)
+        {
+            _isAuthenticated = true;
+        }
+
         // check and get cookie for country location
         /* string? countryLocationStorage = LocalStorage.GetItem<string>("CountryLocation");
 
@@ -63,18 +60,6 @@ public partial class FrontAnonymousLoans
 
             LocalStorage.SetItem("CountryLocation", $"This is a sample data {DateTime.Now}");
         } */
-
-        if ((await AppDataService.IsAuthenticated()) != default)
-        {
-            // navigate to home (/)
-            // the front component will do the routing checks
-            //
-            // if logged in, the role will be used to navigate
-            // to the user's account type listing
-            Navigation.NavigateTo("/");
-
-            return;
-        }
 
         await LoadDataAsync();
 

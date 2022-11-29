@@ -10,15 +10,18 @@ namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
 
 public partial class DynamicMapLoad
 {
+    [CascadingParameter(Name = "AppDataService")]
+    public AppDataService AppDataService { get; set; } = default!;
+
     [Parameter]
     public bool IsMapOnly { get; set; }
 
     [Inject]
     public NavigationManager NavigationManager { get; set; } = default!;
-    [Inject]
-    public AppDataService AppDataService { get; set; } = default!;
+
     [Inject]
     protected IAppUsersClient AppUsersClient { get; set; } = default!;
+
     [Inject]
     protected IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -61,8 +64,6 @@ public partial class DynamicMapLoad
     protected override async Task OnInitializedAsync()
     {
         _objRef = DotNetObjectReference.Create(this);
-
-        await AppDataService.InitializationAsync();
 
         await JSRuntime.InvokeVoidAsync("loadScript", "https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js", "head");
 
