@@ -105,7 +105,7 @@ public class AppDataService : IAppDataService
     public string? Country { get; set; }
     public string? CountryCurrency { get; set; }
 
-    private bool IsNewUser { get; set; } = false;
+    private bool Changed { get; set; } = false;
 
     private GeolocationPosition? _position;
 
@@ -135,186 +135,205 @@ public class AppDataService : IAppDataService
 
         // if not found / not found exception
         // create a silent custom helper
-        var appUserClient = await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, default);
+        // the app user should be present here
+        AppUser = await SetupAppUser(userId);
 
-        // the get async is throwing errors
-        // the user doesn't not exist
-        // create init
-        if (appUserClient == default)
+        if (AppUser != default)
+        {
+            if (string.IsNullOrEmpty(AppUser.Email))
+            {
+                AppUser.Email = email;
+                AppUser.FirstName = firstName;
+                AppUser.LastName = lastName;
+                AppUser.PhoneNumber = phoneNumber;
+                AppUser.ImageUrl = imageUrl;
+
+                Changed = true;
+            }
+
+            if (string.IsNullOrEmpty(AppUser.RoleId))
+            {
+                var userRoles = await UsersClient.GetRolesAsync(userId);
+
+                var lenderOrLessee = userRoles.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
+                if (lenderOrLessee.Count == 1)
+                {
+                    // assigned properly with one application role
+                    AppUser.RoleId = lenderOrLessee[0].RoleId;
+                    AppUser.RoleName = lenderOrLessee[0].RoleName;
+                }
+
+                var basic = userRoles.Where(r => (new string[] { "Basic" }).Contains(r.RoleName) && r.Enabled).ToList();
+                if (basic.Count > 0)
+                {
+                    AppUser.RoleId = basic[0].RoleId;
+                    AppUser.RoleName = basic[0].RoleName;
+                }
+
+                var admin = userRoles.Where(r => (new string[] { "Admin" }).Contains(r.RoleName) && r.Enabled).ToList();
+                if (admin.Count > 0)
+                {
+                    AppUser.RoleId = admin[0].RoleId;
+                    AppUser.RoleName = admin[0].RoleName;
+                }
+
+                Changed = true;
+            }
+
+            if (Changed)
+            {
+                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(AppUser.Id, AppUser.Adapt<UpdateAppUserRequest>()), Snackbar, null) is Guid guidUpdate)
+                {
+                    if (guidUpdate != default && guidUpdate != Guid.Empty)
+                    {
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto appUserUpdated)
+                        {
+                            AppUser = appUserUpdated;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task<AppUserDto> SetupAppUser(string userId)
+    {
+        var appUserObjectAlreadyCreatedDetail = await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, default);
+
+        // the appuser detail record
+        // does not exists
+        if (appUserObjectAlreadyCreatedDetail == default)
         {
             var createAppUserRequest = new CreateAppUserRequest
             {
                 ApplicationUserId = userId
             };
 
-            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.CreateAsync(createAppUserRequest), Snackbar, default!, "Personal application profile created") is Guid guid)
+            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.CreateAsync(createAppUserRequest), Snackbar, default!, "Personal application profile created") is Guid guidCreated)
             {
-                IsNewUser = true;
-            }
-        }
-
-        // the app user should be present here
-        AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, default!) ?? default!;
-
-        if (AppUser != default)
-        {
-            AppUser.Email = email;
-            AppUser.FirstName = firstName;
-            AppUser.LastName = lastName;
-            AppUser.PhoneNumber = phoneNumber;
-            AppUser.ImageUrl = imageUrl;
-
-            if (IsNewUser)
-            {
-                if (_position != default)
+                if (guidCreated != default && guidCreated != Guid.Empty)
                 {
-                    AppUser.Longitude = _position.Coords.Longitude.ToString();
-                    AppUser.Latitude = _position.Coords.Latitude.ToString();
-
-                    var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
+                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto userDetail)
                     {
-                        Coordinate = new Geo.MapBox.Models.Coordinate()
+                        if (_position != default)
                         {
-                            Latitude = Convert.ToDouble(AppUser.Latitude),
-                            Longitude = Convert.ToDouble(AppUser.Longitude)
-                        },
-                        EndpointType = Geo.MapBox.Enums.EndpointType.Places
-                    });
+                            userDetail.Longitude = _position.Coords.Longitude.ToString();
+                            userDetail.Latitude = _position.Coords.Latitude.ToString();
 
-                    if (responseReverseGeocoding != default)
-                    {
-                        if (responseReverseGeocoding.Features != default)
-                        {
-                            if (responseReverseGeocoding.Features.Count > 0)
+                            var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
                             {
-                                foreach (var f in responseReverseGeocoding.Features)
+                                Coordinate = new Geo.MapBox.Models.Coordinate()
                                 {
-                                    if (f.Contexts.Count > 0)
-                                    {
-                                        foreach (var c in f.Contexts)
-                                        {
-                                            // System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
-                                            // System.Diagnostics.Debug.Write(c.ContextText);
+                                    Latitude = Convert.ToDouble(userDetail.Latitude),
+                                    Longitude = Convert.ToDouble(userDetail.Longitude)
+                                },
+                                EndpointType = Geo.MapBox.Enums.EndpointType.Places
+                            });
 
-                                            if (!string.IsNullOrEmpty(c.Id))
+                            if (responseReverseGeocoding != default)
+                            {
+                                if (responseReverseGeocoding.Features != default)
+                                {
+                                    if (responseReverseGeocoding.Features.Count > 0)
+                                    {
+                                        foreach (var f in responseReverseGeocoding.Features)
+                                        {
+                                            if (f.Contexts.Count > 0)
                                             {
-                                                switch (c.Id)
+                                                foreach (var c in f.Contexts)
                                                 {
-                                                    case string s when s.Contains("country"):
-                                                        AppUser.HomeCountry = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("region"):
-                                                        AppUser.HomeRegion = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("postcode"):
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("district"):
-                                                        AppUser.HomeCountry += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("place"):
-                                                        AppUser.HomeCity = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("locality"):
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("neighborhood"):
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("address"):
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("poi"):
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                        break;
+                                                    // System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
+                                                    // System.Diagnostics.Debug.Write(c.ContextText);
+
+                                                    if (!string.IsNullOrEmpty(c.Id))
+                                                    {
+                                                        switch (c.Id)
+                                                        {
+                                                            case string s when s.Contains("country"):
+                                                                userDetail.HomeCountry = c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("region"):
+                                                                userDetail.HomeRegion = c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("postcode"):
+                                                                userDetail.HomeAddress += c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("district"):
+                                                                userDetail.HomeCountry += c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("place"):
+                                                                userDetail.HomeCity = c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("locality"):
+                                                                userDetail.HomeAddress += c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("neighborhood"):
+                                                                userDetail.HomeAddress += c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("address"):
+                                                                userDetail.HomeAddress += c.ContextText[0].Text;
+                                                                break;
+                                                            case string s when s.Contains("poi"):
+                                                                userDetail.HomeAddress += c.ContextText[0].Text;
+                                                                break;
+                                                        }
+                                                    }
                                                 }
+                                            }
+
+                                            if (f.Center is { })
+                                            {
+                                                userDetail.Latitude = f.Center.Latitude.ToString();
+                                                userDetail.Longitude = f.Center.Longitude.ToString();
+                                            }
+
+                                            if (f.Properties.Address is { })
+                                            {
+                                                userDetail.HomeAddress += f.Properties.Address;
                                             }
                                         }
                                     }
 
-                                    if (f.Center is { })
-                                    {
-                                        AppUser.Latitude = f.Center.Latitude.ToString();
-                                        AppUser.Longitude = f.Center.Longitude.ToString();
-                                    }
-
-                                    if (f.Properties.Address is { })
-                                    {
-                                        AppUser.HomeAddress += f.Properties.Address;
-                                    }
                                 }
                             }
-
                         }
-                    }
-                }
 
-                var updateAppUserRequest = new UpdateAppUserRequest
-                {
-                    ApplicationUserId = AppUser.ApplicationUserId,
-                    HomeAddress = AppUser.HomeAddress,
-                    HomeCity = AppUser.HomeCity,
-                    HomeCountry = AppUser.HomeCountry,
-                    HomeRegion = AppUser.HomeRegion,
-                    Id = AppUser.Id,
-                    IsVerified = AppUser.IsVerified,
-                    Latitude = AppUser.Latitude,
-                    Longitude = AppUser.Longitude,
-                    PackageId = AppUser.PackageId
-                };
-
-                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequest), Snackbar, null) is Guid guid)
-                {
-                    AppUser = await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) ?? default!;
-                }
-            }
-
-            // get application user role, the selected if exists
-            // if not just assign the other roles
-            // this is used for checking on some parts of the system.
-            var userRoles = await UsersClient.GetRolesAsync(userId);
-            if (userRoles != null)
-            {
-                if (!string.IsNullOrEmpty(AppUser.RoleId))
-                {
-                    if (_appUserDto is { })
-                    {
-                        var userRole = userRoles.FirstOrDefault(ur => (ur.RoleId is not null) && ur.RoleId.Equals(AppUser.RoleId) && ur.Enabled);
-
-                        if (userRole is not null)
+                        var updateAppUserRequest = new UpdateAppUserRequest
                         {
-                            AppUser.RoleId = userRole.RoleId;
-                            AppUser.RoleName = userRole.RoleName;
+                            Id = userDetail.Id,
+                            ApplicationUserId = userDetail.ApplicationUserId,
+                            HomeAddress = userDetail.HomeAddress,
+                            HomeCity = userDetail.HomeCity,
+                            HomeCountry = userDetail.HomeCountry,
+                            HomeRegion = userDetail.HomeRegion,
+                            IsVerified = userDetail.IsVerified,
+                            Latitude = userDetail.Latitude,
+                            Longitude = userDetail.Longitude,
+                            PackageId = userDetail.PackageId
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(userDetail.Id, updateAppUserRequest), Snackbar, null) is Guid guidUpdate)
+                        {
+                            if (guidUpdate != default && guidUpdate != Guid.Empty)
+                            {
+                                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto appUserUpdated)
+                                {
+                                    if (appUserUpdated != default)
+                                        return appUserUpdated;
+                                }
+                            }
                         }
-                    }
-                }
-                else
-                {
-                    var lenderOrLessee = userRoles.Where(r => (new string[] { "Lender", "Lessee" }).Contains(r.RoleName) && r.Enabled).ToList();
-                    if (lenderOrLessee.Count == 1)
-                    {
-                        // assigned properly with one application role
-                        AppUser.RoleId = lenderOrLessee[0].RoleId;
-                        AppUser.RoleName = lenderOrLessee[0].RoleName;
-                    }
 
-                    var basic = userRoles.Where(r => (new string[] { "Basic" }).Contains(r.RoleName) && r.Enabled).ToList();
-                    if (basic.Count > 0)
-                    {
-                        AppUser.RoleId = basic[0].RoleId;
-                        AppUser.RoleName = basic[0].RoleName;
-                    }
-
-                    var admin = userRoles.Where(r => (new string[] { "Admin" }).Contains(r.RoleName) && r.Enabled).ToList();
-                    if (admin.Count > 0)
-                    {
-                        AppUser.RoleId = admin[0].RoleId;
-                        AppUser.RoleName = admin[0].RoleName;
                     }
                 }
             }
-
         }
+        else
+        {
+            return appUserObjectAlreadyCreatedDetail;
+        }
+
+        return default!;
     }
 
     public async Task<ClaimsPrincipal> IsAuthenticated()
@@ -327,13 +346,21 @@ public class AppDataService : IAppDataService
         // var user = authState.User;
         // IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
 
-        if ((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User is { } userClaimsPrincipal)
+        var getAuthenticationStateAsync = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if (getAuthenticationStateAsync != default)
         {
-            if (userClaimsPrincipal.Identity != default)
+            if ((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User is ClaimsPrincipal userClaimsPrincipal)
             {
-                if (userClaimsPrincipal.Identity.IsAuthenticated)
+                if (userClaimsPrincipal.Identity != default)
                 {
-                    return userClaimsPrincipal;
+                    if (userClaimsPrincipal.Identity.IsAuthenticated)
+                    {
+                        return userClaimsPrincipal;
+                    } else
+                    {
+                        return default!;
+                    }
                 }
             }
         }
@@ -402,7 +429,21 @@ public class AppDataService : IAppDataService
                         float currentLentTotal = 0;
 
                         if (loans.Count > 0)
-                            currentLentTotal = loans.Sum(l => ((l.LoanLenders != default) && (l.LoanLenders.FirstOrDefault() != default) && (l.LoanLenders.FirstOrDefault().Product != default)) ? l.LoanLenders.FirstOrDefault().Product.Amount : 0);
+                        {
+                            foreach (var loan in loans)
+                            {
+                                if (loan.LoanLenders != default && loan.LoanLenders.FirstOrDefault(ll => ll.LenderId.Equals(AppUser.Id)) != default)
+                                {
+                                    LoanLenderDto loanLender = loan.LoanLenders.FirstOrDefault(ll => ll.LenderId.Equals(AppUser.Id)) ?? default!;
+
+                                    if (loanLender != default && loanLender.Product != default)
+                                    {
+                                        currentLentTotal += loanLender.Product.Amount;
+                                    }
+                                }
+                            }
+
+                        }
 
                         if (!(currentLentTotal < package.MaxAmounts))
                             return false;
