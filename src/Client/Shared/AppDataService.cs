@@ -357,7 +357,8 @@ public class AppDataService : IAppDataService
                     if (userClaimsPrincipal.Identity.IsAuthenticated)
                     {
                         return userClaimsPrincipal;
-                    } else
+                    }
+                    else
                     {
                         return default!;
                     }
@@ -404,9 +405,9 @@ public class AppDataService : IAppDataService
     #region business logics
 
     /// <summary>
+    /// Applicable: Lender
     /// Check the current user's package
-    ///     if lessee package limits
-    ///     if lender's check the package limits
+    ///     against lent or provided running loans (draft, published, running payment)
     /// </summary>
     /// <returns>bool</returns>
     public async Task<bool> CanCreateActionAsync()
@@ -460,6 +461,75 @@ public class AppDataService : IAppDataService
         return false;
     }
 
+    /// <summary>
+    /// Applicable: Lessee
+    /// Check the current user's package
+    ///     against applied loans (awarded, running)
+    /// </summary>
+    /// <returns>bool</returns>
+    public async Task<bool> CanApplyActionAsync()
+    {
+        if (AppUser != default)
+        {
+            if (AppUser.RoleName != default)
+            {
+                if (AppUser.RoleName.Equals("Lessee"))
+                {
+                    // get package
+                    var package = await GetCurrentUserPackageAsync();
+
+                    // get package
+                    var loans = await GetCurrentUserLoansAsync();
+
+                    if (package != default && loans != default)
+                    {
+
+                        float currentAppliedTotal = 0;
+
+                        if (loans.Count > 0)
+                        {
+                            foreach (var loan in loans)
+                            {
+                                if (loan.LoanLessees != default && loan.LoanLessees.FirstOrDefault(ll => ll.LesseeId.Equals(AppUser.Id)) != default)
+                                {
+                                    LoanLesseeDto loanLessee = loan.LoanLessees.FirstOrDefault(ll => ll.LesseeId.Equals(AppUser.Id)) ?? default!;
+
+                                    // loan lessee is good to go
+                                    // lessee is awarded with this loan
+                                    if (loanLessee != default)
+                                    {
+                                        // get the product thru lender
+                                        if (loan.LoanLenders != default && loan.LoanLessees.FirstOrDefault() != default)
+                                        {
+                                            LoanLenderDto loanLender = loan.LoanLenders.FirstOrDefault() ?? default!;
+
+                                            if (loanLender != default && loanLender.Product != default)
+                                            {
+
+                                                currentAppliedTotal += loanLender.Product.Amount;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+
+                        if (!(currentAppliedTotal < package.MaxAmounts))
+                            return false;
+
+                        if (!(loans.Count < package.MaxLessees))
+                            return false;
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     #endregion
 
     #region helpers
@@ -474,13 +544,10 @@ public class AppDataService : IAppDataService
         {
             if (AppUser.RoleName != default)
             {
-                if (AppUser.RoleName.Equals("Lender"))
+                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await PackagesClient.GetAsync(AppUser.PackageId), Snackbar) is List<PackageDto> packages)
                 {
-                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await PackagesClient.GetAsync(AppUser.PackageId), Snackbar) is List<PackageDto> packages)
-                    {
-                        if (packages != default)
-                            return packages.First();
-                    }
+                    if (packages != default)
+                        return packages.First();
                 }
             }
         }
@@ -496,24 +563,53 @@ public class AppDataService : IAppDataService
             {
                 if (new string[] { "Lender", "Lessee" }.Contains(AppUser.RoleName))
                 {
-                    var searchLoanRequest = new SearchLoansRequest
+                    SearchLoansRequest searchLoanRequest = new();
+
+                    if (AppUser.RoleName.Equals("Lender"))
                     {
-                        LenderId = AppUser.Id,
-                        IsLender = true,
-                        IsLedger = true,
-                        IsLessee = false
-
-                    };
-
-                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoansClient.SearchAsync(searchLoanRequest), Snackbar) is PaginationResponseOfLoanDto loans)
-                    {
-                        var lenderLoans = loans.Adapt<PaginationResponse<LoanDto>>();
-
-                        if (lenderLoans != default)
+                        searchLoanRequest = new SearchLoansRequest
                         {
-                            return lenderLoans.Data;
+                            LenderId = AppUser.Id,
+                            IsLender = true,
+                            IsLedger = true,
+                            IsLessee = false,
+                            Statuses = new[] { LoanStatus.Draft, LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment, LoanStatus.PaymentFinal, LoanStatus.Finish, LoanStatus.Rate }
+
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoansClient.SearchAsync(searchLoanRequest), Snackbar) is PaginationResponseOfLoanDto loans)
+                        {
+                            var resultLoans = loans.Adapt<PaginationResponse<LoanDto>>();
+
+                            if (resultLoans != default && resultLoans.Data.Count() > 0)
+                            {
+                                return resultLoans.Data.OrderByDescending(l => l.StartOfPayment).OrderByDescending(l => l.Status).ToList();
+                            }
                         }
                     }
+
+                    if (AppUser.RoleName.Equals("Lessee"))
+                    {
+                        SearchLoansLesseeRequest searchLoansLesseeRequest = new SearchLoansLesseeRequest
+                        {
+                            AppUserId = AppUser.Id,
+                            HomeCity = AppUser.HomeCity,
+                            HomeCountry = AppUser.HomeCountry,
+                            Statuses = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment, LoanStatus.PaymentFinal, LoanStatus.Finish, LoanStatus.Rate }
+
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await LoansClient.SearchLesseeAsync(searchLoansLesseeRequest), Snackbar) is PaginationResponseOfLoanDto loans)
+                        {
+                            var resultLoans = loans.Adapt<PaginationResponse<LoanDto>>();
+
+                            if (resultLoans != default && resultLoans.Data.Count() > 0)
+                            {
+                                return resultLoans.Data.OrderByDescending(l => l.StartOfPayment).OrderByDescending(l => l.Status).ToList();
+                            }
+                        }
+                    }
+                    
                 }
             }
         }
@@ -629,6 +725,7 @@ public class AppDataService : IAppDataService
 
         return false;
     }
+
     public bool IsLenderOfLoan(LoanDto Loan)
     {
         if (AppUser != default)
@@ -657,61 +754,6 @@ public class AppDataService : IAppDataService
         return false;
     }
 
-    public bool IsLesseeCanApply(LoanDto Loan)
-    {
-        bool isAnApplicantOfThisLoan = false;
-        bool isLessee = false;
-        // bool isApplicantFlagNormal = false;
-
-        if (AppUser != default)
-        {
-            if (AppUser.RoleName != default)
-            {
-                if (AppUser.RoleName.Equals("Lessee"))
-                {
-                    isLessee = true;
-                }
-            }
-
-            // check if an applicant
-            if (Loan != default)
-            {
-                if (Loan.LoanApplicants != default)
-                {
-                    var applicant = Loan.LoanApplicants.FirstOrDefault(la => la.AppUserId.Equals(AppUser.Id)) ?? default;
-                    if (applicant != default)
-                    {
-                        isAnApplicantOfThisLoan = true;
-                    }
-                }
-            }
-
-            // check if all the amount loaned is below package limit
-            // don't calculate the payment
-            // just the ballpark/basetotal from each loan is enough
-            float packageLimit = 1000f;
-            float amountTotalLoanedTotal = 100f;
-            if (amountTotalLoanedTotal < packageLimit)
-            {
-
-            }
-
-            // check if all the amount loaned is below package limit
-            int packageLenderLimit = 2;
-            int lenderLimitTotal = 1;
-            if (lenderLimitTotal < packageLenderLimit)
-            {
-
-            }
-
-            if (isLessee && !isAnApplicantOfThisLoan)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     public bool IsLenderCanUpdateLoan(LoanDto Loan)
     {

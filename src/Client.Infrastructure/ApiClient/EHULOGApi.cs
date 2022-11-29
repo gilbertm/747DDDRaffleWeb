@@ -17121,8 +17121,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [Newtonsoft.Json.JsonProperty("interestType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public InterestType? InterestType { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<LoanStatus> Status { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("statuses", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<LoanStatus>? Statuses { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("appUserId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? AppUserId { get; set; } = default!;

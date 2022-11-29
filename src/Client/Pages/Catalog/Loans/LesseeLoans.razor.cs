@@ -5,13 +5,14 @@ using EHULOG.BlazorWebAssembly.Client.Shared;
 using Mapster;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Nager.Country;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans;
 
 public partial class LesseeLoans
 {
-    [Inject]
+    [CascadingParameter(Name = "AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
 
     [Inject]
@@ -38,12 +39,38 @@ public partial class LesseeLoans
 
     private List<AppUserProductDto> appUserProducts { get; set; } = default!;
 
+    private bool IsHistory { get; set; }
+
     private string _currency { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await AppDataService.InitializationAsync();
+        LoadContext();
+    }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsHistory = false;
+        Context = default!;
+
+        if (QueryHelpers.ParseQuery(Navigation.ToAbsoluteUri(Navigation.Uri).Query).TryGetValue("history", out var param))
+        {
+            string history = param.First();
+
+            // https://localhost:5002/loans/lessee?history=true
+            if (history != default && history.Equals("true"))
+            {
+                IsHistory = true;
+            }
+
+        }
+
+        await OnInitializedAsync();
+    }
+
+    private void LoadContext()
+    {
         if (AppDataService.AppUser != default)
         {
             if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
@@ -71,8 +98,18 @@ public partial class LesseeLoans
                            {
                                var loanFilter = filter.Adapt<SearchLoansLesseeRequest>();
 
-                               loanFilter.Status = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Payment };
                                loanFilter.AppUserId = AppDataService.AppUser.Id;
+
+                               if (IsHistory)
+                               {
+                                   loanFilter.Statuses = new List<LoanStatus>();
+                                   loanFilter.Statuses.Add(LoanStatus.RateFinal);
+                                   loanFilter.Statuses.Add(LoanStatus.Dispute);
+                               }
+                               else
+                               {
+                                   loanFilter.Statuses = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment, LoanStatus.PaymentFinal, LoanStatus.Finish, LoanStatus.Rate };
+                               }
 
                                var result = await LoansClient.SearchLesseeAsync(loanFilter);
 
@@ -81,14 +118,12 @@ public partial class LesseeLoans
 
                                    if (item.LoanLenders != default)
                                    {
-
                                        if (item.LoanLenders.Count > 0)
                                        {
                                            var loanLender = item.LoanLenders.Where(l => l.LoanId.Equals(item.Id)).FirstOrDefault();
 
                                            if (loanLender is not null && loanLender.Product is not null)
                                            {
-
                                                var image = await InputOutputResourceClient.GetAsync(loanLender.ProductId);
 
                                                if (image.Count() > 0)
@@ -122,10 +157,14 @@ public partial class LesseeLoans
                                    }
                                }
 
+                               if (result.Data != default && result.Data.Count() > 0)
+                                   result.Data = result.Data.OrderByDescending(l => l.StartOfPayment).OrderByDescending(l => l.Status).ToList();
+
                                return result.Adapt<EntityContainerPaginationResponse<LoanDto>>();
                            },
                            template: BodyTemplate);
             }
         }
+
     }
 }

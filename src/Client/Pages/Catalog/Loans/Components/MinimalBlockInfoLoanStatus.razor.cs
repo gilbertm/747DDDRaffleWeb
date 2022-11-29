@@ -73,7 +73,7 @@ public partial class MinimalBlockInfoLoanStatus
             {
                 if (Loan != default)
                 {
-                    IsLesseeCanApply = AppDataService.IsLesseeCanApply(Loan);
+                    IsLesseeCanApply = await AppDataService.CanApplyActionAsync();
 
                     // image receipts
                     if (new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment }.Contains(Loan.Status))

@@ -25,8 +25,6 @@
                         {
                             if (Loan.Status.Equals(LoanStatus.Published))
                             {
-                                IsLesseeCanApply = AppDataService.IsLesseeCanApply(Loan);
-
                                 if (IsLesseeCanApply)
                                 {
                                     @if (Loan.Status.Equals(LoanStatus.Published))
@@ -60,8 +58,12 @@
                                                     break;
                                                 case 2:
                                                     @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
-                                                    <MudText DisableUnderLine="true" Typo="Typo.caption">You applied but removed yourself from this Loan.</MudText>
-                                                    <MudButton Variant="Variant.Text" Class="d-inline py-0" OnClick="(() => ReApplyAsync())"><MudText Typo="Typo.caption">Reapply?</MudText></MudButton>
+                                                    @if (IsLesseeCanApply)
+                                                    {
+                                                        <MudText DisableUnderLine="true" Typo="Typo.caption">You applied but removed yourself from this Loan.</MudText>
+
+                                                        <MudButton Variant="Variant.Text" Class="d-inline py-0" OnClick="(() => ReApplyAsync())"><MudText Typo="Typo.caption">Reapply?</MudText></MudButton>
+                                                    }
                                                     break;
                                                 case 3:
                                                     @*TODO:// Maybe in the future add the functionality of re-apply for this loan; the lessee is not blocked anyways. Business rules should apply*@
@@ -234,98 +236,104 @@
                             }
                             if (AppDataService.AppUser.RoleName.Equals("Lessee"))
                             {
-                                <MudAlert Severity="Severity.Info" Class="mb-5 mx-auto">
-                                    Awaiting lender to finalize the loan.<br />
-                                    Rating will follow after finalization.
-                                </MudAlert>
+                                <MudItem xs="12" Class="text-center">
+                                    <MudAlert Severity="Severity.Info" Class="mb-5 mx-auto">
+                                        Awaiting lender to finalize the loan.<br />
+                                        Rating will follow after finalization.
+                                    </MudAlert>
+                                </MudItem>
                             }
                         }
                     }
-
-                    <MudText Typo="Typo.caption"><MudIcon Size="Size.Large" Icon="@Icons.Filled.TableView" Title="Final Payment" /><br />@Loan.Status</MudText>
+                    <MudItem xs="12" Class="text-center">
+                        <MudText Typo="Typo.caption" Class="mt-3 d-inline-block"><MudIcon Size="Size.Large" Icon="@Icons.Filled.TableView" Title="Final Payment" /><br />@Loan.Status</MudText>
+                    </MudItem>
                 }
                 else if ((new[] { LoanStatus.Finish, LoanStatus.Rate, LoanStatus.RateFinal }).Contains(Loan.Status))
                 {
-                    if (AppDataService.AppUser != default)
-                    {
-                        if (AppDataService.AppUser.RoleName != default)
+                    <MudItem xs="12" Class="text-center">
+                        @if (AppDataService.AppUser != default)
                         {
-                            bool hasBothRated = AppDataService.HasRatedBothLenderLesseeHelper(Loan);
-                                                        
-                            if (rating != default && !hasBothRated)
+                            if (AppDataService.AppUser.RoleName != default)
                             {
-                                @if (rating.LoanId.Equals(Loan.Id) || rating.LoanId.Equals(Guid.Empty))
+                                bool hasBothRated = AppDataService.HasRatedBothLenderLesseeHelper(Loan);
+
+                                if (rating != default && !hasBothRated)
                                 {
-                                    <EditForm Model="@rating" OnValidSubmit="@HandleValidRatingSubmit">
-                                        <DataAnnotationsValidator />
-                                        <ValidationSummary />
+                                    @if (rating.LoanId.Equals(Loan.Id) || rating.LoanId.Equals(Guid.Empty))
+                                    {
+                                        <EditForm Model="@rating" OnValidSubmit="@HandleValidRatingSubmit">
+                                            <DataAnnotationsValidator />
+                                            <ValidationSummary />
+                                            <MudGrid Class="text-center justify-content-center align-center">
+                                                @if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                                                {
+                                                    <MudItem xs="12">
+                                                        <MudRating @bind-SelectedValue="@rating.LenderRate" ReadOnly="AppDataService.HasRatedHelper(Loan)" />
+                                                    </MudItem>
+                                                    <MudItem xs="12">
+                                                        <MudTextField DisableUnderLine="true" T="string" ReadOnly="AppDataService.HasRatedHelper(Loan)" Label="Multiline" @bind-Value="@rating.LenderRemark" Variant="Variant.Outlined" HelperText="Both lender and lessee needs to vote to be able to view final ratings" Text="@rating.LenderRemark" Lines="3" Placeholder="Describe your experience, leave blank, if none" />
+                                                    </MudItem>
+
+                                                }
+                                                else if (AppDataService.AppUser.RoleName.Equals("Lessee"))
+                                                {
+                                                    <MudItem xs="12">
+                                                        <MudRating @bind-SelectedValue="@rating.LesseeRate" ReadOnly="AppDataService.HasRatedHelper(Loan)" />
+                                                    </MudItem>
+                                                    <MudItem xs="12">
+                                                        <MudTextField DisableUnderLine="true" T="string" ReadOnly="AppDataService.HasRatedHelper(Loan)" Label="Multiline" @bind-Value="@rating.LesseeRemark" Variant="Variant.Outlined" HelperText="Both lender and lessee needs to vote to be able to view final ratings" Text="@rating.LesseeRemark" Lines="3" Placeholder="Describe your experience, leave blank, if none" />
+                                                    </MudItem>
+                                                }
+
+                                                @if (!AppDataService.HasRatedHelper(Loan))
+                                                {
+                                                    <MudItem xs="   12">
+                                                        <MudButton Variant="Variant.Filled" Color=" Color.Success" DisableRipple="    true" Class="d-block mx-auto" ButtonType=" ButtonType.Submit">Submit</MudButton>
+                                                    </MudItem>
+                                                }
+                                            </MudGrid>
+
+                                        </EditForm>
+                                    }
+
+                                }
+                                else
+                                {
+                                    // both rated
+                                    @if (rating != default && rating.LoanId.Equals(Loan.Id))
+                                    {
                                         <MudGrid Class="text-center justify-content-center align-center">
-                                            @if (AppDataService.AppUser.RoleName.Equals("Lender"))
+                                            @if (rating.LenderId != default)
                                             {
-                                                <MudItem xs="12">                                                   
-                                                    <MudRating @bind-SelectedValue="@rating.LenderRate" ReadOnly="AppDataService.HasRatedHelper(Loan)" />
+                                                <MudItem xs="12" Class="pb-0">
+                                                    <MudText Typo="Typo.body1" Style="font-weight:600">Lender</MudText>
+                                                    <MudRating @bind-SelectedValue="@rating.LenderRate" ReadOnly="true" />
                                                 </MudItem>
-                                                <MudItem xs="12">
-                                                    <MudTextField DisableUnderLine="true" T="string" ReadOnly="AppDataService.HasRatedHelper(Loan)" Label="Multiline" @bind-Value="@rating.LenderRemark" Variant="Variant.Outlined" HelperText="Both lender and lessee needs to vote to be able to view final ratings" Text="@rating.LenderRemark" Lines="3" Placeholder="Describe your experience, leave blank, if none" />
+                                                <MudItem xs="12" Class="pt-0">
+                                                    <MudText Typo="Typo.caption">@rating.LenderRemark</MudText>
                                                 </MudItem>
 
                                             }
-                                            else if (AppDataService.AppUser.RoleName.Equals("Lessee"))
-                                            {
-                                                <MudItem xs="12">                                                    
-                                                    <MudRating @bind-SelectedValue="@rating.LesseeRate" ReadOnly="AppDataService.HasRatedHelper(Loan)" />
-                                                </MudItem>
-                                                <MudItem xs="12">
-                                                    <MudTextField DisableUnderLine="true" T="string" ReadOnly="AppDataService.HasRatedHelper(Loan)" Label="Multiline" @bind-Value="@rating.LesseeRemark" Variant="Variant.Outlined" HelperText="Both lender and lessee needs to vote to be able to view final ratings" Text="@rating.LesseeRemark" Lines="3" Placeholder="Describe your experience, leave blank, if none" />
-                                                </MudItem>
-                                            }
 
-                                            @if (!AppDataService.HasRatedHelper(Loan))
+                                            @if (rating.LesseeId != default)
                                             {
-                                                <MudItem xs="   12">
-                                                    <MudButton Variant="Variant.Filled" Color=" Color.Success" DisableRipple="    true" Class="d-block mx-auto" ButtonType=" ButtonType.Submit">Submit</MudButton>
+                                                <MudItem xs="12" Class="pb-0">
+                                                    <MudText Typo="Typo.body1" Style="font-weight:600">Lessee</MudText>
+                                                    <MudRating @bind-SelectedValue="@rating.LesseeRate" ReadOnly="true" />
+                                                </MudItem>
+                                                <MudItem xs="12" Class="pt-0">
+                                                    <MudText Typo="Typo.caption">@rating.LesseeRemark</MudText>
                                                 </MudItem>
                                             }
                                         </MudGrid>
-
-                                    </EditForm>
-                                }
-                                
-                            } else
-                            {
-                                // both rated
-                                @if (rating != default && rating.LoanId.Equals(Loan.Id))
-                                {
-                                    <MudGrid Class="text-center justify-content-center align-center">
-                                        @if (rating.LenderId != default)
-                                        {
-                                            <MudItem xs="12" Class="pb-0">
-                                                <MudText>Lender</MudText>
-                                                <MudRating @bind-SelectedValue="@rating.LenderRate" ReadOnly="true" />
-                                            </MudItem>
-                                            <MudItem xs="12" Class="pt-0">
-                                                <MudText>@rating.LenderRemark</MudText>
-                                            </MudItem>
-
-                                        }
-
-                                        @if (rating.LesseeId != default)
-                                        {
-                                            <MudItem xs="12" Class="pb-0">
-                                                <MudText>Lessee</MudText>
-                                                <MudRating @bind-SelectedValue="@rating.LesseeRate" ReadOnly="true" />
-                                            </MudItem>
-                                            <MudItem xs="12" Class="pt-0">
-                                                <MudText>@rating.LesseeRemark</MudText>
-                                            </MudItem>
-                                        }
-                                    </MudGrid>
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    <MudText Typo="Typo.caption"><MudIcon Size="Size.Large" Icon="@Icons.Filled.TableView" Title="Finish / Rate" /><br />@Loan.Status</MudText>
+                        <MudText Typo="Typo.caption" Class="mt-3 d-inline-block"><MudIcon Size="Size.Large" Icon="@Icons.Filled.TableView" Title="Finish / Rate" /><br />@Loan.Status</MudText>
+                    </MudItem>
                 }
             </MudGrid>
 

@@ -623,36 +623,34 @@ else
 
                     <MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="pa-0 ma-0">
                         <MudGrid Class="align-left">
-                            <MudItem xs="12" Class="mb-0 text-center align-center">
+                            <MudItem xs="6" Class="mb-0 text-center align-center">
                                 @if (!string.IsNullOrEmpty(imageUrl))
                                 {
-                                    <MudAvatar Square="true" Image="@imageUrl" Style="height:50px;position:relative"></MudAvatar>
+                                    <MudAvatar Square="true" Size="Size.Large" Image="@imageUrl" Style="position:relative;background-color:transparent !important;"></MudAvatar>
                                     <br />
                                 }
-                                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{EhulogColor.GreenMoney}")">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText> <MudText Typo="Typo.body1" Class="px-1 d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrencyAppUser()</MudText>
                                 <MudText Typo="Typo.caption" Class="d-inline-block" Style="@($"color:{EhulogColor.GreenMoney};width:100%")">@trail.LoanLenders?.FirstOrDefault()?.Product?.Category?.Name</MudText>
+                            </MudItem>
+                            <MudItem xs="6" Class="mb-0 text-center align-center">
+                                <MudText Typo="Typo.h5" Class="d-inline" Style="@($"color:{EhulogColor.GreenMoney}")">@string.Format("{0:#,0.00}", loanLedgerTotal)</MudText> <MudText Typo="Typo.body1" Class="px-1 d-inline" Style="@($"color:{Colors.Amber.Darken1}")">@AppDataService.GetCurrencyAppUser()</MudText>
                             </MudItem>
                             <MudItem xs="12">
                                 <MinimalLoanMainDetails Loan="@trail" />
                             </MudItem>
                             <MudItem xs="12" Class="text-center">
-                                <MudCard Elevation="0">
-                                    <MudCardActions Class="text-center">
-                                        <MudButton DisableElevation="true" Href="@string.Format("/loan/{0}", trail.Id)" Variant="Variant.Outlined" Style="@($"color:{EhulogColor.BlueLink};border:1px solid {Colors.BlueGrey.Lighten1}")"><MudText Typo="Typo.caption">Detail</MudText></MudButton>
-                                        @if (trail.LoanLenders != default)
-                                        {
-                                            var loanLender = trail.LoanLenders.FirstOrDefault() ?? default;
+                                <MudButton DisableElevation="true" Class="custom orange" Href="@string.Format("/loan/{0}", trail.Id)"><MudText Typo="Typo.body2">Detail</MudText></MudButton>
+                                @if (trail.LoanLenders != default)
+                                {
+                                    var loanLender = trail.LoanLenders.FirstOrDefault() ?? default;
 
-                                            if (loanLender is { })
-                                            {
-                                                @if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
-                                                {
-                                                    @* <SpecificLoanLenderProfileQuickInfo LoanLender="@loanLender" /> *@
-                                                }
-                                            }
+                                    if (loanLender is { })
+                                    {
+                                        @if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
+                                        {
+                                            @* <SpecificLoanLenderProfileQuickInfo LoanLender="@loanLender" /> *@
                                         }
-                                    </MudCardActions>
-                                </MudCard>
+                                    }
+                                }
                             </MudItem>
                         </MudGrid>
                     </MudContainer>

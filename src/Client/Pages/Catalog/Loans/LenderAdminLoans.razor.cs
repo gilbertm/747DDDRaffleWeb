@@ -41,7 +41,8 @@ public partial class LenderAdminLoans
     protected ILoansClient LoansClient { get; set; } = default!;
     [Inject]
     protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
-    [Inject]
+
+    [CascadingParameter(Name ="AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
 
     protected EntityServerTableContext<LoanDto, Guid, LoanViewModel> Context { get; set; } = default!;
@@ -357,6 +358,9 @@ public partial class LenderAdminLoans
                                    }
                                }
                            }
+
+                           if (result.Data != default && result.Data.Count() > 0)
+                               result.Data.OrderByDescending(l => l.StartOfPayment).OrderByDescending(l => l.Status);
 
                            return result.Adapt<PaginationResponse<LoanDto>>();
                        },
