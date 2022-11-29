@@ -1,4 +1,5 @@
-﻿@inject IStringLocalizer<MainLayout> L
+﻿@using EHULOG.BlazorWebAssembly.Client.Shared.Miscs.Custom
+@inject IStringLocalizer<MainLayout> L
 
 <CascadingValue Value="@AppDataService" Name="AppDataService">
     <MudAppBar Elevation="25" Class="py-1 main-menu-app-bar logged">
@@ -10,25 +11,7 @@
             <img src="./logo-black-slogan.svg" Style="height:75px" />
         </MudButton>
         <MudSpacer />
-        <MudToolBar>
-            @if (AppDataService != default)
-            {
-                @if (AppDataService.AppUser != default)
-                {
-                    if (loans != default && package != default && package.Id != Guid.Empty)
-                    {
-                        <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Give" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@loans.Sum(l => ((l.LoanLenders != default) && (l.LoanLenders.FirstOrDefault() != default) && (l.LoanLenders.FirstOrDefault().Product != default)) ? l.LoanLenders.FirstOrDefault().Product.Amount : 0) / @package.MaxAmounts</MudText>
-
-                        <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Handshake" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@loans.Count() / @package.MaxLessees</MudText>
-                    }
-
-                    <MudText Typo="Typo.caption" Style="@($"color:{@EhulogColor.GreenMoney}")">@($"{AppDataService.AppUser.HomeCity}, {AppDataService.AppUser.HomeCountry}")</MudText>
-
-                }
-            }            
-        </MudToolBar>
+        <NotificationToolBar Loans="@loans" Package="@package" />
         <MudSpacer />
         <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
             @* <MudButton DisableElevation Variant="Variant.Filled" Color="Color.Secondary"

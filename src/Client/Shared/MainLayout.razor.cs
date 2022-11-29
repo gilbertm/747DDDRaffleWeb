@@ -3,7 +3,6 @@ using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Collections.Generic;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -15,6 +14,7 @@ public partial class MainLayout
     public EventCallback OnDarkModeToggle { get; set; }
     [Parameter]
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
+
     [Inject]
     protected AppDataService AppDataService { get; set; } = default!;
 
@@ -33,6 +33,9 @@ public partial class MainLayout
             {
                 loans = await AppDataService.GetCurrentUserLoansAsync();
                 package = await AppDataService.GetCurrentUserPackageAsync();
+
+                AppDataService.City = AppDataService.AppUser.HomeCity;
+                AppDataService.Country = AppDataService.AppUser.HomeCountry;
             }
         }
 
@@ -40,15 +43,6 @@ public partial class MainLayout
         {
             _rightToLeft = preference.IsRTL;
             _drawerOpen = preference.IsDrawerOpen;
-        }
-
-        if (AppDataService != default)
-        {
-            if (AppDataService.AppUser != default)
-            {
-                AppDataService.City = AppDataService.AppUser.HomeCity;
-                AppDataService.Country = AppDataService.AppUser.HomeCountry;
-            }
         }
     }
 

@@ -10,12 +10,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
 public partial class NavMenu
 {
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
+
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
+
     [Inject]
     protected IAuthorizationService AuthService { get; set; } = default!;
-    [Inject]
-    public AppDataService AppDataService { get; set; } = default!;
 
     private string? _hangfireUrl;
     private bool _canViewHangfire;
@@ -39,12 +41,13 @@ public partial class NavMenu
 
     protected override async Task OnParametersSetAsync()
     {
-        await AppDataService.InitializationAsync();
-
-        _isVerified = await AppDataService.IsVerified();
+        if (AppDataService != default)
+            _isVerified = await AppDataService.IsVerified();
 
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
+
         var user = (await AuthState).User;
+
         _canViewHangfire = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Hangfire);
         _canViewDashboard = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Dashboard);
         _canViewRoles = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Roles);
