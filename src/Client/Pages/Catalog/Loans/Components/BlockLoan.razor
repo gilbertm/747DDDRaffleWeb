@@ -1,4 +1,4 @@
-﻿<MudCard Elevation="0">
+﻿<MudCard Elevation="0" Class="d-flex align-items-start flex-column" Style="height:100%">
     <MudCardContent Class="py-0">
         <MudImage Fluid="true" Src="@imageUrl" Alt="@productName" Class="rounded-lg" />
     </MudCardContent>
@@ -28,12 +28,12 @@
         }
 
     </MudCardContent>
-    <MudCardContent Class="minimal-loan-main-details py-0 my-3">
+    <MudCardContent Class="minimal-loan-main-details py-0 my-3 ma-1">
         <EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans.Components.Block.MinimalLoanMainDetails Loan="Loan" />
     </MudCardContent>
     @if (!DisableStatus)
     {
-        <MudCardContent Class="minimal-block-info-loan-status py-0 ma-1">
+        <MudCardContent Class="minimal-block-info-loan-status py-0 ma-1 mt-auto p-2">
             <MinimalBlockInfoLoanStatus Loan="@Loan" OnUpdatedLoan="UpdateLoan" />
         </MudCardContent>
     }

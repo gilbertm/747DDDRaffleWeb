@@ -31,7 +31,8 @@ public partial class MainLayout
         {
             if (AppDataService.AppUser != default)
             {
-                loans = await AppDataService.GetCurrentUserLoansAsync();
+                // running loans are currently active (this is more used by lessee)
+                loans = await AppDataService.GetCurrentUserLoansAsync(true);
                 package = await AppDataService.GetCurrentUserPackageAsync();
 
                 AppDataService.City = AppDataService.AppUser.HomeCity;

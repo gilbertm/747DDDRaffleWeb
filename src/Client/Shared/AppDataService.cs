@@ -209,12 +209,16 @@ public class AppDataService : IAppDataService
                 ApplicationUserId = userId
             };
 
-            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.CreateAsync(createAppUserRequest), Snackbar, default!, "Personal application profile created") is Guid guidCreated)
+            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.CreateAsync(createAppUserRequest), Snackbar, null, "Personal application profile created") is Guid guidCreated)
             {
                 if (guidCreated != default && guidCreated != Guid.Empty)
                 {
-                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto userDetail)
+                    Console.WriteLine("EhulogConsoleWriteLine: Personal application profile created");
+
+                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null, "Init Geolocation") is AppUserDto userDetail)
                     {
+                        Console.WriteLine("EhulogConsoleWriteLine: Init Geolocation");
+
                         if (_position != default)
                         {
                             userDetail.Longitude = _position.Coords.Longitude.ToString();
@@ -296,44 +300,41 @@ public class AppDataService : IAppDataService
 
                                 }
                             }
-                        }
 
-                        var updateAppUserRequest = new UpdateAppUserRequest
-                        {
-                            Id = userDetail.Id,
-                            ApplicationUserId = userDetail.ApplicationUserId,
-                            HomeAddress = userDetail.HomeAddress,
-                            HomeCity = userDetail.HomeCity,
-                            HomeCountry = userDetail.HomeCountry,
-                            HomeRegion = userDetail.HomeRegion,
-                            IsVerified = userDetail.IsVerified,
-                            Latitude = userDetail.Latitude,
-                            Longitude = userDetail.Longitude,
-                            PackageId = userDetail.PackageId
-                        };
 
-                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(userDetail.Id, updateAppUserRequest), Snackbar, null) is Guid guidUpdate)
-                        {
-                            if (guidUpdate != default && guidUpdate != Guid.Empty)
+                            var updateAppUserRequest = new UpdateAppUserRequest
                             {
-                                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto appUserUpdated)
+                                Id = userDetail.Id,
+                                ApplicationUserId = userDetail.ApplicationUserId,
+                                HomeAddress = userDetail.HomeAddress,
+                                HomeCity = userDetail.HomeCity,
+                                HomeCountry = userDetail.HomeCountry,
+                                HomeRegion = userDetail.HomeRegion,
+                                Latitude = userDetail.Latitude,
+                                Longitude = userDetail.Longitude,
+                            };
+
+                            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(userDetail.Id, updateAppUserRequest), Snackbar, null) is Guid guidUpdate)
+                            {
+                                if (guidUpdate != default && guidUpdate != Guid.Empty)
                                 {
-                                    if (appUserUpdated != default)
-                                        return appUserUpdated;
+                                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto appUserUpdated)
+                                    {
+                                        if (appUserUpdated != default)
+                                            return appUserUpdated;
+                                    }
                                 }
                             }
                         }
 
+
                     }
                 }
             }
-        }
-        else
-        {
-            return appUserObjectAlreadyCreatedDetail;
+
         }
 
-        return default!;
+        return appUserObjectAlreadyCreatedDetail ?? default!;
     }
 
     public async Task<ClaimsPrincipal> IsAuthenticated()
@@ -424,12 +425,12 @@ public class AppDataService : IAppDataService
                     // get package
                     var loans = await GetCurrentUserLoansAsync();
 
-                    if (package != default && loans != default)
+                    if (package != default)
                     {
 
                         float currentLentTotal = 0;
 
-                        if (loans.Count > 0)
+                        if (loans != default && loans.Count > 0)
                         {
                             foreach (var loan in loans)
                             {
@@ -444,13 +445,15 @@ public class AppDataService : IAppDataService
                                 }
                             }
 
+                            if (!(loans.Count < package.MaxLessees))
+                                return false;
+
                         }
 
                         if (!(currentLentTotal < package.MaxAmounts))
                             return false;
 
-                        if (!(loans.Count < package.MaxLessees))
-                            return false;
+
 
                         return true;
                     }
@@ -546,7 +549,7 @@ public class AppDataService : IAppDataService
             {
                 if (await ApiHelper.ExecuteCallGuardedAsync(async () => await PackagesClient.GetAsync(AppUser.PackageId), Snackbar) is List<PackageDto> packages)
                 {
-                    if (packages != default)
+                    if (packages != default && packages.Count() > 0)
                         return packages.First();
                 }
             }
@@ -555,7 +558,7 @@ public class AppDataService : IAppDataService
         return default!;
     }
 
-    public async Task<List<LoanDto>> GetCurrentUserLoansAsync()
+    public async Task<List<LoanDto>> GetCurrentUserLoansAsync(bool runningLoans = false)
     {
         if (AppUser != default)
         {
@@ -563,11 +566,9 @@ public class AppDataService : IAppDataService
             {
                 if (new string[] { "Lender", "Lessee" }.Contains(AppUser.RoleName))
                 {
-                    SearchLoansRequest searchLoanRequest = new();
-
                     if (AppUser.RoleName.Equals("Lender"))
                     {
-                        searchLoanRequest = new SearchLoansRequest
+                        SearchLoansRequest searchLoanRequest = new SearchLoansRequest
                         {
                             LenderId = AppUser.Id,
                             IsLender = true,
@@ -590,12 +591,19 @@ public class AppDataService : IAppDataService
 
                     if (AppUser.RoleName.Equals("Lessee"))
                     {
+                        LoanStatus[] statuses = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment, LoanStatus.PaymentFinal, LoanStatus.Finish, LoanStatus.Rate };
+
+                        if (runningLoans)
+                        {
+                            statuses = new[] { LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment, LoanStatus.PaymentFinal, LoanStatus.Finish, LoanStatus.Rate };
+                        }
+
                         SearchLoansLesseeRequest searchLoansLesseeRequest = new SearchLoansLesseeRequest
                         {
                             AppUserId = AppUser.Id,
                             HomeCity = AppUser.HomeCity,
                             HomeCountry = AppUser.HomeCountry,
-                            Statuses = new[] { LoanStatus.Published, LoanStatus.Assigned, LoanStatus.Meetup, LoanStatus.Payment, LoanStatus.PaymentFinal, LoanStatus.Finish, LoanStatus.Rate }
+                            Statuses = statuses
 
                         };
 
@@ -609,7 +617,7 @@ public class AppDataService : IAppDataService
                             }
                         }
                     }
-                    
+
                 }
             }
         }

@@ -4,10 +4,10 @@
     {
         <MudToolBar>
 
-            @if (Loans != default && Package != default && Package.Id != Guid.Empty)
-            {
+            @* if (Loans != default || (Package != default && Package.Id != Guid.Empty))
+            { *@
                 <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Give" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
-                <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@Loans.Sum(l => ((l.LoanLenders != default) && (l.LoanLenders.FirstOrDefault() != default) && (l.LoanLenders?.FirstOrDefault()?.Product != default)) ? l.LoanLenders?.FirstOrDefault()?.Product?.Amount : 0) / @Package.MaxAmounts</MudText>
+                <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")"> @_totalAmount / @(Package == default ? 0 : Package.MaxAmounts)</MudText>
 
 
                 @if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName))
@@ -15,18 +15,18 @@
                     <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Handshake" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
                     @if (AppDataService.AppUser.RoleName.Equals("Lender"))
                     {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@Loans.Count() / @Package.MaxLessees</MudText>
+                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@(Loans == default ? 0 : Loans.Count()) / @(Package == default ? 0 : Package.MaxLessees)</MudText>
                     }
 
                     @if (AppDataService.AppUser.RoleName.Equals("Lessee"))
                     {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@Loans.Count() / @Package.MaxLenders</MudText>
+                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@(Loans == default ? 0 : Loans.Count()) / @(Package == default ? 0 : Package.MaxLenders)</MudText>
                     }
                 }
-            }
+            @* } *@
 
             <MudText Typo="Typo.caption" Style="@($"color:{@EhulogColor.GreenMoney}")">
-                @($"{AppDataService.AppUser.HomeCity}, {AppDataService.AppUser.HomeCountry}")
+                @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCity) ? "Unknown" : AppDataService.AppUser.HomeCity), @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry) ? "Unknown" : AppDataService.AppUser.HomeCountry)
             </MudText>
 
 
@@ -44,4 +44,35 @@
 
     [Parameter]
     public PackageDto Package { get; set; } = default!;
+
+    private float _totalAmount = 0.00f;
+
+    protected override void OnParametersSet()
+    {
+
+        _totalAmount = 0;
+
+        if (Loans != default)
+        {
+
+            foreach (var item in Loans)
+            {
+                if (AppDataService.AppUser != default)
+                {
+                    var loanLender = item.LoanLenders;
+
+                    if (loanLender != default && loanLender.FirstOrDefault() != default)
+                    {
+                        var loanProduct = loanLender.First().Product;
+
+                        if (loanProduct != default)
+                        {
+                            _totalAmount += loanProduct.Amount;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 }
