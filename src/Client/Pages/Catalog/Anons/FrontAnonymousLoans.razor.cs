@@ -1,10 +1,12 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Shared;
 using EHULOG.WebApi.Shared.Multitenancy;
 using Mapster;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using MudBlazor;
@@ -17,6 +19,11 @@ public partial class FrontAnonymousLoans
 {
     [CascadingParameter(Name = "AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
+
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthState { get; set; } = default!;
+    [Inject]
+    protected IAuthenticationService AuthService { get; set; } = default!;
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
@@ -46,10 +53,15 @@ public partial class FrontAnonymousLoans
 
     protected override async Task OnInitializedAsync()
     {
-        if (AppDataService.IsAuthenticated() != default)
+        if ((await AuthState).User is { } user)
         {
             _isAuthenticated = true;
         }
+
+        // if (AppDataService.IsAuthenticated() != default)
+        // {
+        //    _isAuthenticated = true;
+        // }
 
         // check and get cookie for country location
         /* string? countryLocationStorage = LocalStorage.GetItem<string>("CountryLocation");

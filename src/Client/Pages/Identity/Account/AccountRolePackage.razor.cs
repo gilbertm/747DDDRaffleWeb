@@ -1,14 +1,17 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
+using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Shared;
+using EHULOG.BlazorWebAssembly.Client.Shared.Dialogs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.Globalization;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 
 public partial class AccountRolePackage
 {
-    [Inject]
+    [CascadingParameter(Name = "AppDataService")]
     public AppDataService AppDataService { get; set; } = default!;
 
     public UserRolesRequest UserRolesRequest { get; set; } = default!;
@@ -18,12 +21,17 @@ public partial class AccountRolePackage
     public UpdateAppUserRequest UpdateAppUserRequest { get; set; } = default!;
 
     [Inject]
+    protected IDialogService Dialog { get; set; } = default!;
+
+    [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
 
     [Inject]
     protected IPackagesClient PackagesClient { get; set; } = default!;
+
     [Inject]
     private IUsersClient UsersClient { get; set; } = default!;
+
     [Inject]
     private IAppUsersClient AppUsersClient { get; set; } = default!;
 
@@ -37,11 +45,15 @@ public partial class AccountRolePackage
 
     private CustomValidation? _customValidation;
 
-    private Guid OldPackage { get; set; }
+    private Guid CurrentPackageId { get; set; } = default!;
+
+    private Guid NewPackageId { get; set; } = default!;
 
     private bool LockRole { get; set; }
 
     private bool LockPackage { get; set; }
+
+    private bool CancelCurrentPlan { get; set; }
 
     private int TotalCountPackagesForCurrentRole { get; set; }
 
@@ -66,6 +78,8 @@ public partial class AccountRolePackage
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("EhulogConsoleWriteLine - OnInitializedAsync");
+
         await AppDataService.InitializationAsync();
 
         LockPackage = false;
@@ -75,161 +89,149 @@ public partial class AccountRolePackage
         {
             if (AppDataService.AppUser != default)
             {
-                // the current package
-                // TODO: this will handle changes of subscription
-                OldPackage = AppDataService.AppUser.PackageId;
 
-                if (!AppDataService.AppUser.PackageId.Equals(default!))
+                if (AppDataService.AppUser.PackageId != default)
                 {
-                    // selecting a different package
-                    // TODO: to be handled
-                    //       payment subscription handlers
+                    CurrentPackageId = AppDataService.AppUser.PackageId;
                     IsForSubmission = true;
                 }
 
-                // process
-                if (AppDataService.AppUser.Id != default)
+                // initialize running packages
+                if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => PackagesClient.GetAsync(null), Snackbar)
+                    is List<PackageDto> responsePackages)
                 {
-                    // package
-                    if (await ApiHelper.ExecuteCallGuardedAsync(
-                            () => PackagesClient.GetAsync(null), Snackbar)
-                        is List<PackageDto> responsePackages)
+                    _packages = responsePackages;
+
+                    foreach (var package in _packages)
                     {
-                        _packages = responsePackages;
+                        var image = await InputOutputResourceClient.GetAsync(package.Id);
 
-                        foreach (var package in _packages)
+                        if (image.Count > 0)
                         {
-                            // add image
-                            var image = await InputOutputResourceClient.GetAsync(package.Id);
-
-                            if (image.Count > 0)
-                            {
-                                package.Image = image.First();
-                            }
-
-                            // application user package id match entry
-                            // mark selected and visible
-                            bool selected = AppDataService.AppUser.PackageId.Equals(package.Id);
-
-                            _runningPackages.Add(new ExtendedPackageDto()
-                            {
-                                PackageDto = package,
-                                IsSelected = selected,
-                                IsVisible = selected
-                            });
+                            package.Image = image.First();
                         }
+
+                        _runningPackages.Add(new ExtendedPackageDto()
+                        {
+                            PackageDto = package,
+
+                            // set selected and visibility, if matched
+                            IsSelected = package.Id.Equals(CurrentPackageId),
+                            IsVisible = package.Id.Equals(CurrentPackageId)
+                        });
+                    }
+                }
+
+                // initialize running roles
+                if (await ApiHelper.ExecuteCallGuardedAsync(
+                        () => UsersClient.GetRolesAsync(AppDataService.AppUser.ApplicationUserId), Snackbar)
+                    is ICollection<UserRoleDto> responseRoles)
+                {
+                    _userRolesList = responseRoles.ToList();
+
+                    // look for the ehulog roles (not admin or basic) that are disabled
+                    var usableRoles = _userRolesList.Where(r => !(new string[] { "Basic", "Admin" }).Contains(r.RoleName)).ToList();
+
+                    // TODO:// implement a unique scenario to handle super users
+                    var superUsers = _userRolesList.Where(r => (new string[] { "Admin", "Administrator", "SuperUser" }).Contains(r.RoleName) && r.Enabled).ToList();
+
+                    if (superUsers.Count > 0)
+                    {
+                        // TODO:// handle accordingly, nothing to do yet
                     }
 
-                    // role
-                    if (await ApiHelper.ExecuteCallGuardedAsync(
-                            () => UsersClient.GetRolesAsync(AppDataService.AppUser.ApplicationUserId), Snackbar)
-                        is ICollection<UserRoleDto> responseRoles)
+                    // make visible and selectable options
+                    // these usable roles
+                    // TODO:// this is only available on first sign in
+                    //      all usable roles will be displayed
+                    //      one the application user selects, next block should always clean the unnecessary
+                    foreach (var role in usableRoles.ToList())
                     {
-                        _userRolesList = responseRoles.ToList();
-
-                        // look for the ehulog roles (not admin or basic) that are disabled
-                        var usableRoles = _userRolesList.Where(r => !(new string[] { "Basic", "Admin" }).Contains(r.RoleName)).ToList();
-
-                        // TODO:// implement a unique scenario
-                        var superUsers = _userRolesList.Where(r => (new string[] { "Admin", "Administrator", "SuperUser" }).Contains(r.RoleName) && r.Enabled).ToList();
-
-                        if (superUsers.Count > 0)
+                        _runningRoles.Add(new ExtendedRoleDto()
                         {
-                            // TODO:// handle accordingly, nothing to do yet
-                        }
-
-                        // make visible and selectable options
-                        // these usable roles
-                        // TODO:// this is only available on first sign in
-                        //      all usable roles will be displayed
-                        //      one the application user selects, next block should always clean the unnecessary
-                        foreach (var role in usableRoles.ToList())
-                        {
-                            _runningRoles.Add(new ExtendedRoleDto()
+                            RoleDto = new RoleDto()
                             {
-                                RoleDto = new RoleDto()
-                                {
-                                    Id = role.RoleId ?? default!,
-                                    Name = role.RoleName ?? default!,
-                                    Description = role.Description,
-                                },
-                                IsSelected = false,
-                                IsVisible = true
-                            });
-                        }
+                                Id = role.RoleId ?? default!,
+                                Name = role.RoleName ?? default!,
+                                Description = role.Description,
+                            },
+                            IsSelected = false,
+                            IsVisible = true
+                        });
+                    }
 
-                        // is usable role and enabled
-                        var currentUserUsableEnabledRoles = usableRoles.Where(r => r.Enabled).ToList();
+                    // is usable role and enabled
+                    var currentUserUsableEnabledRoles = usableRoles.Where(r => r.Enabled).ToList();
 
-                        // application user already assigned with specific applicaiton role (i.e. lender or lessee)
-                        // this role is non-changable
-                        if (currentUserUsableEnabledRoles.Count == 1)
+                    // application user already assigned with specific applicaiton role (i.e. lender or lessee)
+                    // this role is non-changable
+                    if (currentUserUsableEnabledRoles.Count == 1)
+                    {
+                        if (AppDataService.AppUser.RoleId != default! && !string.IsNullOrEmpty(AppDataService.AppUser.RoleId))
                         {
-                            if (AppDataService.AppUser.RoleId != default! && !string.IsNullOrEmpty(AppDataService.AppUser.RoleId))
+                            if (!AppDataService.AppUser.RoleId.Equals(currentUserUsableEnabledRoles[0].RoleId))
                             {
-                                if (!AppDataService.AppUser.RoleId.Equals(currentUserUsableEnabledRoles[0].RoleId))
-                                {
-                                    AppDataService.AppUser.RoleId = currentUserUsableEnabledRoles[0].RoleId;
-                                    AppDataService.AppUser.RoleName = currentUserUsableEnabledRoles[0].RoleName;
-                                }
+                                AppDataService.AppUser.RoleId = currentUserUsableEnabledRoles[0].RoleId;
+                                AppDataService.AppUser.RoleName = currentUserUsableEnabledRoles[0].RoleName;
                             }
+                        }
 
-                            // clear, we don't want this changed anymore
-                            // not unless deem super necessary
-                            _runningRoles.Clear();
+                        // clear, we don't want this changed anymore
+                        // not unless deem super necessary
+                        _runningRoles.Clear();
 
-                            // the selectable role
-                            // is only a singular role
-                            // that has been assigned to the application user
-                            // all other roles must non-existent
-                            _runningRoles.Add(new ExtendedRoleDto()
+                        // the selectable role
+                        // is only a singular role
+                        // that has been assigned to the application user
+                        // all other roles must non-existent
+                        _runningRoles.Add(new ExtendedRoleDto()
+                        {
+                            RoleDto = new RoleDto()
                             {
-                                RoleDto = new RoleDto()
-                                {
-                                    Id = currentUserUsableEnabledRoles[0].RoleId ?? default!,
-                                    Name = currentUserUsableEnabledRoles[0].RoleName ?? default!,
-                                    Description = currentUserUsableEnabledRoles[0].Description,
-                                },
-                                IsSelected = true,
-                                IsVisible = true
-                            });
+                                Id = currentUserUsableEnabledRoles[0].RoleId ?? default!,
+                                Name = currentUserUsableEnabledRoles[0].RoleName ?? default!,
+                                Description = currentUserUsableEnabledRoles[0].Description,
+                            },
+                            IsSelected = true,
+                            IsVisible = true
+                        });
 
-                            LockRole = true;
+                        LockRole = true;
 
-                            if (AppDataService.AppUser.PackageId != Guid.Empty && AppDataService.AppUser.PackageId != default)
+                        if (CurrentPackageId != default)
+                        {
+                            // if package is already propagated
+                            // lock the package
+                            // but since package can be selected or resubscribed
+                            // the package can be updated and upgraded to the selected subscription
+                            if (_runningPackages.Find(rp => rp.PackageDto.Id.Equals(CurrentPackageId)) != default!)
                             {
-                                // if package is already propagated
-                                // lock the package
-                                // but since package can be selected or resubscribed
-                                // the package can be updated and upgraded to the selected subscription
-                                if (_runningPackages.Find(rp => rp.PackageDto.Id.Equals(AppDataService.AppUser.PackageId)) != default!)
-                                {
-                                    _runningPackages.First(rp => rp.PackageDto.Id.Equals(AppDataService.AppUser.PackageId)).IsSelected = true;
-                                    _runningPackages.First(rp => rp.PackageDto.Id.Equals(AppDataService.AppUser.PackageId)).IsVisible = true;
+                                _runningPackages.First(rp => rp.PackageDto.Id.Equals(CurrentPackageId)).IsSelected = true;
+                                _runningPackages.First(rp => rp.PackageDto.Id.Equals(CurrentPackageId)).IsVisible = true;
 
-                                    LockPackage = true;
-                                }
+                                LockPackage = true;
+                            }
+                        }
+                        else
+                        {
+                            if ((AppDataService.AppUser.RoleName is { }) && AppDataService.AppUser.RoleName.Equals("Lender"))
+                            {
+                                ExtendedPackageDto defaultRecord = default!;
+
+                                PackagesForRole(true, out defaultRecord);
+
+                                if (defaultRecord != default!)
+                                    SelectPackage(defaultRecord);
                             }
                             else
                             {
-                                if ((AppDataService.AppUser.RoleName is { }) && AppDataService.AppUser.RoleName.Equals("Lender"))
-                                {
-                                    ExtendedPackageDto defaultRecord = default!;
+                                ExtendedPackageDto defaultRecord = default!;
 
-                                    PackagesForRole(true, out defaultRecord);
+                                PackagesForRole(false, out defaultRecord);
 
-                                    if (defaultRecord != default!)
-                                        UpdatePackage(defaultRecord);
-                                }
-                                else
-                                {
-                                    ExtendedPackageDto defaultRecord = default!;
-
-                                    PackagesForRole(false, out defaultRecord);
-
-                                    if (defaultRecord != default!)
-                                        UpdatePackage(defaultRecord);
-                                }
+                                if (defaultRecord != default!)
+                                    SelectPackage(defaultRecord);
                             }
                         }
                     }
@@ -354,14 +356,11 @@ public partial class AccountRolePackage
                 PackagesForRole(false, out _);
             }
 
-            if (AppDataService.AppUser is { })
+            // make default
+            // make it the default value of appuser's package id
+            if (_runningPackages is { } && _runningPackages.Find(p => p.IsVisible && p.PackageDto.IsDefault) is { })
             {
-                // make default
-                // make it the default value of appuser's package id
-                if (_runningPackages is { } && _runningPackages.Find(p => p.IsVisible && p.PackageDto.IsDefault) is { })
-                {
-                    AppDataService.AppUser.PackageId = _runningPackages.First(p => p.IsVisible && p.PackageDto.IsDefault).PackageDto.Id;
-                }
+                NewPackageId = _runningPackages.First(p => p.IsVisible && p.PackageDto.IsDefault).PackageDto.Id;
             }
         }
 
@@ -386,11 +385,9 @@ public partial class AccountRolePackage
     private void ClearPackage()
     {
         LockPackage = false;
+        CancelCurrentPlan = true;
 
-        if (AppDataService.AppUser is not null)
-        {
-            AppDataService.AppUser.PackageId = default!;
-        }
+        NewPackageId = CurrentPackageId;
 
         foreach (var package in _runningPackages)
         {
@@ -446,7 +443,7 @@ public partial class AccountRolePackage
         StateHasChanged();
     }
 
-    private void UpdatePackage(ExtendedPackageDto extendedPackageDto)
+    private void SelectPackage(ExtendedPackageDto extendedPackageDto)
     {
         /* selected and updated the model */
         foreach (var package in _runningPackages)
@@ -460,15 +457,36 @@ public partial class AccountRolePackage
             extendedPackageDto.IsSelected = true;
             extendedPackageDto.IsVisible = true;
 
-            if (AppDataService.AppUser is not null && extendedPackageDto.PackageDto is not null)
-            {
-                AppDataService.AppUser.PackageId = extendedPackageDto.PackageDto.Id;
-            }
+            NewPackageId = extendedPackageDto.PackageDto.Id;
         }
 
         IsForSubmission = true;
 
         StateHasChanged();
+    }
+
+    private async Task CancelPlanAsync()
+    {
+        //TODO:// make sure cancellation is valid and possible
+
+        _infoMessageWrapper = AddInfoWrapperContent();
+
+        var noHeader = new DialogOptions() { MaxWidth = MaxWidth.Large, CloseButton = true };
+
+        var parameters = new DialogParameters { ["ContentText"] = _infoMessageWrapper, ["IsCancelButton"] = true, ["IsWarning"] = true };
+
+        var dialog = Dialog.Show<Info>("Plan cancellation", parameters, noHeader);
+
+        var resultDialog = await dialog.Result;
+
+        if (!resultDialog.Cancelled)
+        {
+            if (resultDialog.Data is bool result)
+            {
+                if (result)
+                    ClearPackage();
+            }
+        }
     }
 
     private void ClearReload()

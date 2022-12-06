@@ -16,7 +16,22 @@
     [CascadingParameter(Name = "AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
 
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthState { get; set; } = default!;
+    [Inject]
+    protected IAuthenticationService AuthService { get; set; } = default!;
+
     private bool _isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if ((await AuthState).User is { } user)
+        {
+            _isAuthenticated = true;
+        }
+
+
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -24,11 +39,7 @@
 
         if (AppDataService != default)
         {
-            if ((await AppDataService.IsAuthenticated()) == default)
-            {
-                _isAuthenticated = false;
-            }
-            else
+            if (await AppDataService.IsAuthenticated() is { } user)
             {
                 if (AppDataService.AppUser != default)
                 {
@@ -54,7 +65,7 @@
                             }
                         }
                     }
-                }
+                }                
             }
         }
     }

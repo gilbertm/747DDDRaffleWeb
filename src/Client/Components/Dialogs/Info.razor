@@ -3,15 +3,33 @@
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
-            <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Large" Color="Color.Warning" Class="mr-3 mb-n1" />
-            @L["Information"]
+
+            @if (IsInformation)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Large" Color="Color.Info" Class="mr-3 mb-n1" />
+            }
+            @if (IsWarning)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Size="Size.Large" Color="Color.Warning" Class="mr-3 mb-n1" />
+            }
+
+            @MudDialog.Title
+
         </MudText>
     </TitleContent>
     <DialogContent>
         @ContentText
     </DialogContent>
     <DialogActions>
-        <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Check" Color="Color.Warning" Variant="Variant.Filled" OnClick="Submit">@L["Ok"]</MudButton>
+        @if (IsCancelButton)
+        {
+            <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Cancel" Color="Color.Error" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
+        }
+
+        @if (IsOkButton)
+        {
+            <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Check" Color="Color.Warning" Variant="Variant.Filled" OnClick="Submit">@L["Ok"]</MudButton>
+        }
     </DialogActions>
 </MudDialog>
 
@@ -21,6 +39,32 @@
 
     [Parameter]
     public RenderFragment? ContentText { get; set; }
+
+    [Parameter]
+    public bool IsCancelButton { get; set; } = false;
+
+    [Parameter]
+    public bool IsOkButton { get; set; } = true;
+
+    [Parameter]
+    public bool IsInformation { get; set; } = true;
+
+    [Parameter]
+    public bool IsWarning { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        if (IsWarning)
+            IsInformation = false;
+
+        if (IsInformation)
+            IsWarning = false;
+    }
+
+    void Cancel()
+    {
+        MudDialog.Close();
+    }
 
     void Submit()
     {
