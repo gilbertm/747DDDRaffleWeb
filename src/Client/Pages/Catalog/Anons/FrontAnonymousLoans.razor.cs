@@ -55,7 +55,16 @@ public partial class FrontAnonymousLoans
     {
         if ((await AuthState).User is { } user)
         {
-            _isAuthenticated = true;
+            if (user != default)
+            {
+                if (user.Identity != default)
+                {
+                    if (user.Identity.IsAuthenticated)
+                    {
+                        _isAuthenticated = true;
+                    }
+                }
+            }
         }
 
         // if (AppDataService.IsAuthenticated() != default)

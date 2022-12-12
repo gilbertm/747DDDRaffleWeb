@@ -156,7 +156,6 @@ public partial class DynamicMapLoad
                     IsVerified = AppDataService.AppUser.IsVerified,
                     Latitude = AppDataService.AppUser.Latitude,
                     Longitude = AppDataService.AppUser.Longitude,
-                    PackageId = AppDataService.AppUser.PackageId,
 
                     // significant statuses
                     AddressStatus = VerificationStatus.Verified,

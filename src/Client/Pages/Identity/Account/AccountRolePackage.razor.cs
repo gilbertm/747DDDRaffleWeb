@@ -14,17 +14,14 @@ public partial class AccountRolePackage
     [CascadingParameter(Name = "AppDataService")]
     public AppDataService AppDataService { get; set; } = default!;
 
-    public UserRolesRequest UserRolesRequest { get; set; } = default!;
-
-    public CreateAppUserRequest CreateAppUserRequest { get; set; } = default!;
-
-    public UpdateAppUserRequest UpdateAppUserRequest { get; set; } = default!;
-
     [Inject]
     protected IDialogService Dialog { get; set; } = default!;
 
     [Inject]
     protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
+
+    [Inject]
+    protected ISubscriptionsClient SubscriptionsClient { get; set; } = default!;
 
     [Inject]
     protected IPackagesClient PackagesClient { get; set; } = default!;
@@ -76,50 +73,59 @@ public partial class AccountRolePackage
         public RoleDto? RoleDto { get; set; }
     }
 
+    private bool _isChangePackageOverlayButtonHover = false;
+
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("EhulogConsoleWriteLine - OnInitializedAsync");
-
-        await AppDataService.InitializationAsync();
-
         LockPackage = false;
         LockRole = false;
 
         if (AppDataService != default)
         {
+            Console.WriteLine("EhulogConsoleWriteLine - OnInitializedAsync");
+
+            // popup might loose state
+            // reload the user if its gone
+            if (AppDataService.AppUser == default)
+            {
+                await AppDataService.InitializationAsync();
+            }
+
             if (AppDataService.AppUser != default)
             {
-
-                if (AppDataService.AppUser.PackageId != default)
+                if (AppDataService.AppUser.Subscription != default)
                 {
-                    CurrentPackageId = AppDataService.AppUser.PackageId;
+                    CurrentPackageId = AppDataService.AppUser.Subscription.PackageId ?? default!;
                     IsForSubmission = true;
                 }
 
                 // initialize running packages
-                if (await ApiHelper.ExecuteCallGuardedAsync(
-                        () => PackagesClient.GetAsync(null), Snackbar)
-                    is List<PackageDto> responsePackages)
+                if (CurrentPackageId != default)
                 {
-                    _packages = responsePackages;
-
-                    foreach (var package in _packages)
+                    if (await ApiHelper.ExecuteCallGuardedAsync(
+                            () => PackagesClient.GetAsync(null), Snackbar)
+                        is List<PackageDto> responsePackages)
                     {
-                        var image = await InputOutputResourceClient.GetAsync(package.Id);
+                        _packages = responsePackages;
 
-                        if (image.Count > 0)
+                        foreach (var package in _packages)
                         {
-                            package.Image = image.First();
+                            var image = await InputOutputResourceClient.GetAsync(package.Id);
+
+                            if (image.Count > 0)
+                            {
+                                package.Image = image.First();
+                            }
+
+                            _runningPackages.Add(new ExtendedPackageDto()
+                            {
+                                PackageDto = package,
+
+                                // set selected and visibility, if matched
+                                IsSelected = package.Id.Equals(CurrentPackageId),
+                                IsVisible = package.Id.Equals(CurrentPackageId)
+                            });
                         }
-
-                        _runningPackages.Add(new ExtendedPackageDto()
-                        {
-                            PackageDto = package,
-
-                            // set selected and visibility, if matched
-                            IsSelected = package.Id.Equals(CurrentPackageId),
-                            IsVisible = package.Id.Equals(CurrentPackageId)
-                        });
                     }
                 }
 
@@ -443,6 +449,20 @@ public partial class AccountRolePackage
         StateHasChanged();
     }
 
+    private void ClearReload()
+    {
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+
+        // var timer = new Timer(
+        //    new TimerCallback(_ =>
+        //        {
+        //            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        //        }),
+        //    null,
+        //    2000,
+        //    2000);
+    }
+
     private void SelectPackage(ExtendedPackageDto extendedPackageDto)
     {
         /* selected and updated the model */
@@ -461,11 +481,37 @@ public partial class AccountRolePackage
         }
 
         IsForSubmission = true;
+        CancelCurrentPlan = true;
+        _isChangePackageOverlayButtonHover = false;
 
         StateHasChanged();
     }
 
     private async Task CancelPlanAsync()
+    {
+        //TODO:// make sure cancellation is valid and possible
+
+        _infoMessageWrapper = AddInfoWrapperContent();
+
+        var noHeader = new DialogOptions() { MaxWidth = MaxWidth.Large, CloseButton = true };
+
+        var parameters = new DialogParameters { ["ContentText"] = _infoMessageWrapper, ["IsCancelButton"] = true, ["IsWarning"] = true };
+
+        var dialog = Dialog.Show<Info>("Change plan", parameters, noHeader);
+
+        var resultDialog = await dialog.Result;
+
+        if (!resultDialog.Cancelled)
+        {
+            if (resultDialog.Data is bool result)
+            {
+                if (result)
+                    ClearPackage();
+            }
+        }
+    }
+
+    private async Task<bool> IsChangePlanAsync()
     {
         //TODO:// make sure cancellation is valid and possible
 
@@ -484,21 +530,11 @@ public partial class AccountRolePackage
             if (resultDialog.Data is bool result)
             {
                 if (result)
-                    ClearPackage();
+                    return true;
             }
         }
-    }
 
-    private void ClearReload()
-    {
-        var timer = new Timer(
-            new TimerCallback(_ =>
-                {
-                    Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
-                }),
-            null,
-            2000,
-            2000);
+        return false;
     }
 
     private bool IsForSubmission { get; set; } = false;
@@ -545,49 +581,67 @@ public partial class AccountRolePackage
                         }
                     }
                 }
-
-                if (Guid.TryParse(AppDataService.AppUser.PackageId.ToString(), out _) && _runningPackages.Count(p => p.IsSelected) == 1)
+                
+                if (AppDataService.AppUser.Subscription != default)
                 {
-                    // TODO:// This needs to be IMPLEMENTED, MONETIZATION
-                    /******************************************************************************/
-                    /******************************************************************************/
-                    /******************************************************************************/
-                    /******************************************************************************/
-
-                    /* create appuser */
-                    UpdateAppUserRequest = new()
+                    if (NewPackageId != default && _runningPackages.Count(p => p.IsSelected) == 1)
                     {
-                        Id = AppDataService.AppUser.Id,
-                        ApplicationUserId = AppDataService.AppUser.ApplicationUserId,
-                        PackageId = AppDataService.AppUser.PackageId,
-                        RolePackageStatus = VerificationStatus.Submitted
-                    };
+                        // change of package popup
+                        // check and confirmed
 
-                    if (await ApiHelper.ExecuteCallGuardedAsync(
-                        () => AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, UpdateAppUserRequest), Snackbar, _customValidation, L["Package updated. "]) is Guid guid)
-                    {
-                        // Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
-                        // Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
+                        // if old package is default then new package is paid subscription
+                        // allow change immediately
 
-                        // DialogOptions noHeader = new DialogOptions() { NoHeader = true };
-                        // Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
+                        // if old package is lower than current, warn if there's existing loans
+                        // possibily disallow to avoid system conflicts
 
-                        Snackbar.Add(L["Role and package submitted. If paid subscription, ensure that you have fulfilled payment."], Severity.Success);
+                        // if new package is greater
+                        // allow without any issues
 
-                        var timer = new Timer(
-                            new TimerCallback(_ =>
-                            {
-                                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
-                            }),
-                            null,
-                            2000,
-                            2000);
+                        // popup ok
+                        // create the shopping cart entry
+                        // proceed to payment page
+
+                        // if cancelled but change has been made, always remind
+
+                        if (await IsChangePlanAsync())
+                        {
+                            Navigation.NavigateTo("/payment/gateways?subscription=true", true);
+                        }
+
+                        /* update subscription */
+                        //UpdateSubscriptionRequest updateSubscriptionRequest = new()
+                        //{
+                        //    AppUserId = AppDataService.AppUser.Id,
+                        //    PackageId = NewPackageId,
+                        //};
+
+                        //if (await ApiHelper.ExecuteCallGuardedAsync(
+                        //    () => SubscriptionsClient.UpdateAsync(AppDataService.AppUser.Id, updateSubscriptionRequest), Snackbar, _customValidation, L["Subscription updated. "]) is Guid guid)
+                        //{
+
+                        //    // Snackbar.Add(L["User data found. Propagating... {0}", guid], Severity.Success);
+                        //    // Snackbar.Add(L["Your Profile has been updated. Please Login again to Continue."], Severity.Success);
+
+                        //    // DialogOptions noHeader = new DialogOptions() { NoHeader = true };
+                        //    // Dialog.Show<TimerReloginDialog>("Relogin", noHeader);
+
+                        //    Snackbar.Add(L["Role and package submitted. If paid subscription, ensure that you have fulfilled payment."], Severity.Success);
+
+                        //    var timer = new Timer(
+                        //        new TimerCallback(_ =>
+                        //        {
+                        //            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                        //        }),
+                        //        null,
+                        //        2000,
+                        //        2000);
+                        //}
                     }
                 }
-            }
-        }
 
-        Navigation.NavigateTo(Navigation.Uri, true);
+            }
+        }        
     }
 
     /*
@@ -599,6 +653,10 @@ public partial class AccountRolePackage
      */
     private async Task PaymentMock()
     {
+        // payment
+        // subscriptions
+        // update shopping cart
+
         if (AppDataService != default)
         {
             if (AppDataService.AppUser != default)
@@ -609,7 +667,6 @@ public partial class AccountRolePackage
                     {
                         Id = AppDataService.AppUser.Id,
                         ApplicationUserId = AppDataService.AppUser.ApplicationUserId,
-                        PackageId = AppDataService.AppUser.PackageId,
                         RolePackageStatus = VerificationStatus.Verified
                     };
 

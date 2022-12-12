@@ -15,14 +15,14 @@
                 <CustomValidation @ref="_customValidation" />
                 <MudGrid Justify="Justify.Center">
 
-                    @if (_runningRoles is not null)
+                    @if (_runningRoles != default)
                     {
                         <MudItem xs="12" md="3">
                             <MudCard Elevation="0">
                                 <MudCardHeader>
                                     <CardHeaderContent>
-                                        <MudText Align="Align.Center" Typo="Typo.h5">@(AppDataService.AppUser.RoleId is not null && AppDataService.AppUser.RoleId.Equals(string.Empty) ? L["Roles"] : L["Role"])</MudText>
-                                            @if (AppDataService.AppUser.RoleId is not null && AppDataService.AppUser.RoleId.Equals(string.Empty))
+                                        <MudText Align="Align.Center" Typo="Typo.h5">@(AppDataService.AppUser.RoleId != default && AppDataService.AppUser.RoleId.Equals(string.Empty) ? L["Roles"] : L["Role"])</MudText>
+                                        @if (AppDataService.AppUser.RoleId != default && AppDataService.AppUser.RoleId.Equals(string.Empty))
                                         {
                                             <MudText Align="Align.Center" Typo="Typo.caption" Class="d-block w-100">@L["Select your role. This role determines how you will be interacting the system."]</MudText>
                                         }
@@ -106,7 +106,7 @@
 
 
 
-                    @if (_runningPackages is not null && _runningPackages.Count() > 0)
+                    @if (_runningPackages != default && _runningPackages.Count() > 0)
                     {
                         <MudItem xs="12" md="9">
                             <MudCard Elevation="0">
@@ -204,7 +204,7 @@
                                                                         </MudGrid>
                                                                     }
 
-                                                                    <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.WarningAmber" Title="Favorite" /><br /><MudText Typo="Typo.caption" Color="Color.Warning">To be implemented: This will be permanent once you paid the subscription plan.</MudText>
+                                                                    @* <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.WarningAmber" Title="Favorite" /><br /><MudText Typo="Typo.caption" Color="Color.Warning">To be implemented: This will be permanent once you paid the subscription plan.</MudText> *@
                                                                 </MudItem>
                                                             </MudGrid>
 
@@ -248,7 +248,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                                    <MudOverlay Visible="@keepOpenPackageOverlay" DarkBackground="true" Absolute="true" Class="text-center">
+                                                                    <MudOverlay Visible="@keepOpenPackageOverlay" DarkBackground="true" Absolute="true" Class="text-center" onmouseout="@(() => {_isChangePackageOverlayButtonHover = false; StateHasChanged(); })" onmouseover="@(() => { _isChangePackageOverlayButtonHover = true; StateHasChanged(); })">
                                                                         @if (package != default)
                                                                         {
                                                                             <MudCardMedia Image="@(Config[ConfigNames.ApiBaseUrl] + package.PackageDto.Image?.ImagePath)" Height="100" Class="mb-3" Style="background-size:contain" />
@@ -309,7 +309,7 @@
                                                                             }
                                                                             else
                                                                             {
-                                                                                <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
+                                                                                <MudButton Style="@(_isChangePackageOverlayButtonHover ? "display:inline" : "display:none")" StartIcon="@Icons.Filled.CardGiftcard" Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Change Package</MudButton>
                                                                                 @* <MudButton StartIcon="@Icons.Filled.CardGiftcard" Variant=" Variant.Filled" Color="Color.Warning" OnClick="@(() => ClearPackage())">Subscribe</MudButton> *@
                                                                             }
                                                                         }
@@ -368,7 +368,9 @@
                                                                             }
 
                                                                             <MudItem xs="12" Class="text-center">
-                                                                                <MudButton StartIcon="@Icons.Filled.Cancel" Variant="Variant.Text" Color="Color.Warning" OnClick="@(()=> CancelPlanAsync())">Cancel Current Plan</MudButton>
+
+                                                                                <MudText Color="Color.Success" Typo="Typo.body1" Style="font-weight:700;">Want more income?</MudText>
+                                                                                <MudButton StartIcon="@Icons.Filled.Money" Variant="Variant.Text" Color="Color.Warning" OnClick="@(()=> CancelPlanAsync())">Change Plan</MudButton>
                                                                             </MudItem>
                                                                         </MudGrid>
                                                                     </MudCardActions>
@@ -403,7 +405,8 @@
 
                             <MudCardActions Class="pb-4 pl-4">
 
-                                @* <MudText>@CancelCurrentPlan</MudText>
+                               @* <MudText>Cancel: @CancelCurrentPlan</MudText>
+                                <MudText>Sam as current: @isSameOldPackage</MudText>
                     <MudText>@CurrentPackageId</MudText>
                     <MudText>@NewPackageId</MudText> *@
 
@@ -414,18 +417,24 @@
                                         <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Color="Color.Error" Variant="Variant.Filled" OnClick="@(() => ClearReload())" StartIcon="@Icons.Filled.Cancel">
                                             @L["Cancel"]
                                         </MudButton>
-                                        <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Success">
-                                            @L["Save"]
+                                        <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium" StartIcon="@Icons.Filled.Payment" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Success">
+                                            @L["Proceed payment"]
                                         </MudButton>
                                     }
                                     else
                                     {
+                                        @* the payment did not push thru and changed status to submitted ONLY *@
                                         if (AppDataService.AppUser.RolePackageStatus.Equals(VerificationStatus.Submitted))
                                         {
                                             <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Variant="Variant.Filled" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" Style="@($"color:{Colors.Shades.Black};")" IconColor="Color.Success">
                                                 @L["Payment"]
                                             </MudButton>
 
+                                        } else
+                                        {
+                                            <MudButton Class="@(IsForSubmission ? "d-inline-flex py-2 px-5 mx-2" : "d-none py-2 px-5 mx-2")" Color="Color.Error" Variant="Variant.Filled" OnClick="@(() => ClearReload())" StartIcon="@Icons.Filled.Cancel">
+                                                @L["Cancel"]
+                                            </MudButton>
                                         }
 
                                     }
@@ -472,8 +481,15 @@
     private RenderFragment addInfoContent = __builder =>
     {
         <MudText Typo="Typo.h5" Class='mb-3' Color="Color.Error">Are you sure?</MudText>
-        <MudText Typo="Typo.body1">You are about to cancel your plan. You will not be billed on the next billing cycle, your current plan ends on the renewal date.</MudText>
-        <MudText Typo="Typo.body1">Ensure that you are settled with all pending transactions.</MudText>
+        <MudText Typo="Typo.body1">You are about to change/cancel your plan.</MudText>
+        <MudList Clickable="false">
+            <MudDivider />
+            <MudListItem Text="Changed to default. If eligible, the current, if paid subscription, will be terminated and will discontinue billing. You may continue using the current subscription package until end of billing cycle." />
+            <MudListItem Text="Changed to paid plan. If eligible, after payment, the NEW PLAN will take effect immediately." />
+            <MudDivider />
+            <MudListItem Style="@($"color:{Colors.Red.Default}")" Text="T&Cs: You are about to change/cancel your plan." />
+
+        </MudList>
     };
 
     private RenderFragment AddInfoWrapperContent() => builder =>

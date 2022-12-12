@@ -39,6 +39,14 @@ public partial class NavMenu
 
     private bool CanViewAdministrationGroup => _canCreateTenants;
 
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+        Console.WriteLine("---------------------------------- Logged - Navmenu loaded... ------------------------------------");
+        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         if (AppDataService != default)

@@ -21,35 +21,41 @@ public partial class LenderAdminLoans
 {
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
-    [Inject]
-    protected IAuthorizationService AuthService { get; set; } = default!;
-    [Inject]
-    protected ICategoriesClient CategoriesClient { get; set; } = default!;
-    [Inject]
-    protected IUsersClient UsersClient { get; set; } = default!;
-    [Inject]
-    protected ILoanLendersClient LoanLendersClient { get; set; } = default!;
-    [Inject]
-    protected IProductsClient ProductsClient { get; set; } = default!;
-    [Inject]
-    protected IAppUsersClient AppUsersClient { get; set; } = default!;
-    [Inject]
-    protected IAppUserProductsClient AppUserProductsClient { get; set; } = default!;
-    [Inject]
-    protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
-    [Inject]
-    protected ILoansClient LoansClient { get; set; } = default!;
-    [Inject]
-    protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
 
     [CascadingParameter(Name ="AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
 
+    [Inject]
+    protected IAuthorizationService AuthService { get; set; } = default!;
+
+    [Inject]
+    protected ICategoriesClient CategoriesClient { get; set; } = default!;
+
+    [Inject]
+    protected IUsersClient UsersClient { get; set; } = default!;
+
+    [Inject]
+    protected ILoanLendersClient LoanLendersClient { get; set; } = default!;
+
+    [Inject]
+    protected IProductsClient ProductsClient { get; set; } = default!;
+
+    [Inject]
+    protected IAppUsersClient AppUsersClient { get; set; } = default!;
+
+    [Inject]
+    protected IAppUserProductsClient AppUserProductsClient { get; set; } = default!;
+
+    [Inject]
+    protected IInputOutputResourceClient InputOutputResourceClient { get; set; } = default!;
+
+    [Inject]
+    protected ILoansClient LoansClient { get; set; } = default!;
+
+    [Inject]
+    protected ILoanLedgersClient LoanLedgersClient { get; set; } = default!;
+
     protected EntityServerTableContext<LoanDto, Guid, LoanViewModel> Context { get; set; } = default!;
-
-    // private readonly EntityTable<LoanDto, Guid, LoanViewModel> _table = default!;
-
-    // private List<ForUploadFile> ForUploadFiles { get; set; } = new();
 
     private List<AppUserProductDto> AppUserProducts { get; set; } = default!;
 
@@ -63,35 +69,41 @@ public partial class LenderAdminLoans
 
     protected override async Task OnInitializedAsync()
     {
-        await AppDataService.InitializationAsync();
-        await LoadContext();
-
+        if (AppDataService != default)
+        {
+            await LoadContextAsync();
+        }
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnAfterRender(bool firstRender)
     {
-        IsHistory = false;
-        Context = default!;
-
-        if (QueryHelpers.ParseQuery(Navigation.ToAbsoluteUri(Navigation.Uri).Query).TryGetValue("history", out var param))
+        if (firstRender)
         {
-            string history = param.First();
+            Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+            Console.WriteLine("-------------------------------- Lender loan/admin parameter  loaded -----------------------------");
+            Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
 
-            // https://localhost:5002/loans/lender?history=true
-            if (history != default && history.Equals("true"))
+            IsHistory = false;
+            Context = default!;
+
+            if (QueryHelpers.ParseQuery(Navigation.ToAbsoluteUri(Navigation.Uri).Query).TryGetValue("history", out var param))
             {
-                IsHistory = true;
+                string history = param.First();
+
+                // https://localhost:5002/loans/lender?history=true
+                if (history != default && history.Equals("true"))
+                {
+                    IsHistory = true;
+                }
+
             }
-
         }
-
-        await OnInitializedAsync();
     }
 
     // for child statechanges
     protected List<LoanLedgerDto> ChildLoanLedgers { get; set; } = default!;
 
-    private async Task LoadAppUserProducts(Guid appUserId, Guid filterCategory = default)
+    private async Task LoadAppUserProductsAsync(Guid appUserId, Guid filterCategory = default)
     {
         AppUserProducts = (await AppUserProductsClient.GetByAppUserIdAsync(appUserId)).ToList();
 
@@ -99,18 +111,18 @@ public partial class LenderAdminLoans
         {
             if (AppUserProducts.Count > 0)
             {
-                foreach (var item in AppUserProducts)
-                {
-                    if (item != default && item.Product != default)
-                    {
-                        var image = await InputOutputResourceClient.GetAsync(item.ProductId);
+                //foreach (var item in AppUserProducts)
+                //{
+                //    if (item != default && item.Product != default)
+                //    {
+                //        var image = await InputOutputResourceClient.GetAsync(item.ProductId);
 
-                        if (image.Count > 0)
-                        {
-                            item.Product.Image = image.First();
-                        }
-                    }
-                }
+                //        if (image.Count > 0)
+                //        {
+                //            item.Product.Image = image.First();
+                //        }
+                //    }
+                //}
 
                 // for select product
                 Products = AppUserProducts.Select(ap => ap.Product).Adapt<List<ProductDto>>();
@@ -167,7 +179,7 @@ public partial class LenderAdminLoans
         }
     }
 
-    private async Task LoadCategories()
+    private async Task LoadCategoriesAsync()
     {
         var categoriesFilter = new PaginationFilter().Adapt<SearchCategoriesRequest>();
 
@@ -189,15 +201,15 @@ public partial class LenderAdminLoans
                         Description = item.Description
                     };
 
-                    var imageCategory = await InputOutputResourceClient.GetAsync(item.Id);
+                    // var imageCategory = await InputOutputResourceClient.GetAsync(item.Id);
 
-                    if (imageCategory != default)
-                    {
-                        if (imageCategory.Count > 0)
-                        {
-                            category.Image = imageCategory.First();
-                        }
-                    }
+                    // if (imageCategory != default)
+                    // {
+                    //    if (imageCategory.Count > 0)
+                    //    {
+                    //        category.Image = imageCategory.First();
+                    //    }
+                    // }
 
                     Categories.Add(category);
 
@@ -206,7 +218,7 @@ public partial class LenderAdminLoans
         }
     }
 
-    private async Task LoadContext()
+    private async Task LoadContextAsync()
     {
         IsProductsReadOnly = true;
 
@@ -220,9 +232,9 @@ public partial class LenderAdminLoans
                     Navigation.NavigateTo("/");
                 }
 
-                await LoadAppUserProducts(AppDataService.AppUser.Id);
+                await LoadAppUserProductsAsync(AppDataService.AppUser.Id);
 
-                await LoadCategories();
+                await LoadCategoriesAsync();
 
                 Context = new(
                        entityName: L["Loan"],
@@ -242,14 +254,14 @@ public partial class LenderAdminLoans
                        {
                            var loanFilter = filter.Adapt<SearchLoansRequest>();
 
-                           if (AppDataService.AppUser is not null && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
+                           if (AppDataService.AppUser != default && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
                            {
                                loanFilter.LenderId = AppDataService.AppUser.Id;
                                loanFilter.IsLender = true;
                                loanFilter.IsLedger = true;
                                loanFilter.IsLessee = false;
                            }
-                           else if (AppDataService.AppUser is not null && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
+                           else if (AppDataService.AppUser != default && !string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
                            {
                                loanFilter.IsLender = true;
                                loanFilter.IsLessee = true;
@@ -266,21 +278,25 @@ public partial class LenderAdminLoans
 
                            if (IsHistory)
                            {
-                               loanFilter.Statuses = new List<LoanStatus>();
-                               loanFilter.Statuses.Add(LoanStatus.RateFinal);
-                               loanFilter.Statuses.Add(LoanStatus.Dispute);
+                               loanFilter.Statuses = new List<LoanStatus>()
+                               {
+                                   LoanStatus.RateFinal,
+                                   LoanStatus.Dispute
+                               };
                            }
                            else
                            {
-                               loanFilter.Statuses = new List<LoanStatus>();
-                               loanFilter.Statuses.Add(LoanStatus.Draft);
-                               loanFilter.Statuses.Add(LoanStatus.Published);
-                               loanFilter.Statuses.Add(LoanStatus.Assigned);
-                               loanFilter.Statuses.Add(LoanStatus.Meetup);
-                               loanFilter.Statuses.Add(LoanStatus.Payment);
-                               loanFilter.Statuses.Add(LoanStatus.PaymentFinal);
-                               loanFilter.Statuses.Add(LoanStatus.Finish);
-                               loanFilter.Statuses.Add(LoanStatus.Rate);
+                               loanFilter.Statuses = new List<LoanStatus>()
+                               {
+                                   LoanStatus.Draft,
+                                   LoanStatus.Published,
+                                   LoanStatus.Assigned,
+                                   LoanStatus.Meetup,
+                                   LoanStatus.Payment,
+                                   LoanStatus.PaymentFinal,
+                                   LoanStatus.Finish,
+                                   LoanStatus.Rate
+                               };
                            }
 
                            var result = await LoansClient.SearchAsync(loanFilter);
@@ -639,11 +655,11 @@ public partial class LenderAdminLoans
         return string.Empty;
     }
 
-    private async Task OnClickApproveChildCallBack()
+    private async Task OnClickApproveChildCallBackAsync()
     {
         Context = default!;
 
-        await LoadContext();
+        await LoadContextAsync();
     }
 }
 

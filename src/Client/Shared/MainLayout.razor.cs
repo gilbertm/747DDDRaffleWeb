@@ -8,15 +8,14 @@ namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
 public partial class MainLayout
 {
+    [Inject]
+    protected AppDataService AppDataService { get; set; } = default!;
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
     [Parameter]
     public EventCallback OnDarkModeToggle { get; set; }
     [Parameter]
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
-
-    [Inject]
-    protected AppDataService AppDataService { get; set; } = default!;
 
     private bool _drawerOpen;
     private bool _rightToLeft;
@@ -25,12 +24,18 @@ public partial class MainLayout
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+        Console.WriteLine("-------------------------------- Logged Main Layout loaded... ------------------------------------");
+        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+
         await AppDataService.InitializationAsync();
 
         if (AppDataService != default)
         {
             if (AppDataService.AppUser != default)
             {
+                AppDataService.ShowValuesAppDto();
+
                 // running loans are currently active (this is more used by lessee)
                 loans = await AppDataService.GetCurrentUserLoansAsync(true);
                 package = await AppDataService.GetCurrentUserPackageAsync();
@@ -81,5 +86,29 @@ public partial class MainLayout
     private void Profile()
     {
         Navigation.NavigateTo("/account");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (AppDataService != default!)
+            {
+                await AppDataService.UpdateLocationAsync(AppDataService.AppUser);
+
+                if (AppDataService.AppUser != default)
+                {
+                    // running loans are currently active (this is more used by lessee)
+                    loans = await AppDataService.GetCurrentUserLoansAsync(true);
+                    package = await AppDataService.GetCurrentUserPackageAsync();
+
+                    AppDataService.City = AppDataService.AppUser.HomeCity;
+                    AppDataService.Country = AppDataService.AppUser.HomeCountry;
+                }
+
+                AppDataService.ShowValuesAppDto();
+            }
+        }
+
     }
 }

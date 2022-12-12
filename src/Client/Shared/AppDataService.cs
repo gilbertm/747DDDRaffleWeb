@@ -1,20 +1,15 @@
-﻿using Microsoft.JSInterop;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Geo.MapBox.Abstractions;
-using MudBlazor;
-using Microsoft.AspNetCore.Components;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Nager.Country;
-using EHULOG.BlazorWebAssembly.Client.Components.Common;
-using Mapster;
+﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
 using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+using Geo.MapBox.Abstractions;
+using Mapster;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
+using MudBlazor;
+using Nager.Country;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -38,11 +33,13 @@ public class AppDataService : IAppDataService
 
     private IUsersClient UsersClient { get; set; } = default!;
 
+    private ISubscriptionsClient SubscriptionsClient { get; set; } = default!;
+
     private IMapBoxGeocoding MapBoxGeocoding { get; set; } = default!;
 
     private ISnackbar Snackbar { get; set; } = default!;
 
-    public AppDataService(IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, ISnackbar snackbar, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient)
+    public AppDataService(IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, ISnackbar snackbar, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient, ISubscriptionsClient subscriptionsClient)
     {
         GeolocationService = geolocationService;
 
@@ -66,9 +63,13 @@ public class AppDataService : IAppDataService
 
         LoansClient = loansClient;
 
+        SubscriptionsClient = subscriptionsClient;
+
         Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         Console.WriteLine("------------------------------------ AppDataService loaded... ------------------------------------");
         Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+        ShowValuesAppDto();
     }
 
     public Task Initialization { get; private set; } = default!;
@@ -104,6 +105,7 @@ public class AppDataService : IAppDataService
     public string? City { get; set; }
     public string? Country { get; set; }
     public string? CountryCurrency { get; set; }
+    public bool ErrorPopupProfile { get; set; } = false; // use this for error, if true make an error popup
 
     private bool Changed { get; set; } = false;
 
@@ -111,13 +113,20 @@ public class AppDataService : IAppDataService
 
     private GeolocationPositionError? _positionError;
 
+    public void ShowValuesAppDto()
+    {
+        Console.WriteLine("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
+        Console.WriteLine("----------------------------- AppDataService Values             ... ------------------------------");
+        Console.WriteLine("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
+
+        Console.WriteLine(JsonSerializer.Serialize(AppUser));
+    }
+
     public async Task InitializationAsync()
     {
-        GeolocationService.GetCurrentPosition(
-                   component: this,
-                   onSuccessCallbackMethodName: nameof(OnPositionRecieved),
-                   onErrorCallbackMethodName: nameof(OnPositionError),
-                   options: _options);
+        Console.WriteLine("--------------------------------------------------------------------------------------------------");
+        Console.WriteLine("----------------------------- AppDataService InitializationAsync... ------------------------------");
+        Console.WriteLine("--------------------------------------------------------------------------------------------------");
 
         var userClaimsPrincipal = await IsAuthenticated();
 
@@ -189,152 +198,212 @@ public class AppDataService : IAppDataService
                         if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto appUserUpdated)
                         {
                             AppUser = appUserUpdated;
+
+                            Changed = false;
                         }
                     }
                 }
             }
+
+            // role is defined
+            // get current subscription package
+            // assign if no subscription
+            if (!string.IsNullOrEmpty(AppUser.RoleId))
+            {
+                await GetCurrentUserPackageAsync(true);
+
+                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto appUserUpdated)
+                {
+                    AppUser = appUserUpdated;
+                }
+            }
+
+
+            await UpdateLocationAsync(AppUser);
+
         }
     }
 
     private async Task<AppUserDto> SetupAppUser(string userId)
     {
-        var appUserObjectAlreadyCreatedDetail = await ApiHelper.ExecuteCallGuardedCustomSuppressAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, default);
-
-        // the appuser detail record
-        // does not exists
-        if (appUserObjectAlreadyCreatedDetail == default)
+        try
         {
-            var createAppUserRequest = new CreateAppUserRequest
+            var appUserCheck = await AppUsersClient.GetApplicationUserAsync(userId);
+
+        }
+        catch (Exception)
+        {
+
+            var guid = await AppUsersClient.CreateAsync(new CreateAppUserRequest
             {
                 ApplicationUserId = userId
-            };
+            });
 
-            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.CreateAsync(createAppUserRequest), Snackbar, null, "Personal application profile created") is Guid guidCreated)
+            if (guid != default)
             {
-                if (guidCreated != default && guidCreated != Guid.Empty)
+                var createSubscriptonRequest = new CreateSubscriptionRequest
                 {
-                    Console.WriteLine("EhulogConsoleWriteLine: Personal application profile created");
+                    AppUserId = guid
+                };
 
-                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null, "Init Geolocation") is AppUserDto userDetail)
-                    {
-                        Console.WriteLine("EhulogConsoleWriteLine: Init Geolocation");
+                var guidCreated = await SubscriptionsClient.CreateAsync(createSubscriptonRequest);
 
-                        if (_position != default)
-                        {
-                            userDetail.Longitude = _position.Coords.Longitude.ToString();
-                            userDetail.Latitude = _position.Coords.Latitude.ToString();
+                if (guidCreated == default)
+                {
+                    ErrorPopupProfile = true;
 
-                            var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
-                            {
-                                Coordinate = new Geo.MapBox.Models.Coordinate()
-                                {
-                                    Latitude = Convert.ToDouble(userDetail.Latitude),
-                                    Longitude = Convert.ToDouble(userDetail.Longitude)
-                                },
-                                EndpointType = Geo.MapBox.Enums.EndpointType.Places
-                            });
-
-                            if (responseReverseGeocoding != default)
-                            {
-                                if (responseReverseGeocoding.Features != default)
-                                {
-                                    if (responseReverseGeocoding.Features.Count > 0)
-                                    {
-                                        foreach (var f in responseReverseGeocoding.Features)
-                                        {
-                                            if (f.Contexts.Count > 0)
-                                            {
-                                                foreach (var c in f.Contexts)
-                                                {
-                                                    // System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
-                                                    // System.Diagnostics.Debug.Write(c.ContextText);
-
-                                                    if (!string.IsNullOrEmpty(c.Id))
-                                                    {
-                                                        switch (c.Id)
-                                                        {
-                                                            case string s when s.Contains("country"):
-                                                                userDetail.HomeCountry = c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("region"):
-                                                                userDetail.HomeRegion = c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("postcode"):
-                                                                userDetail.HomeAddress += c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("district"):
-                                                                userDetail.HomeCountry += c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("place"):
-                                                                userDetail.HomeCity = c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("locality"):
-                                                                userDetail.HomeAddress += c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("neighborhood"):
-                                                                userDetail.HomeAddress += c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("address"):
-                                                                userDetail.HomeAddress += c.ContextText[0].Text;
-                                                                break;
-                                                            case string s when s.Contains("poi"):
-                                                                userDetail.HomeAddress += c.ContextText[0].Text;
-                                                                break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            if (f.Center is { })
-                                            {
-                                                userDetail.Latitude = f.Center.Latitude.ToString();
-                                                userDetail.Longitude = f.Center.Longitude.ToString();
-                                            }
-
-                                            if (f.Properties.Address is { })
-                                            {
-                                                userDetail.HomeAddress += f.Properties.Address;
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }
-
-
-                            var updateAppUserRequest = new UpdateAppUserRequest
-                            {
-                                Id = userDetail.Id,
-                                ApplicationUserId = userDetail.ApplicationUserId,
-                                HomeAddress = userDetail.HomeAddress,
-                                HomeCity = userDetail.HomeCity,
-                                HomeCountry = userDetail.HomeCountry,
-                                HomeRegion = userDetail.HomeRegion,
-                                Latitude = userDetail.Latitude,
-                                Longitude = userDetail.Longitude,
-                            };
-
-                            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(userDetail.Id, updateAppUserRequest), Snackbar, null) is Guid guidUpdate)
-                            {
-                                if (guidUpdate != default && guidUpdate != Guid.Empty)
-                                {
-                                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, null) is AppUserDto appUserUpdated)
-                                    {
-                                        if (appUserUpdated != default)
-                                            return appUserUpdated;
-                                    }
-                                }
-                            }
-                        }
-
-
-                    }
+                    Console.WriteLine("EhulogConsoleWriteLine -- AppService / Setup AppUser / Contact Administrator");
                 }
             }
 
         }
 
-        return appUserObjectAlreadyCreatedDetail ?? default!;
+        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(userId), Snackbar, default) is AppUserDto appUser)
+        {
+            if (appUser != default)
+            {
+                return appUser;
+            }
+
+        }
+
+        return default!;
+    }
+
+    /// <summary>
+    /// Updates the location of the app user
+    /// OnAfterRenderAsync is the most recommended
+    /// </summary>
+    /// <returns></returns>
+    public async Task UpdateLocationAsync(AppUserDto appUserDto)
+    {
+        Console.WriteLine("--------------------------------------------------------------------------------------------------");
+        Console.WriteLine("----------------------------- AppDataService Update Location        ------------------------------");
+        Console.WriteLine("--------------------------------------------------------------------------------------------------");
+
+        GeolocationService.GetCurrentPosition(
+                   component: this,
+                   onSuccessCallbackMethodName: nameof(OnPositionRecieved),
+                   onErrorCallbackMethodName: nameof(OnPositionError),
+                   options: _options);
+
+        if (appUserDto != default)
+        {
+            if (appUserDto.Longitude == default && appUserDto.Latitude == default)
+            {
+                // update app user
+                // location
+                Console.WriteLine("EhulogConsoleWriteLine: Update Geolocation");
+
+                if (_position != default)
+                {
+                    appUserDto.Longitude = _position.Coords.Longitude.ToString();
+                    appUserDto.Latitude = _position.Coords.Latitude.ToString();
+
+                    var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
+                    {
+                        Coordinate = new Geo.MapBox.Models.Coordinate()
+                        {
+                            Latitude = Convert.ToDouble(appUserDto.Latitude),
+                            Longitude = Convert.ToDouble(appUserDto.Longitude)
+                        },
+                        EndpointType = Geo.MapBox.Enums.EndpointType.Places
+                    });
+
+                    if (responseReverseGeocoding != default)
+                    {
+                        if (responseReverseGeocoding.Features != default)
+                        {
+                            if (responseReverseGeocoding.Features.Count > 0)
+                            {
+                                foreach (var f in responseReverseGeocoding.Features)
+                                {
+                                    if (f.Contexts.Count > 0)
+                                    {
+                                        foreach (var c in f.Contexts)
+                                        {
+                                            // System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
+                                            // System.Diagnostics.Debug.Write(c.ContextText);
+
+                                            if (!string.IsNullOrEmpty(c.Id))
+                                            {
+                                                switch (c.Id)
+                                                {
+                                                    case string s when s.Contains("country"):
+                                                        appUserDto.HomeCountry = c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("region"):
+                                                        appUserDto.HomeRegion = c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("postcode"):
+                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("district"):
+                                                        appUserDto.HomeCountry += c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("place"):
+                                                        appUserDto.HomeCity = c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("locality"):
+                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("neighborhood"):
+                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("address"):
+                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
+                                                        break;
+                                                    case string s when s.Contains("poi"):
+                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (f.Center is { })
+                                    {
+                                        appUserDto.Latitude = f.Center.Latitude.ToString();
+                                        appUserDto.Longitude = f.Center.Longitude.ToString();
+                                    }
+
+                                    if (f.Properties.Address is { })
+                                    {
+                                        appUserDto.HomeAddress += f.Properties.Address;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+
+                    var updateAppUserRequest = new UpdateAppUserRequest
+                    {
+                        Id = appUserDto.Id,
+                        ApplicationUserId = appUserDto.ApplicationUserId,
+                        HomeAddress = appUserDto.HomeAddress,
+                        HomeCity = appUserDto.HomeCity,
+                        HomeCountry = appUserDto.HomeCountry,
+                        HomeRegion = appUserDto.HomeRegion,
+                        Latitude = appUserDto.Latitude,
+                        Longitude = appUserDto.Longitude,
+                    };
+
+                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(appUserDto.Id, updateAppUserRequest), Snackbar, null) is Guid guidUpdate)
+                    {
+                        if (guidUpdate != default && guidUpdate != Guid.Empty)
+                        {
+                            if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.GetApplicationUserAsync(AppUser.ApplicationUserId), Snackbar, null) is AppUserDto appUserUpdated)
+                            {
+                                AppUser = appUserUpdated;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     public async Task<ClaimsPrincipal> IsAuthenticated()
@@ -541,21 +610,109 @@ public class AppDataService : IAppDataService
     /// Get current user's package
     /// </summary>
     /// <returns>PackageDto package</returns>
-    public async Task<PackageDto> GetCurrentUserPackageAsync()
+    public async Task<PackageDto> GetCurrentUserPackageAsync(bool assignDefaultIfMissingPackageInSubscription = false)
     {
         if (AppUser != default)
         {
             if (AppUser.RoleName != default)
             {
-                if (await ApiHelper.ExecuteCallGuardedAsync(async () => await PackagesClient.GetAsync(AppUser.PackageId), Snackbar) is List<PackageDto> packages)
+                if (AppUser.Subscription != default)
                 {
-                    if (packages != default && packages.Count() > 0)
-                        return packages.First();
+                    if (AppUser.Subscription.PackageId != default)
+                    {
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await PackagesClient.GetAsync(AppUser.Subscription.PackageId), Snackbar) is List<PackageDto> packages)
+                        {
+                            if (packages != default && packages.Count > 0)
+                                return packages.First();
+                        }
+                    }
+                    else
+                    {
+                        if (assignDefaultIfMissingPackageInSubscription)
+                            await AssignDefaultPackageAsync(AppUser.RoleName);
+                    }
                 }
             }
         }
 
         return default!;
+    }
+
+    private async Task AssignDefaultPackageAsync(string roleName)
+    {
+        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await PackagesClient.GetAsync(null), Snackbar) is List<PackageDto> packages)
+        {
+            if (packages != default)
+            {
+                switch (roleName)
+                {
+                    case "Lender":
+
+                        UpdateSubscriptionRequest updateSubscriptionRequestLender = new()
+                        {
+                            AppUserId = AppUser.Id,
+                            PackageId = packages.First(p => p.IsDefault && p.IsLender).Id
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await SubscriptionsClient.UpdateAsync(AppUser.Id, updateSubscriptionRequestLender), Snackbar) is Guid subscriptionIdLender)
+                        {
+                            if (subscriptionIdLender != default)
+                            {
+                                // default package assigned
+                                // update the verification status
+                                UpdateAppUserRequest updateAppUserRequestLender = new()
+                                {
+                                    Id = AppUser.Id,
+                                    ApplicationUserId = AppUser.ApplicationUserId,
+                                    RolePackageStatus = VerificationStatus.Verified
+                                };
+
+                                Guid guidLender = await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequestLender);
+
+                                if (guidLender != default)
+                                {
+                                    await RevalidateVerification();
+                                }
+                            }
+                        }
+
+                        break;
+
+                    case "Lessee":
+
+                        UpdateSubscriptionRequest updateSubscriptionRequestLessee = new()
+                        {
+                            AppUserId = AppUser.Id,
+                            PackageId = packages.First(p => p.IsDefault && !p.IsLender).Id
+                        };
+
+                        if (await ApiHelper.ExecuteCallGuardedAsync(async () => await SubscriptionsClient.UpdateAsync(AppUser.Id, updateSubscriptionRequestLessee), Snackbar) is Guid subscriptionIdLessee)
+                        {
+                            if (subscriptionIdLessee != default)
+                            {
+                                // default package assigned
+                                // update the verification status
+                                UpdateAppUserRequest updateAppUserRequestLessee = new()
+                                {
+                                    Id = AppUser.Id,
+                                    ApplicationUserId = AppUser.ApplicationUserId,
+                                    RolePackageStatus = VerificationStatus.Verified
+                                };
+
+                                Guid guidLessee = await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequestLessee);
+
+                                if (guidLessee != default)
+                                {
+                                    await RevalidateVerification();
+                                }
+                            }
+                        }
+
+                        break;
+                }
+
+            }
+        }
     }
 
     public async Task<List<LoanDto>> GetCurrentUserLoansAsync(bool runningLoans = false)

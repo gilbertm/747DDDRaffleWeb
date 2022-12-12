@@ -1,0 +1,1 @@
+powershell.exe -ExecutionPolicy Bypass -NoExit -Command "Get-ChildItem -inc bin,obj -rec | Remove-Item -rec -force"

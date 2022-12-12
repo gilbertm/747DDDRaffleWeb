@@ -4,8 +4,37 @@
     {
         <MudToolBar>
 
-            @* if (Loans != default || (Package != default && Package.Id != Guid.Empty))
-            { *@
+            @{
+                var lenderMaxLesses = 0;
+                var lesseeMaxLenders = 0;
+                var countLoan = 0;
+
+                @if (Package == default || (Package != default && Package.Id == default))
+                {
+                    lenderMaxLesses = 0;
+                    lesseeMaxLenders = 0;
+                }
+                else
+                {
+                    if (Package != default)
+                    {
+                        lenderMaxLesses = Package.MaxLessees;
+                        lesseeMaxLenders = Package.MaxLenders;
+                    }
+                }
+
+                @if (Loans == default || (Loans != default && Loans.Count() <= 0))
+                {
+                    countLoan = 0;
+                }
+                else
+                {
+                    if (Loans != default)
+                    {
+                        countLoan = Loans.Count();
+                    }
+                }
+
                 <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Give" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
                 <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")"> @_totalAmount / @(Package == default ? 0 : Package.MaxAmounts)</MudText>
 
@@ -15,15 +44,15 @@
                     <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Handshake" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
                     @if (AppDataService.AppUser.RoleName.Equals("Lender"))
                     {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@(Loans == default ? 0 : Loans.Count()) / @(Package == default ? 0 : Package.MaxLessees)</MudText>
+                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@countLoan / @lenderMaxLesses</MudText>
                     }
 
                     @if (AppDataService.AppUser.RoleName.Equals("Lessee"))
                     {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@(Loans == default ? 0 : Loans.Count()) / @(Package == default ? 0 : Package.MaxLenders)</MudText>
+                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@countLoan / @lesseeMaxLenders</MudText>
                     }
                 }
-            @* } *@
+            }
 
             <MudText Typo="Typo.caption" Style="@($"color:{@EhulogColor.GreenMoney}")">
                 @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCity) ? "Unknown" : AppDataService.AppUser.HomeCity), @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry) ? "Unknown" : AppDataService.AppUser.HomeCountry)

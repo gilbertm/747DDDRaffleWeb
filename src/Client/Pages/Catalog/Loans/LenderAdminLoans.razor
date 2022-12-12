@@ -338,7 +338,7 @@ else
         {
             if (AppDataService.AppUser != default)
             {
-                await LoadAppUserProducts(AppDataService.AppUser.Id, categoryId);
+                await LoadAppUserProductsAsync(AppDataService.AppUser.Id, categoryId);
             }
         }
 
@@ -672,7 +672,7 @@ else
                     {
                         <MudGrid>
                             <MudItem xs="12" Class="pa-0">
-                                <MinimalBlockInfoLoanStatus Loan="@trail" OnUpdatedLoan="@OnClickApproveChildCallBack" />
+                                <MinimalBlockInfoLoanStatus Loan="@trail" OnUpdatedLoan="@OnClickApproveChildCallBackAsync" />
                             </MudItem>
                         </MudGrid>
                     }
@@ -719,7 +719,7 @@ else
 
                 if (trail.LoanApplicants != default && trail.Status < LoanStatus.Assigned)
                 {
-                    <BlockInfoLoanApplicants Loan="@trail" OnClickApprove="(() => OnClickApproveChildCallBack())" />
+                    <BlockInfoLoanApplicants Loan="@trail" OnClickApprove="(() => OnClickApproveChildCallBackAsync())" />
                 }
 
                 if (trail.LoanLessees != default && trail.Status >= LoanStatus.Assigned)

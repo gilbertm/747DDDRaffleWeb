@@ -25,9 +25,23 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+        Console.WriteLine("------------------------------------ Index          loaded... ------------------------------------");
+        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+
+
         if ((await AuthState).User is { } user)
         {
-            _isAuthenticated = true;
+            if (user != default)
+            {
+                if (user.Identity != default)
+                {
+                    if (user.Identity.IsAuthenticated)
+                    {
+                        _isAuthenticated = true;
+                    }
+                }
+            }
         }
 
 
@@ -35,7 +49,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        await AppDataService.InitializationAsync();
+        // TODO:// INVESTIGATE ----- WHY THERE'S A NEED
+        // await AppDataService.InitializationAsync();
 
         if (AppDataService != default)
         {
@@ -65,7 +80,7 @@
                             }
                         }
                     }
-                }                
+                }
             }
         }
     }
