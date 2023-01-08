@@ -1,9 +1,12 @@
 ﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
 using EHULOG.BlazorWebAssembly.Client.Shared;
+using Mapster;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System;
+using System.Reflection;
 using System.Text.Json;
 
 namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
@@ -24,6 +27,9 @@ public partial class DynamicMapLoad
 
     [Inject]
     protected IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    protected ILoggerFactory LoggerFactory { get; set; } = default!;
 
     private DotNetObjectReference<DynamicMapLoad>? _objRef;
 
@@ -53,6 +59,9 @@ public partial class DynamicMapLoad
                 AppDataService.AppUser.Longitude = longitude;
 
             }
+
+            AppDataService.City = homeCity;
+            AppDataService.Country = homeCountry;
         }
     }
 
@@ -63,6 +72,8 @@ public partial class DynamicMapLoad
 
     protected override async Task OnInitializedAsync()
     {
+        LoggerFactory.CreateLogger(Assembly.GetExecutingAssembly().Location).LogInformation("This is something");
+
         _objRef = DotNetObjectReference.Create(this);
 
         await JSRuntime.InvokeVoidAsync("loadScript", "https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js", "head");
@@ -108,36 +119,51 @@ public partial class DynamicMapLoad
                         }
                     }
                 }
+
+                // else
+                // {
+                //    // await AppDataService.UpdateLocationAsync();
+                // }
             }
             else
             {
                 var position = AppDataService.GetGeolocationPosition();
 
-                var obj = new
+                if (position != default)
                 {
-                    Key = Config["MapBox:Key"],
-                    MapContainer = Config["MapBox:MapContainer"],
-                    Zoom = Config["MapBox:Zoom"],
-                    Style = Config["MapBox:Style"],
-                    Longitude = position is { } && !string.IsNullOrEmpty(position.Coords.Longitude.ToString()) ? position.Coords.Longitude.ToString() : "0",
-                    Latitude = position is { } && !string.IsNullOrEmpty(position.Coords.ToString()) ? position.Coords.Latitude.ToString() : "0"
-                };
-
-                if (JsonLoadedScripts is { } && JsonLoadedScripts.Count > 0)
-                {
-                    if (JsonLoadedScripts.Contains("js/mapBox.js"))
+                    if (position.Coords != default)
                     {
-                        await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.initMap", obj);
+                        var obj = new
+                        {
+                            Key = Config["MapBox:Key"],
+                            MapContainer = Config["MapBox:MapContainer"],
+                            Zoom = Config["MapBox:Zoom"],
+                            Style = Config["MapBox:Style"],
+                            Longitude = position.Coords.Longitude.ToString(),
+                            Latitude = position.Coords.Latitude.ToString()
+                        };
+
+                        if (JsonLoadedScripts is { } && JsonLoadedScripts.Count > 0)
+                        {
+                            if (JsonLoadedScripts.Contains("js/mapBox.js"))
+                            {
+                                await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.initMap", obj);
+                            }
+                        }
                     }
                 }
-            }
 
+                await AppDataService.UpdateLocationAsync();
+
+            }
         }
+
     }
 
     private async Task UpdateAppUserAddress()
     {
-        _objRef = DotNetObjectReference.Create(this);
+        if (_objRef == default)
+            _objRef = DotNetObjectReference.Create(this);
 
         await JSRuntime.InvokeVoidAsync("dotNetJSMapBox.updateAddressDtoFromJS", _objRef);
 

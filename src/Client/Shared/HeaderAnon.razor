@@ -193,17 +193,6 @@
         return _isMobileMenuHidden;
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (AppDataService != default)
-        {
-            // monitor, cascading is taking care of this?
-            // TODO:// checks
-            // await AppDataService.InitializationAsync();
-        }
-
-    }
-
     private void Profile()
     {
         Navigation.NavigateTo("/login");

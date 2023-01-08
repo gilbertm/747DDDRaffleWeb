@@ -42,14 +42,16 @@
                 // disabled to ensure that the pin selected is always the main focal
                 // geolocate.trigger();
 
-                var marker = new mapboxgl.Marker(el)
+                /* var marker = new mapboxgl.Marker(el)
                     .setLngLat([parseFloat(objectFromDotNet.longitude), parseFloat(objectFromDotNet.latitude)])
                     .addTo(window.MainMap);
 
                 var lngLat = marker.getLngLat();
 
+                console.log(lngLat); */
+
                 // deprecated, using internal checks is more reliable
-                // window.dotNetJSMapBox.processLatLng(lngLat, objectFromDotNet.key);
+                window.dotNetJSMapBox.processLatLng(objectFromDotNet.longitude, objectFromDotNet.latitude, objectFromDotNet.key);
 
             });
 
@@ -99,7 +101,7 @@
 
                 var lngLat = marker.getLngLat();
 
-                var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + lngLat.lng + "," + lngLat.lat+ ".json?access_token=" + objectFromDotNet.key;
+                var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + lngLat.lng + "," + lngLat.lat + ".json?access_token=" + objectFromDotNet.key;
 
                 // Making our request
                 fetch(url, { method: 'GET' })
@@ -160,9 +162,9 @@
                                         document.getElementById("HomeAddress").value = location.features[i].text;
                                     }
                                 }
-                                    
+
                             }
-                            
+
                             if (location.features[i].id.includes('address')) {
                                 // address
                                 if (document.getElementById("HomeAddress")) {
@@ -223,29 +225,69 @@
             longitude = document.getElementById("Longitude").value;
 
         dotNetHelper.invokeMethodAsync("ChangeAddressFromJS", homeAddress, homeCity, homeCountry, homeRegion, latitude, longitude);
-    }/*,
-    processLatLng: function (latLng, key) {
-        var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + latLng.lng + "," + latLng.lat + ".json?access_token=" + key;
+    },
+    processLatLng: function (longitude, latitude, key) {
+
+        /* console.log("load -----------------------------------");
+        console.log(longitude);
+        console.log(latitude); */
+
+        var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + longitude + "," + latitude + ".json?access_token=" + key;
+
+        var homeCity = '';
+        var homeCountry = '';
 
         // Making our request
         fetch(url, { method: 'GET' })
             .then(Result => Result.json())
-            .then(location => {
+            .then(location => {                
+
                 for (let i = 0; i < location.features.length; i++) {
-                    if (location.features[i].id.includes('country')) {
-                        if (document.getElementById("HomeCountryAnon"))
-                            document.getElementById("HomeCountryAnon").innerText = location.features[i].text;
+
+                    if (location.features[i].id.includes('country')) {                       
+
+                        if (document.getElementById("HomeCountry"))
+                        {
+                            document.getElementById("HomeCountry").value = location.features[i].text;
+                            homeCountry = location.features[i].text;
+
+                            /* console.log("data--------------------country");
+                            console.log(homeCountry); */
+                        }
+
+                        if (document.getElementById("HomeCountryAnon")) {
+                            console.log("country anon");
+                            console.log(document.getElementById("HomeCountryAnon"));
+                            document.getElementById("HomeCountryAnon").innerHTML = location.features[i].text;
+                        }
+
                     }
                     if (location.features[i].id.includes('place')) {
                         // city or town
-                        if (document.getElementById("HomeCityAnon"))
-                            document.getElementById("HomeCityAnon").innerText = location.features[i].text + ", ";
-                    }
+                        if (document.getElementById("HomeCity"))
+                        {
+                            document.getElementById("HomeCity").value = location.features[i].text;
+                            homeCity = location.features[i].text;
 
+                            /* console.log("data--------------------city");
+                            console.log(homeCity); */
+                        }
+
+                        // city or town
+                        if (document.getElementById("HomeCityAnon")) {
+                            document.getElementById("HomeCityAnon").innerHTML = location.features[i].text + ",&nbsp;";
+                        }
+                    }
                 }
             })
             .catch(errorMsg => {
                 // console.log(errorMsg);
             });
-    } */
+
+        /* console.log("-----------------------------------------------------------------------------------");
+        console.log(homeCity);
+        console.log(homeCountry); */
+
+
+    }
 };

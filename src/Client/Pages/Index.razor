@@ -1,87 +1,18 @@
 ﻿@page "/home"
 @page "/"
-@using Nager.Country;
-@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
+@using Nager.Country
+@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons
 
 @attribute [AllowAnonymous]
 
 @if (!_isAuthenticated)
 {
     <FrontAnonymousLoans />
+} else {
+    <MudText>The following is yet to be completed:</MudText>
+    <MudText>Location</MudText>
+    <MudText>Subscription</MudText>
+    <MudText>Valid documents</MudText>
 }
 
 <LossGeolocationPopup />
-
-@code {
-    [CascadingParameter(Name = "AppDataService")]
-    protected AppDataService AppDataService { get; set; } = default!;
-
-    [CascadingParameter]
-    protected Task<AuthenticationState> AuthState { get; set; } = default!;
-    [Inject]
-    protected IAuthenticationService AuthService { get; set; } = default!;
-
-    private bool _isAuthenticated = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
-        Console.WriteLine("------------------------------------ Index          loaded... ------------------------------------");
-        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
-
-
-        if ((await AuthState).User is { } user)
-        {
-            if (user != default)
-            {
-                if (user.Identity != default)
-                {
-                    if (user.Identity.IsAuthenticated)
-                    {
-                        _isAuthenticated = true;
-                    }
-                }
-            }
-        }
-
-
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        // TODO:// INVESTIGATE ----- WHY THERE'S A NEED
-        // await AppDataService.InitializationAsync();
-
-        if (AppDataService != default)
-        {
-            if (await AppDataService.IsAuthenticated() is { } user)
-            {
-                if (AppDataService.AppUser != default)
-                {
-                    if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Admin"))
-                    {
-                        Navigation.NavigateTo("/users");
-                    }
-                    else if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName) && AppDataService.AppUser.RoleName.Equals("Lender"))
-                    {
-                        Navigation.NavigateTo("/loans/lender");
-                    }
-                    else
-                    {
-                        if (AppDataService.AppUser.RolePackageStatus != default)
-                        {
-                            if (AppDataService.AppUser.RolePackageStatus < VerificationStatus.Submitted)
-                            {
-                                Navigation.NavigateTo("/account/role-subscription");
-                            }
-                            else
-                            {
-                                Navigation.NavigateTo("/loans/lessee");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}

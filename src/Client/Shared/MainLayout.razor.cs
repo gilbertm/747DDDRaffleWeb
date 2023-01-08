@@ -3,6 +3,7 @@ using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.Diagnostics;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
@@ -17,6 +18,11 @@ public partial class MainLayout
     [Parameter]
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
 
+    [Inject]
+    protected ILoggerFactory LoggerFactory { get; set; } = default!;
+
+    private ILogger Logger { get; set; } = default!;
+
     private bool _drawerOpen;
     private bool _rightToLeft;
     private PackageDto package = new();
@@ -24,14 +30,25 @@ public partial class MainLayout
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
-        Console.WriteLine("-------------------------------- Logged Main Layout loaded... ------------------------------------");
-        Console.WriteLine("//////////////////////////////////////////////////////////////////////////////////////////////////");
+        Logger = LoggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(MainLayout)}");
 
-        await AppDataService.InitializationAsync();
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var st = new StackTrace(new StackFrame(1));
+
+            if (st != default)
+            {
+                if (st.GetFrame(0) != default)
+                {
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                }
+            }
+        }
 
         if (AppDataService != default)
         {
+            await AppDataService.InitializationAsync();
+
             if (AppDataService.AppUser != default)
             {
                 AppDataService.ShowValuesAppDto();
@@ -88,7 +105,7 @@ public partial class MainLayout
         Navigation.NavigateTo("/account");
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    /*protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -109,6 +126,5 @@ public partial class MainLayout
                 AppDataService.ShowValuesAppDto();
             }
         }
-
-    }
+    } */
 }

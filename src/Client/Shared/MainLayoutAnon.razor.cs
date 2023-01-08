@@ -1,15 +1,25 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
 public partial class MainLayoutAnon
 {
+    [Inject]
+    protected AppDataService AppDataService { get; set; } = default!;
+
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
     [Parameter]
     public EventCallback OnDarkModeToggle { get; set; }
     [Parameter]
     public EventCallback<bool> OnRightToLeftToggle { get; set; }
+
+    [Inject]
+    protected ILoggerFactory LoggerFactory { get; set; } = default!;
+
+    private ILogger Logger { get; set; } = default!;
 
     private bool _rightToLeft = default!;
     public async Task ToggleDarkMode()
@@ -26,20 +36,36 @@ public partial class MainLayoutAnon
         await OnRightToLeftToggle.InvokeAsync(isRtl);
     }
 
-    [Inject]
-    protected AppDataService AppDataService { get; set; } = default!;
-
     private string _currentUrl = default!;
     private Uri _uri = default!;
     private string _cssClasses = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        Console.WriteLine("------------------------------------ Main Layout Anonymous   ------------------------------------");
-        Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        Logger = LoggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(MainLayoutAnon)}");
 
-        await AppDataService.InitializationAsync();
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var st = new StackTrace(new StackFrame(1));
+
+            if (st != default)
+            {
+                if (st.GetFrame(0) != default)
+                {
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                }
+            }
+        }
+
+        if (AppDataService != default)
+        {
+            AppDataService.ShowValuesAppDto();
+
+            if (AppDataService.City == default)
+            {
+                await AppDataService.UpdateLocationAsync();
+            }
+        }
     }
 
     protected override void OnParametersSet()
@@ -61,86 +87,4 @@ public partial class MainLayoutAnon
             _cssClasses = "home";
         }
     }
-
-    public void UpdateCity(string city)
-    {
-        AppDataService.City = city;
-        StateHasChanged();
-    }
-
-    public void UpdateCountry(string country)
-    {
-        AppDataService.Country = country;
-        StateHasChanged();
-    }
-
-    public void UpdateCountryCurrency(string countryCurrency)
-    {
-        AppDataService.CountryCurrency = countryCurrency;
-        StateHasChanged();
-    }
-
-    /*protected async Task TestOnAfterRenderAsync(bool firstRender)
-        {
-        await EatCookies();
-
-        if (!firstRender)
-            {
-            Country = await AppDataService.GetCountryOnAnonymousStateAsync();
-
-            if (!string.IsNullOrEmpty(Country))
-                {
-                var CountryCurrency = AppDataService.GetCurrencyAnonymous(Country);
-            }
-
-
-            if (AppDataService.Country == default)
-                {
-                AppDataService.Country = await AppDataService.GetCountryOnAnonymousStateAsync();
-
-                if (string.IsNullOrEmpty(AppDataService.CountryCurrency))
-                    {
-                    AppDataService.CountryCurrency = AppDataService.GetCurrencyAnonymous(AppDataService.Country);
-                }
-
-                await StoreCookies();
-
-
-             }
-             StateHasChanged();
-    }
-    }
-
-    public async Task EatCookies()
-         {
-         check and get cookie for country location
-        string? countryLocation = await LocalStorage.GetItemAsStringAsync("CountryLocation");
-
-        if (countryLocation != default)
-            {
-            AppDataService.Country = countryLocation;
-        }
-
-        string? countryLocationCurrency = await LocalStorage.GetItemAsStringAsync("CountryLocationCurrency");
-
-        if (countryLocationCurrency != default)
-            {
-            AppDataService.CountryCurrency = countryLocationCurrency;
-    }
-    }
-
-    public async Task StoreCookies()
-        {
-        if (!string.IsNullOrEmpty(AppDataService.Country))
-            {
-            await LocalStorage.SetItemAsStringAsync("CountryLocation", AppDataService.Country);
-        }
-
-        if (!string.IsNullOrEmpty(AppDataService.CountryCurrency))
-            {
-            await LocalStorage.SetItemAsStringAsync("CountryLocationCurrency", AppDataService.Country);
-    }
-    }
-    */
-
 }

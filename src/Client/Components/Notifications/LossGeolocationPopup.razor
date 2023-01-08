@@ -1,8 +1,10 @@
 ﻿@using System.Text.Json
 @using System.Text.Json.Serialization
 @using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
+@using System.Diagnostics;
 
 @attribute [AllowAnonymous]
+@inject ILogger<LossGeolocationPopup> Logger;
 @inject IStringLocalizer<Index> L
 @inject IDialogService Dialog
 @inject IGeolocationService GeolocationService
@@ -30,6 +32,18 @@
 
     protected override void OnInitialized()
     {
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var st = new StackTrace(new StackFrame(1));
+
+            if (st != default)
+            {
+                if (st.GetFrame(0) != default)
+                {
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                }
+            }
+        }
        
         _infoMessageWrapper = AddInfoWrapperContent();
 

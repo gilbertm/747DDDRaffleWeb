@@ -1,13 +1,16 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
+﻿using Blazored.LocalStorage;
 using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
 using Geo.MapBox.Abstractions;
 using Mapster;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using MudBlazor;
 using Nager.Country;
+using System.Diagnostics;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -15,6 +18,8 @@ namespace EHULOG.BlazorWebAssembly.Client.Shared;
 
 public class AppDataService : IAppDataService
 {
+    private ILogger Logger { get; set; } = default!;
+
     private IGeolocationService GeolocationService { get; set; } = default!;
 
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
@@ -35,12 +40,18 @@ public class AppDataService : IAppDataService
 
     private ISubscriptionsClient SubscriptionsClient { get; set; } = default!;
 
+    private ILocalStorageService LocalStorageService { get; set; } = default!;
+
     private IMapBoxGeocoding MapBoxGeocoding { get; set; } = default!;
 
     private ISnackbar Snackbar { get; set; } = default!;
 
-    public AppDataService(IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, ISnackbar snackbar, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient, ISubscriptionsClient subscriptionsClient)
+    public AppDataService(ILoggerFactory loggerFactory, ILocalStorageService localStorageService, IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, ISnackbar snackbar, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient, ISubscriptionsClient subscriptionsClient)
     {
+        Logger = loggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(AppDataService)}");
+
+        LocalStorageService = localStorageService;
+
         GeolocationService = geolocationService;
 
         HttpClientFactory = httpClientFactory;
@@ -65,14 +76,14 @@ public class AppDataService : IAppDataService
 
         SubscriptionsClient = subscriptionsClient;
 
-        Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        Console.WriteLine("------------------------------------ AppDataService loaded... ------------------------------------");
-        Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        GeolocationService.GetCurrentPosition(
+           component: this,
+           onSuccessCallbackMethodName: nameof(OnPositionRecieved),
+           onErrorCallbackMethodName: nameof(OnPositionError),
+           options: _options);
 
         ShowValuesAppDto();
     }
-
-    public Task Initialization { get; private set; } = default!;
 
     private readonly PositionOptions _options = new()
     {
@@ -115,18 +126,36 @@ public class AppDataService : IAppDataService
 
     public void ShowValuesAppDto()
     {
-        Console.WriteLine("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
-        Console.WriteLine("----------------------------- AppDataService Values             ... ------------------------------");
-        Console.WriteLine("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var st = new StackTrace(new StackFrame(1));
 
-        Console.WriteLine(JsonSerializer.Serialize(AppUser));
+            if (st != default)
+            {
+                if (st.GetFrame(0) != default)
+                {
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - Country: {JsonSerializer.Serialize(Country)}");
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - City: {JsonSerializer.Serialize(City)}");
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - AppUser: {JsonSerializer.Serialize(AppUser)}");
+                }
+            }
+        }
     }
 
     public async Task InitializationAsync()
     {
-        Console.WriteLine("--------------------------------------------------------------------------------------------------");
-        Console.WriteLine("----------------------------- AppDataService InitializationAsync... ------------------------------");
-        Console.WriteLine("--------------------------------------------------------------------------------------------------");
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var st = new StackTrace(new StackFrame(1));
+
+            if (st != default)
+            {
+                if (st.GetFrame(0) != default)
+                {
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - InitializationAsync");
+                }
+            }
+        }
 
         var userClaimsPrincipal = await IsAuthenticated();
 
@@ -217,11 +246,10 @@ public class AppDataService : IAppDataService
                     AppUser = appUserUpdated;
                 }
             }
-
-
-            await UpdateLocationAsync(AppUser);
-
         }
+
+        // if (_position == default)
+           //  await UpdateLocationAsync();
     }
 
     private async Task<AppUserDto> SetupAppUser(string userId)
@@ -275,122 +303,157 @@ public class AppDataService : IAppDataService
     /// OnAfterRenderAsync is the most recommended
     /// </summary>
     /// <returns></returns>
-    public async Task UpdateLocationAsync(AppUserDto appUserDto)
+    [Obsolete("UpdateLocationAsync looks unnecessary.")]
+    public async Task UpdateLocationAsync()
     {
-        Console.WriteLine("--------------------------------------------------------------------------------------------------");
-        Console.WriteLine("----------------------------- AppDataService Update Location        ------------------------------");
-        Console.WriteLine("--------------------------------------------------------------------------------------------------");
-
-        GeolocationService.GetCurrentPosition(
-                   component: this,
-                   onSuccessCallbackMethodName: nameof(OnPositionRecieved),
-                   onErrorCallbackMethodName: nameof(OnPositionError),
-                   options: _options);
-
-        if (appUserDto != default)
+        if (Logger.IsEnabled(LogLevel.Information))
         {
-            if (appUserDto.Longitude == default && appUserDto.Latitude == default)
+            var st = new StackTrace(new StackFrame(1));
+
+            if (st != default)
             {
-                // update app user
-                // location
-                Console.WriteLine("EhulogConsoleWriteLine: Update Geolocation");
-
-                if (_position != default)
+                if (st.GetFrame(0) != default)
                 {
-                    appUserDto.Longitude = _position.Coords.Longitude.ToString();
-                    appUserDto.Latitude = _position.Coords.Latitude.ToString();
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - {JsonSerializer.Serialize(AppUser)} - Update Location");
+                }
+            }
+        }
 
-                    var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
+        if (_position != default)
+        {
+            if (_position.Coords != default)
+            {
+                var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
+                {
+                    Coordinate = new Geo.MapBox.Models.Coordinate()
                     {
-                        Coordinate = new Geo.MapBox.Models.Coordinate()
-                        {
-                            Latitude = Convert.ToDouble(appUserDto.Latitude),
-                            Longitude = Convert.ToDouble(appUserDto.Longitude)
-                        },
-                        EndpointType = Geo.MapBox.Enums.EndpointType.Places
-                    });
+                        Latitude = Convert.ToDouble(_position.Coords.Latitude),
+                        Longitude = Convert.ToDouble(_position.Coords.Longitude)
+                    },
+                    EndpointType = Geo.MapBox.Enums.EndpointType.Places
+                });
 
-                    if (responseReverseGeocoding != default)
+                if (responseReverseGeocoding != default)
+                {
+                    if (responseReverseGeocoding.Features != default)
                     {
-                        if (responseReverseGeocoding.Features != default)
+                        if (responseReverseGeocoding.Features.Count > 0)
                         {
-                            if (responseReverseGeocoding.Features.Count > 0)
+                            foreach (var f in responseReverseGeocoding.Features)
                             {
-                                foreach (var f in responseReverseGeocoding.Features)
+                                if (f.Contexts.Count > 0)
                                 {
-                                    if (f.Contexts.Count > 0)
+                                    foreach (var c in f.Contexts)
                                     {
-                                        foreach (var c in f.Contexts)
-                                        {
-                                            // System.Diagnostics.Debug.Write(c.Id.Contains("Home"));
-                                            // System.Diagnostics.Debug.Write(c.ContextText);
 
-                                            if (!string.IsNullOrEmpty(c.Id))
+                                        if (!string.IsNullOrEmpty(c.Id))
+                                        {
+                                            switch (c.Id)
                                             {
-                                                switch (c.Id)
-                                                {
-                                                    case string s when s.Contains("country"):
-                                                        appUserDto.HomeCountry = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("region"):
-                                                        appUserDto.HomeRegion = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("postcode"):
-                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("district"):
-                                                        appUserDto.HomeCountry += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("place"):
-                                                        appUserDto.HomeCity = c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("locality"):
-                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("neighborhood"):
-                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("address"):
-                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                    case string s when s.Contains("poi"):
-                                                        appUserDto.HomeAddress += c.ContextText[0].Text;
-                                                        break;
-                                                }
+                                                case string s when s.Contains("country"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeCountry = c.ContextText[0].Text;
+
+                                                    Country = c.ContextText[0].Text;
+
+                                                    string? country = await LocalStorageService.GetItemAsStringAsync("Country");
+
+                                                    if (string.IsNullOrEmpty(country))
+                                                    {
+                                                        await LocalStorageService.SetItemAsync("Country", Country);
+                                                    }
+
+                                                    break;
+                                                case string s when s.Contains("region"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeRegion = c.ContextText[0].Text;
+                                                    break;
+                                                case string s when s.Contains("postcode"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeAddress += c.ContextText[0].Text;
+                                                    break;
+                                                case string s when s.Contains("district"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeCountry += c.ContextText[0].Text;
+                                                    break;
+                                                case string s when s.Contains("place"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeCity = c.ContextText[0].Text;
+
+                                                    City = c.ContextText[0].Text;
+
+                                                    string? city = await LocalStorageService.GetItemAsStringAsync("City");
+
+                                                    if (string.IsNullOrEmpty(city))
+                                                    {
+                                                        await LocalStorageService.SetItemAsync("City", City);
+                                                    }
+
+
+                                                    break;
+                                                case string s when s.Contains("locality"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeAddress += c.ContextText[0].Text;
+                                                    break;
+                                                case string s when s.Contains("neighborhood"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeAddress += c.ContextText[0].Text;
+                                                    break;
+                                                case string s when s.Contains("address"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeAddress += c.ContextText[0].Text;
+                                                    break;
+                                                case string s when s.Contains("poi"):
+                                                    if (AppUser != default)
+                                                        AppUser.HomeAddress += c.ContextText[0].Text;
+                                                    break;
                                             }
                                         }
                                     }
+                                }
 
-                                    if (f.Center is { })
+                                if (f.Center is { })
+                                {
+                                    if (AppUser != default && (AppUser.Longitude == default && AppUser.Latitude == default))
                                     {
-                                        appUserDto.Latitude = f.Center.Latitude.ToString();
-                                        appUserDto.Longitude = f.Center.Longitude.ToString();
-                                    }
-
-                                    if (f.Properties.Address is { })
-                                    {
-                                        appUserDto.HomeAddress += f.Properties.Address;
+                                        AppUser.Latitude = f.Center.Latitude.ToString();
+                                        AppUser.Longitude = f.Center.Longitude.ToString();
                                     }
                                 }
+
+                                if (f.Properties.Address is { })
+                                {
+                                    if (AppUser != default)
+                                        AppUser.HomeAddress += f.Properties.Address;
+                                }
                             }
-
                         }
-                    }
 
+                    }
+                }
+
+                if (AppUser != default)
+                {
+                    if (AppUser.Longitude == default && AppUser.Latitude == default)
+                    {
+                        AppUser.Longitude = _position.Coords.Longitude.ToString();
+                        AppUser.Latitude = _position.Coords.Latitude.ToString();
+
+                    }
 
                     var updateAppUserRequest = new UpdateAppUserRequest
                     {
-                        Id = appUserDto.Id,
-                        ApplicationUserId = appUserDto.ApplicationUserId,
-                        HomeAddress = appUserDto.HomeAddress,
-                        HomeCity = appUserDto.HomeCity,
-                        HomeCountry = appUserDto.HomeCountry,
-                        HomeRegion = appUserDto.HomeRegion,
-                        Latitude = appUserDto.Latitude,
-                        Longitude = appUserDto.Longitude,
+                        Id = AppUser.Id,
+                        ApplicationUserId = AppUser.ApplicationUserId,
+                        HomeAddress = AppUser.HomeAddress,
+                        HomeCity = AppUser.HomeCity,
+                        HomeCountry = AppUser.HomeCountry,
+                        HomeRegion = AppUser.HomeRegion,
+                        Latitude = AppUser.Latitude,
+                        Longitude = AppUser.Longitude,
                     };
 
-                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(appUserDto.Id, updateAppUserRequest), Snackbar, null) is Guid guidUpdate)
+                    if (await ApiHelper.ExecuteCallGuardedAsync(async () => await AppUsersClient.UpdateAsync(AppUser.Id, updateAppUserRequest), Snackbar, null) is Guid guidUpdate)
                     {
                         if (guidUpdate != default && guidUpdate != Guid.Empty)
                         {
@@ -402,8 +465,8 @@ public class AppDataService : IAppDataService
                     }
                 }
             }
-        }
 
+        }
     }
 
     public async Task<ClaimsPrincipal> IsAuthenticated()

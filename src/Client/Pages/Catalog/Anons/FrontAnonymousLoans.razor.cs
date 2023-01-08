@@ -1,4 +1,5 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
+﻿using Blazored.LocalStorage;
+using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
 using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
@@ -10,7 +11,10 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using MudBlazor;
+using MudBlazor.Charts;
+using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Text.Json;
 
 namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
@@ -37,6 +41,11 @@ public partial class FrontAnonymousLoans
     [Inject]
     protected IDialogService Dialog { get; set; } = default!;
 
+    [Inject]
+    protected ILoggerFactory LoggerFactory { get; set; } = default!;
+
+    private ILogger Logger { get; set; } = default!;
+
     private IEnumerable<LoanDto>? _entityList;
     private int _totalItems;
     private int _pageSize;
@@ -53,6 +62,21 @@ public partial class FrontAnonymousLoans
 
     protected override async Task OnInitializedAsync()
     {
+        Logger = LoggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(FrontAnonymousLoans)}");
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var st = new StackTrace(new StackFrame(1));
+
+            if (st != default)
+            {
+                if (st.GetFrame(0) != default)
+                {
+                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                }
+            }
+        }
+
+
         if ((await AuthState).User is { } user)
         {
             if (user != default)
@@ -99,6 +123,11 @@ public partial class FrontAnonymousLoans
 
         if (AppDataService != default)
         {
+            if (AppDataService.Country == null && AppDataService.City == null)
+            {
+                await AppDataService.UpdateLocationAsync();
+            }
+
             if (AppDataService.Country != default)
                 loanFilter.HomeCountry = AppDataService.Country;
 
