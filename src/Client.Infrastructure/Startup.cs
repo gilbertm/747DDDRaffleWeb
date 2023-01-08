@@ -39,7 +39,7 @@ public static class Startup
                 {
                     client.DefaultRequestHeaders.AcceptLanguage.Clear();
                     client.DefaultRequestHeaders.AcceptLanguage.ParseAdd(CultureInfo.DefaultThreadCurrentCulture?.TwoLetterISOLanguageName);
-                    client.BaseAddress = new Uri(config[ConfigNames.ApiBaseUrl]);
+                    client.BaseAddress = new Uri(config[ConfigNames.ApiBaseUrl]!);
                 })
                 .AddAuthenticationHandler(config)
                 .Services

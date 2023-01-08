@@ -77,7 +77,7 @@ public class AccountSampleBUnitTest
 
                 // .AddJsonFile($"testsettings.json", optional: false);
 
-                builder.AddInMemoryCollection(myConfiguration);
+                builder.AddInMemoryCollection(myConfiguration!);
 
                 _config = builder.Build();
             }

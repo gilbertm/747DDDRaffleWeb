@@ -6,11 +6,9 @@ namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
 
 internal class AzureAdAuthenticationService : IAuthenticationService
 {
-    private readonly SignOutSessionStateManager _signOut;
     private readonly NavigationManager _navigation;
 
-    public AzureAdAuthenticationService(SignOutSessionStateManager signOut, NavigationManager navigation) =>
-        (_signOut, _navigation) = (signOut, navigation);
+    public AzureAdAuthenticationService(NavigationManager navigation) => _navigation = navigation;
 
     public AuthProvider ProviderType => AuthProvider.AzureAd;
 
@@ -20,10 +18,10 @@ internal class AzureAdAuthenticationService : IAuthenticationService
     public Task<bool> LoginAsync(string tenantId, TokenRequest request) =>
         throw new NotImplementedException();
 
-    public async Task LogoutAsync()
+    public Task LogoutAsync()
     {
-        await _signOut.SetSignOutState();
-        _navigation.NavigateTo("authentication/logout");
+        _navigation.NavigateToLogout("authentication/logout");
+        return Task.CompletedTask;
     }
 
     public Task ReLoginAsync(string returnUrl)
