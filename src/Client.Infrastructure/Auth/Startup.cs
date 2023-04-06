@@ -1,10 +1,10 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.Jwt;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth.Jwt;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
 
 internal static class Startup
 {

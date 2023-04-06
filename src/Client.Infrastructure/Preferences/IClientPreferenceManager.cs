@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 
 public interface IClientPreferenceManager : IPreferenceManager
 {

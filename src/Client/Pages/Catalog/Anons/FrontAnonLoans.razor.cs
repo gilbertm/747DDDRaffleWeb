@@ -1,15 +1,15 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Pages.Multitenancy;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Multitenancy;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.EntityContainer;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Pages.Multitenancy;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Multitenancy;
 using Mapster;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 
 public partial class FrontAnonLoans
 {

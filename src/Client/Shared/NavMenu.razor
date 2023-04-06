@@ -45,7 +45,7 @@
         @* normal users *@
         @if (!CanViewAdministrationGroup)
         {
-            <MudNavGroup Title="@L["Account"]" Expanded="@(_isVerified ? false : true)" Icon="@(_isVerified ? EhulogIcon.VerifiedUser : Icons.TwoTone.PersonOutline)" IconColor="@(_isVerified ? Color.Success : default)" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+            <MudNavGroup Title="@L["Account"]" Expanded="@(_isVerified ? false : true)" Icon="@(_isVerified ? RaffleIcon.VerifiedUser : Icons.TwoTone.PersonOutline)" IconColor="@(_isVerified ? Color.Success : default)" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
                 <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.TwoTone.AssignmentInd" Class="custom-nav-child">@L["Profile"]</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.All" Href="/account/address" ForceLoad="true" Icon="@Icons.TwoTone.Map" Class="custom-nav-child">
                     @L["Address"]
@@ -66,7 +66,7 @@
                             break;
                     }
                 </MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/account/role-subscription" ForceLoad="true" Icon="@EhulogIcon.PaymentMethod" Class="custom-nav-child">
+                <MudNavLink Match="NavLinkMatch.All" Href="/account/role-subscription" ForceLoad="true" Icon="@RaffleIcon.PaymentMethod" Class="custom-nav-child">
                     @L["Subscription"]
 
                     @switch (AppDataService.AppUser.RolePackageStatus)
@@ -85,7 +85,7 @@
                             break;
                     }
                 </MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/account/document" ForceLoad="true" Icon="@EhulogIcon.Document" Class="custom-nav-child">
+                <MudNavLink Match="NavLinkMatch.All" Href="/account/document" ForceLoad="true" Icon="@RaffleIcon.Document" Class="custom-nav-child">
                     @L["Documents"]
 
                     @switch (AppDataService.AppUser.DocumentsStatus)

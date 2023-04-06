@@ -1,11 +1,11 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Multitenancy;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.Common;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Multitenancy;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages;
 
 public partial class Contact
 {

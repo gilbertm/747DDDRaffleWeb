@@ -1,4 +1,4 @@
-﻿namespace EHULOG.BlazorWebAssembly.Client.Shared;
+﻿namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public class SharedResource
 {

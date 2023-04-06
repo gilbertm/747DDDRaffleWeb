@@ -1,6 +1,6 @@
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
 
-public static class EhulogColor
+public static class RaffleColor
 {
     public const string GreenMoney = "#1B8366";
     public const string GreenMoneyLight = "#57C478";

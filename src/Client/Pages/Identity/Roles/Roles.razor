@@ -1,9 +1,9 @@
 ﻿@page "/roles"
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Roles)]
+@attribute [MustHavePermission(RAFFLEAction.View, RAFFLEResource.Roles)]
 
 @inject IStringLocalizer<Roles> L
 
-<EhulogTitle Title="@L["Roles"]" Description="@L["Manage Roles."]" />
+<RaffleTitle Title="@L["Roles"]" Description="@L["Manage Roles."]" />
 
 <EntityTable TEntity="RoleDto" TId="string" TRequest="CreateOrUpdateRoleRequest" Context="@Context">
 

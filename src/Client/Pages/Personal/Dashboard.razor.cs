@@ -1,12 +1,12 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Notifications;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Notifications;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Notifications;
 using MediatR.Courier;
 using Microsoft.AspNetCore.Components;
 using System.Globalization;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Personal;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Personal;
 
 public partial class Dashboard
 {

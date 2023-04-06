@@ -1,13 +1,13 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Shared;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages;
 
 public partial class Index
 {
@@ -29,7 +29,7 @@ public partial class Index
 
     protected override async Task OnInitializedAsync()
     {
-        Logger = LoggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(Index)}");
+        Logger = LoggerFactory.CreateLogger($"RaffleConsoleWriteLine - {nameof(Index)}");
 
         if (Logger.IsEnabled(LogLevel.Information))
         {
@@ -39,7 +39,7 @@ public partial class Index
             {
                 if (st.GetFrame(0) != default)
                 {
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
                 }
             }
         }

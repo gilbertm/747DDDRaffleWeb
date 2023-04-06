@@ -1,10 +1,10 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
 
 internal class AzureAdClaimsPrincipalFactory : AccountClaimsPrincipalFactory<RemoteUserAccount>
 {
@@ -48,9 +48,9 @@ internal class AzureAdClaimsPrincipalFactory : AccountClaimsPrincipalFactory<Rem
                 userIdentity.AddClaim(new Claim(ClaimTypes.Surname, userDetails.LastName));
             }
 
-            if (!userIdentity.HasClaim(c => c.Type == EHULOGClaims.Fullname))
+            if (!userIdentity.HasClaim(c => c.Type == RAFFLEClaims.Fullname))
             {
-                userIdentity.AddClaim(new Claim(EHULOGClaims.Fullname, $"{userDetails.FirstName} {userDetails.LastName}"));
+                userIdentity.AddClaim(new Claim(RAFFLEClaims.Fullname, $"{userDetails.FirstName} {userDetails.LastName}"));
             }
 
             if (!userIdentity.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
@@ -58,14 +58,14 @@ internal class AzureAdClaimsPrincipalFactory : AccountClaimsPrincipalFactory<Rem
                 userIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userDetails.Id.ToString()));
             }
 
-            if (!string.IsNullOrWhiteSpace(userDetails.ImageUrl) && !userIdentity.HasClaim(c => c.Type == EHULOGClaims.ImageUrl) && userDetails.ImageUrl is not null)
+            if (!string.IsNullOrWhiteSpace(userDetails.ImageUrl) && !userIdentity.HasClaim(c => c.Type == RAFFLEClaims.ImageUrl) && userDetails.ImageUrl is not null)
             {
-                userIdentity.AddClaim(new Claim(EHULOGClaims.ImageUrl, userDetails.ImageUrl));
+                userIdentity.AddClaim(new Claim(RAFFLEClaims.ImageUrl, userDetails.ImageUrl));
             }
 
             var permissions = await _services.GetRequiredService<IPersonalClient>().GetPermissionsAsync();
 
-            userIdentity.AddClaims(permissions.Select(permission => new Claim(EHULOGClaims.Permission, permission)));
+            userIdentity.AddClaims(permissions.Select(permission => new Claim(RAFFLEClaims.Permission, permission)));
         }
 
         return principal;

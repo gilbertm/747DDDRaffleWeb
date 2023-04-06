@@ -1,9 +1,9 @@
 ﻿@page "/roles/{Id}/permissions"
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.RoleClaims)]
+@attribute [MustHavePermission(RAFFLEAction.View, RAFFLEResource.RoleClaims)]
 
 @inject IStringLocalizer<RolePermissions> L
 
-<EhulogTitle Title="@_title" Description="@_description" />
+<RaffleTitle Title="@_title" Description="@_description" />
 
 @if (!_loaded)
 {

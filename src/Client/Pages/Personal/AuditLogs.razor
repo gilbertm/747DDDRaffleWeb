@@ -2,7 +2,7 @@
 
 @inject IStringLocalizer<AuditLogs> L
 
-<EhulogTitle Title="@L["Audit Logs"]" Description="@L["Your Recent Activities."]" />
+<RaffleTitle Title="@L["Audit Logs"]" Description="@L["Your Recent Activities."]" />
 
 <EntityTable TEntity="RelatedAuditTrail" TId="Guid" TRequest="object" Context="@Context" @bind-SearchString="_searchString">
 

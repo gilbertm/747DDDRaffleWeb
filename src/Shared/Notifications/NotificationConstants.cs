@@ -1,4 +1,4 @@
-﻿namespace EHULOG.WebApi.Shared.Notifications;
+﻿namespace RAFFLE.WebApi.Shared.Notifications;
 
 public static class NotificationConstants
 {

@@ -1,14 +1,14 @@
 ﻿using System.Globalization;
 using System.Security.Claims;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Shared.Dialogs;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Shared.Dialogs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using static MudBlazor.CategoryTypes;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.Common.Popup;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.Common.Popup;
 
 public partial class ManageUserFilesDocuments
 {

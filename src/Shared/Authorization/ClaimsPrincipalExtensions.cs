@@ -1,4 +1,4 @@
-using EHULOG.WebApi.Shared.Authorization;
+using RAFFLE.WebApi.Shared.Authorization;
 
 namespace System.Security.Claims;
 
@@ -8,10 +8,10 @@ public static class ClaimsPrincipalExtensions
         => principal.FindFirstValue(ClaimTypes.Email);
 
     public static string? GetTenant(this ClaimsPrincipal principal)
-        => principal.FindFirstValue(EHULOGClaims.Tenant);
+        => principal.FindFirstValue(RAFFLEClaims.Tenant);
 
     public static string? GetFullName(this ClaimsPrincipal principal)
-        => principal?.FindFirst(EHULOGClaims.Fullname)?.Value;
+        => principal?.FindFirst(RAFFLEClaims.Fullname)?.Value;
 
     public static string? GetFirstName(this ClaimsPrincipal principal)
         => principal?.FindFirst(ClaimTypes.Name)?.Value;
@@ -26,11 +26,11 @@ public static class ClaimsPrincipalExtensions
        => principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
     public static string? GetImageUrl(this ClaimsPrincipal principal)
-       => principal.FindFirstValue(EHULOGClaims.ImageUrl);
+       => principal.FindFirstValue(RAFFLEClaims.ImageUrl);
 
     public static DateTimeOffset GetExpiration(this ClaimsPrincipal principal) =>
         DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(
-            principal.FindFirstValue(EHULOGClaims.Expiration)));
+            principal.FindFirstValue(RAFFLEClaims.Expiration)));
 
     private static string? FindFirstValue(this ClaimsPrincipal principal, string claimType) =>
         principal is null

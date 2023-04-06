@@ -1,12 +1,12 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Identity.Users;
 
 public partial class UserRoles
 {
@@ -33,8 +33,8 @@ public partial class UserRoles
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canEditUsers = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.Users);
-        _canSearchRoles = await AuthService.HasPermissionAsync(state.User, EHULOGAction.View, EHULOGResource.UserRoles);
+        _canEditUsers = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.Update, RAFFLEResource.Users);
+        _canSearchRoles = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.View, RAFFLEResource.UserRoles);
 
         if (await ApiHelper.ExecuteCallGuardedAsync(
                 () => UsersClient.GetByIdAsync(Id), Snackbar)

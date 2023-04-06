@@ -1,4 +1,4 @@
-﻿namespace EHULOG.WebApi.Shared.Events;
+﻿namespace RAFFLE.WebApi.Shared.Events;
 
 public interface IEvent
 {

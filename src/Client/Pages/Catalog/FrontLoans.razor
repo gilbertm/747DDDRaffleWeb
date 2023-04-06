@@ -1,12 +1,12 @@
 ﻿@page "/catalog/front/loans"
 @using System.Globalization
-@using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer
-@using EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Loans
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Loans)]
+@using RAFFLE.BlazorWebAssembly.Client.Components.EntityContainer
+@using RAFFLE.BlazorWebAssembly.Client.Pages.Catalog.Loans
+@attribute [MustHavePermission(RAFFLEAction.View, RAFFLEResource.Loans)]
 
 @inject IStringLocalizer<FrontLoans> L
 
-<EhulogTitle Title="@L["Loans"]" Description="@L["Browse"]" />
+<RaffleTitle Title="@L["Loans"]" Description="@L["Browse"]" />
 
 @if (AppDataService != default)
 {

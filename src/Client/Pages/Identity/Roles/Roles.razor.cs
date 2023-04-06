@@ -1,12 +1,12 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Roles;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Identity.Roles;
 
 public partial class Roles
 {
@@ -24,13 +24,13 @@ public partial class Roles
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canViewRoleClaims = await AuthService.HasPermissionAsync(state.User, EHULOGAction.View, EHULOGResource.RoleClaims);
+        _canViewRoleClaims = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.View, RAFFLEResource.RoleClaims);
 
         Context = new(
             entityName: L["Role"],
             entityNamePlural: L["Roles"],
-            entityResource: EHULOGResource.Roles,
-            searchAction: EHULOGAction.View,
+            entityResource: RAFFLEResource.Roles,
+            searchAction: RAFFLEAction.View,
             fields: new()
             {
                 new(role => role.Id, L["Id"]),
@@ -47,8 +47,8 @@ public partial class Roles
             updateFunc: async (_, role) => await RolesClient.RegisterRoleAsync(role),
             deleteFunc: async id => await RolesClient.DeleteAsync(id),
             hasExtraActionsFunc: () => _canViewRoleClaims,
-            canUpdateEntityFunc: e => !EHULOGRoles.IsDefault(e.Name),
-            canDeleteEntityFunc: e => !EHULOGRoles.IsDefault(e.Name),
+            canUpdateEntityFunc: e => !RAFFLERoles.IsDefault(e.Name),
+            canDeleteEntityFunc: e => !RAFFLERoles.IsDefault(e.Name),
             exportAction: string.Empty);
     }
 

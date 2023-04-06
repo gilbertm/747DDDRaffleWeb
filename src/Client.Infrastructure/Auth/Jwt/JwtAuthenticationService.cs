@@ -1,9 +1,9 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.Jwt;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth.Jwt;
 
 public class JwtAuthenticationService : AuthenticationStateProvider, IAuthenticationService, IAccessTokenProvider
 {
@@ -38,7 +38,7 @@ public class JwtAuthenticationService : AuthenticationStateProvider, IAuthentica
         // Add cached permissions as claims
         if (await GetCachedPermissionsAsync() is List<string> cachedPermissions)
         {
-            claimsIdentity.AddClaims(cachedPermissions.Select(p => new Claim(EHULOGClaims.Permission, p)));
+            claimsIdentity.AddClaims(cachedPermissions.Select(p => new Claim(RAFFLEClaims.Permission, p)));
         }
 
         return new AuthenticationState(new ClaimsPrincipal(claimsIdentity));

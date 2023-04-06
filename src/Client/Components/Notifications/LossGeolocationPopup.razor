@@ -1,6 +1,6 @@
 ﻿@using System.Text.Json
 @using System.Text.Json.Serialization
-@using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
+@using RAFFLE.BlazorWebAssembly.Client.Components.Dialogs;
 @using System.Diagnostics;
 
 @attribute [AllowAnonymous]
@@ -40,7 +40,7 @@
             {
                 if (st.GetFrame(0) != default)
                 {
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
                 }
             }
         }

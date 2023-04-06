@@ -1,8 +1,8 @@
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Notifications;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.ThemeManager;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.ThemeManager;
 
 public partial class TableCustomizationPanel
 {
@@ -17,7 +17,7 @@ public partial class TableCustomizationPanel
     [Inject]
     protected INotificationPublisher Notifications { get; set; } = default!;
 
-    private EhulogTablePreference _tablePreference = new();
+    private RaffleTablePreference _tablePreference = new();
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,12 +1,12 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Notifications;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using MediatR.Courier;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.Common;
 
-public class EhulogTable<T> : MudTable<T>
+public class RaffleTable<T> : MudTable<T>
 {
     [Inject]
     private IClientPreferenceManager ClientPreferences { get; set; } = default!;
@@ -20,7 +20,7 @@ public class EhulogTable<T> : MudTable<T>
             SetTablePreference(clientPreference.TablePreference);
         }
 
-        Courier.SubscribeWeak<NotificationWrapper<EhulogTablePreference>>(wrapper =>
+        Courier.SubscribeWeak<NotificationWrapper<RaffleTablePreference>>(wrapper =>
         {
             SetTablePreference(wrapper.Notification);
             StateHasChanged();
@@ -29,7 +29,7 @@ public class EhulogTable<T> : MudTable<T>
         await base.OnInitializedAsync();
     }
 
-    private void SetTablePreference(EhulogTablePreference tablePreference)
+    private void SetTablePreference(RaffleTablePreference tablePreference)
     {
         Dense = tablePreference.IsDense;
         Striped = tablePreference.IsStriped;

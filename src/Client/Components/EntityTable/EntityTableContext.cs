@@ -1,7 +1,7 @@
-﻿using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.WebApi.Shared.Authorization;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
 
 /// <summary>
 /// Abstract base class for the initialization Context of the EntityTable Component.
@@ -65,12 +65,12 @@ public abstract class EntityTableContext<TEntity, TId, TRequest>
     public string? EntityNamePlural { get; }
 
     /// <summary>
-    /// The EHULOGResource that is representing this entity. This is used in combination with the xxActions to check for permissions.
+    /// The RAFFLEResource that is representing this entity. This is used in combination with the xxActions to check for permissions.
     /// </summary>
     public string? EntityResource { get; }
 
     /// <summary>
-    /// The EHULOGAction name of the search permission. This is EHULOGAction.Search by default.
+    /// The RAFFLEAction name of the search permission. This is RAFFLEAction.Search by default.
     /// When empty, no search functionality will be available.
     /// When the string is "true", search funtionality will be enabled,
     /// otherwise it will only be enabled if the user has permission for this action on the EntityResource.
@@ -78,7 +78,7 @@ public abstract class EntityTableContext<TEntity, TId, TRequest>
     public string SearchAction { get; }
 
     /// <summary>
-    /// The permission name of the create permission. This is EHULOGAction.Create by default.
+    /// The permission name of the create permission. This is RAFFLEAction.Create by default.
     /// When empty, no create functionality will be available.
     /// When the string "true", create funtionality will be enabled,
     /// otherwise it will only be enabled if the user has permission for this action on the EntityResource.
@@ -86,7 +86,7 @@ public abstract class EntityTableContext<TEntity, TId, TRequest>
     public string CreateAction { get; }
 
     /// <summary>
-    /// The permission name of the update permission. This is EHULOGAction.Update by default.
+    /// The permission name of the update permission. This is RAFFLEAction.Update by default.
     /// When empty, no update functionality will be available.
     /// When the string is "true", update funtionality will be enabled,
     /// otherwise it will only be enabled if the user has permission for this action on the EntityResource.
@@ -94,7 +94,7 @@ public abstract class EntityTableContext<TEntity, TId, TRequest>
     public string UpdateAction { get; }
 
     /// <summary>
-    /// The permission name of the delete permission. This is EHULOGAction.Delete by default.
+    /// The permission name of the delete permission. This is RAFFLEAction.Delete by default.
     /// When empty, no delete functionality will be available.
     /// When the string is "true", delete funtionality will be enabled,
     /// otherwise it will only be enabled if the user has permission for this action on the EntityResource.
@@ -102,7 +102,7 @@ public abstract class EntityTableContext<TEntity, TId, TRequest>
     public string DeleteAction { get; }
 
     /// <summary>
-    /// The permission name of the export permission. This is EHULOGAction.Export by default.
+    /// The permission name of the export permission. This is RAFFLEAction.Export by default.
     /// </summary>
     public string ExportAction { get; }
 
@@ -158,11 +158,11 @@ public abstract class EntityTableContext<TEntity, TId, TRequest>
         GetDetailsFunc = getDetailsFunc;
         UpdateFunc = updateFunc;
         DeleteFunc = deleteFunc;
-        SearchAction = searchAction ?? EHULOGAction.Search;
-        CreateAction = createAction ?? EHULOGAction.Create;
-        UpdateAction = updateAction ?? EHULOGAction.Update;
-        DeleteAction = deleteAction ?? EHULOGAction.Delete;
-        ExportAction = exportAction ?? EHULOGAction.Export;
+        SearchAction = searchAction ?? RAFFLEAction.Search;
+        CreateAction = createAction ?? RAFFLEAction.Create;
+        UpdateAction = updateAction ?? RAFFLEAction.Update;
+        DeleteAction = deleteAction ?? RAFFLEAction.Delete;
+        ExportAction = exportAction ?? RAFFLEAction.Export;
         EditFormInitializedFunc = editFormInitializedFunc;
         HasExtraActionsFunc = hasExtraActionsFunc;
         CanUpdateEntityFunc = canUpdateEntityFunc;

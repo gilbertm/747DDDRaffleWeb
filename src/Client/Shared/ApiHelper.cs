@@ -1,8 +1,8 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.Common;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Shared;
+namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public static class ApiHelper
 {

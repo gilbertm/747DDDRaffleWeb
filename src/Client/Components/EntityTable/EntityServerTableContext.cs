@@ -1,6 +1,6 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
 
 /// <summary>
 /// Initialization Context for the EntityTable Component.

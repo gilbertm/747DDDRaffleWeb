@@ -1,5 +1,5 @@
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Shared;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -7,9 +7,9 @@ using MudBlazor;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
-using static EHULOG.WebApi.Shared.Multitenancy.MultitenancyConstants;
+using static RAFFLE.WebApi.Shared.Multitenancy.MultitenancyConstants;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.EntityContainer;
 
 public partial class EntityContainer<TEntity>
 {

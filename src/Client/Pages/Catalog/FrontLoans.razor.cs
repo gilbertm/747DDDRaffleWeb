@@ -1,11 +1,11 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Shared;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.EntityContainer;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
 using Mapster;
 using Microsoft.AspNetCore.Components;
 using Nager.Country;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Catalog;
 
 public partial class FrontLoans
 {

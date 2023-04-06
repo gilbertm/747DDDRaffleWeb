@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <RootNamespace>EHULOG.WebApi.Shared</RootNamespace>
-        <AssemblyName>EHULOG.WebApi.Shared</AssemblyName>
+        <RootNamespace>RAFFLE.WebApi.Shared</RootNamespace>
+        <AssemblyName>RAFFLE.WebApi.Shared</AssemblyName>
     </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Nager.Country" Version="3.1.1" />
+    </ItemGroup>
 </Project>

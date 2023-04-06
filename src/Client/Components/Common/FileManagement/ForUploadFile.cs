@@ -1,6 +1,6 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.Common.FileManagement;
 
 public class ForUploadFile
 {

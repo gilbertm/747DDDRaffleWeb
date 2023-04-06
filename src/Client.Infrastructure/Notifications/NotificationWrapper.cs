@@ -1,7 +1,7 @@
-using EHULOG.WebApi.Shared.Notifications;
+using RAFFLE.WebApi.Shared.Notifications;
 using MediatR;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 public class NotificationWrapper<TNotificationMessage> : INotification
     where TNotificationMessage : INotificationMessage

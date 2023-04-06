@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "EHULOG.BlazorWebAssembly.Server": {
+    "RAFFLE.BlazorWebAssembly.Server": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

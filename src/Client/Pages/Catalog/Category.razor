@@ -1,9 +1,9 @@
 ﻿@page "/catalog/categories"
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Categories)]
+@attribute [MustHavePermission(RAFFLEAction.View, RAFFLEResource.Categories)]
 
 @inject IStringLocalizer<Category> L
 
-<EhulogTitle Title="@L["Categories"]" Description="@L["Manage Categories."]" />
+<RaffleTitle Title="@L["Categories"]" Description="@L["Manage Categories."]" />
 
 <EntityTable TEntity="CategoryDto" TId="Guid" TRequest="CategoryViewModel" Context="@Context">
 

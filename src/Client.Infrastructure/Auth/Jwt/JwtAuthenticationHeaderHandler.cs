@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.Jwt;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth.Jwt;
 
 public class JwtAuthenticationHeaderHandler : DelegatingHandler
 {
@@ -25,17 +25,7 @@ public class JwtAuthenticationHeaderHandler : DelegatingHandler
             }
             else
             {
-                // ++g++, bypass all SendAsync requests that were marked /anon
-                if (request.RequestUri?.AbsolutePath.Contains("/anon") is true)
-                {
-
-                }// ++g++, bypass all SendAsync requests that were marked /anon
-                else if (request.RequestUri?.AbsolutePath.Contains("/users/self-register") is true)
-                {
-
-                }
-                // ++g++, bypass all SendAsync requests that were marked /anon
-                else if (request.RequestUri?.AbsolutePath.Contains("api/v1/loanledgers/calculator") is true)
+                if (request.RequestUri?.AbsolutePath.Contains("/users/self-register") is true)
                 {
 
                 }

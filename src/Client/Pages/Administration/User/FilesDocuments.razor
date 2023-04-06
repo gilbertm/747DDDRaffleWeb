@@ -1,14 +1,14 @@
-﻿@using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement
+﻿@using RAFFLE.BlazorWebAssembly.Client.Components.Common.FileManagement
 
 @page "/admin/user/identification-files-documents"
 
-@attribute [MustHavePermission(EHULOGAction.Update, EHULOGResource.InputOutputResources)]
+@attribute [MustHavePermission(RAFFLEAction.Update, RAFFLEResource.InputOutputResources)]
 
 @inject IStringLocalizer<FilesDocuments> L
 
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Users)]
+@attribute [MustHavePermission(RAFFLEAction.View, RAFFLEResource.Users)]
 
-<EhulogTitle Title="@L["Resources and files"]" Description="@L["Verification of user resources and files"]" />
+<RaffleTitle Title="@L["Resources and files"]" Description="@L["Verification of user resources and files"]" />
 
 @if (Context != default)
 {

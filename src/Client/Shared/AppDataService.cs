@@ -1,20 +1,17 @@
 ﻿using Blazored.LocalStorage;
-using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using Geo.MapBox.Abstractions;
+using RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
 using Mapster;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using MudBlazor;
-using Nager.Country;
 using System.Diagnostics;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
+using Nager.Country;
 
-namespace EHULOG.BlazorWebAssembly.Client.Shared;
+namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public class AppDataService : IAppDataService
 {
@@ -42,13 +39,11 @@ public class AppDataService : IAppDataService
 
     private ILocalStorageService LocalStorageService { get; set; } = default!;
 
-    private IMapBoxGeocoding MapBoxGeocoding { get; set; } = default!;
-
     private ISnackbar Snackbar { get; set; } = default!;
 
-    public AppDataService(ILoggerFactory loggerFactory, ILocalStorageService localStorageService, IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, ISnackbar snackbar, IMapBoxGeocoding mapBoxGeocoding, IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient, ISubscriptionsClient subscriptionsClient)
+    public AppDataService(ILoggerFactory loggerFactory, ILocalStorageService localStorageService, IGeolocationService geolocationService, AuthenticationStateProvider authenticationStateProvider, ISnackbar snackbar,  IConfiguration configuration, IAppUsersClient appUsersClient, IPackagesClient packagesClient, IUsersClient usersClient, IRolesClient rolesClient, IHttpClientFactory httpClientFactory, ILoansClient loansClient, ISubscriptionsClient subscriptionsClient)
     {
-        Logger = loggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(AppDataService)}");
+        Logger = loggerFactory.CreateLogger($"RaffleConsoleWriteLine - {nameof(AppDataService)}");
 
         LocalStorageService = localStorageService;
 
@@ -59,8 +54,6 @@ public class AppDataService : IAppDataService
         Snackbar = snackbar;
 
         Configuration = configuration;
-
-        MapBoxGeocoding = mapBoxGeocoding;
 
         AppUsersClient = appUsersClient;
 
@@ -134,9 +127,9 @@ public class AppDataService : IAppDataService
             {
                 if (st.GetFrame(0) != default)
                 {
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - Country: {JsonSerializer.Serialize(Country)}");
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - City: {JsonSerializer.Serialize(City)}");
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - AppUser: {JsonSerializer.Serialize(AppUser)}");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - Country: {JsonSerializer.Serialize(Country)}");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - City: {JsonSerializer.Serialize(City)}");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - AppUser: {JsonSerializer.Serialize(AppUser)}");
                 }
             }
         }
@@ -152,7 +145,7 @@ public class AppDataService : IAppDataService
             {
                 if (st.GetFrame(0) != default)
                 {
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - InitializationAsync");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - InitializationAsync");
                 }
             }
         }
@@ -280,7 +273,7 @@ public class AppDataService : IAppDataService
                 {
                     ErrorPopupProfile = true;
 
-                    Console.WriteLine("EhulogConsoleWriteLine -- AppService / Setup AppUser / Contact Administrator");
+                    Console.WriteLine("RaffleConsoleWriteLine -- AppService / Setup AppUser / Contact Administrator");
                 }
             }
 
@@ -314,7 +307,7 @@ public class AppDataService : IAppDataService
             {
                 if (st.GetFrame(0) != default)
                 {
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - {JsonSerializer.Serialize(AppUser)} - Update Location");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name} - {JsonSerializer.Serialize(AppUser)} - Update Location");
                 }
             }
         }
@@ -323,115 +316,6 @@ public class AppDataService : IAppDataService
         {
             if (_position.Coords != default)
             {
-                var responseReverseGeocoding = await MapBoxGeocoding.ReverseGeocodingAsync(new()
-                {
-                    Coordinate = new Geo.MapBox.Models.Coordinate()
-                    {
-                        Latitude = Convert.ToDouble(_position.Coords.Latitude),
-                        Longitude = Convert.ToDouble(_position.Coords.Longitude)
-                    },
-                    EndpointType = Geo.MapBox.Enums.EndpointType.Places
-                });
-
-                if (responseReverseGeocoding != default)
-                {
-                    if (responseReverseGeocoding.Features != default)
-                    {
-                        if (responseReverseGeocoding.Features.Count > 0)
-                        {
-                            foreach (var f in responseReverseGeocoding.Features)
-                            {
-                                if (f.Contexts.Count > 0)
-                                {
-                                    foreach (var c in f.Contexts)
-                                    {
-
-                                        if (!string.IsNullOrEmpty(c.Id))
-                                        {
-                                            switch (c.Id)
-                                            {
-                                                case string s when s.Contains("country"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeCountry = c.ContextText[0].Text;
-
-                                                    Country = c.ContextText[0].Text;
-
-                                                    string? country = await LocalStorageService.GetItemAsStringAsync("Country");
-
-                                                    if (string.IsNullOrEmpty(country))
-                                                    {
-                                                        await LocalStorageService.SetItemAsync("Country", Country);
-                                                    }
-
-                                                    break;
-                                                case string s when s.Contains("region"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeRegion = c.ContextText[0].Text;
-                                                    break;
-                                                case string s when s.Contains("postcode"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                    break;
-                                                case string s when s.Contains("district"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeCountry += c.ContextText[0].Text;
-                                                    break;
-                                                case string s when s.Contains("place"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeCity = c.ContextText[0].Text;
-
-                                                    City = c.ContextText[0].Text;
-
-                                                    string? city = await LocalStorageService.GetItemAsStringAsync("City");
-
-                                                    if (string.IsNullOrEmpty(city))
-                                                    {
-                                                        await LocalStorageService.SetItemAsync("City", City);
-                                                    }
-
-
-                                                    break;
-                                                case string s when s.Contains("locality"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                    break;
-                                                case string s when s.Contains("neighborhood"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                    break;
-                                                case string s when s.Contains("address"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                    break;
-                                                case string s when s.Contains("poi"):
-                                                    if (AppUser != default)
-                                                        AppUser.HomeAddress += c.ContextText[0].Text;
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (f.Center is { })
-                                {
-                                    if (AppUser != default && (AppUser.Longitude == default && AppUser.Latitude == default))
-                                    {
-                                        AppUser.Latitude = f.Center.Latitude.ToString();
-                                        AppUser.Longitude = f.Center.Longitude.ToString();
-                                    }
-                                }
-
-                                if (f.Properties.Address is { })
-                                {
-                                    if (AppUser != default)
-                                        AppUser.HomeAddress += f.Properties.Address;
-                                }
-                            }
-                        }
-
-                    }
-                }
-
                 if (AppUser != default)
                 {
                     if (AppUser.Longitude == default && AppUser.Latitude == default)

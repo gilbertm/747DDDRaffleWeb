@@ -1,8 +1,8 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Authorization;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Catalog;
 
 public partial class Category
 {
@@ -35,7 +35,7 @@ public partial class Category
         Context = new(
             entityName: L["Category"],
             entityNamePlural: L["Categories"],
-            entityResource: EHULOGResource.Categories,
+            entityResource: RAFFLEResource.Categories,
             fields: new()
             {
                 new(category => category.Id, L["Id"], "Id", Template: CategoryDtoTemplate),

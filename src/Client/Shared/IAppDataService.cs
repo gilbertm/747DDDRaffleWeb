@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
-namespace EHULOG.BlazorWebAssembly.Client.Shared;
+namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public interface IAppDataService
 {

@@ -1,13 +1,13 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Identity.Users;
 
 public partial class UserProfile
 {
@@ -68,7 +68,7 @@ public partial class UserProfile
         }
 
         var state = await AuthState;
-        _canToggleUserStatus = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.Users);
+        _canToggleUserStatus = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.Update, RAFFLEResource.Users);
         _loaded = true;
     }
 }

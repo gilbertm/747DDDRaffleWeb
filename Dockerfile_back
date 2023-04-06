@@ -24,4 +24,4 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "EHULOG.BlazorWebAssembly.Host.dll"]
+ENTRYPOINT ["dotnet", "RAFFLE.BlazorWebAssembly.Host.dll"]

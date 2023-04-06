@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Theme;
 
 public class LightTheme : MudTheme
 {

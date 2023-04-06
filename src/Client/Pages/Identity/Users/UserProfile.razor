@@ -1,9 +1,9 @@
 ﻿@page "/users/{Id}/profile"
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Users)]
+@attribute [MustHavePermission(RAFFLEAction.View, RAFFLEResource.Users)]
 
 @inject IStringLocalizer<UserProfile> _localizer
 
-<EhulogTitle Title="@Title" Description="@Description" />
+<RaffleTitle Title="@Title" Description="@Description" />
 @if (!_loaded)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />

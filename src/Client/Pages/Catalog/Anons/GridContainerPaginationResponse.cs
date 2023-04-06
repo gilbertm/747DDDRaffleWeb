@@ -1,4 +1,4 @@
-﻿namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog.Anons;
+﻿namespace RAFFLE.BlazorWebAssembly.Client.Pages.Catalog.Anons;
 
 public class GridContainerPaginationResponse<T>
 {

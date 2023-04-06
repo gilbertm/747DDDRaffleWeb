@@ -15,7 +15,7 @@
                 IsNeededPager = false;
             }
 
-            <EhulogContainer MaxWidth="MaxWidth.False" Class="list-grid-container pa-0">
+            <RaffleContainer MaxWidth="MaxWidth.False" Class="list-grid-container pa-0">
                 @if (IsNeededPager)
                 {
                     <MudPaper Elevation="1" Class="mb-4">
@@ -69,7 +69,7 @@
                         </MudItem>
                     </MudGrid>
                 }
-            </EhulogContainer>
+            </RaffleContainer>
 
             @if (IsNeededPager)
             {
@@ -79,7 +79,7 @@
 
     </ChildContent>
     <ErrorContent>
-        <EhulogCustomError />
+        <RaffleCustomError />
     </ErrorContent>
 </ErrorBoundary>
 

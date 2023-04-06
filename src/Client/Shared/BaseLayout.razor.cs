@@ -1,8 +1,8 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Theme;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Shared;
+namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public partial class BaseLayout
 {

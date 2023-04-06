@@ -1,7 +1,7 @@
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.ThemeManager;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.ThemeManager;
 
 public partial class RadiusPanel
 {

@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>FSH.BlazorWebAssembly.Client</RootNamespace>
-        <AssemblyName>FSH.BlazorWebAssembly.Client</AssemblyName>
+        <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace>RAFFLE.BlazorWebAssembly.Client</RootNamespace>
+        <AssemblyName>RAFFLE.BlazorWebAssembly.Client</AssemblyName>
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
@@ -11,23 +11,11 @@
     <ItemGroup>
       <Compile Remove="Pages\Catalog\Anons\FrontAnonLoans.razor.cs" />
       <Compile Remove="Pages\Catalog\FrontLoans.razor.cs" />
-      <Compile Remove="Pages\Catalog\Loans\SpecificLoan.razor.cs" />
-      <Compile Remove="Pages\Catalog\Loans\SpecificLoanApplicants.razor.cs" />
-      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLedger.razor.cs" />
-      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLender.razor.cs" />
-      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLenderProfileQuickInfo.razor.cs" />
-      <Compile Remove="Pages\Catalog\Loans\SpecificLoanLessee.razor.cs" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Remove="Pages\Catalog\Anons\FrontAnonLoans.razor" />
       <Content Remove="Pages\Catalog\FrontLoans.razor" />
-      <Content Remove="Pages\Catalog\Loans\SpecificLoan.razor" />
-      <Content Remove="Pages\Catalog\Loans\SpecificLoanApplicants.razor" />
-      <Content Remove="Pages\Catalog\Loans\SpecificLoanLedger.razor" />
-      <Content Remove="Pages\Catalog\Loans\SpecificLoanLender.razor" />
-      <Content Remove="Pages\Catalog\Loans\SpecificLoanLenderProfileQuickInfo.razor" />
-      <Content Remove="Pages\Catalog\Loans\SpecificLoanLessee.razor" />
       <Content Remove="wwwroot\js\locationIQ.js" />
     </ItemGroup>
 
@@ -40,14 +28,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazor.Geolocation.WebAssembly" Version="2.0.11" />
-        <PackageReference Include="Geo.MapBox" Version="1.1.0" />
+        <PackageReference Include="Blazor.Geolocation.WebAssembly" Version="7.0.3" />
         <PackageReference Include="Mapster" Version="7.3.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.5" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.3" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.4" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.4" PrivateAssets="all" />
         <PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-        <PackageReference Include="MudBlazor" Version="6.0.10" />
+        <PackageReference Include="MudBlazor" Version="6.2.0" />
     </ItemGroup>
 
     <ItemGroup>

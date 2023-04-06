@@ -1,6 +1,6 @@
-﻿namespace EHULOG.WebApi.Shared.Authorization;
+﻿namespace RAFFLE.WebApi.Shared.Authorization;
 
-public static class EHULOGClaims
+public static class RAFFLEClaims
 {
     public const string Tenant = "tenant";
     public const string Fullname = "fullName";

@@ -1,15 +1,15 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
-using EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Multitenancy;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.Common;
+using RAFFLE.BlazorWebAssembly.Client.Components.EntityContainer;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Multitenancy;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Authentication;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Authentication;
 
 public partial class SelfRegister
 {

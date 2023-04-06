@@ -1,4 +1,4 @@
-﻿namespace EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
+﻿namespace RAFFLE.BlazorWebAssembly.Client.Components.EntityContainer;
 
 public class EntityContainerPaginationResponse<T>
 {

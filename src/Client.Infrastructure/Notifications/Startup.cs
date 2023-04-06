@@ -1,10 +1,10 @@
-﻿using EHULOG.WebApi.Shared.Notifications;
+﻿using RAFFLE.WebApi.Shared.Notifications;
 using MediatR;
 using MediatR.Courier;
 using MediatR.Courier.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 internal static class Startup
 {

@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Theme;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 
 public class ClientPreferenceManager : IClientPreferenceManager
 {

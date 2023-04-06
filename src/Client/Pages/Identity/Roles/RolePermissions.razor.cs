@@ -1,16 +1,16 @@
 ﻿using System.Security.Claims;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Authorization;
-using EHULOG.WebApi.Shared.Multitenancy;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Authorization;
+using RAFFLE.WebApi.Shared.Multitenancy;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Roles;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Identity.Roles;
 
 public partial class RolePermissions
 {
@@ -34,13 +34,13 @@ public partial class RolePermissions
     private bool _canSearchRoleClaims;
     private bool _loaded;
 
-    static RolePermissions() => TypeAdapterConfig<EHULOGPermission, PermissionViewModel>.NewConfig().MapToConstructor(true);
+    static RolePermissions() => TypeAdapterConfig<RAFFLEPermission, PermissionViewModel>.NewConfig().MapToConstructor(true);
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canEditRoleClaims = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.RoleClaims);
-        _canSearchRoleClaims = await AuthService.HasPermissionAsync(state.User, EHULOGAction.View, EHULOGResource.RoleClaims);
+        _canEditRoleClaims = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.Update, RAFFLEResource.RoleClaims);
+        _canSearchRoleClaims = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.View, RAFFLEResource.RoleClaims);
 
         if (await ApiHelper.ExecuteCallGuardedAsync(
                 () => RolesClient.GetByIdWithPermissionsAsync(Id), Snackbar)
@@ -50,8 +50,8 @@ public partial class RolePermissions
             _description = string.Format(L["Manage {0} Role Permissions"], role.Name);
 
             var permissions = state.User.GetTenant() == MultitenancyConstants.Root.Id
-                ? EHULOGPermissions.All
-                : EHULOGPermissions.Admin;
+                ? RAFFLEPermissions.All
+                : RAFFLEPermissions.Admin;
 
             _groupedRoleClaims = permissions
                 .GroupBy(p => p.Resource)
@@ -103,7 +103,7 @@ public partial class RolePermissions
             || permission.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase) is true;
 }
 
-public record PermissionViewModel : EHULOGPermission
+public record PermissionViewModel : RAFFLEPermission
 {
     public bool Enabled { get; set; }
 

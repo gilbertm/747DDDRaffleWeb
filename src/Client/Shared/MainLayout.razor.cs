@@ -1,11 +1,11 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Diagnostics;
 
-namespace EHULOG.BlazorWebAssembly.Client.Shared;
+namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public partial class MainLayout
 {
@@ -30,7 +30,7 @@ public partial class MainLayout
 
     protected override async Task OnInitializedAsync()
     {
-        Logger = LoggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(MainLayout)}");
+        Logger = LoggerFactory.CreateLogger($"RaffleConsoleWriteLine - {nameof(MainLayout)}");
 
         if (Logger.IsEnabled(LogLevel.Information))
         {
@@ -40,7 +40,7 @@ public partial class MainLayout
             {
                 if (st.GetFrame(0) != default)
                 {
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
                 }
             }
         }

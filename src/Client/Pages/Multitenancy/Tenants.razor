@@ -1,10 +1,10 @@
 ﻿@page "/tenants"
-@attribute [MustHavePermission(EHULOGAction.View, EHULOGResource.Tenants)]
+@attribute [MustHavePermission(RAFFLEAction.View, RAFFLEResource.Tenants)]
 
 @inject IStringLocalizer<Tenants> L
 @inject IAuthenticationService Authentication
 
-<EhulogTitle Title="@L["Tenants"]" Description="@L["Manage Tenants."]" />
+<RaffleTitle Title="@L["Tenants"]" Description="@L["Manage Tenants."]" />
 
 <EntityTable @ref="EntityTable" TEntity="TenantDetail" TId="Guid" TRequest="CreateTenantRequest" Context="@Context"
     @bind-SearchString="_searchString">

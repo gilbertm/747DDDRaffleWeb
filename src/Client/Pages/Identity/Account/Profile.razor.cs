@@ -1,15 +1,15 @@
 ﻿using System.Security.Claims;
-using EHULOG.BlazorWebAssembly.Client.Components.Common;
-using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Shared;
+using RAFFLE.BlazorWebAssembly.Client.Components.Common;
+using RAFFLE.BlazorWebAssembly.Client.Components.Dialogs;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Identity.Account;
 
 public partial class Profile
 {

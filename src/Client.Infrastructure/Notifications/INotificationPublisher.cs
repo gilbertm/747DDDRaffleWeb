@@ -1,6 +1,6 @@
-using EHULOG.WebApi.Shared.Notifications;
+using RAFFLE.WebApi.Shared.Notifications;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Notifications;
 
 public interface INotificationPublisher
 {

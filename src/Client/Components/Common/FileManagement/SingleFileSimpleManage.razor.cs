@@ -1,10 +1,10 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using EHULOG.BlazorWebAssembly.Client.Components.Common.Popup;
+using RAFFLE.BlazorWebAssembly.Client.Components.Common.Popup;
 using System;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.Common.FileManagement;
 
 public partial class SingleFileSimpleManage
 {

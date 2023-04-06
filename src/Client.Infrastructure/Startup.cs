@@ -1,15 +1,15 @@
 ﻿using System.Globalization;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Notifications;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
-using EHULOG.WebApi.Shared.Authorization;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Notifications;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure;
 
 public static class Startup
 {
@@ -47,9 +47,9 @@ public static class Startup
 
     private static void RegisterPermissionClaims(AuthorizationOptions options)
     {
-        foreach (var permission in EHULOGPermissions.All)
+        foreach (var permission in RAFFLEPermissions.All)
         {
-            options.AddPolicy(permission.Name, policy => policy.RequireClaim(EHULOGClaims.Permission, permission.Name));
+            options.AddPolicy(permission.Name, policy => policy.RequireClaim(RAFFLEClaims.Permission, permission.Name));
         }
     }
 

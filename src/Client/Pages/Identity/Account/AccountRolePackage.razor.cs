@@ -1,13 +1,13 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.Common;
-using EHULOG.BlazorWebAssembly.Client.Components.Dialogs;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.BlazorWebAssembly.Client.Shared.Dialogs;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.Common;
+using RAFFLE.BlazorWebAssembly.Client.Components.Dialogs;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.BlazorWebAssembly.Client.Shared.Dialogs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Globalization;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Account;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Identity.Account;
 
 public partial class AccountRolePackage
 {
@@ -82,7 +82,7 @@ public partial class AccountRolePackage
 
         if (AppDataService != default)
         {
-            Console.WriteLine("EhulogConsoleWriteLine - OnInitializedAsync");
+            Console.WriteLine("RaffleConsoleWriteLine - OnInitializedAsync");
 
             // popup might loose state
             // reload the user if its gone

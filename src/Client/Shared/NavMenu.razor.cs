@@ -1,12 +1,12 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace EHULOG.BlazorWebAssembly.Client.Shared;
+namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public partial class NavMenu
 {
@@ -56,20 +56,20 @@ public partial class NavMenu
 
         var user = (await AuthState).User;
 
-        _canViewHangfire = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Hangfire);
-        _canViewDashboard = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Dashboard);
-        _canViewRoles = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Roles);
-        _canViewUsers = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Users);
-        _canViewProducts = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Products);
-        _canViewBrands = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Brands);
-        _canViewTenants = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Tenants);
-        _canViewCategories = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Categories);
-        _canViewPackages = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Packages);
-        _canViewLoans = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.Loans);
-        _canViewInputOutputResources = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.InputOutputResources);
-        _canViewAppUserProducts = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.AppUserProducts);
+        _canViewHangfire = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Hangfire);
+        _canViewDashboard = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Dashboard);
+        _canViewRoles = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Roles);
+        _canViewUsers = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Users);
+        _canViewProducts = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Products);
+        _canViewBrands = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Brands);
+        _canViewTenants = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Tenants);
+        _canViewCategories = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Categories);
+        _canViewPackages = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Packages);
+        _canViewLoans = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Loans);
+        _canViewInputOutputResources = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.InputOutputResources);
+        _canViewAppUserProducts = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.AppUserProducts);
 
-        _canCreateTenants = await AuthService.HasPermissionAsync(user, EHULOGAction.Create, EHULOGResource.Tenants);
+        _canCreateTenants = await AuthService.HasPermissionAsync(user, RAFFLEAction.Create, RAFFLEResource.Tenants);
 
     }
 }

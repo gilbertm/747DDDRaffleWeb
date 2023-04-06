@@ -1,10 +1,10 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Shared;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Catalog;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Catalog;
 
 public class CategoryAutocomplete : MudAutocomplete<Guid>
 {

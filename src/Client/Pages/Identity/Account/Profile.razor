@@ -1,4 +1,4 @@
-﻿@using EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement
+﻿@using RAFFLE.BlazorWebAssembly.Client.Components.Common.FileManagement
 @inject IStringLocalizer<Profile> L
 
 <MudGrid>
@@ -6,7 +6,7 @@
         <MudCard Elevation="25">
             <MudCardContent>
                 <CascadingValue Value="@FileUpload" Name="FileUpload">
-                    <EHULOG.BlazorWebAssembly.Client.Components.Common.FileManagement.SingleFileUpload ImageUrl="@_imageUrl" ForName="ProfileImage" OnRemoveImage="RemoveImageAsync" OnUploadImage="UploadFileAsync" UserId="@_userId" />
+                    <RAFFLE.BlazorWebAssembly.Client.Components.Common.FileManagement.SingleFileUpload ImageUrl="@_imageUrl" ForName="ProfileImage" OnRemoveImage="RemoveImageAsync" OnUploadImage="UploadFileAsync" UserId="@_userId" />
                 </CascadingValue>
                 <MudText Typo="Typo.h6" Align="Align.Center">@_profileModel.FirstName @_profileModel.LastName</MudText>
                 <MudText Align="Align.Center" Class="pb-5">@_profileModel.Email</MudText>

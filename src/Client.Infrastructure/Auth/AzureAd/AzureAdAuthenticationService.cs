@@ -1,8 +1,8 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth.AzureAd;
 
 internal class AzureAdAuthenticationService : IAuthenticationService
 {

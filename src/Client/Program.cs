@@ -1,10 +1,9 @@
 using System.Globalization;
-using EHULOG.BlazorWebAssembly.Client;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using Geo.MapBox.DependencyInjection;
+using RAFFLE.BlazorWebAssembly.Client;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -15,7 +14,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddClientServices(builder.Configuration);
 builder.Services.AddGeolocationServices();
-builder.Services.AddMapBoxServices(options => options.UseKey(builder.Configuration["MapBox:Key"]));
 builder.Services.AddScoped<IAppDataService, AppDataService>();
 builder.Services.AddScoped<AppDataService>();
 

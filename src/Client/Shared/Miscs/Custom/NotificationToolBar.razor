@@ -35,26 +35,26 @@
                     }
                 }
 
-                <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Give" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
-                <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")"> @_totalAmount / @(Package == default ? 0 : Package.MaxAmounts)</MudText>
+                <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@RaffleIcon.Give" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
+                <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@RaffleColor.GreenMoney}")"> @_totalAmount / @(Package == default ? 0 : Package.MaxAmounts)</MudText>
 
 
                 @if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName))
                 {
-                    <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@EhulogIcon.Handshake" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
+                    <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@RaffleIcon.Handshake" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
                     @if (AppDataService.AppUser.RoleName.Equals("Lender"))
                     {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@countLoan / @lenderMaxLesses</MudText>
+                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@RaffleColor.GreenMoney}")">@countLoan / @lenderMaxLesses</MudText>
                     }
 
                     @if (AppDataService.AppUser.RoleName.Equals("Lessee"))
                     {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@EhulogColor.GreenMoney}")">@countLoan / @lesseeMaxLenders</MudText>
+                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@RaffleColor.GreenMoney}")">@countLoan / @lesseeMaxLenders</MudText>
                     }
                 }
             }
 
-            <MudText Typo="Typo.caption" Style="@($"color:{@EhulogColor.GreenMoney}")">
+            <MudText Typo="Typo.caption" Style="@($"color:{@RaffleColor.GreenMoney}")">
                 @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCity) ? "Unknown" : AppDataService.AppUser.HomeCity), @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry) ? "Unknown" : AppDataService.AppUser.HomeCountry)
             </MudText>
 

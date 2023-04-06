@@ -34,7 +34,7 @@
             </MudExpansionPanel>
         }
 
-        <EhulogTable @ref="_table" Elevation="25" ServerData="@ServerReloadFunc" Items="@_entityList" Filter="LocalSearch"
+        <RaffleTable @ref="_table" Elevation="25" ServerData="@ServerReloadFunc" Items="@_entityList" Filter="LocalSearch"
                      Loading="@Loading" LoadingProgressColor="@Color.Secondary" ChildRowContent="@ChildRowContent">
 
             <ToolBarContent>
@@ -150,10 +150,10 @@
                 <TablePager />
             </PagerContent>
 
-        </EhulogTable>
+        </RaffleTable>
 
     </ChildContent>
     <ErrorContent>
-        <EhulogCustomError />
+        <RaffleCustomError />
     </ErrorContent>
 </ErrorBoundary>

@@ -1,4 +1,4 @@
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
 public interface IApiService
 {

@@ -1,8 +1,8 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.Common;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.Common;
 
 public partial class ErrorHandler
 {

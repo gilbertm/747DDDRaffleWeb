@@ -1,6 +1,6 @@
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
 
 public interface IAuthenticationService
 {

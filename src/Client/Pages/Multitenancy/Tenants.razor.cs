@@ -1,15 +1,15 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Authorization;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Multitenancy;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Multitenancy;
 
 public partial class Tenants
 {
@@ -32,8 +32,8 @@ public partial class Tenants
         Context = new(
             entityName: L["Tenant"],
             entityNamePlural: L["Tenants"],
-            entityResource: EHULOGResource.Tenants,
-            searchAction: EHULOGAction.View,
+            entityResource: RAFFLEResource.Tenants,
+            searchAction: RAFFLEAction.View,
             deleteAction: string.Empty,
             updateAction: string.Empty,
             fields: new()
@@ -53,8 +53,8 @@ public partial class Tenants
             exportAction: string.Empty);
 
         var state = await AuthState;
-        _canUpgrade = await AuthService.HasPermissionAsync(state.User, EHULOGAction.UpgradeSubscription, EHULOGResource.Tenants);
-        _canModify = await AuthService.HasPermissionAsync(state.User, EHULOGAction.Update, EHULOGResource.Tenants);
+        _canUpgrade = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.UpgradeSubscription, RAFFLEResource.Tenants);
+        _canModify = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.Update, RAFFLEResource.Tenants);
     }
 
     private void ViewTenantDetails(string id)

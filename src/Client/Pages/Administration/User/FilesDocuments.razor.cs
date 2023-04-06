@@ -1,15 +1,15 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.BlazorWebAssembly.Client.Shared;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.BlazorWebAssembly.Client.Shared;
+using RAFFLE.WebApi.Shared.Authorization;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Administration.User;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Administration.User;
 
 public partial class FilesDocuments
 {
@@ -41,8 +41,8 @@ public partial class FilesDocuments
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthState).User;
-        _canExportUsers = await AuthService.HasPermissionAsync(user, EHULOGAction.Export, EHULOGResource.Users);
-        _canViewRoles = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.UserRoles);
+        _canExportUsers = await AuthService.HasPermissionAsync(user, RAFFLEAction.Export, RAFFLEResource.Users);
+        _canViewRoles = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.UserRoles);
 
         LoadContext();
     }
@@ -52,8 +52,8 @@ public partial class FilesDocuments
         Context = new(
            entityName: L["User documents for verification"],
            entityNamePlural: L["Users and documents for verification"],
-           entityResource: EHULOGResource.Users,
-           searchAction: EHULOGAction.View,
+           entityResource: RAFFLEResource.Users,
+           searchAction: RAFFLEAction.View,
            updateAction: string.Empty,
            deleteAction: string.Empty,
            fields: new()

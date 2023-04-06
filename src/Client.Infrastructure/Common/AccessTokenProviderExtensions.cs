@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
 
 public static class AccessTokenProviderExtensions
 {

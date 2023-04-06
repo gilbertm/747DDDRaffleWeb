@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace EHULOG.BlazorWebAssembly.Client.Shared;
+namespace RAFFLE.BlazorWebAssembly.Client.Shared;
 
 public partial class MainLayoutAnon
 {
@@ -42,7 +42,7 @@ public partial class MainLayoutAnon
 
     protected override async Task OnInitializedAsync()
     {
-        Logger = LoggerFactory.CreateLogger($"EhulogConsoleWriteLine - {nameof(MainLayoutAnon)}");
+        Logger = LoggerFactory.CreateLogger($"RaffleConsoleWriteLine - {nameof(MainLayoutAnon)}");
 
         if (Logger.IsEnabled(LogLevel.Information))
         {
@@ -52,7 +52,7 @@ public partial class MainLayoutAnon
             {
                 if (st.GetFrame(0) != default)
                 {
-                    Logger.LogInformation($"EhulogConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
+                    Logger.LogInformation($"RaffleConsoleWriteLine {st?.GetFrame(0)?.GetMethod()?.Name}");
                 }
             }
         }

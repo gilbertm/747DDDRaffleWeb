@@ -1,9 +1,9 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Components.EntityContainer;
+namespace RAFFLE.BlazorWebAssembly.Client.Components.EntityContainer;
 
 /// <summary>
 /// Abstract base class for the initialization Context of the EntityGrid Component.

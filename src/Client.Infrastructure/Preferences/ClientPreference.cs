@@ -1,6 +1,6 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Infrastructure.Theme;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Theme;
 
-namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Preferences;
+namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 
 public class ClientPreference : IPreference
 {
@@ -11,5 +11,5 @@ public class ClientPreference : IPreference
     public string SecondaryColor { get; set; } = CustomColors.Light.Secondary;
     public double BorderRadius { get; set; } = 5;
     public string LanguageCode { get; set; } = LocalizationConstants.SupportedLanguages.FirstOrDefault()?.Code ?? "en-US";
-    public EhulogTablePreference TablePreference { get; set; } = new EhulogTablePreference();
+    public RaffleTablePreference TablePreference { get; set; } = new RaffleTablePreference();
 }

@@ -1,13 +1,13 @@
-﻿using EHULOG.BlazorWebAssembly.Client.Components.EntityTable;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using EHULOG.BlazorWebAssembly.Client.Infrastructure.Auth;
-using EHULOG.WebApi.Shared.Authorization;
+﻿using RAFFLE.BlazorWebAssembly.Client.Components.EntityTable;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
+using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace EHULOG.BlazorWebAssembly.Client.Pages.Identity.Users;
+namespace RAFFLE.BlazorWebAssembly.Client.Pages.Identity.Users;
 
 public partial class Users
 {
@@ -35,14 +35,14 @@ public partial class Users
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthState).User;
-        _canExportUsers = await AuthService.HasPermissionAsync(user, EHULOGAction.Export, EHULOGResource.Users);
-        _canViewRoles = await AuthService.HasPermissionAsync(user, EHULOGAction.View, EHULOGResource.UserRoles);
+        _canExportUsers = await AuthService.HasPermissionAsync(user, RAFFLEAction.Export, RAFFLEResource.Users);
+        _canViewRoles = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.UserRoles);
 
         Context = new(
             entityName: L["User"],
             entityNamePlural: L["Users"],
-            entityResource: EHULOGResource.Users,
-            searchAction: EHULOGAction.View,
+            entityResource: RAFFLEResource.Users,
+            searchAction: RAFFLEAction.View,
             updateAction: string.Empty,
             deleteAction: string.Empty,
             fields: new()

@@ -1,4 +1,4 @@
-﻿namespace EHULOG.BlazorWebAssembly.Client.Infrastructure.Common;
+﻿namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
 
 public static class ConfigNames
 {
