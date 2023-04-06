@@ -10,9 +10,6 @@
         <MudButton Variant="Variant.Text" Class="pt-2 pb-2" DisableElevation="true" OnClick="@(() => Navigation.NavigateTo("/", true))">
             <img src="./logo-black-slogan.svg" Style="height:75px" />
         </MudButton>
-        <MudSpacer />
-        <NotificationToolBar Loans="@loans" Package="@package" />
-        <MudSpacer />
         <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
             <NotificationConnectionStatus></NotificationConnectionStatus>
         </MudHidden>

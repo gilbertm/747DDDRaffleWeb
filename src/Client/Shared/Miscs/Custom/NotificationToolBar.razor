@@ -2,57 +2,7 @@
 {
     @if (AppDataService.AppUser != default)
     {
-        <MudToolBar>
-
-            @{
-                var lenderMaxLesses = 0;
-                var lesseeMaxLenders = 0;
-                var countLoan = 0;
-
-                @if (Package == default || (Package != default && Package.Id == default))
-                {
-                    lenderMaxLesses = 0;
-                    lesseeMaxLenders = 0;
-                }
-                else
-                {
-                    if (Package != default)
-                    {
-                        lenderMaxLesses = Package.MaxLessees;
-                        lesseeMaxLenders = Package.MaxLenders;
-                    }
-                }
-
-                @if (Loans == default || (Loans != default && Loans.Count() <= 0))
-                {
-                    countLoan = 0;
-                }
-                else
-                {
-                    if (Loans != default)
-                    {
-                        countLoan = Loans.Count();
-                    }
-                }
-
-                <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@RaffleIcon.Give" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
-                <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@RaffleColor.GreenMoney}")"> @_totalAmount / @(Package == default ? 0 : Package.MaxAmounts)</MudText>
-
-
-                @if (!string.IsNullOrEmpty(AppDataService.AppUser.RoleName))
-                {
-                    <MudIconButton Size="Size.Small" Disabled="true" DisableElevation="true" Icon="@RaffleIcon.Handshake" OnClick="@(() => { Navigation.NavigateTo("/", true); })" />
-                    @if (AppDataService.AppUser.RoleName.Equals("Lender"))
-                    {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@RaffleColor.GreenMoney}")">@countLoan / @lenderMaxLesses</MudText>
-                    }
-
-                    @if (AppDataService.AppUser.RoleName.Equals("Lessee"))
-                    {
-                        <MudText Typo="Typo.caption" Class="mr-3" Style="@($"color:{@RaffleColor.GreenMoney}")">@countLoan / @lesseeMaxLenders</MudText>
-                    }
-                }
-            }
+        <MudToolBar>         
 
             <MudText Typo="Typo.caption" Style="@($"color:{@RaffleColor.GreenMoney}")">
                 @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCity) ? "Unknown" : AppDataService.AppUser.HomeCity), @(string.IsNullOrEmpty(AppDataService.AppUser.HomeCountry) ? "Unknown" : AppDataService.AppUser.HomeCountry)
@@ -67,41 +17,4 @@
 @code {
     [CascadingParameter(Name = "AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
-
-    [Parameter]
-    public List<LoanDto> Loans { get; set; } = default!;
-
-    [Parameter]
-    public PackageDto Package { get; set; } = default!;
-
-    private float _totalAmount = 0.00f;
-
-    protected override void OnParametersSet()
-    {
-
-        _totalAmount = 0;
-
-        if (Loans != default)
-        {
-
-            foreach (var item in Loans)
-            {
-                if (AppDataService.AppUser != default)
-                {
-                    var loanLender = item.LoanLenders;
-
-                    if (loanLender != default && loanLender.FirstOrDefault() != default)
-                    {
-                        var loanProduct = loanLender.First().Product;
-
-                        if (loanProduct != default)
-                        {
-                            _totalAmount += loanProduct.Amount;
-                        }
-                    }
-
-                }
-            }
-        }
-    }
 }

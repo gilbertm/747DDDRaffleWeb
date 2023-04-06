@@ -49,8 +49,6 @@ public partial class NavMenu
 
     protected override async Task OnParametersSetAsync()
     {
-        if (AppDataService != default)
-            _isVerified = await AppDataService.IsVerified();
 
         _hangfireUrl = Config[ConfigNames.ApiBaseUrl] + "jobs";
 
@@ -60,14 +58,9 @@ public partial class NavMenu
         _canViewDashboard = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Dashboard);
         _canViewRoles = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Roles);
         _canViewUsers = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Users);
-        _canViewProducts = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Products);
-        _canViewBrands = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Brands);
         _canViewTenants = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Tenants);
         _canViewCategories = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Categories);
-        _canViewPackages = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Packages);
-        _canViewLoans = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Loans);
         _canViewInputOutputResources = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.InputOutputResources);
-        _canViewAppUserProducts = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.AppUserProducts);
 
         _canCreateTenants = await AuthService.HasPermissionAsync(user, RAFFLEAction.Create, RAFFLEResource.Tenants);
 

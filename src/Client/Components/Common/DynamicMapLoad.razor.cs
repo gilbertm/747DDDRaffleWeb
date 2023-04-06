@@ -191,8 +191,6 @@ public partial class DynamicMapLoad
                 };
 
                 await AppUsersClient.UpdateAsync(AppDataService.AppUser.Id, updateAppUserRequest);
-
-                await AppDataService.RevalidateVerification();
             }
         }
 

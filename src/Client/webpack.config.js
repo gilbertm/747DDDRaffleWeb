@@ -10,7 +10,7 @@ module.exports = {
     mode: devMode ? "development" : "production",
     // Webpack needs to know where to start the bundling process,
     // so we define the Sass file under './Styles' directory
-    entry: ["./Styles/ehulog.scss"],
+    entry: ["./Styles/main.scss"],
     // This is where we define the path where Webpack will place
     // a bundled JS file. Webpack needs to produce this file,
     // but for our purposes you can ignore it
@@ -111,7 +111,7 @@ module.exports = {
         // indicating what the CSS output file name should be and
         // the location
         new MiniCssExtractPlugin({
-            filename: devMode ? "css/ehulog.css" : "css/ehulog.min.css"
+            filename: devMode ? "css/main.css" : "css/main.min.css"
         })
     ]
 };

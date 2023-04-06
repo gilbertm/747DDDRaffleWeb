@@ -31,10 +31,6 @@
         }
     </EditFormContent>
     <ExtraActions>
-        @if(_canUpgrade)
-        {
-            <MudMenuItem OnClick="@(() => ViewUpgradeSubscriptionModalAsync(context.Id))">@L["Upgrade Subscription"]</MudMenuItem>
-        }
         <MudMenuItem OnClick="@(() => ViewTenantDetails(context.Id))">
             @((context.ShowDetails == true) ? L["Hide"] : L["Show"]) @L["Tenant Details"]
         </MudMenuItem>

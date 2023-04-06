@@ -163,7 +163,7 @@ public partial class EntityTable<TEntity, TId, TRequest>
                         () => Context.ServerContext.ExportFunc(filter), Snackbar)
                     is { } result)
                 {
-                    using var streamRef = new DotNetStreamReference(result.Stream);
+                    using var streamRef = new DotNetStreamReference(result.GetResponseStream());
                     await JS.InvokeVoidAsync("downloadFileFromStream", $"{Context.EntityNamePlural}.xlsx", streamRef);
                 }
 

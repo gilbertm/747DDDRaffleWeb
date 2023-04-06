@@ -53,7 +53,6 @@ public partial class Tenants
             exportAction: string.Empty);
 
         var state = await AuthState;
-        _canUpgrade = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.UpgradeSubscription, RAFFLEResource.Tenants);
         _canModify = await AuthService.HasPermissionAsync(state.User, RAFFLEAction.Update, RAFFLEResource.Tenants);
     }
 
@@ -64,29 +63,6 @@ public partial class Tenants
         foreach (var otherTenants in _tenants.Except(new[] { tenant }))
         {
             otherTenants.ShowDetails = false;
-        }
-    }
-
-    private async Task ViewUpgradeSubscriptionModalAsync(string id)
-    {
-        var tenant = _tenants.First(f => f.Id == id);
-        var parameters = new DialogParameters
-        {
-            {
-                nameof(UpgradeSubscriptionModal.Request),
-                new UpgradeSubscriptionRequest
-                {
-                    TenantId = tenant.Id,
-                    ExtendedExpiryDate = tenant.ValidUpto
-                }
-            }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
-        var dialog = DialogService.Show<UpgradeSubscriptionModal>(L["Upgrade Subscription"], parameters, options);
-        var result = await dialog.Result;
-        if (!result.Cancelled)
-        {
-            await EntityTable.ReloadDataAsync();
         }
     }
 

@@ -25,8 +25,6 @@ public partial class MainLayout
 
     private bool _drawerOpen;
     private bool _rightToLeft;
-    private PackageDto package = new();
-    private List<LoanDto> loans = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,10 +50,6 @@ public partial class MainLayout
             if (AppDataService.AppUser != default)
             {
                 AppDataService.ShowValuesAppDto();
-
-                // running loans are currently active (this is more used by lessee)
-                loans = await AppDataService.GetCurrentUserLoansAsync(true);
-                package = await AppDataService.GetCurrentUserPackageAsync();
 
                 AppDataService.City = AppDataService.AppUser.HomeCity;
                 AppDataService.Country = AppDataService.AppUser.HomeCountry;
@@ -104,27 +98,4 @@ public partial class MainLayout
     {
         Navigation.NavigateTo("/account");
     }
-
-    /*protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            if (AppDataService != default!)
-            {
-                await AppDataService.UpdateLocationAsync(AppDataService.AppUser);
-
-                if (AppDataService.AppUser != default)
-                {
-                    // running loans are currently active (this is more used by lessee)
-                    loans = await AppDataService.GetCurrentUserLoansAsync(true);
-                    package = await AppDataService.GetCurrentUserPackageAsync();
-
-                    AppDataService.City = AppDataService.AppUser.HomeCity;
-                    AppDataService.Country = AppDataService.AppUser.HomeCountry;
-                }
-
-                AppDataService.ShowValuesAppDto();
-            }
-        }
-    } */
 }

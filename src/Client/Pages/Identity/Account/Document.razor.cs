@@ -273,8 +273,6 @@ public partial class Document
 
                         Snackbar.Add(L["For verification images submitted."], Severity.Success);
 
-                        await AppDataService.RevalidateVerification();
-
                         var timer = new Timer(
                             new TimerCallback(_ =>
                             {
