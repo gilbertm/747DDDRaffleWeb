@@ -2,33 +2,21 @@
 
 @if (!hideThePage)
 {
-    <MudCarousel Class="mud-width-full" Style="height:32em;" AutoCycleTime="TimeSpan.FromSeconds(15)" ShowArrows="@_arrows" ShowBullets="@_bullets" EnableSwipeGesture="@_enableSwipeGesture" AutoCycle="@_autocycle" TData="object">
+    <MudCarousel Class="mud-width-full" Style="height:50em;" AutoCycleTime="TimeSpan.FromSeconds(15)" ShowArrows="@_arrows" ShowBullets="@_bullets" EnableSwipeGesture="@_enableSwipeGesture" AutoCycle="@_autocycle" TData="object">
         <MudCarouselItem Transition="_transition" Color="@Color.Primary">
-            <div class="d-flex hero object-fit" style="height:100%;background-image:url(@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/adventure-height-level-arm-assistance.jpg"));">
+            <div class="d-flex hero object-fit" style="height:100%;background-image:url(@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/sample1.jpg"));">
                 <MudContainer Class="my-auto mx-auto pa-0 text-center" Style="z-index:2" MaxWidth="MaxWidth.Medium">
                     <MudText Typo="Typo.h1" Style="@($"color:{Colors.Shades.White};font-weight:700")">Raffle Entries</MudText>
-                    <MudText Typo="Typo.h5" Class="mb-4" Style="@($"color:{Colors.Shades.White};")">Your social do-gooder.<br />What is this?</MudText>
-                    <MudButton Href="/get-started" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Get started</MudText></MudButton>
-
-
-                </MudContainer>
-            </div>
-        </MudCarouselItem>
-        <MudCarouselItem Transition="_transition" Color="@Color.Secondary">
-            <div class="d-flex hero object-fit" style="height:100%;background-image:url(@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/hands-give-money.jpg"));">
-                <MudContainer Class="my-auto mx-auto pa-0 text-center" Style="z-index:2" MaxWidth="MaxWidth.Medium">
-                    <MudText Typo="Typo.h1" Style="@($"color:{Colors.Shades.White};font-weight:700")">Ink Me Live</MudText>
-                    <MudText Typo="Typo.h5" Class="mb-4" Style="@($"color:{Colors.Shades.White};")">Choose your social standing and be responsible?</MudText>
-                    <MudButton Href="/users/self-register" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">Register now</MudText></MudButton>
+                    <MudText Typo="Typo.h5" Class="mb-4" Style="@($"color:{Colors.Shades.White};")">Running 747 Raffle Entries</MudText>
                 </MudContainer>
             </div>
         </MudCarouselItem>
         <MudCarouselItem Transition="_transition">
-            <div class="d-flex hero object-fit" style="height:100%;background-image:url(@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/money-world-map-world-map-wallpaper.jpg"));">
+            <div class="d-flex hero object-fit" style="height:100%;background-image:url(@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/sample2.jpg"));">
                 <MudContainer Class="my-auto mx-auto pa-0 text-center" Style="z-index:2" MaxWidth="MaxWidth.Medium">
-                    <MudText Typo="Typo.h1" Style="@($"color:{Colors.Shades.White};font-weight:700")">About 747 Live</MudText>
-                    <MudText Typo="Typo.h5" Class="mb-4" Style="@($"color:{Colors.Shades.White};")">eHulog recognize the value of being a real change</MudText>
-                    <MudButton Href="/about-us" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">About eHulog</MudText></MudButton>
+                    <MudText Typo="Typo.h1" Style="@($"color:{Colors.Shades.White};font-weight:700")">About 747 Raffle Live</MudText>
+                    <MudText Typo="Typo.h5" Class="mb-4" Style="@($"color:{Colors.Shades.White};")">Raffles for our 747 Community</MudText>
+                    <MudButton Href="/about-us" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;"><MudText Typo="Typo.body2" Style="@($"color:{Colors.Shades.White};")">About 747 Raffle</MudText></MudButton>
                 </MudContainer>
             </div>
         </MudCarouselItem>

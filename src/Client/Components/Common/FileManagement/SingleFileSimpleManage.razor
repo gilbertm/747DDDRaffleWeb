@@ -7,11 +7,11 @@
         </MudCardContent>
 
         <MudOverlay Visible="@(IsImageHovered && (InputOutputResource.ResourceStatusType < InputOutputResourceStatusType.EnabledAndVerified))" DarkBackground="true" Absolute="true" Class="text-center">
-            <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Filled.RemoveRedEye" Class="mb-5" OnClick="@(() => PopupFileAndManage(InputOutputResource))">
+            <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Material.Filled.RemoveRedEye" Class="mb-5" OnClick="@(() => PopupFileAndManage(InputOutputResource))">
                 <MudText Typo="Typo.caption">Being careful. Blowup</MudText>
                 @* OnClick="@(async () => { Remove(); await OnRemoveImage.InvokeAsync();})" *@
             </MudButton><br />
-            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.Cancel" Size="Size.Small" OnClick="@(() => FileAndManage("Denied"))">
+            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Cancel" Size="Size.Small" OnClick="@(() => FileAndManage("Denied"))">
                 <MudText Typo="Typo.caption">Deny</MudText>
             </MudButton>
         </MudOverlay>

@@ -4,78 +4,11 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="@($"background:{Colors.Shades.White};height:100%")">
     <MudContainer MaxWidth="MaxWidth.Large" Class="py-5">
-        <img src="./logo-vertical-black-description.svg" Style="height:200px;display:inline-block;float:left;padding-right:1rem;padding-bottom:1rem;" /> <MudText Typo="Typo.h6">eHulog is a startup that hopes and believes that  every person has a kind heart. A burning desire to come together, do good and affect change even in the smallest of things.</MudText>
-        <br />
-        <br />
-        <MudText Typo="Typo.h6">
-            The providers of this social community are called lenders. These unsung heroes with resources they are willing to share and give to others in need
-        </MudText>
-        <br />
-        <br />
-        <MudText Typo="Typo.h6">Lessees are those in need who for one reason or another would like to endure, smile and still be a good part of the social fabric. eHulog connects lenders with lessees for their emergencies and dire situations. eHulog makes it easier for them to find those good providers.</MudText>
-        <br />
-        <br />
-        <MudText Typo="Typo.h6">eHulog is bridging and bringing together the haves and have-nots in a more subtle and secure way without having to go through tedious process of queueing, waiting for your applications for days, proving financial capacities and background evaluations.</MudText>
-        <br />
+        <img src="./logo-live.png" Style="height:200px;display:inline-block;float:left;padding-right:1rem;padding-bottom:1rem;background:red" /> <MudText Typo="Typo.h6">747 Raffle</MudText>
         <br />
         <MudText Typo="Typo.h6">
-            eHulog's mission is to provide a harmonious place where service providers are happy to make a positive impact on those in need, and the person in need continues to be a functioning member of the community without worrying about where to turn for difficult needs and emergencies.
+            Raffles are for our 747 Community.
         </MudText>
     </MudContainer>
 
-    <MudContainer MaxWidth="MaxWidth.Large" Class="py-5">
-        <div class="section-header">
-            <h2>Who we are</h2>
-            <p>The good hearts behind the technology</p>
-        </div>
-
-        <MudGrid Justify="Justify.Center" Class="text-center">
-            <MudItem xs="12" md="4">
-                <MudPaper Class="speaker" Elevation="0">
-                    <MudAvatar Style="height:100%; width:100%; border-radius:0;" Class="d-flex" Image="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/gilbert-ehulog.jpg")"></MudAvatar>
-                    @* <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/gilbert-ehulog.jpg")" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage> *@
-                    <MudPaper Elevation="0" Class="details">
-                        <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Gilbert T. Maloloy-on</a></MudText>
-                        <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Founder - Senior Developer</MudText>
-                        <MudContainer Class="social">
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Twitter" aria-label="twitter"></MudIconButton></MudButton>
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Instagram" aria-label="instagram"></MudIconButton></MudButton>
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.LinkedIn" aria-label="linkedin"></MudIconButton></MudButton>
-                        </MudContainer>
-                    </MudPaper>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="12" md="4">
-                <MudPaper Class="speaker" Elevation="0">
-                    <MudAvatar Style="height:100%; width:100%; border-radius:0;" Class="d-flex" Image="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/francis-jopia-ehulog.jpg")"></MudAvatar>
-                    @* <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/francis-jopia-ehulog.jpg")" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage> *@
-                    <MudPaper Elevation="0" Class="details">
-                        <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Francis Jopia</a></MudText>
-                        <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Community</MudText>
-                        <MudContainer Class="social">
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Twitter" aria-label="twitter"></MudIconButton></MudButton>
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Instagram" aria-label="instagram"></MudIconButton></MudButton>
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.LinkedIn" aria-label="linkedin"></MudIconButton></MudButton>
-                        </MudContainer>
-                    </MudPaper>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="12" md="4">
-                <MudPaper Class="speaker" Elevation="0">
-                    <MudAvatar Style="height:100%; width:100%; border-radius:0;" Class="d-flex" Image="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/armand-ehulog.jpg")"></MudAvatar>
-                    @* <MudImage Src="@(Config[ConfigNames.ApiBaseUrl] + "Files/backgrounds/handshake-hands-money.jpg")" Style="max-width:100%;width:100%;object-fit:contain;display:block"></MudImage> *@
-                    <MudPaper Elevation="0" Class="details">
-                        <MudText Typo="Typo.h5"><a href="speaker-details.html" style="@($"color:{Colors.Shades.White};")">Armand Malapira</a></MudText>
-                        <MudText Typo="Typo.caption" Class="mb-3" Style="@($"color:{Colors.Shades.White};")">Infrastructure</MudText>
-                        <MudContainer Class="social">
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Twitter" aria-label="twitter"></MudIconButton></MudButton>
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.Instagram" aria-label="instagram"></MudIconButton></MudButton>
-                            <MudButton Href="#" Target="_blank" Variant="Variant.Text"><MudIconButton Style="@($"color:{Colors.Shades.White};text-transform:none")" Size="Size.Small" Icon="@Icons.Custom.Brands.LinkedIn" aria-label="linkedin"></MudIconButton></MudButton>
-                        </MudContainer>
-                    </MudPaper>
-                </MudPaper>
-            </MudItem>
-
-        </MudGrid>
-    </MudContainer>
 </MudContainer>

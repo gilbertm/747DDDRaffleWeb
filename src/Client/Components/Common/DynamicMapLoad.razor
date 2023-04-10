@@ -74,7 +74,7 @@
                         <MudItem xs="12" Class="text-center">
                             @if (AppDataService.AppUser.AddressStatus.Equals(VerificationStatus.Initial))
                             {
-                                <MudButton Variant="Variant.Filled" DisableElevation="true" onmouseout="@(() => HoverSubmit(true))" onmouseover="@(() => HoverSubmit(false))" ButtonType="ButtonType.Submit" StartIcon="@Icons.Filled.Save" IconColor="Color.Success" Class="@_submitHoverClass" Style="@($"color:{Colors.Shades.Black};")">
+                                <MudButton Variant="Variant.Filled" DisableElevation="true" onmouseout="@(() => HoverSubmit(true))" onmouseover="@(() => HoverSubmit(false))" ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Success" Class="@_submitHoverClass" Style="@($"color:{Colors.Shades.Black};")">
                                     @L["Save"]
                                 </MudButton>
                             }

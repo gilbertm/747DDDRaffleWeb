@@ -89,7 +89,7 @@
                     case VerificationStatus.Submitted:
                         <MudPaper Elevation="0">
                             <MudAlert NoIcon="true" Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
-                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.Info" /> <MudText Typo="Typo.h5">Under review</MudText>
+                                <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.Info" /> <MudText Typo="Typo.h5">Under review</MudText>
                             </MudAlert>
                             <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center">
                                 Note: replace the image(s) which doesn't pass verification immediately. It will automatically replace the old file.
@@ -99,14 +99,14 @@
                     case VerificationStatus.Verified:
                         <MudPaper Elevation="0">
                             <MudAlert NoIcon="true" Severity="Severity.Success" ContentAlignment="HorizontalAlignment.Center">
-                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.CheckCircleOutline" /> <MudText Typo="Typo.h5">Documents verified</MudText>
+                                <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircleOutline" /> <MudText Typo="Typo.h5">Documents verified</MudText>
                             </MudAlert>
                         </MudPaper>
                         break;
                     default:
                         <MudPaper Elevation="0">
                             <MudAlert NoIcon="true" Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center">
-                                <MudIcon Size="Size.Large" Icon="@Icons.Filled.Close" /> <MudText Typo="Typo.h5">Error. Please contact us.</MudText>
+                                <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.Close" /> <MudText Typo="Typo.h5">Error. Please contact us.</MudText>
                             </MudAlert>
                         </MudPaper>
                         break;

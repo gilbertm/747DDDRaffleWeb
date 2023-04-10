@@ -1,49 +1,20 @@
-﻿@inject IStringLocalizer<HeaderAnon> L
+﻿@using System.Text.Json;
+@inject IStringLocalizer<HeaderAnon> L
 
 <MudAppBar Elevation="0" DisableGutters=true ToolBarClass="d-inline-block" Class="pa-0 main-menu-app-bar anon">
     <MudPaper Width="100%" MaxWidth="100%" Class="rounded-0 top-bar d-flex" Elevation="0">
         <MudContainer MaxWidth="MaxWidth.Large" Class="pa-0 align-self-center">
             <MudToolBar DisableGutters=true Class="pa-0">
-                <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.LocationOn" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
-                    <MudInputLabel id="HomeCityAnon">
-                        @if (AppDataService != default)
-                        {
-                            @if (AppDataService.City != default)
-                            {
-                                @($"{AppDataService.City},")<span>&nbsp;</span>
-                            }
-                            else
-                            {
-                                @($"Unknown,")<span>&nbsp;</span>
-                            }
-                        }
-                    </MudInputLabel><MudInputLabel id="HomeCountryAnon">
-                        @if (AppDataService != default)
-                        {
-                            @if (AppDataService.Country != default)
-                            {
-                                @AppDataService.Country
-                            }
-                            else
-                            {
-                                @($"Unknown")
-                            }
-                        }
-
-                    </MudInputLabel>
-                </MudButton>
                 <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-                    <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.Email" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:lowercase; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
-                        info@ehulog.com
+                    <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.Email" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.Black};background-color:transparent !important;text-transform:lowercase; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
+                        gilbert@747.live
                     </MudButton>
-                    <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.Phone" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
+                    <MudButton DisableElevation=true StartIcon="@Icons.TwoTone.Phone" Class="py-0 mr-5" Style="@($"color:{Colors.Shades.Black};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text">
                         +971559972675
                     </MudButton>
                     <MudSpacer />
-                    <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Class="py-0" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
-                    <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Class="py-0" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
-                    <MudIconButton Icon="@Icons.Custom.Brands.Instagram" Class="py-0" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
-                    <MudIconButton Class="py-0 pr-0" Icon="@Icons.Custom.Brands.LinkedIn" Style="@($"color:{Colors.Shades.White};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
+                    <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Class="py-0" Style="@($"color:{Colors.Shades.Black};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
+                    <MudIconButton Class="py-0 pr-0" Icon="@Icons.Custom.Brands.Instagram" Style="@($"color:{Colors.Shades.Black};background-color:transparent !important;text-transform:capitalize; font: 500 15px/1em 'Montserrat', sans-serif;")" Variant="Variant.Text" />
                 </MudHidden>
             </MudToolBar>
         </MudContainer>
@@ -79,33 +50,32 @@
                         <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
                             <MudToolBar>
                                 <MudButton OnClick="@(() => { Navigation.NavigateTo("/", true); })" Href="/" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
-                                    <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Home</MudText>
+                                    <MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Home</MudText>
                                 </MudButton>
                                 <MudButton Href="/catalog/front/loans/anon" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
-                                    <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Loan</MudText>
+                                    <MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Raffles</MudText>
                                 </MudButton>
                                 <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomCenter">
                                     <ActivatorContent>
-                                        <MudButton EndIcon="@Icons.Filled.KeyboardArrowDown" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
-                                            <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">About</MudText>
+                                        <MudButton EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Variant="Variant.Filled" Style="@($"color:{Colors.Shades.White};justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;")">
+                                            <MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">About</MudText>
                                         </MudButton>
                                     </ActivatorContent>
                                     <ChildContent>
-                                        <MudMenuItem>What is eHulog?</MudMenuItem>
                                         <MudMenuItem>FAQs</MudMenuItem>
-                                        <MudMenuItem>Get started</MudMenuItem>
                                     </ChildContent>
                                 </MudMenu>
                                 <MudButton Href="/contact-us" Variant="Variant.Filled" Style="justify-content:left;box-shadow:none !important;text-transform:none;background:transparent;">
-                                    <MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Contact</MudText>
+                                    <MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Contact</MudText>
                                 </MudButton>
                             </MudToolBar>
                         </MudPaper>
                         <MudSpacer />
                         <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
                             <MudToolBar DisableGutters=true>
-                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
-                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!_isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                                <MudButton data-arengu-modal-form-id="168112437392387262" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Simple Test</MudButton>
+                                <MudButton data-arengu-modal-form-id="168067567396444674" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Login</MudButton>
+                                <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!_isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Be a Player</MudButton>
                             </MudToolBar>
                         </MudPaper>
                     </MudHidden>
@@ -118,7 +88,7 @@
                     <MudNavMenu>
                         <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Home</MudText></MudNavLink>
                         <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/catalog/front/loans/anon", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Loan</MudText></MudNavLink>
-                        <MudNavGroup Title="About" Expanded="true" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                        <MudNavGroup Title="About" Expanded="true" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
                             <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">What is eHulog?</MudText></MudNavLink>
                             <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">FAQs</MudText></MudNavLink>
                             <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Get started</MudText></MudNavLink>
@@ -139,6 +109,24 @@
 
 
 @code {
+
+    [Inject]
+    protected IJSRuntime JSRuntime { get; set; } = default!;
+
+    private DotNetObjectReference<HeaderAnon>? _objRef;
+
+    private List<string> JsonLoadedScripts { get; set; } = new();
+
+    [JSInvokable]
+    public void GetLoadedScriptsFromJS(string loadedScripts)
+    {
+        if (!string.IsNullOrEmpty(loadedScripts))
+        {
+            JsonLoadedScripts = JsonSerializer.Deserialize<List<string>>(loadedScripts) ?? new();
+        }
+    }
+
+
     [CascadingParameter(Name = "AppDataService")]
     protected AppDataService AppDataService { get; set; } = default!;
 
@@ -150,6 +138,15 @@
     private bool _isLoginHovered = default!;
 
     private bool _isRegisteredHovered = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _objRef = DotNetObjectReference.Create(this);
+
+        await JSRuntime.InvokeVoidAsync("loadScript", "https://sdk.arengu.com/forms.js", "head");
+        await JSRuntime.InvokeVoidAsync("loadScript", "https://sdk.arengu.com/modal.js", "head");
+        await JSRuntime.InvokeVoidAsync("getLoadedScript", _objRef);
+    }
 
     public bool IsLoginHovered
     {

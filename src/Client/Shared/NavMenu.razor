@@ -19,7 +19,7 @@
         {
             @if (_canViewUsers)
             {
-                <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.TwoTone.VerifiedUser" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                <MudNavGroup Title="@L["Users"]" Expanded Icon="@Icons.TwoTone.VerifiedUser" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
                     <MudNavLink Match="NavLinkMatch.All" Href="/users" Icon="@Icons.Material.Filled.PeopleAlt" Class="custom-nav-child">@L["Users"]</MudNavLink>
 
                     @if (_canViewInputOutputResources)
@@ -28,7 +28,7 @@
                     }
                 </MudNavGroup>
             }
-            <MudNavGroup Title="@L["Manage"]" Expanded Icon="@Icons.TwoTone.Settings" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+            <MudNavGroup Title="@L["Manage"]" Expanded Icon="@Icons.TwoTone.Settings" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 @if (_canViewRoles)
                 {
                     <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.EmojiPeople">@L["Roles"]</MudNavLink>
@@ -45,7 +45,7 @@
         @* normal users *@
         @if (!CanViewAdministrationGroup)
         {
-            <MudNavGroup Title="@L["Account"]" Expanded="@(_isVerified ? false : true)" Icon="@(_isVerified ? RaffleIcon.VerifiedUser : Icons.TwoTone.PersonOutline)" IconColor="@(_isVerified ? Color.Success : default)" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+            <MudNavGroup Title="@L["Account"]" Expanded="@(_isVerified ? false : true)" Icon="@(_isVerified ? RaffleIcon.VerifiedUser : Icons.TwoTone.PersonOutline)" IconColor="@(_isVerified ? Color.Success : default)" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 <MudNavLink Match="NavLinkMatch.All" Href="/account" Icon="@Icons.TwoTone.AssignmentInd" Class="custom-nav-child">@L["Profile"]</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.All" Href="/account/address" ForceLoad="true" Icon="@Icons.TwoTone.Map" Class="custom-nav-child">
                     @L["Address"]
@@ -53,15 +53,15 @@
                     @switch (AppDataService.AppUser.AddressStatus)
                     {
                         case VerificationStatus.Initial:
-                            <MudIcon Icon="@Icons.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
+                            <MudIcon Icon="@Icons.Material.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
                             break;
                         case VerificationStatus.Submitted:
-                            <MudIcon Icon="@Icons.Outlined.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
+                            <MudIcon Icon="@Icons.Material.Outlined.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
                             break;
                         case VerificationStatus.Verified:
                             @if (!_isVerified)
                             {
-                                <MudIcon Icon="@Icons.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
+                                <MudIcon Icon="@Icons.Material.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
                             }
                             break;
                     }
@@ -72,15 +72,15 @@
                     @switch (AppDataService.AppUser.RolePackageStatus)
                     {
                         case VerificationStatus.Initial:
-                            <MudIcon Icon="@Icons.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
+                            <MudIcon Icon="@Icons.Material.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
                             break;
                         case VerificationStatus.Submitted:
-                            <MudIcon Icon="@Icons.Outlined.WatchLater" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Payment or necessary further needed" />
+                            <MudIcon Icon="@Icons.Material.Outlined.WatchLater" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Payment or necessary further needed" />
                             break;
                         case VerificationStatus.Verified:
                             @if (!_isVerified)
                             {
-                                <MudIcon Icon="@Icons.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
+                                <MudIcon Icon="@Icons.Material.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
                             }
                             break;
                     }
@@ -91,15 +91,15 @@
                     @switch (AppDataService.AppUser.DocumentsStatus)
                     {
                         case VerificationStatus.Initial:
-                            <MudIcon Icon="@Icons.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
+                            <MudIcon Icon="@Icons.Material.Outlined.WarningAmber" Color="Color.Error" Size="Size.Small" Class="mx-2" Title="Action required" />
                             break;
                         case VerificationStatus.Submitted:
-                            <MudIcon Icon="@Icons.Outlined.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
+                            <MudIcon Icon="@Icons.Material.Outlined.FactCheck" Color="Color.Surface" Size="Size.Small" Class="mx-2" Title="Under review" />
                             break;
                         case VerificationStatus.Verified:
                             @if (!_isVerified)
                             {
-                                <MudIcon Icon="@Icons.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
+                                <MudIcon Icon="@Icons.Material.Outlined.CheckCircle" Style="@($"color:{Colors.Green.Lighten3}")" Size="Size.Small" Class="mx-2" Title="Verified" />
                             }
                             break;
                     }
@@ -115,7 +115,7 @@
                 @if (AppDataService.AppUser.RoleName != default)
                 {
                     @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Loans"]</MudText> *@
-                    <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.TwoTone.ConnectWithoutContact" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                    <MudNavGroup Title="@L["Loans"]" Expanded Icon="@Icons.TwoTone.ConnectWithoutContact" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
 
                         @if (AppDataService.AppUser.RoleName.Equals("Lender") == true)
                         {
@@ -155,7 +155,7 @@
                 if (_canViewAppUserProducts || _canViewBrands || _canViewCategories)
                 {
                     @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
-                    <MudNavGroup Title="@L["Dependencies"]" Expanded Icon="@Icons.TwoTone.Storefront" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                    <MudNavGroup Title="@L["Dependencies"]" Expanded Icon="@Icons.TwoTone.Storefront" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
                         @if (_canViewAppUserProducts)
                         {
                             <MudNavLink Match="NavLinkMatch.All" Href="/catalog/userproducts" Icon="@Icons.TwoTone.Engineering" Class="custom-nav-child">
@@ -182,10 +182,10 @@
             if (_canViewPackages)
             {
                 @* <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-4 my-3">@L["Dependency"]</MudText> *@
-                <MudNavGroup Title="@L["Extras"]" Expanded Icon="@Icons.Filled.Settings" ExpandIcon="@Icons.Filled.KeyboardArrowDown">
+                <MudNavGroup Title="@L["Extras"]" Expanded Icon="@Icons.Material.Filled.Settings" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
                     @if (_canViewPackages)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Outlined.Inventory2" Class="custom-nav-child">
+                        <MudNavLink Match="NavLinkMatch.All" Href="/catalog/packages" Icon="@Icons.Material.Outlined.Inventory2" Class="custom-nav-child">
                             @L["Packages"]
                         </MudNavLink>
                     }

@@ -9,25 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Pages\Catalog\Anons\FrontAnonLoans.razor.cs" />
-      <Compile Remove="Pages\Catalog\FrontLoans.razor.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="Pages\Catalog\Anons\FrontAnonLoans.razor" />
-      <Content Remove="Pages\Catalog\FrontLoans.razor" />
-      <Content Remove="wwwroot\js\locationIQ.js" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\js\locationIQ.js" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="wwwroot\js\locationIQ.js" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Blazor.Geolocation.WebAssembly" Version="7.0.3" />
         <PackageReference Include="Mapster" Version="7.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.4" />

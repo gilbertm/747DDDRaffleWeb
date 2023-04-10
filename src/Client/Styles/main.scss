@@ -208,14 +208,14 @@
         }
 
         &.sign-up {
-            background-color: var(--custom-pallete-button);
-            border-color: var(--custom-pallete-button);
-            color: var(--mud-palette-white);
+            background-color: var(--mud-palette-primary);
+            border-color: var(--mud-palette-primary);
+            color: var(--mud-palette-primary-text);
         }
 
         &:hover, &:focus-visible {
-            background-color: var(--custom-pallete-button-hover);
-            border: 1px solid var(--custom-pallete-button-hover);
+            background-color: var(--mud-palette-info);
+            border: 1px solid var(--mud-palette-info);
             color: var(--mud-palette-white);
         }
     }

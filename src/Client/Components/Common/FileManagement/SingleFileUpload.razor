@@ -12,16 +12,16 @@
                         <MudOverlay Visible="@_isHovered" DarkBackground="true" Absolute="true" Class="text-center">
                             @if (CanEnable)
                             {
-                                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.Check" Size="Size.Small" OnClick="@(async () => { await OnEnableImage.InvokeAsync();})">Accept</MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="@(async () => { await OnEnableImage.InvokeAsync();})">Accept</MudButton>
                             }
 
-                            <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Filled.RemoveRedEye" Link="@ImageUrl" Style="margin-left:5px;">
+                            <MudButton HtmlTag="label" DisableElevation Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" Target="_blank" StartIcon="@Icons.Material.Filled.RemoveRedEye" Link="@ImageUrl" Style="margin-left:5px;">
                                 View
                             </MudButton>
 
                             @if (CanUpdate)
                             {
-                                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Filled.RemoveCircleOutline" Size="Size.Small" OnClick="@(async () => { Remove(); await OnRemoveImage.InvokeAsync();})">Remove</MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircleOutline" Size="Size.Small" OnClick="@(async () => { Remove(); await OnRemoveImage.InvokeAsync();})">Remove</MudButton>
                             }
                         </MudOverlay>
                     </MudCard>

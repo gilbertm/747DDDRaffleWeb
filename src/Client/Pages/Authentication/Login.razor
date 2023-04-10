@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@page "/login/{Test1?}/{Test2?}/{Test3?}/{Test4?}/{Test5?}"
 @attribute [AllowAnonymous]
 @inject IStringLocalizer<Login> L
 @inject IStringLocalizer<SharedResource> LS
@@ -35,17 +36,17 @@
                 </MudItem> *@
 
                 <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
-                    <MudButton StartIcon="@Icons.Filled.AppRegistration" Link="/users/self-register">@L["Register?"]</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.AppRegistration" Link="/users/self-register">@L["Register?"]</MudButton>
                 </MudItem>
                 <MudItem xs="12" md="6" Class="d-flex justify-center mx-auto">
-                    <MudButton StartIcon="@Icons.Filled.LockReset" Link="/account/forgot-password">@L["Forgot password?"]</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.LockReset" Link="/account/forgot-password">@L["Forgot password?"]</MudButton>
                 </MudItem>
                 <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
                     <MudButton ButtonType="ButtonType.Submit" Disabled="BusySubmitting" Variant="Variant.Filled"
-                               Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Filled.Login" Style="width: 100%;">@L["Login"]</MudButton>
+                               Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.Login" Style="width: 100%;">@L["Login"]</MudButton>
                 </MudItem>
                 @* <MudItem xs="12">
-                <MudButton StartIcon="@Icons.Filled.Password" OnClick="FillAdministratorCredentials">@L["Fill Administrator Credentials"]</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.Password" OnClick="FillAdministratorCredentials">@L["Fill Administrator Credentials"]</MudButton>
                 </MudItem> *@
             </MudGrid>
         </MudCardContent>

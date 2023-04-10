@@ -23,12 +23,12 @@
     <DialogActions>
         @if (IsCancelButton)
         {
-            <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Cancel" Color="Color.Error" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Size="Size.Small" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Error" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         }
 
         @if (IsOkButton)
         {
-            <MudButton Size="Size.Small" StartIcon="@Icons.Filled.Check" Color="Color.Warning" Variant="Variant.Filled" OnClick="Submit">@L["Ok"]</MudButton>
+            <MudButton Size="Size.Small" StartIcon="@Icons.Material.Filled.Check" Color="Color.Warning" Variant="Variant.Filled" OnClick="Submit">@L["Ok"]</MudButton>
         }
     </DialogActions>
 </MudDialog>

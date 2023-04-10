@@ -12,6 +12,7 @@ using MudBlazor;
 
 namespace RAFFLE.BlazorWebAssembly.Client.Pages.Authentication;
 
+
 public partial class Login
 {
     [CascadingParameter]
@@ -29,6 +30,18 @@ public partial class Login
     private InputType _passwordInput = InputType.Password;
     private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
 
+    [Parameter]
+    public string Test1 { get; set; } = default!;
+    [Parameter]
+    public string Test2 { get; set; } = default!;
+    [Parameter]
+    public string Test3 { get; set; } = default!;
+    [Parameter]
+    public string Test4 { get; set; } = default!;
+    [Parameter]
+    public string Test5 { get; set; } = default!;
+
+
     protected override async Task OnInitializedAsync()
     {
         if (AuthService.ProviderType == AuthProvider.AzureAd)
@@ -37,11 +50,40 @@ public partial class Login
             return;
         }
 
-        var authState = await AuthState;
+        AuthenticationState? authState = await AuthState;
         if (authState.User.Identity?.IsAuthenticated is true)
         {
             Navigation.NavigateTo("/");
         }
+
+        TenantId = MultitenancyConstants.Root.Id;
+
+        _tokenRequest.Email = MultitenancyConstants.Root.EmailAddress;
+        _tokenRequest.Password = MultitenancyConstants.DefaultPassword;
+
+        BusySubmitting = true;
+
+        if (await ApiHelper.ExecuteCallGuardedAsync(
+            () => AuthService.LoginAsync(TenantId, _tokenRequest),
+            Snackbar,
+            _customValidation))
+        {
+            Snackbar.Add($"Logged in as {_tokenRequest.Email}", Severity.Info);
+
+            // get our URI
+            var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+
+            bool foundQueryParameter = QueryHelpers.ParseQuery(uri.Query).TryGetValue("redirect_url", out var valueFromQueryString);
+
+            if (foundQueryParameter)
+            {
+                string redirect_url = valueFromQueryString.FirstOrDefault() ?? string.Empty;
+
+                Navigation.NavigateTo(redirect_url);
+            }
+        }
+
+        BusySubmitting = false;
     }
 
     private void TogglePasswordVisibility()

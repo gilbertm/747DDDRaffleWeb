@@ -7,26 +7,43 @@
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
 /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
 /***/ "./Styles/main.scss":
 /*!**************************!*\
   !*** ./Styles/main.scss ***!
   \**************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("throw new Error(\"Module build failed (from ./node_modules/mini-css-extract-plugin/dist/loader.js):\\nHookWebpackError: Module build failed (from ./node_modules/postcss-loader/dist/cjs.js):\\nTypeError: Cannot read properties of undefined (reading 'toString')\\n    at new NoWorkResult (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss\\\\lib\\\\no-work-result.js:11:15)\\n    at Processor.process (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss\\\\lib\\\\processor.js:26:14)\\n    at Object.loader (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss-loader\\\\dist\\\\index.js:78:30)\\n    at tryRunOrWebpackError (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\HookWebpackError.js:88:9)\\n    at __webpack_require_module__ (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:5058:12)\\n    at __webpack_require__ (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:5015:18)\\n    at D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:5086:20\\n    at symbolIterator (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\neo-async\\\\async.js:3485:9)\\n    at done (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\neo-async\\\\async.js:3527:9)\\n    at Hook.eval [as callAsync] (eval at create (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\tapable\\\\lib\\\\HookCodeFactory.js:33:10), <anonymous>:15:1)\\n    at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\tapable\\\\lib\\\\Hook.js:18:14)\\n    at D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:4993:43\\n    at symbolIterator (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\neo-async\\\\async.js:3482:9)\\n-- inner error --\\nError: Module build failed (from ./node_modules/postcss-loader/dist/cjs.js):\\nTypeError: Cannot read properties of undefined (reading 'toString')\\n    at new NoWorkResult (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss\\\\lib\\\\no-work-result.js:11:15)\\n    at Processor.process (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss\\\\lib\\\\processor.js:26:14)\\n    at Object.loader (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss-loader\\\\dist\\\\index.js:78:30)\\n    at Object.<anonymous> (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\css-loader\\\\dist\\\\cjs.js??ruleSet[1].rules[0].use[1]!D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss-loader\\\\dist\\\\cjs.js??ruleSet[1].rules[0].use[2]!D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\sass-loader\\\\dist\\\\cjs.js!D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\Styles\\\\main.scss:1:7)\\n    at D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\javascript\\\\JavascriptModulesPlugin.js:438:10\\n    at Hook.eval (eval at create (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\tapable\\\\lib\\\\HookCodeFactory.js:19:10), <anonymous>:7:1)\\n    at Hook.CALL_DELEGATE [as _call] (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\tapable\\\\lib\\\\Hook.js:14:14)\\n    at D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:5060:39\\n    at tryRunOrWebpackError (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\HookWebpackError.js:83:7)\\n    at __webpack_require_module__ (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:5058:12)\\n    at __webpack_require__ (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:5015:18)\\n    at D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\webpack\\\\lib\\\\Compilation.js:5086:20\\n    at symbolIterator (D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\neo-async\\\\async.js:3485:9)\\n\\nGenerated code for D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\css-loader\\\\dist\\\\cjs.js??ruleSet[1].rules[0].use[1]!D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\postcss-loader\\\\dist\\\\cjs.js??ruleSet[1].rules[0].use[2]!D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\node_modules\\\\sass-loader\\\\dist\\\\cjs.js!D:\\\\747Devs\\\\DDDRaffle\\\\webassembly\\\\src\\\\Client\\\\Styles\\\\main.scss\\n1 | throw new Error(\\\"Module build failed (from ./node_modules/postcss-loader/dist/cjs.js):\\\\nTypeError: Cannot read properties of undefined (reading 'toString')\\\\n    at new NoWorkResult (D:\\\\\\\\747Devs\\\\\\\\DDDRaffle\\\\\\\\webassembly\\\\\\\\src\\\\\\\\Client\\\\\\\\node_modules\\\\\\\\postcss\\\\\\\\lib\\\\\\\\no-work-result.js:11:15)\\\\n    at Processor.process (D:\\\\\\\\747Devs\\\\\\\\DDDRaffle\\\\\\\\webassembly\\\\\\\\src\\\\\\\\Client\\\\\\\\node_modules\\\\\\\\postcss\\\\\\\\lib\\\\\\\\processor.js:26:14)\\\\n    at Object.loader (D:\\\\\\\\747Devs\\\\\\\\DDDRaffle\\\\\\\\webassembly\\\\\\\\src\\\\\\\\Client\\\\\\\\node_modules\\\\\\\\postcss-loader\\\\\\\\dist\\\\\\\\index.js:78:30)\\\");\");\n\n//# sourceURL=webpack://client/./Styles/main.scss?");
+eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://client/./Styles/main.scss?");
 
 /***/ })
 
 /******/ 	});
 /************************************************************************/
+/******/ 	// The require scope
+/******/ 	var __webpack_require__ = {};
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	// This entry module doesn't tell about it's top-level declarations so it can't be inlined
+/******/ 	// This entry module can't be inlined because the eval devtool is used.
 /******/ 	var __webpack_exports__ = {};
-/******/ 	__webpack_modules__["./Styles/main.scss"]();
+/******/ 	__webpack_modules__["./Styles/main.scss"](0, __webpack_exports__, __webpack_require__);
 /******/ 	
 /******/ })()
 ;

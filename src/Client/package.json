@@ -28,5 +28,8 @@
     "BeforeBuild": [
       "build"
     ]
+  },
+  "dependencies": {
+    "sass": "^1.61.0"
   }
 }
