@@ -86,19 +86,18 @@
             <MudContainer MaxWidth="MaxWidth.False" Class="@(_isMobileMenuHidden ? "d-none px-0" : "px-0")">
                 <MudPaper Elevation="0" Style="background:transparent;border-radius:0;">
                     <MudNavMenu>
-                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Home</MudText></MudNavLink>
-                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/catalog/front/loans/anon", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Loan</MudText></MudNavLink>
-                        <MudNavGroup Title="About" Expanded="true" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
-                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">What is eHulog?</MudText></MudNavLink>
-                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">FAQs</MudText></MudNavLink>
-                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Get started</MudText></MudNavLink>
+                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")" Color="Color.Surface">Home</MudText></MudNavLink>
+                        <MudNavGroup Title="About" Expanded="true" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")" ExpandIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")" Color="Color.Surface">FAQs</MudText></MudNavLink>
+                            <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/", true); })"><MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")" Color="Color.Surface">Get started</MudText></MudNavLink>
                         </MudNavGroup>
-                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/contact", true); })"><MudText Typo="Typo.h6" Style="font-size:1rem" Color="Color.Surface">Contact</MudText></MudNavLink>
+                        <MudNavLink OnClick="@(() => { Navigation.NavigateTo("/contact", true); })"><MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")" Color="Color.Surface">Contact</MudText></MudNavLink>
                     </MudNavMenu>
                     <MudDivider Class="my-3" />
                     <MudToolBar Class="pb-5">
-                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/login", true); })" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true>Login</MudButton>
-                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!_isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true>Sign-up</MudButton>
+                        <MudButton data-arengu-modal-form-id="168112437392387262" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Simple Test</MudButton>
+                        <MudButton data-arengu-modal-form-id="168067567396444674" @onmouseover="@(() => IsLoginHovered=true)" @onmouseout="@(() => IsLoginHovered=false)" Variant="@(!_isLoginHovered ? Variant.Outlined : Variant.Filled)" Class="custom border-solid rounded mr-3" DisableElevation=true Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Login</MudButton>
+                        <MudButton OnClick="@(() => { Navigation.NavigateTo("/users/self-register", true); })" @onmouseover="@(() => IsRegisteredHovered=true)" @onmouseout="@(() => IsRegisteredHovered=false)" Variant="@(!_isRegisteredHovered ? Variant.Outlined : Variant.Filled)" Class="custom sign-up border-solid rounded" DisableElevation=true Style="@($"color:{Colors.Shades.White};text-transform:none;font-size:1rem;")">Be a Player</MudButton>
                     </MudToolBar>
                 </MudPaper>
             </MudContainer>

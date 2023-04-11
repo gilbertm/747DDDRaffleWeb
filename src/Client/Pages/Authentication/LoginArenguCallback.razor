@@ -1,16 +1,55 @@
 ﻿@page "/login/arengu/callback"
+@using System.Net.Http.Headers;
+@using System.Text.Json;
+@using RAFFLE.WebApi.Shared.Multitenancy;
 @attribute [AllowAnonymous]
 @inject IStringLocalizer<Login> L
 
 @code {
+    [Inject]
+    NavigationManager NavigationManager { get; set; } = default!;
+
+    private CustomValidation? _customValidation;
+    private bool BusySubmitting { get; set; }
 
     [Inject]
-    NavigationManager NavigationManager { get; set; }
+    private IUsersClient UsersClient { get; set; } = default!;
 
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    private string Tenant { get; set; } = MultitenancyConstants.Root.Id;
 
     protected override async Task OnInitializedAsync()
     {
-        
+        HttpRequestMessage request;
+        HttpResponseMessage response;
+
+        request = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"{Config[ConfigNames.ApiBaseUrl]}api/tokens/"),
+                Content = new StringContent(JsonSerializer.Serialize(new TokenRequest()
+                {
+                    Email = "test@test.com",
+                    Password = "test"
+                })),
+            };
+
+        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        request.Content.Headers.Add("tenant", Tenant);
+
+        response = await HttpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (tokenResponse is not null)
+            {
+                
+            }
+        }
     }
 
     
