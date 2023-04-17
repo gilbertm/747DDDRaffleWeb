@@ -6,12 +6,14 @@ using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Preferences;
 using RAFFLE.BlazorWebAssembly.Client.Shared;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudExtensions.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+builder.Services.AddMudExtensions();
 builder.Services.AddClientServices(builder.Configuration);
 builder.Services.AddGeolocationServices();
 builder.Services.AddScoped<IAppDataService, AppDataService>();

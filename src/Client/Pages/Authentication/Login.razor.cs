@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using MudBlazor;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RAFFLE.BlazorWebAssembly.Client.Pages.Authentication;
 
@@ -22,6 +24,9 @@ public partial class Login
 
     private CustomValidation? _customValidation;
 
+    [Inject]
+    public IConfiguration Configuration { get; set; } = default!;
+
     public bool BusySubmitting { get; set; }
 
     private readonly TokenRequest _tokenRequest = new();
@@ -29,6 +34,7 @@ public partial class Login
     private bool _passwordVisibility;
     private InputType _passwordInput = InputType.Password;
     private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+
 
     [Parameter]
     public string Test1 { get; set; } = default!;
@@ -44,44 +50,44 @@ public partial class Login
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthService.ProviderType == AuthProvider.AzureAd)
-        {
-            AuthService.NavigateToExternalLogin(Navigation.Uri);
-            return;
-        }
+        //if (AuthService.ProviderType == AuthProvider.AzureAd)
+        //{
+        //    AuthService.NavigateToExternalLogin(Navigation.Uri);
+        //    return;
+        //}
 
-        AuthenticationState? authState = await AuthState;
-        if (authState.User.Identity?.IsAuthenticated is true)
-        {
-            Navigation.NavigateTo("/");
-        }
+        //AuthenticationState? authState = await AuthState;
+        //if (authState.User.Identity?.IsAuthenticated is true)
+        //{
+        //    Navigation.NavigateTo("/");
+        //}
 
-        TenantId = MultitenancyConstants.Root.Id;
+        //TenantId = MultitenancyConstants.Root.Id;
 
-        _tokenRequest.Email = MultitenancyConstants.Root.EmailAddress;
-        _tokenRequest.Password = MultitenancyConstants.DefaultPassword;
+        //_tokenRequest.Email = MultitenancyConstants.Root.EmailAddress;
+        //_tokenRequest.Password = MultitenancyConstants.DefaultPassword;
 
-        BusySubmitting = true;
+        //BusySubmitting = true;
 
-        if (await ApiHelper.ExecuteCallGuardedAsync(
-            () => AuthService.LoginAsync(TenantId, _tokenRequest),
-            Snackbar,
-            _customValidation))
-        {
-            Snackbar.Add($"Logged in as {_tokenRequest.Email}", Severity.Info);
+        //if (await ApiHelper.ExecuteCallGuardedAsync(
+        //    () => AuthService.LoginAsync(TenantId, _tokenRequest),
+        //    Snackbar,
+        //    _customValidation))
+        //{
+        //    Snackbar.Add($"Logged in as {_tokenRequest.Email}", Severity.Info);
 
-            // get our URI
-            var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        //    // get our URI
+        //    var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
 
-            bool foundQueryParameter = QueryHelpers.ParseQuery(uri.Query).TryGetValue("redirect_url", out var valueFromQueryString);
+        //    bool foundQueryParameter = QueryHelpers.ParseQuery(uri.Query).TryGetValue("redirect_url", out var valueFromQueryString);
 
-            if (foundQueryParameter)
-            {
-                string redirect_url = valueFromQueryString.FirstOrDefault() ?? string.Empty;
+        //    if (foundQueryParameter)
+        //    {
+        //        string redirect_url = valueFromQueryString.FirstOrDefault() ?? string.Empty;
 
-                Navigation.NavigateTo(redirect_url);
-            }
-        }
+        //        Navigation.NavigateTo(redirect_url);
+        //    }
+        //}
 
         BusySubmitting = false;
     }

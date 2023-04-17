@@ -5,10 +5,11 @@
 
 @attribute [AllowAnonymous]
 
-@if (!_isAuthenticated)
+@**
+    @if (!_isAuthenticated)
 {
 
-    <h1>Do some anonymous stuffs here.</h1>
+    <Login />
     
 } else {
     <MudText>The following is yet to be completed:</MudText>
@@ -17,4 +18,4 @@
     <MudText>Valid documents</MudText>
 }
 
-<LossGeolocationPopup />
+<LossGeolocationPopup /> **@

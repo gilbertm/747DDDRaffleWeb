@@ -30,7 +30,7 @@
     <MudCardContent Class="@(IsFieldsOnly ? "px-0" : "")">
         @if (BusySubmitting != default)
         {
-            <MudAlert NoIcon AlertTextPosition="AlertTextPosition.Center" Severity="Severity.Normal" Class="mb-3">
+            <MudAlert NoIcon ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Normal" Class="mb-3">
                 <MudText Typo="Typo.h6">Loading</MudText>
             </MudAlert>
         }
@@ -38,7 +38,7 @@
         @if (successMessage != default)
         {
             <MudContainer MaxWidth="MaxWidth.Medium">
-                <MudAlert AlertTextPosition="AlertTextPosition.Center" Severity="Severity.Success" Class="mb-3">
+                <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Success" Class="mb-3">
                     <MudText Typo="Typo.h6">@successMessage</MudText>
                 </MudAlert>
             </MudContainer>

@@ -25,13 +25,15 @@ public class JwtAuthenticationHeaderHandler : DelegatingHandler
             }
             else
             {
+                // TODO:// handle this
+                // right now prevents forms; redirects immediately to /login/ if enabled.
                 if (request.RequestUri?.AbsolutePath.Contains("/users/self-register") is true)
                 {
 
                 }
                 else
                 {
-                    _navigation.NavigateTo("/login");
+                    // _navigation.NavigateTo("/login");
                 }
             }
         }
