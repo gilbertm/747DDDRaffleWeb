@@ -729,7 +729,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email);
+        System.Threading.Tasks.Task<GenericResponse> RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -737,7 +737,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<GenericResponse> RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Arengu creates a dashboard user
@@ -999,7 +999,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email)
+        public virtual System.Threading.Tasks.Task<GenericResponse> RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email)
         {
             return RafflePlayerUserInfoAsync(tenant, authCode, userId, userId747, userName747, email, System.Threading.CancellationToken.None);
         }
@@ -1010,7 +1010,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GenericResponse> RafflePlayerUserInfoAsync(string tenant, string? authCode, string? userId, string? userId747, string? userName747, string? email, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/arengus/raffle-player-userinfo");
@@ -1056,6 +1056,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
                     }
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -1080,7 +1081,12 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<GenericResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)
@@ -2607,7 +2613,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task SelfRegisterAsync(string tenant, RegisterPlayerRequest registerPlayerRequest);
+        System.Threading.Tasks.Task<GenericResponse> SelfRegisterAsync(string tenant, RegisterUserRequest registerUserRequest);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -2615,14 +2621,14 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task SelfRegisterAsync(string tenant, RegisterPlayerRequest registerPlayerRequest, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<GenericResponse> SelfRegisterAsync(string tenant, RegisterUserRequest registerUserRequest, System.Threading.CancellationToken cancellationToken);
 
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterPlayerRequest registerPlayerRequest);
+        System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterUserRequest registerUserRequest);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterPlayerRequest registerPlayerRequest, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterUserRequest registerUserRequest, System.Threading.CancellationToken cancellationToken);
 
     }
 
@@ -2868,9 +2874,9 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task SelfRegisterAsync(string tenant, RegisterPlayerRequest registerPlayerRequest)
+        public virtual System.Threading.Tasks.Task<GenericResponse> SelfRegisterAsync(string tenant, RegisterUserRequest registerUserRequest)
         {
-            return SelfRegisterAsync(tenant, registerPlayerRequest, System.Threading.CancellationToken.None);
+            return SelfRegisterAsync(tenant, registerUserRequest, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -2879,10 +2885,10 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task SelfRegisterAsync(string tenant, RegisterPlayerRequest registerPlayerRequest, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GenericResponse> SelfRegisterAsync(string tenant, RegisterUserRequest registerUserRequest, System.Threading.CancellationToken cancellationToken)
         {
-            if (registerPlayerRequest == null)
-                throw new System.ArgumentNullException("registerPlayerRequest");
+            if (registerUserRequest == null)
+                throw new System.ArgumentNullException("registerUserRequest");
 
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/sevenfourseven/self-register");
@@ -2897,11 +2903,12 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
                     if (tenant == null)
                         throw new System.ArgumentNullException("tenant");
                     request_.Headers.TryAddWithoutValidation("tenant", ConvertToString(tenant, System.Globalization.CultureInfo.InvariantCulture));
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(registerPlayerRequest, _settings.Value);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(registerUserRequest, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2926,7 +2933,12 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<GenericResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)
@@ -2963,17 +2975,17 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         }
 
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterPlayerRequest registerPlayerRequest)
+        public virtual System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterUserRequest registerUserRequest)
         {
-            return RegisterPlayerToRaffleSystemAsync(registerPlayerRequest, System.Threading.CancellationToken.None);
+            return RegisterPlayerToRaffleSystemAsync(registerUserRequest, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterPlayerRequest registerPlayerRequest, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<bool> RegisterPlayerToRaffleSystemAsync(RegisterUserRequest registerUserRequest, System.Threading.CancellationToken cancellationToken)
         {
-            if (registerPlayerRequest == null)
-                throw new System.ArgumentNullException("registerPlayerRequest");
+            if (registerUserRequest == null)
+                throw new System.ArgumentNullException("registerUserRequest");
 
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/sevenfourseven");
@@ -2984,7 +2996,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(registerPlayerRequest, _settings.Value);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(registerUserRequest, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
@@ -8691,6 +8703,18 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GenericResponse
+    {
+        [Newtonsoft.Json.JsonProperty("erorrCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int ErorrCode { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Message { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    [System.Obsolete]
     public partial class RegisterPlayerRequest
     {
         [Newtonsoft.Json.JsonProperty("authCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -9100,6 +9124,35 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
 
         [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Email { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class RegisterUserRequest
+    {
+        [Newtonsoft.Json.JsonProperty("authCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string AuthCode { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Name { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("surname", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Surname { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("phone", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Phone { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Email { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("info747", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Info747 Info747 { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("socialProfiles", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SocialProfiles SocialProfiles { get; set; } = default!;
+
+        [Newtonsoft.Json.JsonProperty("isAgent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsAgent { get; set; } = default!;
 
     }
 

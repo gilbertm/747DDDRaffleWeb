@@ -341,7 +341,7 @@ public partial class LoginDashboard
             }
 
             if (await ApiHelper.ExecuteCallGuardedAsync(
-                () => SevenFourSevenClient.SelfRegisterAsync(TenantId, new RegisterPlayerRequest
+                () => SevenFourSevenClient.SelfRegisterAsync(TenantId, new RegisterUserRequest
                 {
                     IsAgent = _bridgeRequest.IsAgent,
 
@@ -349,7 +349,7 @@ public partial class LoginDashboard
                     Email = _raffleResponse.Email!,
                     Info747 = new Info747
                     {
-                         UniqueCode = _sendGridRequest.Code
+                        UniqueCode = _sendGridRequest.Code
                     },
                     Name = _raffleResponse.Name!,
                     Phone = _raffleResponse.Phone!,
@@ -362,7 +362,7 @@ public partial class LoginDashboard
                     Surname = _raffleResponse.Surname!
                 }),
                 Snackbar,
-                _customValidation) as GenericResponse genericResponse)
+                _customValidation) is GenericResponse genericResponse)
             {
                 _tokenRequest.Email = _raffleRequest.Email;
                 _tokenRequest.Password = genericResponse.Message;
@@ -388,7 +388,6 @@ public partial class LoginDashboard
                 }
             }
 
-            
         }
         else
         {
