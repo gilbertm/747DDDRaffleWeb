@@ -349,7 +349,7 @@ public partial class LoginDashboard
                     Email = _raffleResponse.Email!,
                     Info747 = new Info747
                     {
-                        UniqueCode = _sendGridRequest.Code
+                        UniqueCode = $"747--{ _sendGridRequest.Code }--747"
                     },
                     Name = _raffleResponse.Name!,
                     Phone = _raffleResponse.Phone!,
