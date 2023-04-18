@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <RootNamespace>RAFFLE.WebApi.Shared</RootNamespace>
         <AssemblyName>RAFFLE.WebApi.Shared</AssemblyName>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Nager.Country" Version="3.1.1" />
+      <PackageReference Include="Nager.Country" Version="4.0.0" />
     </ItemGroup>
 </Project>
