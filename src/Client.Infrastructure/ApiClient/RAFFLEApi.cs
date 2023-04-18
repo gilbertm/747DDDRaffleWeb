@@ -2222,6 +2222,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Verify code
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
+        /// <returns>VerificationCheckResource.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<VerificationCheckResource> VerifyCodeAsync(string tenant, TwilioCodeRequest twilioCodeRequest);
 
@@ -2230,6 +2231,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Verify code
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
+        /// <returns>VerificationCheckResource.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<VerificationCheckResource> VerifyCodeAsync(string tenant, TwilioCodeRequest twilioCodeRequest, System.Threading.CancellationToken cancellationToken);
 
@@ -2371,6 +2373,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Verify code
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
+        /// <returns>VerificationCheckResource.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<VerificationCheckResource> VerifyCodeAsync(string tenant, TwilioCodeRequest twilioCodeRequest)
         {
@@ -2382,6 +2385,7 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         /// Verify code
         /// </summary>
         /// <param name="tenant">Input your tenant Id to access this API</param>
+        /// <returns>VerificationCheckResource.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<VerificationCheckResource> VerifyCodeAsync(string tenant, TwilioCodeRequest twilioCodeRequest, System.Threading.CancellationToken cancellationToken)
         {
@@ -9280,8 +9284,8 @@ namespace RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient
         [System.ComponentModel.DataAnnotations.Required]
         public string ConfirmPassword { get; set; } = default!;
 
-        [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? PhoneNumber { get; set; } = default!;
+        [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string PhoneNumber { get; set; } = default!;
 
     }
 

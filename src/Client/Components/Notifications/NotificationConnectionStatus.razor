@@ -6,7 +6,7 @@
 
 @code {
     public string TooltipText { get; set; } = "No Connection";
-    public string Icon { get; set; } = Icons.Filled.SignalWifi0Bar;
+    public string Icon { get; set; } = Icons.Material.Filled.SignalWifi0Bar;
     public Color IconColor { get; set; } = Color.Error;
     
     [CascadingParameter] private NotificationConnection _notifications { get; set; } = default!;
@@ -29,7 +29,7 @@
             case ConnectionState.Connected:
                 TooltipText = $"Connected to Server with ConnectionId {message}";
                 Icon = @Icons.Material.Filled.SignalWifiStatusbar4Bar;
-                IconColor = Color.Success;
+                IconColor = Color.Warning;
                 break;
 
             case ConnectionState.Connecting:

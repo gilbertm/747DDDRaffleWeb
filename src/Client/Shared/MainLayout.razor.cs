@@ -46,14 +46,6 @@ public partial class MainLayout
         if (AppDataService != default)
         {
             await AppDataService.InitializationAsync();
-
-            if (AppDataService.AppUser != default)
-            {
-                AppDataService.ShowValuesAppDto();
-
-                AppDataService.City = AppDataService.AppUser.HomeCity;
-                AppDataService.Country = AppDataService.AppUser.HomeCountry;
-            }
         }
 
         if (await ClientPreferences.GetPreference() is ClientPreference preference)

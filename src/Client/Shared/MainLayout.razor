@@ -2,13 +2,13 @@
 @inject IStringLocalizer<MainLayout> L
 
 <CascadingValue Value="@AppDataService" Name="AppDataService">
-    <MudAppBar Elevation="25" Class="py-1 main-menu-app-bar logged">
+    <MudAppBar Elevation="25" Class="py-1 main-menu-app-bar logged" Style="background:#1d2c48 !important;">
         <MudTooltip Text="Toggle Drawer">
-            <MudIconButton Icon="@Icons.Rounded.Notes" Edge="Edge.Start"
-                           OnClick="@((e) => DrawerToggle())" />
+            <MudIconButton Icon="@Icons.Material.Rounded.Notes" Edge="Edge.Start"
+                           OnClick="@((e) => DrawerToggle())" Style="background:#fff!important;" />
         </MudTooltip>
         <MudButton Variant="Variant.Text" Class="pt-2 pb-2" DisableElevation="true" OnClick="@(() => Navigation.NavigateTo("/", true))">
-            <img src="./logo-black-slogan.svg" Style="height:75px" />
+            <img src="./logo-live.png" Style="height:75px" />
         </MudButton>
         <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
             <NotificationConnectionStatus></NotificationConnectionStatus>
@@ -18,18 +18,18 @@
         </MudHidden>
         <MudMenu AnchorOrigin="Origin.BottomRight" LockScroll="true" TransformOrigin="Origin.TopRight">
             <ActivatorContent>
-                <MudIconButton Icon="@Icons.Material.Filled.Person" Size="Size.Medium" />
+                <MudIconButton Icon="@Icons.Material.Filled.Person" Size="Size.Medium" Color="Color.Warning" />
             </ActivatorContent>
             <ChildContent>
                 <div class="py-2" style="min-width: 220px">
                     <PersonCard Class="mt-n2" Style="margin-bottom:0px!important" />
                     <MudMenuItem OnClick="Profile">
                         <div class="d-flex">
-                            <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.Person" />
+                            <MudIcon Color="Color.Warning" Class="mx-2" Icon="@Icons.Material.Filled.Person" />
                             <MudText>@L["Account"]</MudText>
                         </div>
                     </MudMenuItem>
-                    <MudMenuItem Link="/dashboard">
+                    <MudMenuItem Href="/dashboard">
                         <div class="d-flex">
                             <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.Dashboard" />
                             <MudText>@L["Dashboard"]</MudText>
@@ -54,7 +54,7 @@
         <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
             @ChildContent
             <MudScrollToTop TopOffset="400" Style="z-index:2000;">
-                <MudFab Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" />
+                <MudFab StartIcon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" />
             </MudScrollToTop>
         </MudContainer>
     </MudMainContent>

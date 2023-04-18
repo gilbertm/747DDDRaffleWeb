@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.WebUtilities;
@@ -16,6 +17,9 @@ namespace RAFFLE.BlazorWebAssembly.Client.Pages.Authentication;
 
 public partial class LoginDashboard
 {
+    [CascadingParameter(Name = "AppDataService")]
+    protected AppDataService AppDataService { get; set; } = default!;
+
     private readonly BridgeRequest _bridgeRequest = new();
 
     private readonly GetUserInfoRequest _raffleRequest = new();
@@ -96,7 +100,6 @@ public partial class LoginDashboard
 
     protected override void OnInitialized()
     {
-
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
 
         ECBridgeForm = new EditContext(_bridgeRequest);
@@ -188,9 +191,19 @@ public partial class LoginDashboard
         {
             _sendGridStepIsActive = false;
             _disableSendgridFields = true;
+
+            Snackbar.Add($"Verification step {status}.", Severity.Info);
         }
 
-        Snackbar.Add($"Verification step {status}.", Severity.Info);
+        if (status == StepStatus.Continued)
+        {
+            // code is not correct
+            // resubmit
+            _sendGridStepIsActive = true;
+            _disableSendgridFields = false;
+        }
+
+        StateHasChanged();
     }
 
     private async Task SubmitBridgeAsync()
@@ -326,6 +339,10 @@ public partial class LoginDashboard
 
     private async Task GenerateLoginDashboard(string? VerificationStatus)
     {
+        TenantId = MultitenancyConstants.Root.Id;
+
+        // provide token
+        // one time password technique
         if (VerificationStatus is not null && VerificationStatus == "approved")
         {
             if (AuthService.ProviderType == AuthProvider.AzureAd)
@@ -349,7 +366,9 @@ public partial class LoginDashboard
                     Email = _raffleResponse.Email!,
                     Info747 = new Info747
                     {
-                        UniqueCode = $"747--{ _sendGridRequest.Code }--747"
+                        UniqueCode = $"747--{_sendGridRequest.Code}--747",
+                        UserId747 = _raffleRequest.UserId747,
+                        Username747 = _raffleRequest.UserName747
                     },
                     Name = _raffleResponse.Name!,
                     Phone = _raffleResponse.Phone!,
@@ -387,7 +406,6 @@ public partial class LoginDashboard
                     }
                 }
             }
-
         }
         else
         {
@@ -398,6 +416,8 @@ public partial class LoginDashboard
             });
 
             _sendGridStepIsActive = true;
+
+            SendgridStatusChanged(StepStatus.Continued);
         }
     }
 

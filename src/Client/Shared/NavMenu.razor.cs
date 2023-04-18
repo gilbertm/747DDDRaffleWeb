@@ -1,5 +1,4 @@
-﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.ApiClient;
-using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
+﻿using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Auth;
 using RAFFLE.BlazorWebAssembly.Client.Infrastructure.Common;
 using RAFFLE.WebApi.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -24,16 +23,9 @@ public partial class NavMenu
     private bool _canViewDashboard;
     private bool _canViewRoles;
     private bool _canViewUsers;
-    private bool _canViewProducts;
 
-    private bool _canViewAppUserProducts;
-    private bool _canViewBrands;
-    private bool _canViewCategories;
-    private bool _canViewPackages;
     private bool _canViewTenants;
-    private bool _canViewLoans;
     private bool _canViewInputOutputResources;
-    private bool _isVerified;
 
     private bool _canCreateTenants;
 
@@ -59,8 +51,6 @@ public partial class NavMenu
         _canViewRoles = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Roles);
         _canViewUsers = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Users);
         _canViewTenants = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Tenants);
-        _canViewCategories = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.Categories);
-        _canViewInputOutputResources = await AuthService.HasPermissionAsync(user, RAFFLEAction.View, RAFFLEResource.InputOutputResources);
 
         _canCreateTenants = await AuthService.HasPermissionAsync(user, RAFFLEAction.Create, RAFFLEResource.Tenants);
 

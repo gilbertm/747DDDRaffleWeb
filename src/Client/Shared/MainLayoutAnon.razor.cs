@@ -40,7 +40,7 @@ public partial class MainLayoutAnon
     private Uri _uri = default!;
     private string _cssClasses = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Logger = LoggerFactory.CreateLogger($"RaffleConsoleWriteLine - {nameof(MainLayoutAnon)}");
 
@@ -56,16 +56,6 @@ public partial class MainLayoutAnon
                 }
             }
         }
-
-        if (AppDataService != default)
-        {
-            AppDataService.ShowValuesAppDto();
-
-            if (AppDataService.City == default)
-            {
-                await AppDataService.UpdateLocationAsync();
-            }
-        }
     }
 
     protected override void OnParametersSet()
@@ -76,11 +66,9 @@ public partial class MainLayoutAnon
 
         if (_uri is { } && _uri.Segments.Count() > 1)
         {
-
             _cssClasses = _uri.Segments.ToList().ElementAt(1).ToString().ToLower();
 
-            _cssClasses = _cssClasses.Replace("/", "");
-
+            _cssClasses = _cssClasses.Replace("/", string.Empty);
         }
         else
         {

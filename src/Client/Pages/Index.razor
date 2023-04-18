@@ -5,17 +5,71 @@
 
 @attribute [AllowAnonymous]
 
-@**
-    @if (!_isAuthenticated)
+@if (!_isAuthenticated)
 {
 
-    <Login />
+    <LoginDashboard />
     
 } else {
-    <MudText>The following is yet to be completed:</MudText>
-    <MudText>Location</MudText>
-    <MudText>Subscription</MudText>
-    <MudText>Valid documents</MudText>
+    <MudGrid Spacing="2" Justify="Justify.Center">
+        <MudItem xs="12">
+            <MudPaper Class="d-flex align-center justify-center mud-width-full py-8"><MudText Typo="Typo.h3">Raffle Entries</MudText></MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudCard>
+                <MudCardMedia Image="https://picsum.photos/200/300" Height="200" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">Old Paint</MudText>
+                    <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                    <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem>
+            <MudCard>
+                <MudCardMedia Image="https://picsum.photos/200/300" Height="200" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">Old Paint</MudText>
+                    <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                    <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem>
+            <MudCard>
+                <MudCardMedia Image="https://picsum.photos/200/300" Height="200" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">Old Paint</MudText>
+                    <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                    <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem>
+            <MudCard>
+                <MudCardMedia Image="https://picsum.photos/200/300" Height="200" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">Old Paint</MudText>
+                    <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                    <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 }
-
-<LossGeolocationPopup /> **@

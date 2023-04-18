@@ -9,206 +9,213 @@
 @using MudExtensions.Utilities
 @using System.ComponentModel.DataAnnotations;
 
-<MudGrid Class="cursor-default mb-5">
-    <MudItem xs="12" sm="12">
-        <MudStepper @ref="_stepper" ContentStyle="min-height: 400px" Linear="_linear" Vertical="_vertical" Color="_color" Variant="_variant"
+
+@if (AppDataService != default && AppDataService.AppUser != default)
+{
+    <h3>You are logged in.</h3>
+} else {
+    <MudGrid Class="cursor-default mb-5">
+        <MudItem xs="12" sm="12">
+            <MudStepper @ref="_stepper" ContentStyle="min-height: 400px" Linear="_linear" Vertical="_vertical" Color="_color" Variant="_variant"
                     DisableAnimation="_disableAnimation" DisablePreviousButton="_disablePreviousButton" DisableNextButton="_disableNextButton"
                     DisableSkipButton="_disableSkipButton" DisableStepResultIndicator="_disableStepResultIndicator" HeaderTextView="_headerTextView"
                     PreventStepChangeAsync="new Func<StepChangeDirection, Task<bool>>(CheckChange)"
                     MobileView="_mobileView" IconActionButtons="_iconActionButtons" Loading="_loading">
-            <StaticContent>
-                @if (_showStaticContent)
-                {
-                    <MudStack Row="true" AlignItems="AlignItems.Center">
-                        <MudAvatar Color="_color">ST</MudAvatar>
-                        <MudText>This is a static content which shows with each step.</MudText>
-                    </MudStack>
-                }
-            </StaticContent>
-            <ChildContent>
-                <MudStep Title="Bridge check" StatusChanged="BridgeStatusChanged">
-                    <EditForm OnValidSubmit="@(async () => await SubmitBridgeAsync())" EditContext="@ECBridgeForm">
-                        <MudCard Elevation="0">
-                            <MudCardHeader>
-                                <CardHeaderContent>
-                                    <div class="text-center">
-                                        <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
-                                            @L["747 Account"]
-                                        </MudText>
-                                        <MudText>@L["Please ensure to fill out the fields correctly to ensure your integrity in our 747 systems."]</MudText>
-                                    </div>
-                                    <br />
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                            <MudCardContent>
-                                <MudGrid>
-                                    <DataAnnotationsValidator />
-                                    <CustomValidation @ref="_customValidation" />
-                                    <MudRadioGroup T="bool" @bind-SelectedOption="_bridgeRequest.IsAgent" Required="true">
-                                        <MudRadio Option="false" Color="Color.Secondary" Dense="false">Player</MudRadio>
-                                        <MudRadio Option="true" Color="Color.Primary" Dense="true">Agent</MudRadio>
-                                    </MudRadioGroup>
-                                    <MudItem xs="12">
-                                        <MudTextField Disabled="_disableBridgeFields" T="string" Label="@L["Email"]" Variant="Variant.Outlined" @bind-Value="_bridgeRequest.Email"
+                <StaticContent>
+                    @if (_showStaticContent)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudAvatar Color="_color">ST</MudAvatar>
+                            <MudText>This is a static content which shows with each step.</MudText>
+                        </MudStack>
+                    }
+                </StaticContent>
+                <ChildContent>
+                    <MudStep Title="Bridge check" StatusChanged="BridgeStatusChanged">
+                        <EditForm OnValidSubmit="@(async () => await SubmitBridgeAsync())" EditContext="@ECBridgeForm">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <div class="text-center">
+                                            <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
+                                                @L["747 Account"]
+                                            </MudText>
+                                            <MudText>@L["Please ensure to fill out the fields correctly to ensure your integrity in our 747 systems."]</MudText>
+                                        </div>
+                                        <br />
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudGrid>
+                                        <DataAnnotationsValidator />
+                                        <CustomValidation @ref="_customValidation" />
+                                        <MudRadioGroup T="bool" @bind-SelectedOption="_bridgeRequest.IsAgent" Required="true">
+                                            <MudRadio Option="false" Color="Color.Secondary" Dense="false">Player</MudRadio>
+                                            <MudRadio Option="true" Color="Color.Primary" Dense="true">Agent</MudRadio>
+                                        </MudRadioGroup>
+                                        <MudItem xs="12">
+                                            <MudTextField Disabled="_disableBridgeFields" T="string" Label="@L["Email"]" Variant="Variant.Outlined" @bind-Value="_bridgeRequest.Email"
                                                       For="@(() => _bridgeRequest.Email)" Required="true" />
-                                    </MudItem>
-                                    <MudItem xs="12">
-                                        <MudTextField Disabled="_disableBridgeFields" T="string" Label="@L["UserName"]" Variant="Variant.Outlined" @bind-Value="_bridgeRequest.UserName"
+                                        </MudItem>
+                                        <MudItem xs="12">
+                                            <MudTextField Disabled="_disableBridgeFields" T="string" Label="@L["UserName"]" Variant="Variant.Outlined" @bind-Value="_bridgeRequest.UserName"
                                                       For="@(() => _bridgeRequest.UserName)" Required="true" />
-                                    </MudItem>
-                                    <MudItem xs="12">
-                                        <MudTextField Disabled="_disableBridgeFields" T="string" Label="@L["UserId"]" Variant="Variant.Outlined" @bind-Value="_bridgeRequest.UserId"
+                                        </MudItem>
+                                        <MudItem xs="12">
+                                            <MudTextField Disabled="_disableBridgeFields" T="string" Label="@L["UserId"]" Variant="Variant.Outlined" @bind-Value="_bridgeRequest.UserId"
                                                       For="@(() => _bridgeRequest.UserId)" Required="true" />
-                                    </MudItem>
-                                    @** <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(()=>SubmitBridgeAsync())" DisableRipple="true">Validate</MudButton> **@
-                                    <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
-                                        <MudButton ButtonType="ButtonType.Submit" Disabled="!_bridgeStepIsActive" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@(_bridgeStepIsActive ? Icons.Material.Filled.Check : Icons.Material.Filled.CheckCircle)" Style="width: 100%;">
-                                            @if (_bridgeStepIsActive)
-                                            {
-                                                @L["Check user"]
-                                            }
-                                            else
-                                            {
-                                                @L["Proceed"]
-                                            }
-                                        </MudButton>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudCardContent>
-                        </MudCard>
-                    </EditForm>
-                </MudStep>
-                <MudStep Title="Enrol reward system" StatusChanged="RaffleStatusChanged">
-                    <EditForm OnValidSubmit="@(async () => await GenerateSendgridVerificationAsync())" EditContext="@ECRaffleForm">
-                        <MudCard Elevation="0">
-                            <MudCardHeader>
-                                <CardHeaderContent>
-                                    <div class="text-center">
-                                        <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
-                                            @L["747 Reward System Registration"]
-                                        </MudText>
-                                        <MudText>@L["If you have prior registrations, please check details. If not, please fill in religiously. Please ensure to fill out the fields correctly to ensure your integrity in our 747 systems."]</MudText>
-                                    </div>
-                                    <br />
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                            <MudCardContent>
-                                <MudGrid>
-                                    <DataAnnotationsValidator />
-                                    <CustomValidation @ref="_customValidation" />
-                                    @if (_raffleResponse is { })
-                                    {
-                                        @if (_bridgeRequest.IsAgent && _raffleResponse.AgentInfo is { })
-                                        {
-                                            <MudItem xs="12">
-                                                <MudText Typo="Typo.h5">Agent</MudText>
-                                            </MudItem>
-                                            <MudItem xs="12">
-                                                <MudTextField Disabled="true" T="string" Label="@L["Username"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.AgentInfo.Username747"
-                                                      For="@(() => _raffleResponse.AgentInfo.Username747)" Required="true" />
-                                            </MudItem>
-                                            <MudItem xs="12">
-                                                <MudTextField Disabled="true" T="long" Label="@L["UserId"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.AgentInfo.UserId747"
-                                                      For="@(() => _raffleResponse.AgentInfo.UserId747)" Required="true" />
-                                            </MudItem>
-                                        }
-                                        else if (!_bridgeRequest.IsAgent && _raffleResponse.PlayerInfo is { })
-                                        {
-                                            <MudItem xs="12">
-                                                <MudText Typo="Typo.h5">Player</MudText>
-                                            </MudItem>
-                                            <MudItem xs="12">
-                                                <MudTextField Disabled="true" T="string" Label="@L["Username"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.PlayerInfo.Username747"
-                                                      For="@(() => _raffleResponse.PlayerInfo.Username747)" Required="true" />
-                                            </MudItem>
-                                            <MudItem xs="12">
-                                                <MudTextField Disabled="true" T="long" Label="@L["UserId"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.PlayerInfo.UserId747"
-                                                      For="@(() => _raffleResponse.PlayerInfo.UserId747)" Required="true" />
-                                            </MudItem>
-
-                                        }
-
-                                        <MudItem xs="12">
-                                            <MudTextField Disabled="true" T="string" Label="@L["Email"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Email"
-                                                      For="@(() => _raffleResponse.Email)" Required="true" />
                                         </MudItem>
-
-                                        <MudItem xs="12">
-                                            <MudTextField Disabled="_disableRaffleFields" T="string" Label="@L["Name"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Name"
-                                                      For="@(() => _raffleResponse.Name)" Required="true" />
-                                        </MudItem>
-                                        <MudItem xs="12">
-                                            <MudTextField Disabled="_disableRaffleFields" T="string" Label="@L["Surname"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Surname"
-                                                      For="@(() => _raffleResponse.Surname)" Required="true" />
-                                        </MudItem>
-                                        <MudItem xs="12">
-                                            <MudTextField Disabled="_disableRaffleFields" T="string" Label="@L["Phone"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Phone"
-                                                      For="@(() => _raffleResponse.Phone)" Required="true" />
-                                        </MudItem>
+                                        @** <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(()=>SubmitBridgeAsync())" DisableRipple="true">Validate</MudButton> **@
                                         <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
-                                            <MudButton ButtonType="ButtonType.Submit" Disabled="!_raffleStepIsActive" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@(_raffleStepIsActive ? Icons.Material.Filled.Check : Icons.Material.Filled.CheckCircle)" Style="width: 100%;">
-                                                @if (_raffleStepIsActive)
+                                            <MudButton ButtonType="ButtonType.Submit" Disabled="!_bridgeStepIsActive" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@(_bridgeStepIsActive ? Icons.Material.Filled.Check : Icons.Material.Filled.CheckCircle)" Style="width: 100%;">
+                                                @if (_bridgeStepIsActive)
                                                 {
-                                                    @L["Update and/or fill in details"]
+                                                    @L["Check user"]
                                                 }
                                                 else
                                                 {
-                                                    @L["Proceed and verify"]
+                                                    @L["Proceed"]
                                                 }
                                             </MudButton>
                                         </MudItem>
-                                    }
-                                </MudGrid>
-                            </MudCardContent>
-                        </MudCard>
-                    </EditForm>
-                </MudStep>
-                <MudStep Title="Email verification" StatusChanged="SendgridStatusChanged">
-                    <EditForm OnValidSubmit="@(async () => await SendgridVerificationAsync())" EditContext="@ECSendgridForm">
-                        <MudCard Elevation="0">
-                            <MudCardHeader>
-                                <CardHeaderContent>
-                                    <div class="text-center">
-                                        <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
-                                            @L["Email code verification"]
-                                        </MudText>
-                                        <MudText>@L["Check your email and please provide the verification code."]</MudText>
-                                    </div>
-                                    <br />
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                            <MudCardContent>
-                                <MudGrid>
-                                    <DataAnnotationsValidator />
-                                    <CustomValidation @ref="_customValidation" />
-                                    <MudItem xs="12">
-                                        <MudTextField isabled="_disableSendgridFields" T="string" Label="@L["Code"]" Variant="Variant.Outlined" @bind-Value="_sendGridRequest.Code"
-                                                      For="@(() => _sendGridRequest.Code)" Required="true" />
-                                    </MudItem>
-                                    <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
-                                        <MudButton ButtonType="ButtonType.Submit" Disabled="!_sendGridStepIsActive" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@(_sendGridStepIsActive ? Icons.Material.Filled.Check : Icons.Material.Filled.CheckCircle)" Style="width: 100%;">
-                                            @if (_sendGridStepIsActive)
-                                            {
-                                                @L["Validate"]
-                                            }
-                                        </MudButton>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudCardContent>
-                        </MudCard>
-                    </EditForm>
-                </MudStep>
-                
-                @if (_addResultStep)
-                {
-                    <MudStep Title="Result Step" IsResultStep="true">
-                        <div class="d-flex flex-column align-center justify-center" style="height: 200px">
-                            <MudIconButton Icon="@Icons.Material.Filled.DoneAll" Size="Size.Large" Variant="Variant.Filled" Color="Color.Success" />
-                            <MudText>Your reservation succesfully completed.</MudText>
-                        </div>
+                                    </MudGrid>
+                                </MudCardContent>
+                            </MudCard>
+                        </EditForm>
                     </MudStep>
-                }
-            </ChildContent>
-        </MudStepper>
-    </MudItem>
-</MudGrid>
+                    <MudStep Title="Enrol reward system" StatusChanged="RaffleStatusChanged">
+                        <EditForm OnValidSubmit="@(async () => await GenerateSendgridVerificationAsync())" EditContext="@ECRaffleForm">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <div class="text-center">
+                                            <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
+                                                @L["747 Reward System Registration"]
+                                            </MudText>
+                                            <MudText>@L["If you have prior registrations, please check details. If not, please fill in religiously. Please ensure to fill out the fields correctly to ensure your integrity in our 747 systems."]</MudText>
+                                        </div>
+                                        <br />
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudGrid>
+                                        <DataAnnotationsValidator />
+                                        <CustomValidation @ref="_customValidation" />
+                                        @if (_raffleResponse is { })
+                                        {
+                                            @if (_bridgeRequest.IsAgent && _raffleResponse.AgentInfo is { })
+                                            {
+                                                <MudItem xs="12">
+                                                    <MudText Typo="Typo.h5">Agent</MudText>
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudTextField Disabled="true" T="string" Label="@L["Username"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.AgentInfo.Username747"
+                                                      For="@(() => _raffleResponse.AgentInfo.Username747)" Required="true" />
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudTextField Disabled="true" T="long" Label="@L["UserId"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.AgentInfo.UserId747"
+                                                      For="@(() => _raffleResponse.AgentInfo.UserId747)" Required="true" />
+                                                </MudItem>
+                                            }
+                                            else if (!_bridgeRequest.IsAgent && _raffleResponse.PlayerInfo is { })
+                                            {
+                                                <MudItem xs="12">
+                                                    <MudText Typo="Typo.h5">Player</MudText>
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudTextField Disabled="true" T="string" Label="@L["Username"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.PlayerInfo.Username747"
+                                                      For="@(() => _raffleResponse.PlayerInfo.Username747)" Required="true" />
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudTextField Disabled="true" T="long" Label="@L["UserId"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.PlayerInfo.UserId747"
+                                                      For="@(() => _raffleResponse.PlayerInfo.UserId747)" Required="true" />
+                                                </MudItem>
+
+                                            }
+
+                                            <MudItem xs="12">
+                                                <MudTextField Disabled="true" T="string" Label="@L["Email"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Email"
+                                                      For="@(() => _raffleResponse.Email)" Required="true" />
+                                            </MudItem>
+
+                                            <MudItem xs="12">
+                                                <MudTextField Disabled="_disableRaffleFields" T="string" Label="@L["Name"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Name"
+                                                      For="@(() => _raffleResponse.Name)" Required="true" />
+                                            </MudItem>
+                                            <MudItem xs="12">
+                                                <MudTextField Disabled="_disableRaffleFields" T="string" Label="@L["Surname"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Surname"
+                                                      For="@(() => _raffleResponse.Surname)" Required="true" />
+                                            </MudItem>
+                                            <MudItem xs="12">
+                                                <MudTextField Disabled="_disableRaffleFields" T="string" Label="@L["Phone"]" Variant="Variant.Outlined" @bind-Value="_raffleResponse.Phone"
+                                                      For="@(() => _raffleResponse.Phone)" Required="true" />
+                                            </MudItem>
+                                            <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
+                                                <MudButton ButtonType="ButtonType.Submit" Disabled="!_raffleStepIsActive" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@(_raffleStepIsActive ? Icons.Material.Filled.Check : Icons.Material.Filled.CheckCircle)" Style="width: 100%;">
+                                                    @if (_raffleStepIsActive)
+                                                    {
+                                                        @L["Update and/or fill in details"]
+                                                    }
+                                                    else
+                                                    {
+                                                        @L["Proceed and verify"]
+                                                    }
+                                                </MudButton>
+                                            </MudItem>
+                                        }
+                                    </MudGrid>
+                                </MudCardContent>
+                            </MudCard>
+                        </EditForm>
+                    </MudStep>
+                    <MudStep Title="Email verification" StatusChanged="SendgridStatusChanged">
+                        <EditForm OnValidSubmit="@(async () => await SendgridVerificationAsync())" EditContext="@ECSendgridForm">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <div class="text-center">
+                                            <MudText Typo="Typo.h4" GutterBottom="true" style="margin-bottom:5px">
+                                                @L["Email code verification"]
+                                            </MudText>
+                                            <MudText>@L["Check your email and please provide the verification code."]</MudText>
+                                        </div>
+                                        <br />
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudGrid>
+                                        <DataAnnotationsValidator />
+                                        <CustomValidation @ref="_customValidation" />
+                                        <MudItem xs="12">
+                                            <MudTextField isabled="_disableSendgridFields" T="string" Label="@L["Code"]" Variant="Variant.Outlined" @bind-Value="_sendGridRequest.Code"
+                                                      For="@(() => _sendGridRequest.Code)" Required="true" />
+                                        </MudItem>
+                                        <MudItem xs="12" md="4" lg="2" Class="d-flex justify-center mx-auto">
+                                            <MudButton ButtonType="ButtonType.Submit" Disabled="!_sendGridStepIsActive" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@(_sendGridStepIsActive ? Icons.Material.Filled.Check : Icons.Material.Filled.CheckCircle)" Style="width: 100%;">
+                                                @if (_sendGridStepIsActive)
+                                                {
+                                                    @L["Validate"]
+                                                }
+                                            </MudButton>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudCardContent>
+                            </MudCard>
+                        </EditForm>
+                    </MudStep>
+
+                    @if (_addResultStep)
+                    {
+                        <MudStep Title="Result Step" IsResultStep="true">
+                            <div class="d-flex flex-column align-center justify-center" style="height: 200px">
+                                <MudIconButton Icon="@Icons.Material.Filled.DoneAll" Size="Size.Large" Variant="Variant.Filled" Color="Color.Success" />
+                                <MudText>Your reservation succesfully completed.</MudText>
+                            </div>
+                        </MudStep>
+                    }
+                </ChildContent>
+            </MudStepper>
+        </MudItem>
+    </MudGrid>
+
+}
